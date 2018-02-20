@@ -56,3 +56,4 @@ dkms.conf
 
 # SDKs
 nRF5_SDK*
+s132_nrf52_5.1.0_softdevice.hex
