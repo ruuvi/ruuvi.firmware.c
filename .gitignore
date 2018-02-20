@@ -53,3 +53,6 @@ dkms.conf
 
 # Mac OSX files
 .DS_Store
+
+# SDKs
+nRF5_SDK*
