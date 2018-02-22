@@ -8,6 +8,7 @@
 #include "ruuvi_error.h"
 #include "environmental.h"
 #include "bme280_interface.h"
+#include "lis2dh12_interface.h"
 #include "spi.h"
 #include "yield.h"
 // #include "ruuvi_endpoints.h"
@@ -36,6 +37,9 @@ int main(void)
   // environmental_selftest();
   ruuvi_status_t err_code = spi_init();
   NRF_LOG_INFO("SPI init status: %X", err_code);
+
+  err_code = lis2dh12_interface_init();
+  NRF_LOG_INFO("LIS init status: %X", err_code);
 
   ruuvi_sensor_t environmental_sensor;
 
@@ -74,7 +78,7 @@ int main(void)
   err_code = environmental_sensor.mode_set(&bme280_mode);
   NRF_LOG_INFO("BME mode status: %X", err_code);
 
-  ruuvi_environmental_data_t environmental;
+  // ruuvi_environmental_data_t environmental;
 
   //init_acceleration();
 
@@ -84,10 +88,10 @@ int main(void)
     platform_yield();
     platform_delay_ms(1000);
     
-    err_code = environmental_sensor.data_get(&environmental);
-    NRF_LOG_INFO("BME data status: %X", err_code);
-    NRF_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
-    NRF_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure)); 
-    NRF_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
+    // err_code = environmental_sensor.data_get(&environmental);
+    // NRF_LOG_INFO("BME data status: %X", err_code);
+    // NRF_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
+    // NRF_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure)); 
+    // NRF_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
   }
 }
