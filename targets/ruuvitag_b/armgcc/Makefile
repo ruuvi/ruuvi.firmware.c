@@ -10,40 +10,6 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 
 # Source files common to all targets
 SRC_FILES += \
-  $(SDK_ROOT)/components/boards/boards.c \
-  $(SDK_ROOT)/components/libraries/atomic_fifo/nrf_atfifo.c \
-  $(SDK_ROOT)/components/libraries/balloc/nrf_balloc.c \
-  $(SDK_ROOT)/components/libraries/button/app_button.c \
-  $(SDK_ROOT)/components/libraries/crc16/crc16.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_rtt.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_serial.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_uart.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_default_backends.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_frontend.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_str_formatter.c \
-  $(SDK_ROOT)/components/libraries/fds/fds.c \
-  $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
-  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
-  $(SDK_ROOT)/components/libraries/util/app_error.c \
-  $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
-  $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
-  $(SDK_ROOT)/components/libraries/util/nrf_assert.c \
-  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
-  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_sd.c \
-  $(SDK_ROOT)/components/libraries/experimental_memobj/nrf_memobj.c \
-  $(SDK_ROOT)/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c \
-  $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
-  $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
-  $(SDK_ROOT)/components/libraries/util/sdk_mapped_flags.c \
-  $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c \
-  $(SDK_ROOT)/components/drivers_nrf/common/nrf_drv_common.c \
-  $(SDK_ROOT)/components/drivers_nrf/gpiote/nrf_drv_gpiote.c \
-  $(SDK_ROOT)/components/drivers_nrf/spi_master/nrf_drv_spi.c \
-  $(SDK_ROOT)/components/drivers_nrf/uart/nrf_drv_uart.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp_nfc.c \
-  $(SDK_ROOT)/components/libraries/bootloader/dfu/nrf_dfu_svci.c \
   $(SDK_ROOT)/components/ble/common/ble_advdata.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble/common/ble_conn_params.c \
@@ -64,6 +30,46 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
+  $(SDK_ROOT)/components/boards/boards.c \
+  $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c \
+  $(SDK_ROOT)/components/drivers_nrf/common/nrf_drv_common.c \
+  $(SDK_ROOT)/components/drivers_nrf/gpiote/nrf_drv_gpiote.c \
+  $(SDK_ROOT)/components/drivers_nrf/spi_master/nrf_drv_spi.c \
+  $(SDK_ROOT)/components/drivers_nrf/uart/nrf_drv_uart.c \
+  $(SDK_ROOT)/components/libraries/atomic_fifo/nrf_atfifo.c \
+  $(SDK_ROOT)/components/libraries/balloc/nrf_balloc.c \
+  $(SDK_ROOT)/components/libraries/bootloader/dfu/nrf_dfu_svci.c \
+  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
+  $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
+  $(SDK_ROOT)/components/libraries/bsp/bsp_nfc.c \
+  $(SDK_ROOT)/components/libraries/button/app_button.c \
+  $(SDK_ROOT)/components/libraries/crc16/crc16.c \
+  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_rtt.c \
+  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_serial.c \
+  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_uart.c \
+  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_default_backends.c \
+  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_frontend.c \
+  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_str_formatter.c \
+  $(SDK_ROOT)/components/libraries/experimental_memobj/nrf_memobj.c \
+  $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
+  $(SDK_ROOT)/components/libraries/fds/fds.c \
+  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
+  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_sd.c \
+  $(SDK_ROOT)/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c \
+  $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
+  $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
+  $(SDK_ROOT)/components/libraries/timer/app_timer.c \
+  $(SDK_ROOT)/components/libraries/util/app_error.c \
+  $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
+  $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
+  $(SDK_ROOT)/components/libraries/util/nrf_assert.c \
+  $(SDK_ROOT)/components/libraries/util/sdk_mapped_flags.c \
+  $(SDK_ROOT)/components/nfc/t4t_lib/hal_t4t/hal_nfc_t4t.c \
+  $(SDK_ROOT)/components/nfc/ndef/generic/message/nfc_ndef_msg.c \
+  $(SDK_ROOT)/components/nfc/ndef/generic/record/nfc_ndef_record.c \
+  $(SDK_ROOT)/components/nfc/ndef/text/nfc_text_rec.c \
+  $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_msg.c \
+  $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_rec.c \
   $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf52.S \
   $(SDK_ROOT)/components/toolchain/system_nrf52.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
@@ -82,6 +88,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/spi/spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/yield/yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/nfc_tag/nfc_tag.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
 
 # Include folders common to all targets
@@ -121,6 +128,12 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/fstorage \
   $(SDK_ROOT)/components/libraries/mutex \
   $(SDK_ROOT)/components/libraries/experimental_log/src \
+  $(SDK_ROOT)/components/nfc/ndef/generic/message \
+  $(SDK_ROOT)/components/nfc/ndef/generic/record \
+  $(SDK_ROOT)/components/nfc/ndef/text/ \
+  $(SDK_ROOT)/components/nfc/ndef/uri \
+  $(SDK_ROOT)/components/nfc/t4t_lib \
+  $(SDK_ROOT)/components/nfc/t4t_lib/hal_t4t \
   $(SDK_ROOT)/components/softdevice/common \
   $(SDK_ROOT)/components/softdevice/s132/headers \
   $(SDK_ROOT)/components/softdevice/s132/headers/nrf52 \
@@ -135,6 +148,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/communication \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
@@ -145,6 +159,7 @@ INC_FOLDERS += \
 
 # Libraries common to all targets
 LIB_FILES += \
+ $(SDK_ROOT)/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a \
 
 # Optimization flags
 OPT = -O3 -g3

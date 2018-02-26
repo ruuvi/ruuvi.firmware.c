@@ -10,6 +10,7 @@
 #include "acceleration.h"
 #include "bme280_interface.h"
 #include "lis2dh12_interface.h"
+#include "nfc_tag.h"
 #include "spi.h"
 #include "yield.h"
 // #include "ruuvi_endpoints.h"
@@ -20,22 +21,21 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
+static uint8_t text[] = {'d', 'a', 't', 'a'};
+static size_t text_len = sizeof(text);
+static uint8_t url[] = {'r', 'u', 'u', 'v', 'i', '.', 'c', 'o', 'm'};
+static size_t url_len = sizeof(url); 
+
 int main(void)
 {
-//    bsp_board_leds_init();
 
   APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
   NRF_LOG_DEFAULT_BACKENDS_INIT();
 
-  NRF_LOG_INFO("SPI example.");
+  //Init LED
 
-  // Register callbacks to drivers
-  //init_endpoints();
+  //Init NFC
 
-  // Register environmental driver if available
-  // init_environmental();
-  // environmental_init();
-  // environmental_selftest();
   ruuvi_status_t err_code = spi_init();
   NRF_LOG_INFO("SPI init status: %X", err_code);
   
@@ -115,10 +115,47 @@ int main(void)
   err_code = environmental_sensor.mode_set(&bme280_mode);
   NRF_LOG_INFO("BME mode status: %X", err_code);
 
+  // ruuvi_status_t nfc_app_record_set(const uint8_t scheme, const chat* uri, size_t length);
+
+  // Functions for implementing communication api
+  ruuvi_communication_channel_t nfc;
+  nfc.init = nfc_init;
+  nfc.uninit = nfc_uninit;
+  nfc.process_asynchronous = nfc_process_asynchronous;
+
+  // Setup constant records
+  err_code = nfc_text_record_set(text, text_len);
+  err_code = nfc_uri_record_set(url, url_len);
+  err_code = nfc.process_asynchronous();
+
+  //init
+  err_code = nfc.init();
+  NRF_LOG_INFO("NFC init status: %d", err_code);
+  // nfc on_connect = nfc_on_connect;
+  // nfc on_disconnect = nfc_on_diconnect;
+  // nfc is_connected = nfc_is_connected;
+  // // Return RUUVI_SUCCESS if data was placed on HW buffer. 
+  // // call tx_complete once tx is complete.
+  // nfc process_asynchronous = nfc_process_asynchronous;
+  // // return RUUVI_SUCCESS when data has been sent and acknowledged if applicable.
+  // // return RUUVI_ERROR_INVALID_STATE if connection is not established.
+  // nfc process_synchronous = nfc_process_synchronous;
+  // Called after successful asynch tx
+  // nfc settx_complete;
+
+  //Clear TX queue
+  // nfc flush_tx = ;
+  // //Clear RX queue
+  // nfc flush_rx = ;
+  // return RUUVI SUCCESS on successful queuing, err_code on fail. 
+  // Can success even if there is not connection, check transmitting message with process() function
+  // nfc message_put = nfc_message_put;
+  // // Return RUUVI_ERROR_NOT_FOUND if queue is empty, RUUVI SUCCESS if data could be read
+  // nfc message_get = nfc_message_get;
+
+
   ruuvi_environmental_data_t environmental;
   ruuvi_acceleration_data_t  acceleration;
-
-  //init_acceleration();
 
   while (1)
   {
