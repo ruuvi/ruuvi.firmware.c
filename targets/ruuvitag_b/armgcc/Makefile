@@ -67,6 +67,10 @@ SRC_FILES += \
   $(SDK_ROOT)/components/nfc/t4t_lib/hal_t4t/hal_nfc_t4t.c \
   $(SDK_ROOT)/components/nfc/ndef/generic/message/nfc_ndef_msg.c \
   $(SDK_ROOT)/components/nfc/ndef/generic/record/nfc_ndef_record.c \
+  $(SDK_ROOT)/components/nfc/ndef/parser/message/nfc_ndef_msg_parser.c \
+  $(SDK_ROOT)/components/nfc/ndef/parser/message/nfc_ndef_msg_parser_local.c \
+  $(SDK_ROOT)/components/nfc/ndef/parser/record/nfc_ndef_record_parser.c \
+  $(SDK_ROOT)/components/nfc/ndef/launchapp/nfc_launchapp_rec.c \
   $(SDK_ROOT)/components/nfc/ndef/text/nfc_text_rec.c \
   $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_msg.c \
   $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_rec.c \
@@ -128,8 +132,11 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/fstorage \
   $(SDK_ROOT)/components/libraries/mutex \
   $(SDK_ROOT)/components/libraries/experimental_log/src \
+  $(SDK_ROOT)/components/nfc/ndef/launchapp/ \
   $(SDK_ROOT)/components/nfc/ndef/generic/message \
   $(SDK_ROOT)/components/nfc/ndef/generic/record \
+  $(SDK_ROOT)/components/nfc/ndef/parser/message \
+  $(SDK_ROOT)/components/nfc/ndef/parser/record \
   $(SDK_ROOT)/components/nfc/ndef/text/ \
   $(SDK_ROOT)/components/nfc/ndef/uri \
   $(SDK_ROOT)/components/nfc/t4t_lib \
