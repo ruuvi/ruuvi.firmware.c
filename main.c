@@ -16,21 +16,28 @@
 // #include "ruuvi_endpoints.h"
 #include "bme280.h"
 
-//TODO use platform log
-#include "nrf_log.h"
-#include "nrf_log_ctrl.h"
-#include "nrf_log_default_backends.h"
+#define PLATFORM_LOG_MODULE_NAME main
+#if MAIN_LOG_ENABLED
+#define PLATFORM_LOG_LEVEL       MAIN_LOG_LEVEL
+#define PLATFORM_LOG_INFO_COLOR  MAIN_INFO_COLOR
+#else // ANT_BPWR_LOG_ENABLED
+#define PLATFORM_LOG_LEVEL       0
+#endif // ANT_BPWR_LOG_ENABLED
+#include "platform_log.h"
+PLATFORM_LOG_MODULE_REGISTER();
 
 static uint8_t text[] = {'d', 'a', 't', 'a'};
 static size_t text_len = sizeof(text);
 static uint8_t url[] = {'r', 'u', 'u', 'v', 'i', '.', 'c', 'o', 'm'};
 static size_t url_len = sizeof(url); 
+// static uint8_t app[] = {'c', 'o', 'm', '.', 'r', 'u', 'u', 'v', 'i', '.', 's', 't', 'a', 't', 'i', 'o', 'n'};
+// static size_t app_len = sizeof(app);
 
 int main(void)
 {
 
-  APP_ERROR_CHECK(NRF_LOG_INIT(NULL));
-  NRF_LOG_DEFAULT_BACKENDS_INIT();
+  APP_ERROR_CHECK(PLATFORM_LOG_INIT(NULL));
+  PLATFORM_LOG_DEFAULT_BACKENDS_INIT();
 
   //Init LED
 
@@ -125,12 +132,15 @@ int main(void)
 
   // Setup constant records
   err_code = nfc_text_record_set(text, text_len);
-  err_code = nfc_uri_record_set(url, url_len);
-  err_code = nfc.process_asynchronous();
+  err_code |= nfc_uri_record_set(url, url_len);
+  //err_code = nfc_app_record_set(app, app_len);
 
   //init
   err_code = nfc.init();
   NRF_LOG_INFO("NFC init status: %d", err_code);
+  err_code = nfc.process_asynchronous();
+
+  NRF_LOG_INFO("NFC data set status: %d", err_code);
   // nfc on_connect = nfc_on_connect;
   // nfc on_disconnect = nfc_on_diconnect;
   // nfc is_connected = nfc_is_connected;
@@ -154,25 +164,29 @@ int main(void)
   // nfc message_get = nfc_message_get;
 
 
-  ruuvi_environmental_data_t environmental;
-  ruuvi_acceleration_data_t  acceleration;
+  // ruuvi_environmental_data_t environmental;
+  // ruuvi_acceleration_data_t  acceleration;
+  // platform_delay_ms(1000);
 
   while (1)
   {
-    NRF_LOG_FLUSH();
-    platform_yield();
-    platform_delay_ms(1000);
+    PLATFORM_LOG_FLUSH();
     
-    err_code = environmental_sensor.data_get(&environmental);
-    NRF_LOG_INFO("BME data status: %X", err_code);
-    NRF_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
-    NRF_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure)); 
-    NRF_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
+    // err_code = environmental_sensor.data_get(&environmental);
+    // NRF_LOG_INFO("BME data status: %X", err_code);
+    // NRF_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
+    // NRF_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure)); 
+    // NRF_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
 
-    err_code |= acceleration_sensor.data_get(&acceleration);
-    NRF_LOG_INFO("LIS data status %x", err_code);
-    NRF_LOG_INFO("X:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.x_mg));
-    NRF_LOG_INFO("Y:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.y_mg)); 
-    NRF_LOG_INFO("Z:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.z_mg));
+    // err_code |= acceleration_sensor.data_get(&acceleration);
+    // NRF_LOG_INFO("LIS data status %x", err_code);
+    // NRF_LOG_INFO("X:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.x_mg));
+    // NRF_LOG_INFO("Y:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.y_mg)); 
+    // NRF_LOG_INFO("Z:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.z_mg));
+
+    platform_yield();
+    platform_yield();
+    platform_delay_ms(10);
+    nfc_process_asynchronous();
   }
 }

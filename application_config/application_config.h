@@ -1,11 +1,41 @@
 /** Define application constants, i.e. sample rates, whether ruuvi.endpoints libarary is in use **/
 
+// <o> LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+// <o> INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
 //#define RUUVI_ENDPOINTS
+#ifndef APPLICATION_CONFIG
+#define APPLICATION_CONFIG
+
 #define ENVIRONMENTAL_SENSING
 #define BME280_ENVIRONMENTAL
 
 #define ACCELERATION_SENSING
 #define LIS2DH12_ACCELERATION
+#define LIS2DH12_INTERFACE_LOG_ENABLED 1
+#define LIS2DH12_INTERFACE_LOG_LEVEL   3  //Info
+#define LIS2DH12_INTERFACE_INFO_COLOR  0  //black 
+
+// 24 bytes payload max for incoming/outgoing messages. 
+// Note: BLE Mesh should be limited to 11 bytes, BLE4 GATT to 20.
+#define RUUVI_COMMUNICATION_MESSAGE_MAX_PALYLOAD_LENGTH 24
 
 #define APPLICATION_NFC
 #define NFC_TEXT_BUF_SIZE 128
@@ -13,6 +43,7 @@
 #define NFC_APP_BUF_SIZE 64
 #define NFC_DATA_BUF_SIZE 240
 #define NDEF_FILE_SIZE 512
+#define NFC_MAX_NUMBER_OF_RECORDS 4
 #define NFC_NDEF_MSG_PARSER_LOG_ENABLED 1
 #define NFC_NDEF_MSG_PARSER_LOG_LEVEL   3 //INFO
 #define NFC_NDEF_MSG_PARSER_INFO_COLOR  0 //Black
@@ -31,3 +62,4 @@
 
 #define APPLICATION_FLOAT_USE
 
+#endif
