@@ -24,14 +24,23 @@
 #ifndef APPLICATION_CONFIG
 #define APPLICATION_CONFIG
 
+#define MAIN_LOG_ENABLED 1
+#define MAIN_LOG_LEVEL   3  //Info
+#define MAIN_INFO_COLOR  0  //black 
+
 #define ENVIRONMENTAL_SENSING
 #define BME280_ENVIRONMENTAL
+#define BME280_INTERFACE_LOG_ENABLED 0
+#define BME280_INTERFACE_LOG_LEVEL   1  //Error
+#define BME280_INTERFACE_INFO_COLOR  0  //black 
 
 #define ACCELERATION_SENSING
 #define LIS2DH12_ACCELERATION
-#define LIS2DH12_INTERFACE_LOG_ENABLED 1
-#define LIS2DH12_INTERFACE_LOG_LEVEL   3  //Info
+#define LIS2DH12_INTERFACE_LOG_ENABLED 0
+#define LIS2DH12_INTERFACE_LOG_LEVEL   1  //Error
 #define LIS2DH12_INTERFACE_INFO_COLOR  0  //black 
+
+
 
 // 24 bytes payload max for incoming/outgoing messages. 
 // Note: BLE Mesh should be limited to 11 bytes, BLE4 GATT to 20.
@@ -44,10 +53,13 @@
 #define NFC_DATA_BUF_SIZE 240
 #define NDEF_FILE_SIZE 512
 #define NFC_MAX_NUMBER_OF_RECORDS 4
-#define NFC_NDEF_MSG_PARSER_LOG_ENABLED 1
+#define NFC_TAG_INTERFACE_LOG_ENABLED 1
+#define NFC_TAG_INTERFACE_LOG_LEVEL   3
+#define NFC_TAG_INTERFACE_LOG_COLOR   0
+#define NFC_NDEF_MSG_PARSER_LOG_ENABLED 0
 #define NFC_NDEF_MSG_PARSER_LOG_LEVEL   3 //INFO
 #define NFC_NDEF_MSG_PARSER_INFO_COLOR  0 //Black
-#define NFC_NDEF_RECORD_PARSER_LOG_ENABLED 1
+#define NFC_NDEF_RECORD_PARSER_LOG_ENABLED 0
 #define NFC_NDEF_RECORD_PARSER_LOG_LEVEL 3
 #define NFC_NDEF_RECORD_PARSER_INFO_COLOR 0
 
@@ -60,6 +72,7 @@
 // <2=> BLOCK_IF_FIFO_FULL 
 #define SEGGER_RTT_CONFIG_DEFAULT_MODE 2
 
+// Required by some drivers. If your platform does not support hw-floats, comment this and fix errors
 #define APPLICATION_FLOAT_USE
 
 #endif
