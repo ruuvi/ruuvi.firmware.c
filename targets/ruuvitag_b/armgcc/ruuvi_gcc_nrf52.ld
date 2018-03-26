@@ -5,9 +5,8 @@ GROUP(-lgcc -lc -lnosys)
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x23000, LENGTH = 0x55000
-  RAM (rwx) :  ORIGIN = 0x20002180, LENGTH = 0xde80
-  
+  FLASH (rx) : ORIGIN = 0x26000, LENGTH = 0x5a000
+  RAM (rwx) :  ORIGIN = 0x200018a8, LENGTH = 0xe758
 }
 
 SECTIONS
@@ -26,6 +25,12 @@ SECTIONS
     KEEP(*(SORT(.log_dynamic_data*)))
     PROVIDE(__stop_log_dynamic_data = .);
   } > RAM
+  .cli_sorted_cmd_ptrs :
+  {
+    PROVIDE(__start_cli_sorted_cmd_ptrs = .);
+    KEEP(*(.cli_sorted_cmd_ptrs))
+    PROVIDE(__stop_cli_sorted_cmd_ptrs = .);
+  } > RAM
   .fs_data :
   {
     PROVIDE(__start_fs_data = .);
@@ -40,17 +45,17 @@ SECTIONS
   .mem_section_dummy_rom :
   {
   }
-  .sdh_ble_observers :
-  {
-    PROVIDE(__start_sdh_ble_observers = .);
-    KEEP(*(SORT(.sdh_ble_observers*)))
-    PROVIDE(__stop_sdh_ble_observers = .);
-  } > FLASH
   .sdh_soc_observers :
   {
     PROVIDE(__start_sdh_soc_observers = .);
     KEEP(*(SORT(.sdh_soc_observers*)))
     PROVIDE(__stop_sdh_soc_observers = .);
+  } > FLASH
+  .sdh_ble_observers :
+  {
+    PROVIDE(__start_sdh_ble_observers = .);
+    KEEP(*(SORT(.sdh_ble_observers*)))
+    PROVIDE(__stop_sdh_ble_observers = .);
   } > FLASH
   .pwr_mgmt_data :
   {
@@ -64,17 +69,11 @@ SECTIONS
     KEEP(*(SORT(.log_const_data*)))
     PROVIDE(__stop_log_const_data = .);
   } > FLASH
-    .svc_data :
+    .nrf_balloc :
   {
-    PROVIDE(__start_svc_data = .);
-    KEEP(*(.svc_data))
-    PROVIDE(__stop_svc_data = .);
-  } > FLASH
-  .sdh_req_observers :
-  {
-    PROVIDE(__start_sdh_req_observers = .);
-    KEEP(*(SORT(.sdh_req_observers*)))
-    PROVIDE(__stop_sdh_req_observers = .);
+    PROVIDE(__start_nrf_balloc = .);
+    KEEP(*(.nrf_balloc))
+    PROVIDE(__stop_nrf_balloc = .);
   } > FLASH
   .sdh_state_observers :
   {
@@ -88,8 +87,31 @@ SECTIONS
     KEEP(*(SORT(.sdh_stack_observers*)))
     PROVIDE(__stop_sdh_stack_observers = .);
   } > FLASH
-  
+  .sdh_req_observers :
+  {
+    PROVIDE(__start_sdh_req_observers = .);
+    KEEP(*(SORT(.sdh_req_observers*)))
+    PROVIDE(__stop_sdh_req_observers = .);
+  } > FLASH
+    .nrf_queue :
+  {
+    PROVIDE(__start_nrf_queue = .);
+    KEEP(*(.nrf_queue))
+    PROVIDE(__stop_nrf_queue = .);
+  } > FLASH
+    .cli_command :
+  {
+    PROVIDE(__start_cli_command = .);
+    KEEP(*(.cli_command))
+    PROVIDE(__stop_cli_command = .);
+  } > FLASH
+  .crypto_data :
+  {
+    PROVIDE(__start_crypto_data = .);
+    KEEP(*(SORT(.crypto_data*)))
+    PROVIDE(__stop_crypto_data = .);
+  } > FLASH
 
 } INSERT AFTER .text
 
-INCLUDE "nrf5x_common.ld"
+INCLUDE "nrf_common.ld"

@@ -46,12 +46,12 @@ int main(void)
 
   ruuvi_status_t err_code = spi_init();
   PLATFORM_LOG_INFO("SPI init status: %X", err_code);
-  
+
   ruuvi_sensor_t acceleration_sensor;
   err_code = lis2dh12_interface_init();
   PLATFORM_LOG_INFO("LIS init status: %X", err_code);
 
-  if(RUUVI_SUCCESS == err_code)
+  if (RUUVI_SUCCESS == err_code)
   {
     //TODO: refactor pointer setup into driver
     acceleration_sensor.init           = lis2dh12_interface_init;
@@ -68,9 +68,9 @@ int main(void)
     acceleration_sensor.mode_get       = lis2dh12_interface_mode_get;
     acceleration_sensor.interrupt_set  = lis2dh12_interface_interrupt_set;
     acceleration_sensor.interrupt_get  = lis2dh12_interface_interrupt_get;
-    acceleration_sensor.data_get       = lis2dh12_interface_data_get;    
+    acceleration_sensor.data_get       = lis2dh12_interface_data_get;
   }
-  
+
   ruuvi_sensor_samplerate_t accelerometer_samplerate = 1;
   err_code = acceleration_sensor.samplerate_set(&accelerometer_samplerate);
   PLATFORM_LOG_INFO("LIS samplerate status: %X", err_code);
@@ -92,7 +92,7 @@ int main(void)
   err_code = bme280_interface_init();
   PLATFORM_LOG_INFO("BME init status: %X", err_code);
 
-  if(RUUVI_SUCCESS == err_code)
+  if (RUUVI_SUCCESS == err_code)
   {
     //TODO: refactor pointer setup into driver
     environmental_sensor.init           = bme280_interface_init;
@@ -146,35 +146,35 @@ int main(void)
 
   PLATFORM_LOG_INFO("NFC data set status: %d", err_code);
 
-  // ruuvi_environmental_data_t environmental;
-  // ruuvi_acceleration_data_t  acceleration;
-     ruuvi_communication_message_t rx;
-     uint8_t payload[20];
-     rx.payload = payload;
-     rx.payload_length = sizeof(payload);
-  // platform_delay_ms(1000);
+  ruuvi_environmental_data_t environmental;
+  ruuvi_acceleration_data_t  acceleration;
+  ruuvi_communication_message_t rx;
+  uint8_t payload[20];
+  rx.payload = payload;
+  rx.payload_length = sizeof(payload);
+  platform_delay_ms(1000);
 
   while (1)
   {
     PLATFORM_LOG_FLUSH();
     nfc.process_asynchronous();
-    while(RUUVI_SUCCESS == nfc.message_get(&rx))
+    while (RUUVI_SUCCESS == nfc.message_get(&rx))
     {
       PLATFORM_LOG_INFO("Got message");
       PLATFORM_LOG_HEXDUMP_INFO(rx.payload, rx.payload_length);
       // Payload length gets overwritten, let the driver know full length of buffer
       rx.payload_length = sizeof(payload);
     }
-    //err_code = environmental_sensor.data_get(&environmental);
+    err_code = environmental_sensor.data_get(&environmental);
     // NRF_LOG_INFO("BME data status: %X", err_code);
     // NRF_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
-    // NRF_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure)); 
+    // NRF_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure));
     // NRF_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
 
-    // err_code |= acceleration_sensor.data_get(&acceleration);
+    err_code = acceleration_sensor.data_get(&acceleration);
     // NRF_LOG_INFO("LIS data status %x", err_code);
     // NRF_LOG_INFO("X:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.x_mg));
-    // NRF_LOG_INFO("Y:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.y_mg)); 
+    // NRF_LOG_INFO("Y:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.y_mg));
     // NRF_LOG_INFO("Z:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.z_mg));
 
     platform_yield();

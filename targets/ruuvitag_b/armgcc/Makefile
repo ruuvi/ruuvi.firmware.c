@@ -2,7 +2,7 @@ PROJECT_NAME     := ruuvi_firmware_ruuvitag_b_s132
 TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../../../nRF5_SDK_14.2.0_17b948a
+SDK_ROOT := ../../../nRF5_SDK_15.0.0_a53641a
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
@@ -15,10 +15,10 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/common/ble_conn_params.c \
   $(SDK_ROOT)/components/ble/common/ble_conn_state.c \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
+  $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatt_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatts_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/id_manager.c \
-  $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
   $(SDK_ROOT)/components/ble/peer_manager/peer_data_storage.c \
   $(SDK_ROOT)/components/ble/peer_manager/peer_database.c \
   $(SDK_ROOT)/components/ble/peer_manager/peer_id.c \
@@ -27,22 +27,11 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/peer_manager/pm_mutex.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_dispatcher.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_manager.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
   $(SDK_ROOT)/components/boards/boards.c \
-  $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c \
-  $(SDK_ROOT)/components/drivers_nrf/common/nrf_drv_common.c \
-  $(SDK_ROOT)/components/drivers_nrf/gpiote/nrf_drv_gpiote.c \
-  $(SDK_ROOT)/components/drivers_nrf/spi_master/nrf_drv_spi.c \
-  $(SDK_ROOT)/components/drivers_nrf/uart/nrf_drv_uart.c \
+  $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(SDK_ROOT)/components/libraries/atomic_fifo/nrf_atfifo.c \
+  $(SDK_ROOT)/components/libraries/atomic_flags/nrf_atflags.c \
   $(SDK_ROOT)/components/libraries/balloc/nrf_balloc.c \
-  $(SDK_ROOT)/components/libraries/bootloader/dfu/nrf_dfu_svci.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp_btn_ble.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp_nfc.c \
-  $(SDK_ROOT)/components/libraries/button/app_button.c \
   $(SDK_ROOT)/components/libraries/crc16/crc16.c \
   $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_rtt.c \
   $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_serial.c \
@@ -74,8 +63,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/nfc/ndef/text/nfc_text_rec.c \
   $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_msg.c \
   $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_rec.c \
-  $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf52.S \
-  $(SDK_ROOT)/components/toolchain/system_nrf52.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
@@ -84,15 +71,27 @@ SRC_FILES += \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_spi.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spi.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
+  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
+  $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(PROJ_DIR)/main.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/lis2dh12_interface.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/bme280_interface.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/spi/spi.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/yield/yield.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/platform_error.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform/nfc_tag/nfc_tag.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/spi.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/yield.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/nfc_tag/nfc_tag.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
 
 # Include folders common to all targets
@@ -102,22 +101,14 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/ble/common \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt \
   $(SDK_ROOT)/components/ble/peer_manager \
-  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
   $(SDK_ROOT)/components/boards \
-  $(SDK_ROOT)/components/device \
-  $(SDK_ROOT)/components/drivers_nrf/clock \
-  $(SDK_ROOT)/components/drivers_nrf/common \
-  $(SDK_ROOT)/components/drivers_nrf/delay \
-  $(SDK_ROOT)/components/drivers_nrf/gpiote \
-  $(SDK_ROOT)/components/drivers_nrf/hal \
-  $(SDK_ROOT)/components/drivers_nrf/spi_master \
-  $(SDK_ROOT)/components/drivers_nrf/uart \
   $(SDK_ROOT)/components/libraries/atomic \
   $(SDK_ROOT)/components/libraries/atomic_fifo \
+  $(SDK_ROOT)/components/libraries/atomic_flags/ \
   $(SDK_ROOT)/components/libraries/balloc \
-  $(SDK_ROOT)/components/libraries/bootloader/dfu \
   $(SDK_ROOT)/components/libraries/bsp \
   $(SDK_ROOT)/components/libraries/crc16 \
+  $(SDK_ROOT)/components/libraries/delay \
   $(SDK_ROOT)/components/libraries/experimental_log \
   $(SDK_ROOT)/components/libraries/experimental_memobj \
   $(SDK_ROOT)/components/libraries/experimental_section_vars \
@@ -149,6 +140,12 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
   $(SDK_ROOT)/external/fprintf \
   $(SDK_ROOT)/external/segger_rtt \
+  $(SDK_ROOT)/integration/nrfx/legacy/ \
+  $(SDK_ROOT)/modules/nrfx/ \
+  $(SDK_ROOT)/modules/nrfx/drivers/include \
+  $(SDK_ROOT)/modules/nrfx/hal \
+  $(SDK_ROOT)/modules/nrfx/mdk \
+  $(SDK_ROOT)/integration/nrfx \
   $(PROJ_DIR)/application_config \
   $(PROJ_DIR)/ruuvi.boards.c \
   $(PROJ_DIR)/ruuvi.drivers.c/ \
@@ -159,7 +156,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk14_platform \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
 
 
@@ -185,8 +182,7 @@ CFLAGS += -DNRF52
 CFLAGS += -DNRF52832_XXAA
 CFLAGS += -DHAL_NFC_ENGINEERING_BC_FTPAN_WORKAROUND
 CFLAGS += -DNRF52_PAN_74
-CFLAGS += -DNRF_DFU_SVCI_ENABLED
-CFLAGS += -DNRF_SD_BLE_API_VERSION=5
+CFLAGS += -DNRF_SD_BLE_API_VERSION=6
 CFLAGS += -DS132
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DSWI_DISABLE0
@@ -216,15 +212,14 @@ ASMFLAGS += -DNRF52
 ASMFLAGS += -DNRF52832_XXAA
 ASMFLAGS += -DHAL_NFC_ENGINEERING_BC_FTPAN_WORKAROUND
 ASMFLAGS += -DNRF52_PAN_74
-ASMFLAGS += -DNRF_DFU_SVCI_ENABLED
-ASMFLAGS += -DNRF_SD_BLE_API_VERSION=5
+ASMFLAGS += -DNRF_SD_BLE_API_VERSION=6
 ASMFLAGS += -DS132
 ASMFLAGS += -DSOFTDEVICE_PRESENT
 ASMFLAGS += -DSWI_DISABLE0
 
 # Linker flags
 LDFLAGS += $(OPT)
-LDFLAGS += -mthumb -mabi=aapcs -L $(TEMPLATE_PATH) -T$(LINKER_SCRIPT)
+LDFLAGS += -mthumb -mabi=aapcs -L$(SDK_ROOT)/modules/nrfx/mdk -T$(LINKER_SCRIPT)
 LDFLAGS += -mcpu=cortex-m4
 LDFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # let linker dump unused sections
@@ -232,6 +227,10 @@ LDFLAGS += -Wl,--gc-sections
 # use newlib in nano version
 LDFLAGS += --specs=nano.specs
 
+nrf52832_xxaa: CFLAGS += -D__HEAP_SIZE=8192
+nrf52832_xxaa: CFLAGS += -D__STACK_SIZE=8192
+nrf52832_xxaa: ASMFLAGS += -D__HEAP_SIZE=8192
+nrf52832_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
 
 # Add standard libraries at the very end of the linker input, after all objects
 # that may need symbols provided by these libraries.

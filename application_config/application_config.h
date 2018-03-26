@@ -30,14 +30,14 @@
 
 #define ENVIRONMENTAL_SENSING 1
 #define BME280_ENVIRONMENTAL 1
-#define BME280_INTERFACE_LOG_ENABLED 0
-#define BME280_INTERFACE_LOG_LEVEL   1  //Error
+#define BME280_INTERFACE_LOG_ENABLED 1
+#define BME280_INTERFACE_LOG_LEVEL   3  //Error
 #define BME280_INTERFACE_INFO_COLOR  0  //black 
 
 #define ACCELERATION_SENSING 1
 #define LIS2DH12_ACCELERATION 1
-#define LIS2DH12_INTERFACE_LOG_ENABLED 0
-#define LIS2DH12_INTERFACE_LOG_LEVEL   1  //Error
+#define LIS2DH12_INTERFACE_LOG_ENABLED 1
+#define LIS2DH12_INTERFACE_LOG_LEVEL   3  //Error
 #define LIS2DH12_INTERFACE_INFO_COLOR  0  //black 
 
 
@@ -59,6 +59,6 @@
 #define SEGGER_RTT_CONFIG_DEFAULT_MODE 2
 
 // Required by some drivers. If your platform does not support hw-floats, comment this and fix errors
-#define APPLICATION_FLOAT_USE
+#define APPLICATION_FLOAT_USE 1
 
 #endif
