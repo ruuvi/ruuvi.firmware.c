@@ -23,13 +23,12 @@
 //#define RUUVI_ENDPOINTS
 #ifndef APPLICATION_CONFIG
 #define APPLICATION_CONFIG
-#include "boards.h"
 
 #define MAIN_LOG_ENABLED 1
 #define MAIN_LOG_LEVEL   3  //Info
 #define MAIN_INFO_COLOR  0  //black 
 
-#define BLE4_LOG_ENABLED 0
+#define BLE4_LOG_ENABLED 1
 #define BLE4_LOG_LEVEL   3
 #define BLE4_INFO_COLOR  0
 

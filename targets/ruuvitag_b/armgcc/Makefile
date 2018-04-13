@@ -12,10 +12,17 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 SRC_FILES += \
   $(SDK_ROOT)/components/ble/common/ble_advdata.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
+  $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c \
+  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
+  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
+  $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
+  $(SDK_ROOT)/components/ble/ble_services/ble_dis/ble_dis.c \
+  $(SDK_ROOT)/components/ble/ble_services/ble_nus/ble_nus.c \
   $(SDK_ROOT)/components/ble/common/ble_conn_params.c \
   $(SDK_ROOT)/components/ble/common/ble_conn_state.c \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
+  $(SDK_ROOT)/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatt_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatts_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/id_manager.c \
@@ -32,7 +39,20 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/atomic_fifo/nrf_atfifo.c \
   $(SDK_ROOT)/components/libraries/atomic_flags/nrf_atflags.c \
   $(SDK_ROOT)/components/libraries/balloc/nrf_balloc.c \
+  $(SDK_ROOT)/components/libraries/bootloader/dfu/nrf_dfu_svci.c \
   $(SDK_ROOT)/components/libraries/crc16/crc16.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_init.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng_mbedtls.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_chacha_poly_aead.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_ecdh.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_ecdsa.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_hash.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_hmac.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_init.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_rng.c \
   $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_rtt.c \
   $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_serial.c \
   $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_uart.c \
@@ -45,6 +65,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_sd.c \
   $(SDK_ROOT)/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c \
+  $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
   $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
   $(SDK_ROOT)/components/libraries/timer/app_timer.c \
@@ -72,12 +93,14 @@ SRC_FILES += \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
-  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_spi.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
@@ -88,33 +111,64 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/lis2dh12_interface.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/bme280_interface.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/spi.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/yield.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_advertisement.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_gatt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_stack.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/gpio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/pin_interrupt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/spi.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/timer.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/nfc_tag/nfc_tag.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ringbuffer.c \
+  $(PROJ_DIR)/tasks/accelerometer.c \
+  $(PROJ_DIR)/tasks/bluetooth.c \
+  $(PROJ_DIR)/tasks/environmental.c \
+  $(PROJ_DIR)/tasks/peripherals.c \
+  $(PROJ_DIR)/tasks/pop.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/ble/ble_advertising \
+  $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
+  $(SDK_ROOT)/components/ble/ble_services/ble_dis/ \
+  $(SDK_ROOT)/components/ble/ble_services/ble_nus \
   $(SDK_ROOT)/components/ble/common \
+  $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt \
+  $(SDK_ROOT)/components/ble/nrf_ble_qwr \
   $(SDK_ROOT)/components/ble/peer_manager \
   $(SDK_ROOT)/components/boards \
   $(SDK_ROOT)/components/libraries/atomic \
   $(SDK_ROOT)/components/libraries/atomic_fifo \
   $(SDK_ROOT)/components/libraries/atomic_flags/ \
   $(SDK_ROOT)/components/libraries/balloc \
+  $(SDK_ROOT)/components/libraries/bootloader \
+  $(SDK_ROOT)/components/libraries/bootloader/ble_dfu/ \
+  $(SDK_ROOT)/components/libraries/bootloader/dfu/ \
   $(SDK_ROOT)/components/libraries/bsp \
   $(SDK_ROOT)/components/libraries/crc16 \
+  $(SDK_ROOT)/components/libraries/crypto \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cc310 \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cifra \
+  $(SDK_ROOT)/components/libraries/crypto/backend/cc310_bl \
+  $(SDK_ROOT)/components/libraries/crypto/backend/micro_ecc \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/ \
+  $(SDK_ROOT)/components/libraries/crypto/backend/nrf_sw \
+  $(SDK_ROOT)/components/libraries/crypto/backend/oberon \
   $(SDK_ROOT)/components/libraries/delay \
   $(SDK_ROOT)/components/libraries/experimental_log \
   $(SDK_ROOT)/components/libraries/experimental_memobj \
   $(SDK_ROOT)/components/libraries/experimental_section_vars \
   $(SDK_ROOT)/components/libraries/fds \
   $(SDK_ROOT)/components/libraries/pwr_mgmt \
+  $(SDK_ROOT)/components/libraries/queue/ \
   $(SDK_ROOT)/components/libraries/scheduler \
+  $(SDK_ROOT)/components/libraries/stack_info/ \
   $(SDK_ROOT)/components/libraries/strerror \
   $(SDK_ROOT)/components/libraries/svc \
   $(SDK_ROOT)/components/libraries/util \
@@ -139,6 +193,11 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/toolchain \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
   $(SDK_ROOT)/external/fprintf \
+  $(SDK_ROOT)/external/mbedtls/include \
+  $(SDK_ROOT)/external/nrf_tls/mbedtls/nrf_crypto/config \
+  $(SDK_ROOT)/external/nrf_cc310/include \
+  $(SDK_ROOT)/external/nrf_oberon/include \
+  $(SDK_ROOT)/external/nrf_oberon/ \
   $(SDK_ROOT)/external/segger_rtt \
   $(SDK_ROOT)/integration/nrfx/legacy/ \
   $(SDK_ROOT)/modules/nrfx/ \
@@ -154,16 +213,21 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/communication \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/timer \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
+  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ \
+  $(PROJ_DIR)/tasks
 
 
 
 # Libraries common to all targets
 LIB_FILES += \
  $(SDK_ROOT)/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a \
+ $(SDK_ROOT)/external/nrf_oberon/lib/nrf52/liboberon_2.0.4.a \
 
 # Optimization flags
 OPT = -O3 -g3
@@ -182,9 +246,17 @@ CFLAGS += -DNRF52
 CFLAGS += -DNRF52832_XXAA
 CFLAGS += -DHAL_NFC_ENGINEERING_BC_FTPAN_WORKAROUND
 CFLAGS += -DNRF52_PAN_74
+CFLAGS += -DNRF_DFU_SVCI_ENABLED
+CFLAGS += -DNRF_DFU_TRANSPORT_BLE=1
 CFLAGS += -DNRF_SD_BLE_API_VERSION=6
 CFLAGS += -DS132
 CFLAGS += -DSOFTDEVICE_PRESENT
+CFLAGS += -DNRF_CRYPTO_MAX_INSTANCE_COUNT=1
+CFLAGS += -DuECC_ENABLE_VLI_API=0
+CFLAGS += -DuECC_OPTIMIZATION_LEVEL=3
+CFLAGS += -DuECC_SQUARE_FUNC=0
+CFLAGS += -DuECC_SUPPORT_COMPRESSED_POINT=0
+CFLAGS += -DuECC_VLI_NATIVE_LITTLE_ENDIAN=1
 CFLAGS += -DSWI_DISABLE0
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
@@ -212,9 +284,17 @@ ASMFLAGS += -DNRF52
 ASMFLAGS += -DNRF52832_XXAA
 ASMFLAGS += -DHAL_NFC_ENGINEERING_BC_FTPAN_WORKAROUND
 ASMFLAGS += -DNRF52_PAN_74
+ASMFLAGS += -DNRF_DFU_SVCI_ENABLED
+ASMFLAGS += -DNRF_DFU_TRANSPORT_BLE=1
 ASMFLAGS += -DNRF_SD_BLE_API_VERSION=6
 ASMFLAGS += -DS132
 ASMFLAGS += -DSOFTDEVICE_PRESENT
+ASMFLAGS += -DNRF_CRYPTO_MAX_INSTANCE_COUNT=1
+ASMFLAGS += -DuECC_ENABLE_VLI_API=0
+ASMFLAGS += -DuECC_OPTIMIZATION_LEVEL=3
+ASMFLAGS += -DuECC_SQUARE_FUNC=0
+ASMFLAGS += -DuECC_SUPPORT_COMPRESSED_POINT=0
+ASMFLAGS += -DuECC_VLI_NATIVE_LITTLE_ENDIAN=1
 ASMFLAGS += -DSWI_DISABLE0
 
 # Linker flags
