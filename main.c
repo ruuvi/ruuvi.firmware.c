@@ -111,6 +111,9 @@ int main(void)
 
   err_code = task_generate_keys();
   PLATFORM_LOG_INFO("Keygen data status: %X", err_code);
+  task_generate_dummy_hash();
+  task_sign_hash();
+  task_verify_hash();
 
   ruuvi_communication_message_t ble_in_msg;
   uint8_t ble_in_data[24];

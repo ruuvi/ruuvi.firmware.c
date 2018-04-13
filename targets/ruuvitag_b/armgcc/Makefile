@@ -51,6 +51,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_hash.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_hmac.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_ecdsa.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_init.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_rng.c \
   $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_rtt.c \
