@@ -23,31 +23,47 @@
 //#define RUUVI_ENDPOINTS
 #ifndef APPLICATION_CONFIG
 #define APPLICATION_CONFIG
+#include "boards.h"
 
 #define MAIN_LOG_ENABLED 1
 #define MAIN_LOG_LEVEL   3  //Info
 #define MAIN_INFO_COLOR  0  //black 
 
+#define BLE4_LOG_ENABLED 0
+#define BLE4_LOG_LEVEL   3
+#define BLE4_INFO_COLOR  0
+
+#define SPI_PLATFORM_LOG_ENABLED 0
+#define SPI_PLATFORM_LOG_LEVEL   3
+#define SPI_PLATFORM_INFO_COLOR  0
+
+#define I2C_PLATFORM_LOG_ENABLED 0
+#define I2C_PLATFORM_LOG_LEVEL   3
+#define I2C_PLATFORM_INFO_COLOR  0
+
+#define LOG_PLATFORM_LOG_ENABLED    0
+#define LOG_PLATFORM_LOG_LEVEL      3
+#define LOG_PLATFORM_LOG_INFO_COLOR 0
+
+#define UART_LOG_ENABLED    1
+#define UART_LOG_LEVEL      3
+#define UART_LOG_INFO_COLOR 0
+
 #define ENVIRONMENTAL_SENSING 1
-#define BME280_ENVIRONMENTAL 1
-#define BME280_INTERFACE_LOG_ENABLED 1
+#define BME280_INTERFACE_LOG_ENABLED 0
 #define BME280_INTERFACE_LOG_LEVEL   3  //Error
 #define BME280_INTERFACE_INFO_COLOR  0  //black 
 
 #define ACCELERATION_SENSING 1
-#define LIS2DH12_ACCELERATION 1
-#define LIS2DH12_INTERFACE_LOG_ENABLED 1
+#define LIS2DH12_INTERFACE_LOG_ENABLED 0
 #define LIS2DH12_INTERFACE_LOG_LEVEL   3  //Error
 #define LIS2DH12_INTERFACE_INFO_COLOR  0  //black 
-
-
 
 // 24 bytes payload max for incoming/outgoing messages. 
 // Note: BLE Mesh should be limited to 11 bytes, BLE4 GATT to 20.
 #define RUUVI_COMMUNICATION_MESSAGE_MAX_PALYLOAD_LENGTH 24
 
 #define APPLICATION_NFC 1
-
 
 // <i> The following modes are supported:
 // <i> - SKIP  - Do not block, output nothing.
