@@ -200,6 +200,8 @@ ruuvi_status_t task_pop_process_incoming_data(uint8_t* message, size_t message_l
 {
   if (NULL == message) { return RUUVI_ERROR_NULL; }
   if (message_length < 4) { return RUUVI_ERROR_INVALID_LENGTH; }
+  message_source = message[MESSAGE_SOURCE_INDEX];
+  message_destination = message[MESSAGE_DESTINATION_INDEX];
   uint8_t data_type = message[MESSAGE_TYPE_INDEX];
   uint8_t payload_length = message[MESSAGE_PAYLOAD_LENGTH_INDEX];
 
