@@ -265,7 +265,7 @@ CFLAGS += -mthumb -mabi=aapcs
 CFLAGS +=  -Wall -Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
-CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
+CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing -fstack-usage
 CFLAGS += -fno-builtin -fshort-enums 
 
 # C++ flags common to all targets

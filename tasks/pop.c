@@ -166,10 +166,10 @@ ruuvi_status_t task_pop_send_challenge(void)
   hash_payload[MESSAGE_TYPE_INDEX] = POP_CHALLENGE_1;
   hash_payload[MESSAGE_PAYLOAD_LENGTH_INDEX] = 16;
   memcpy(&hash_payload[MESSAGE_PAYLOAD_INDEX], &tag_hash[0], 16);
-  err_code |= task_bluetooth_send_asynchronous(tag_hash, 16);
+  err_code |= task_bluetooth_send_asynchronous(hash_payload, 20);
   hash_payload[MESSAGE_TYPE_INDEX] = POP_CHALLENGE_2;
   memcpy(&hash_payload[MESSAGE_PAYLOAD_INDEX], &tag_hash[16], 16);
-  err_code |= task_bluetooth_send_asynchronous(tag_hash, 16);
+  err_code |= task_bluetooth_send_asynchronous(hash_payload, 20);
   if (RUUVI_SUCCESS != err_code) { PLATFORM_LOG_ERROR("POP Challenge send failed"); }
   return err_code;
 }

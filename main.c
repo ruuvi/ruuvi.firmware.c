@@ -121,18 +121,19 @@ int main(void)
   uint8_t ble_in_data[24];
   ble_in_msg.payload = ble_in_data;
   ble_in_msg.payload_length = sizeof(ble_in_data);
-  
+
   while (1)
   {
     PLATFORM_LOG_DEBUG("Processing");
     while (RUUVI_SUCCESS == ble4_nus_message_get(&ble_in_msg))
     {
       PLATFORM_LOG_DEBUG("Got data");
-      // PLATFORM_LOG_HEXDUMP_INFO(ble_in_msg.payload, ble_in_msg.payload_length);
+      PLATFORM_LOG_HEXDUMP_INFO(ble_in_msg.payload, ble_in_msg.payload_length);
       // Data length from BLE stack is passed as length of message,
       // so setting invalid length to message field does not lead to overflow
       task_pop_process_incoming_data(ble_in_msg.payload, ble_in_msg.payload_length);
       ble_in_msg.payload_length = sizeof(ble_in_data);
+      task_bluetooth_send_asynchronous(hello, sizeof(hello));
     }
     task_bluetooth_process();
     PLATFORM_LOG_DEBUG("Yielding");
