@@ -106,12 +106,14 @@ int main(void)
   PLATFORM_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
   PLATFORM_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure));
   PLATFORM_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
-  uint8_t data[] = {'H', 'e', 'l', 'l', 'o'};
-  task_bluetooth_send_asynchronous(data, sizeof(data));
+  uint8_t hello[] = {'H', 'e', 'l', 'l', 'o'};
+  task_bluetooth_send_asynchronous(hello, sizeof(hello));
 
   err_code = task_generate_keys();
-  PLATFORM_LOG_INFO("Keygen data status: %X", err_code);
-  task_generate_dummy_hash();
+  // PLATFORM_LOG_INFO("Keygen data status: %X", err_code);
+  // task_generate_dummy_hash();
+  char* data = "{\"type\":\"CryptoMessage\",\"signer\":\"sender\",\"pubKey\":\"publicKeyOfSenderToIOTA\",\"signature\":\"signatureOfSenderToIOTA\",\"cryptoFunction\":\"SHA256\",\"message\":{\"type\":\"CryptoMessage\",\"tsSigned\":\"Timestampaddedbysender\",\"signer\":\"notary\",\"pubKey\":\"pubKeyOfBeacon\",\"signature\":\"signatureOfBeacon\",\"cryptoFunction\":\"SHA256\",\"message\":{\"type\":\"proofOfVisit\",\"version\":\"0.0.1\",\"timeLimit\":30,\"tsSigned\":\"ISOsignerTimeStamp\",\"tsSentChallenge\":\"2017-10-18T17:29:00+02:00\",\"tsReceivedChallenge\":\"2017-10-18T17:29:18+02:00\",\"challenge\":{\"type\":\"CryptoMessage\",\"signer\":\"requestor\",\"pubKey\":\"publicKeyOfRequestor\",\"signature\":\"signatureOfSmartphone\",\"cryptoFunction\":\"SHA256\",\"message\":{\"type\":\"RandomString\",\"string\":\"SomeRandomString\",\"tsSigned\":\"ISOsignerTimeStamp\"}}}}}";
+  task_sha256_message((uint8_t*)data, strlen(data));
   task_sign_hash();
   task_verify_hash();
 
@@ -119,6 +121,7 @@ int main(void)
   uint8_t ble_in_data[24];
   ble_in_msg.payload = ble_in_data;
   ble_in_msg.payload_length = sizeof(ble_in_data);
+  
   while (1)
   {
     task_bluetooth_process();
@@ -127,8 +130,10 @@ int main(void)
     {
       //TODO: Task to identify and reply to message
       PLATFORM_LOG_HEXDUMP_INFO(ble_in_msg.payload, ble_in_msg.payload_length);
+      // task_process_incoming_data(ble_in_msg.payload, ble_in_msg.payload_length);
       ble_in_msg.payload_length = sizeof(ble_in_data);
-      task_bluetooth_send_asynchronous(data, sizeof(data));
+      
+      task_bluetooth_send_asynchronous(hello, sizeof(hello));
     }
 
     platform_yield();
