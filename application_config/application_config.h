@@ -71,7 +71,7 @@
 // <0=> SKIP 
 // <1=> TRIM 
 // <2=> BLOCK_IF_FIFO_FULL 
-#define SEGGER_RTT_CONFIG_DEFAULT_MODE 2
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 
 // Required by some drivers. If your platform does not support hw-floats, comment this and fix errors
 #define APPLICATION_FLOAT_USE 1

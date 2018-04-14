@@ -12,6 +12,16 @@
 
 #include "ble_nus.h"
 
+#define PLATFORM_LOG_MODULE_NAME application_bluetooth
+#if MAIN_LOG_ENABLED
+#define PLATFORM_LOG_LEVEL       MAIN_LOG_LEVEL
+#define PLATFORM_LOG_INFO_COLOR  MAIN_INFO_COLOR
+#else // ANT_BPWR_LOG_ENABLED
+#define PLATFORM_LOG_LEVEL       0
+#endif // ANT_BPWR_LOG_ENABLED
+#include "platform_log.h"
+PLATFORM_LOG_MODULE_REGISTER();
+
 ruuvi_status_t task_bluetooth_init(void)
 {
   ruuvi_status_t err_code = RUUVI_SUCCESS;
@@ -58,11 +68,15 @@ ruuvi_status_t task_bluetooth_send_asynchronous(uint8_t* data, size_t data_lengt
   ruuvi_communication_message_t msg;
   msg.payload = data;
   msg.payload_length = data_length;
+  msg.repeat = false;
+
+  PLATFORM_LOG_INFO("Send message");
 
   return ble4_nus_message_put(&msg);
 }
 
 ruuvi_status_t task_bluetooth_process(void)
 {
+  PLATFORM_LOG_INFO("Process queue message");
   return ble4_nus_process_asynchronous();
 }
