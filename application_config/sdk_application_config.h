@@ -72,6 +72,9 @@
   #define SAADC_CONFIG_OVERSAMPLE 0
   #define SAADC_CONFIG_LP_MODE 0
 
+  #define NRF5_SDK15_SCHEDULER 1
+  #define NRF5_SDK15_TIMER 1
+
   #define NRF_LOG_ENABLED 1
 
   // <i> The following modes are supported:

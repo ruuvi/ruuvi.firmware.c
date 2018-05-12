@@ -122,6 +122,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/pin_interrupt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/scheduler.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/timer.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/yield.c \
@@ -221,10 +222,13 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/communication \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/scheduler \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/timer \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ \
   $(PROJ_DIR)/tasks

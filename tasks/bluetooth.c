@@ -29,7 +29,7 @@ ruuvi_status_t task_bluetooth_init(void)
   ruuvi_status_t err_code = RUUVI_SUCCESS;
   err_code |= ble4_stack_init();
   // Do not include trailing NULL
-  err_code |= ble4_set_name((uint8_t*)DEVICE_NAME, sizeof(DEVICE_NAME)-1, true);
+  err_code |= ble4_set_name((uint8_t*)DEVICE_NAME, sizeof(DEVICE_NAME) - 1, true);
 
   err_code |= ble4_advertisement_init(&m_adv_channel);
   err_code |= ble4_advertisement_set_interval(100);
@@ -47,8 +47,8 @@ ruuvi_status_t task_bluetooth_init(void)
 
 ruuvi_status_t task_bluetooth_advertise(uint8_t* data, size_t data_length)
 {
-  if(NULL == data) { return RUUVI_ERROR_NULL; }
-  if(RUUVI_COMMUNICATION_MESSAGE_MAX_PALYLOAD_LENGTH < data_length) { return RUUVI_ERROR_INVALID_LENGTH; }
+  if (NULL == data) { return RUUVI_ERROR_NULL; }
+  if (RUUVI_COMMUNICATION_MESSAGE_MAX_PALYLOAD_LENGTH < data_length) { return RUUVI_ERROR_INVALID_LENGTH; }
 
   ruuvi_status_t err_code = RUUVI_SUCCESS;
   ruuvi_communication_message_t msg;
@@ -64,8 +64,8 @@ ruuvi_status_t task_bluetooth_advertise(uint8_t* data, size_t data_length)
 
 ruuvi_status_t task_bluetooth_send_asynchronous(uint8_t* data, size_t data_length)
 {
-  if(NULL == data) { return RUUVI_ERROR_NULL; }
-  if(BLE_NUS_MAX_DATA_LEN < data_length) { return RUUVI_ERROR_INVALID_LENGTH; }
+  if (NULL == data) { return RUUVI_ERROR_NULL; }
+  if (BLE_NUS_MAX_DATA_LEN < data_length) { return RUUVI_ERROR_INVALID_LENGTH; }
 
   ruuvi_communication_message_t msg;
   msg.payload = data;
@@ -79,6 +79,16 @@ ruuvi_status_t task_bluetooth_send_asynchronous(uint8_t* data, size_t data_lengt
 
 ruuvi_status_t task_bluetooth_process(void)
 {
+  ruuvi_communication_message_t ble_in_msg;
+  uint8_t ble_in_data[24];
+  ble_in_msg.payload = ble_in_data;
+  ble_in_msg.payload_length = sizeof(ble_in_data);
+
+  while (RUUVI_SUCCESS == ble4_nus_message_get(&ble_in_msg))
+  {
+    PLATFORM_LOG_DEBUG("Got data");
+    PLATFORM_LOG_HEXDUMP_DEBUG(ble_in_msg.payload, ble_in_msg.payload_length);
+  }
   PLATFORM_LOG_DEBUG("Process queue message");
   return ble4_nus_process_asynchronous();
 }
