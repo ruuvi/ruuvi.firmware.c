@@ -112,7 +112,7 @@ ruuvi_status_t task_generate_challenge_hash(void)
 
 ruuvi_status_t task_sha256_message(uint8_t* message, size_t message_size)
 {
-  PLATFORM_LOG_INFO("Generating data hash of %d bytes", message_size);
+  PLATFORM_LOG_DEBUG("Generating data hash of %d bytes", message_size);
   ret_code_t                                 err_code;
   nrf_crypto_hash_context_t           hash_context;
   nrf_crypto_hash_sha256_digest_t    hash_digest;
