@@ -1,4 +1,5 @@
 #include "tasks.h"
+#include "adc.h"
 #include "spi.h"
 #include "timer.h"
 #include "pin_interrupt.h"
@@ -9,31 +10,24 @@
 #include "nfc_tag.h"
 #include "nrf_crypto.h"
 
-static uint8_t text[] = {'d', 'a', 't', 'a'};
-static size_t text_len = sizeof(text);
-static uint8_t url[] = {'r', 'u', 'u', 'v', 'i', '.', 'c', 'o', 'm'};
-static size_t url_len = sizeof(url);
-static ruuvi_communication_channel_t nfc;
+// static uint8_t text[] = {'d', 'a', 't', 'a'};
+// static size_t text_len = sizeof(text);
+// static uint8_t url[] = {'r', 'u', 'u', 'v', 'i', '.', 'c', 'o', 'm'};
+// static size_t url_len = sizeof(url);
+// static ruuvi_communication_channel_t m_nfc;
 
 ruuvi_status_t task_init_peripherals(void)
 {
-  // Comms
+  // Buses
   ruuvi_status_t err_code = spi_init();
+  
+  // // Setup constant records for NFC
+  // err_code  = nfc_text_record_set(text, text_len);
+  // err_code |= nfc_uri_record_set(url, url_len);
 
-  // Functions for implementing communication api
-
-  nfc.init = nfc_init;
-  nfc.uninit = nfc_uninit;
-  nfc.message_get = nfc_message_get;
-  nfc.process_asynchronous = nfc_process_asynchronous;
-
-  // Setup constant records
-  err_code = nfc_text_record_set(text, text_len);
-  err_code |= nfc_uri_record_set(url, url_len);
-
-  //init
-  err_code |= nfc.init();
-  err_code |= nfc.process_asynchronous();
+  // //init NFC
+  // err_code |= nfc_init(&m_nfc);
+  // err_code |= nfc.process_asynchronous();
 
   // Timers
   err_code |= platform_timers_init();
@@ -50,6 +44,8 @@ ruuvi_status_t task_init_peripherals(void)
   nrf_crypto_rng_context_t context;
   err_code |= nrf_crypto_init();
   err_code |= nrf_crypto_rng_init(&context, NULL);
+  ruuvi_sensor_t adc;
+  err_code |= adc_init(&adc);
 
   return err_code;
 }
@@ -71,5 +67,6 @@ ruuvi_status_t task_blink_leds(uint32_t time_per_led)
 
 ruuvi_status_t task_nfc_process(void)
 {
-  return nfc.process_asynchronous();
+  // return nfc.process_asynchronous();
+  return RUUVI_ERROR_NOT_IMPLEMENTED;
 }
