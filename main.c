@@ -106,10 +106,10 @@ int main(void)
   PLATFORM_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
   PLATFORM_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure));
   PLATFORM_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
-  uint8_t hello[] = {'H', 'e', 'l', 'l', 'o'};
-  task_bluetooth_send_asynchronous(hello, sizeof(hello));
+  // uint8_t hello[] = {'H', 'e', 'l', 'l', 'o', ' ', 'I', 'o', 'T', 'C', 'a', 'm', 'p', '!'};
+  // task_bluetooth_send_asynchronous(hello, sizeof(hello));
 
-  err_code = task_generate_keys();
+  // err_code = task_generate_keys();
   // PLATFORM_LOG_INFO("Keygen data status: %X", err_code);
   // task_generate_dummy_hash();
   // char* data = "{\"type\":\"CryptoMessage\",\"signer\":\"sender\",\"pubKey\":\"publicKeyOfSenderToIOTA\",\"signature\":\"signatureOfSenderToIOTA\",\"cryptoFunction\":\"SHA256\",\"message\":{\"type\":\"CryptoMessage\",\"tsSigned\":\"Timestampaddedbysender\",\"signer\":\"notary\",\"pubKey\":\"pubKeyOfBeacon\",\"signature\":\"signatureOfBeacon\",\"cryptoFunction\":\"SHA256\",\"message\":{\"type\":\"proofOfVisit\",\"version\":\"0.0.1\",\"timeLimit\":30,\"tsSigned\":\"ISOsignerTimeStamp\",\"tsSentChallenge\":\"2017-10-18T17:29:00+02:00\",\"tsReceivedChallenge\":\"2017-10-18T17:29:18+02:00\",\"challenge\":{\"type\":\"CryptoMessage\",\"signer\":\"requestor\",\"pubKey\":\"publicKeyOfRequestor\",\"signature\":\"signatureOfSmartphone\",\"cryptoFunction\":\"SHA256\",\"message\":{\"type\":\"RandomString\",\"string\":\"SomeRandomString\",\"tsSigned\":\"ISOsignerTimeStamp\"}}}}}";
@@ -133,7 +133,7 @@ int main(void)
       // so setting invalid length to message field does not lead to overflow
       task_pop_process_incoming_data(ble_in_msg.payload, ble_in_msg.payload_length);
       ble_in_msg.payload_length = sizeof(ble_in_data);
-      task_bluetooth_send_asynchronous(hello, sizeof(hello));
+      // task_bluetooth_send_asynchronous(hello, sizeof(hello));
     }
     task_bluetooth_process();
     PLATFORM_LOG_DEBUG("Yielding");

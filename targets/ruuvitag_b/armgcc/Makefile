@@ -2,7 +2,7 @@ PROJECT_NAME     := ruuvi_firmware_ruuvitag_b_s132
 TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../../../nRF5_SDK_15.0.0_a53641a
+SDK_ROOT := ../../../../nRF5_SDK_15.0.0_a53641a
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
@@ -13,6 +13,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/common/ble_advdata.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c \
+  $(SDK_ROOT)/components/ble/ble_radio_notification/ble_radio_notification.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
@@ -101,11 +102,12 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(PROJ_DIR)/main.c \
@@ -113,6 +115,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/lis2dh12_interface.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/bme280_interface.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/adc/adc.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_advertisement.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_gatt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_stack.c \
@@ -135,6 +138,7 @@ SRC_FILES += \
 INC_FOLDERS += \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/ble/ble_advertising \
+  $(SDK_ROOT)/components/ble/ble_radio_notification \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu \
   $(SDK_ROOT)/components/ble/ble_services/ble_dis/ \
   $(SDK_ROOT)/components/ble/ble_services/ble_nus \
@@ -213,6 +217,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/adc/ \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/communication \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \

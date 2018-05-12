@@ -22,6 +22,8 @@
 #include "platform_log.h"
 PLATFORM_LOG_MODULE_REGISTER();
 
+static ruuvi_communication_channel_t m_adv_channel;
+
 ruuvi_status_t task_bluetooth_init(void)
 {
   ruuvi_status_t err_code = RUUVI_SUCCESS;
@@ -29,7 +31,7 @@ ruuvi_status_t task_bluetooth_init(void)
   // Do not include trailing NULL
   err_code |= ble4_set_name((uint8_t*)DEVICE_NAME, sizeof(DEVICE_NAME)-1, true);
 
-  err_code |= ble4_advertisement_init();
+  err_code |= ble4_advertisement_init(&m_adv_channel);
   err_code |= ble4_advertisement_set_interval(100);
   err_code |= ble4_advertisement_set_power(4);
   err_code |= ble4_advertisement_set_type(CONNECTABLE_SCANNABLE);
@@ -55,8 +57,8 @@ ruuvi_status_t task_bluetooth_advertise(uint8_t* data, size_t data_length)
   msg.repeat = false;
   memcpy(msg.payload, data, data_length);
   msg.payload_length = data_length;
-  err_code |= ble4_advertisement_message_put(&msg);
-  err_code |= ble4_advertisement_process_asynchronous();
+  err_code |= m_adv_channel.message_put(&msg);
+  err_code |= m_adv_channel.process_asynchronous();
   return err_code;
 }
 
@@ -70,13 +72,13 @@ ruuvi_status_t task_bluetooth_send_asynchronous(uint8_t* data, size_t data_lengt
   msg.payload_length = data_length;
   msg.repeat = false;
 
-  PLATFORM_LOG_INFO("Send message");
+  PLATFORM_LOG_DEBUG("Send message");
 
   return ble4_nus_message_put(&msg);
 }
 
 ruuvi_status_t task_bluetooth_process(void)
 {
-  PLATFORM_LOG_INFO("Process queue message");
+  PLATFORM_LOG_DEBUG("Process queue message");
   return ble4_nus_process_asynchronous();
 }

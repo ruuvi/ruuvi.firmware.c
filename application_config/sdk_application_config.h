@@ -61,14 +61,18 @@
   #define NRF_CRYPTO_RNG_AUTO_INIT_ENABLED 1
   #define NRF_QUEUE_ENABLED 1
 
-  #define NRF_LOG_ENABLED 1
+  #define NRF52_SDK15_ADC 1
+  #define SAADC_ENABLED 1
+  // <0=> 8 bit 
+  // <1=> 10 bit 
+  // <2=> 12 bit 
+  // <3=> 14 bit 
+  // TODO: Check if these take effect
+  #define SAADC_CONFIG_RESOLUTION 1
+  #define SAADC_CONFIG_OVERSAMPLE 0
+  #define SAADC_CONFIG_LP_MODE 0
 
-  // #if APP_UART
-  //   #define NRFX_UARTE_ENABLED 0
-  //   #define NRFX_UART_ENABLED 1
-  //   #define NRFX_UART0_ENABLED 1
-  //   #define NRFX_UART0_ENABLED 1
-  // #endif
+  #define NRF_LOG_ENABLED 1
 
   // <i> The following modes are supported:
   // <i> - SKIP  - Do not block, output nothing.
