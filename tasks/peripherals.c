@@ -10,24 +10,24 @@
 #include "nfc_tag.h"
 #include "nrf_crypto.h"
 
-// static uint8_t text[] = {'d', 'a', 't', 'a'};
-// static size_t text_len = sizeof(text);
-// static uint8_t url[] = {'r', 'u', 'u', 'v', 'i', '.', 'c', 'o', 'm'};
-// static size_t url_len = sizeof(url);
-// static ruuvi_communication_channel_t m_nfc;
+static uint8_t text[] = {'d', 'a', 't', 'a'};
+static size_t text_len = sizeof(text);
+static uint8_t url[] = {'r', 'u', 'u', 'v', 'i', '.', 'c', 'o', 'm'};
+static size_t url_len = sizeof(url);
+static ruuvi_communication_channel_t m_nfc;
 
 ruuvi_status_t task_init_peripherals(void)
 {
   // Buses
   ruuvi_status_t err_code = spi_init();
   
-  // // Setup constant records for NFC
-  // err_code  = nfc_text_record_set(text, text_len);
-  // err_code |= nfc_uri_record_set(url, url_len);
+  // Setup constant records for NFC
+  err_code  = nfc_text_record_set(text, text_len);
+  err_code |= nfc_uri_record_set(url, url_len);
 
-  // //init NFC
-  // err_code |= nfc_init(&m_nfc);
-  // err_code |= nfc.process_asynchronous();
+  //init NFC
+  err_code |= nfc_init(&m_nfc);
+  err_code |= m_nfc.process_asynchronous();
 
   // Timers
   err_code |= platform_timers_init();
@@ -40,7 +40,7 @@ ruuvi_status_t task_init_peripherals(void)
   err_code |= platform_gpio_set(LED_GREEN);
 
   platform_pin_interrupt_init();
-  //platform_pin_interrupt_enable(BUTTON_1, RUUVI_GPIO_SLOPE_HITOLO, RUUVI_GPIO_MODE_INPUT_NOPULL, button_press_handler);
+  // platform_pin_interrupt_enable(BUTTON_1, RUUVI_GPIO_SLOPE_HITOLO, RUUVI_GPIO_MODE_INPUT_NOPULL, button_press_handler);
   nrf_crypto_rng_context_t context;
   err_code |= nrf_crypto_init();
   err_code |= nrf_crypto_rng_init(&context, NULL);
