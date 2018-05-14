@@ -4,17 +4,17 @@
 #include "environmental.h"
 #include <stddef.h>
 
-ruuvi_status_t task_init_peripherals(void);
-ruuvi_status_t task_blink_leds(uint32_t time_per_led);
+ruuvi_status_t task_peripherals_init(void);
+ruuvi_status_t task_leds_blink(uint32_t time_per_led);
 ruuvi_status_t task_nfc_process(void);
 
-ruuvi_status_t task_init_accelerometer (void);
-ruuvi_status_t task_setup_accelerometer(void);
-ruuvi_status_t task_get_acceleration   (ruuvi_acceleration_data_t* data);
+ruuvi_status_t task_accelerometer_init (void);
+ruuvi_status_t task_accelerometer_setup(const ruuvi_sensor_configuration_t* configuration);
+ruuvi_status_t task_accelerometer_get  (ruuvi_acceleration_data_t* data);
 
-ruuvi_status_t task_init_environmental (void);
-ruuvi_status_t task_setup_environmental(void);
-ruuvi_status_t task_get_environmental  (ruuvi_environmental_data_t* data);
+ruuvi_status_t task_environmental_init (void);
+ruuvi_status_t task_environmental_setup(const ruuvi_sensor_configuration_t* configuration);
+ruuvi_status_t task_environmental_get  (ruuvi_environmental_data_t* data);
 
 ruuvi_status_t task_bluetooth_init(void);
 ruuvi_status_t task_bluetooth_advertise(uint8_t* data, size_t data_length);

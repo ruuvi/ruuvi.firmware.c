@@ -19,11 +19,11 @@
 PLATFORM_LOG_MODULE_REGISTER();
 
 static ruuvi_sensor_t acceleration_sensor;
-static bool sensor_is_init = false;
+static bool m_sensor_is_init = false;
 
-ruuvi_status_t task_init_accelerometer(void)
+ruuvi_status_t task_accelerometer_init(void)
 {
-  sensor_is_init = true;
+  m_sensor_is_init = true;
   ruuvi_status_t err_code = RUUVI_SUCCESS;
 
   #if LIS2DH12_ACCELERATION
@@ -34,39 +34,37 @@ ruuvi_status_t task_init_accelerometer(void)
   #endif
 
   PLATFORM_LOG_INFO("No accelerometer was found");
-  sensor_is_init = false;
+  m_sensor_is_init = false;
   return RUUVI_ERROR_NOT_FOUND;
 }
 
-ruuvi_status_t task_setup_accelerometer(void)
+// Configure accelerometer with given configuration.
+// Important: The configuration will have implemented configuration error codes as output.
+ruuvi_status_t task_accelerometer_setup(const ruuvi_sensor_configuration_t* configuration)
 {
-  if(!sensor_is_init) { return RUUVI_ERROR_INVALID_STATE; }
-  ruuvi_sensor_samplerate_t accelerometer_samplerate = 1;
-  ruuvi_status_t err_code = acceleration_sensor.samplerate_set(&accelerometer_samplerate);
+  if(!m_sensor_is_init) { return RUUVI_ERROR_INVALID_STATE; }
+  ruuvi_status_t err_code = acceleration_sensor.samplerate_set(configuration->samplerate);
   PLATFORM_LOG_DEBUG("Accelerometer samplerate status: %X", err_code);
 
-  ruuvi_sensor_scale_t accelerometer_scale = RUUVI_SENSOR_SCALE_MIN;
-  err_code = acceleration_sensor.scale_set(&accelerometer_scale);
+  err_code = acceleration_sensor.scale_set(configuration->scale);
   PLATFORM_LOG_DEBUG("Accelerometer scale status: %X", err_code);
 
-  ruuvi_sensor_resolution_t accelerometer_resolution = 10;
-  err_code = acceleration_sensor.resolution_set(&accelerometer_resolution);
+  err_code = acceleration_sensor.resolution_set(configuration->resolution);
   PLATFORM_LOG_DEBUG("Accelerometer resolution status: %X", err_code);
 
-  ruuvi_sensor_mode_t accelerometer_mode = RUUVI_SENSOR_MODE_CONTINOUS;
-  err_code = acceleration_sensor.mode_set(&accelerometer_mode);
+  err_code = acceleration_sensor.mode_set(configuration->mode);
   PLATFORM_LOG_DEBUG("Accelerometer mode status: %X", err_code);
   return err_code;
 }
 
 
-ruuvi_status_t task_get_acceleration (ruuvi_acceleration_data_t* data)
+ruuvi_status_t task_accelerometer_get (ruuvi_acceleration_data_t* data)
 {
   data->x_mg = RUUVI_FLOAT_INVALID;
   data->y_mg = RUUVI_FLOAT_INVALID;
   data->z_mg = RUUVI_FLOAT_INVALID;
   if(NULL == data || NULL == acceleration_sensor.data_get) { return RUUVI_ERROR_NULL; }
-  if(!sensor_is_init) { return RUUVI_ERROR_INVALID_STATE; }
+  if(!m_sensor_is_init) { return RUUVI_ERROR_INVALID_STATE; }
   PLATFORM_LOG_DEBUG("Getting acceleration");
   return acceleration_sensor.data_get(data);
 }

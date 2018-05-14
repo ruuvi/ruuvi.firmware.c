@@ -26,47 +26,31 @@
 PLATFORM_LOG_MODULE_REGISTER();
 
 static uint8_t name[] = {'R', 'u', 'u', 'v', 'i'};
+static uint8_t errors = 0;
+static uint8_t error_code[20] = {'E', 'r', 'r', ':', ' '};
+static uint8_t err_index = 5;
 
-int main(void)
+// Read default configuration from application_config.h and initialize accelerometer with it.
+// If there is error, add error information to global error counters.
+// Call peripheral init before calling this to have SPI bus and timers operational.
+static ruuvi_status_t app_accelerometer_init(void)
 {
-  //Init LOG
-  APP_ERROR_CHECK(PLATFORM_LOG_INIT(NULL));
-  PLATFORM_LOG_DEFAULT_BACKENDS_INIT();
-  PLATFORM_LOG_INFO("Logging started");
-  platform_yield_init();
-
-  uint8_t errors = 0;
-  uint8_t error_code[20] = {'E', 'r', 'r', ':', ' '};
-  uint8_t err_index = 5;
-
-  //Init peripherals
-  ruuvi_status_t err_code = task_init_peripherals();
-  task_blink_leds(1000);
-  if (RUUVI_SUCCESS != err_code)
-  {
-    error_code[err_index++] = 'P'; // Peripheral
-    errors++;
-  }
-  PLATFORM_LOG_INFO("Peripheral init status: 0x%X", err_code);
-
-  err_code = task_init_accelerometer();
-  err_code |= task_setup_accelerometer();
+  err_code = task_accelerometer_init();
+  ruuvi_sensor_configuration_t accelerometer_configuration;
+  accelerometer_configuration->resolution = 10;
+  err_code |= task_accelerometer_setup();
   if (RUUVI_SUCCESS != err_code)
   {
     error_code[err_index++] = 'A'; // Accelerometer
     errors++;
   }
   PLATFORM_LOG_INFO("Accelerometer init status: 0x%X", err_code);
+}
 
-  err_code = task_init_environmental();
-  err_code |= task_setup_environmental();
-  if (RUUVI_SUCCESS != err_code)
-  {
-    error_code[err_index++] = 'E'; // Environmental
-    errors++;
-  }
-  PLATFORM_LOG_INFO("Environmental init status: 0x%X", err_code);
-
+// Initialize bluetooth with default configuration from application_bluetooth_configuration.h
+//
+static ruuvi_status_t app_bluetooth_init(void)
+{
   err_code  = task_bluetooth_init();
   err_code |= task_bluetooth_advertise(name, sizeof(name) - 1);
   if (RUUVI_SUCCESS != err_code)
@@ -75,41 +59,90 @@ int main(void)
     errors++;
   }
   PLATFORM_LOG_INFO("Bluetooth init status: 0x%X", err_code);
+}
 
-  ruuvi_acceleration_data_t  acceleration  = { 0 };
-  ruuvi_environmental_data_t environmental = { 0 };
 
-  uint8_t status_led = LED_GREEN;
-  if (errors)
+// Init environmental sensor. Reads default configuration from application_config.h
+static ruuvi_status_t app_environmental_init()
+{
+  err_code = task_environmental_init();
+  err_code |= task_environmental_setup();
+  if (RUUVI_SUCCESS != err_code)
   {
-    PLATFORM_LOG_ERROR("Errors detected: %s", error_code);
-    err_code  = ble4_set_name(error_code, err_index, false);
-    err_code |= task_bluetooth_advertise(name, sizeof(name) - 1);
-    PLATFORM_LOG_INFO("Name update status: 0x%X", err_code);
-    status_led = LED_RED;
+    error_code[err_index++] = 'E'; // Environmental
+    errors++;
   }
+  PLATFORM_LOG_INFO("Environmental init status: 0x%X", err_code);
+}
 
-  platform_gpio_toggle(status_led);
-  platform_delay_ms(3000);
-  platform_gpio_toggle(status_led);
-  PLATFORM_LOG_INFO("Entering main loop");
+// Init peripherals, such as leds, timers, SPI, WDT and NFC. Default configuration is in application_config.h if applicable.
+// Some board-specific configuration, such as SPI speed and pinout is in board configuration.
+// If there is error, add error information to global error counters.
+static ruuvi_status_t app_peripheral_init()
+{
+  task_leds_init();
+  task_spi_init();
+  task_twi_init();
+  task_uart_init();
+  task_timers_init();
+  task_rtc_init();
+  task_crypto_init();
+  task_nfc_init();
+  task_adc_init();
 
-  err_code = task_get_acceleration(&acceleration);
-  PLATFORM_LOG_INFO("Acceleration data status %x", err_code);
-  PLATFORM_LOG_INFO("X:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.x_mg));
-  PLATFORM_LOG_INFO("Y:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.y_mg));
-  PLATFORM_LOG_INFO("Z:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(acceleration.z_mg));
+  if (RUUVI_SUCCESS != err_code)
+  {
+    error_code[err_index++] = 'P'; // Peripheral
+    errors++;
+  }
+  PLATFORM_LOG_INFO("Peripheral init status: 0x%X", err_code);
+}
 
-  err_code = task_get_environmental(&environmental);
-  PLATFORM_LOG_INFO("Environmental data status: %X", err_code);
-  PLATFORM_LOG_INFO("T:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.temperature));
-  PLATFORM_LOG_INFO("P:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.pressure));
-  PLATFORM_LOG_INFO("H:" NRF_LOG_FLOAT_MARKER, NRF_LOG_FLOAT(environmental.humidity));
+// Init events
+static ruuvi_status_t app_events_init()
+{
 
+}
+
+// Init periodic task
+static ruuvi_status_t app_periodic_task_init()
+{
+
+}
+
+int main(void)
+{
+  // Init log first
+  APP_ERROR_CHECK(PLATFORM_LOG_INIT(NULL));
+  PLATFORM_LOG_DEFAULT_BACKENDS_INIT();
+  PLATFORM_LOG_INFO("Logging started");
+  
+  // Init yield then, as other init tasks might require delays
+  platform_yield_init();
+
+  // Init peripherals, sensors will require them
+  app_peripheral_init();
+  
+  // Init bluetooth
+  app_bluetooth_init();
+
+  // Init sensors
+  app_accelerometer_init();
+  app_environmental_init();
+  
+  // Run self-test
+  app_selftest();
+
+  // init event handling
+  app_events_init();
+
+  app_periodic_task_init();
+
+  // Execute schedule and go back to sleep
   while (1)
   {
     PLATFORM_LOG_DEBUG("Processing");
-    task_bluetooth_process();
+    platform_scheduler_execute();
     PLATFORM_LOG_DEBUG("Yielding");
     platform_yield();
     PLATFORM_LOG_DEBUG("Resuming");
