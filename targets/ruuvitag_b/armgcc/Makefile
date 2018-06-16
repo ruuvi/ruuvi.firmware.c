@@ -122,18 +122,17 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/pin_interrupt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/platform_error.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/scheduler.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/platform_scheduler.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/timer.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/nfc_tag/nfc_tag.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ringbuffer.c \
-  $(PROJ_DIR)/tasks/accelerometer.c \
-  $(PROJ_DIR)/tasks/bluetooth.c \
-  $(PROJ_DIR)/tasks/environmental.c \
-  $(PROJ_DIR)/tasks/peripherals.c \
-  $(PROJ_DIR)/tasks/pop.c
+  $(PROJ_DIR)/tasks/task_adc.c \
+  $(PROJ_DIR)/tasks/task_bluetooth.c \
+  $(PROJ_DIR)/tasks/task_led.c \
+  $(PROJ_DIR)/tasks/task_spi.c 
 
 # Include folders common to all targets
 INC_FOLDERS += \
