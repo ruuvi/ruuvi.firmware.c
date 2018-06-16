@@ -9,9 +9,9 @@
 #if MAIN_LOG_ENABLED
 #define PLATFORM_LOG_LEVEL       MAIN_LOG_LEVEL
 #define PLATFORM_LOG_INFO_COLOR  MAIN_INFO_COLOR
-#else // ANT_BPWR_LOG_ENABLED
+#else
 #define PLATFORM_LOG_LEVEL       0
-#endif // ANT_BPWR_LOG_ENABLED
+#endif
 #include "platform_log.h"
 PLATFORM_LOG_MODULE_REGISTER();
 
