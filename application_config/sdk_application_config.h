@@ -61,7 +61,7 @@
   #define NRF_CRYPTO_RNG_AUTO_INIT_ENABLED 1
   #define NRF_QUEUE_ENABLED 1
 
-  #define NRF52_SDK15_ADC 1
+  #define NRF5_SDK15_ADC 1
   #define SAADC_ENABLED 1
   // <0=> 8 bit 
   // <1=> 10 bit 
