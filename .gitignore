@@ -59,3 +59,10 @@ dkms.conf
 # SDKs
 nRF5_SDK*
 s132_nrf52_5.1.0_softdevice.hex
+
+# Build folder
+Output/
+
+# SES files
+*.emSession
+*.jlink
