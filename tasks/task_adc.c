@@ -1,11 +1,11 @@
 #include "task_adc.h"
-#include "ruuvi_error.h"  
+#include "ruuvi_error.h"
+#include "ruuvi_sensor.h"
 #include "adc.h"
 #include "task_bluetooth.h"
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "tasks.h"
 #include "application_config.h"
 #include "boards.h"
 #include <stdbool.h>

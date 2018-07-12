@@ -60,9 +60,10 @@
 
 // 24 bytes payload max for incoming/outgoing messages. 
 // Note: BLE Mesh should be limited to 11 bytes, BLE4 GATT to 20.
-#define RUUVI_COMMUNICATION_MESSAGE_MAX_PALYLOAD_LENGTH 24
+#define RUUVI_COMMUNICATION_MESSAGE_MAX_PAYLOAD_LENGTH 24
 
 #define APPLICATION_NFC 1
+#define RUUVI_ENDPOINTS 1
 
 // <i> The following modes are supported:
 // <i> - SKIP  - Do not block, output nothing.

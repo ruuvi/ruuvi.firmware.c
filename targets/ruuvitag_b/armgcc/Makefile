@@ -111,6 +111,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(PROJ_DIR)/main.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoints.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/lis2dh12_interface.c \
@@ -213,6 +214,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/integration/nrfx \
   $(PROJ_DIR)/application_config \
   $(PROJ_DIR)/ruuvi.boards.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/ \
   $(PROJ_DIR)/ruuvi.drivers.c/ \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
