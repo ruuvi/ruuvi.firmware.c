@@ -137,7 +137,6 @@
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/common/ble_srv_common.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/nrf_ble_gatt/nrf_ble_gatt.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/nrf_ble_qwr/nrf_ble_qwr.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/ble_radio_notification/ble_radio_notification.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/gatt_cache_manager.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/gatts_cache_manager.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/id_manager.c" />
@@ -149,6 +148,7 @@
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/pm_mutex.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/security_dispatcher.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/security_manager.c" />
+      <file file_name="../../../ruuvi.nrf_sdk15_0_overrides.c/ble_radio_notification.c" />
     </folder>
     <folder Name="nRF_BLE_Services">
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/ble_services/ble_nus/ble_nus.c" />

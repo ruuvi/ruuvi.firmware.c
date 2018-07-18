@@ -13,7 +13,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/common/ble_advdata.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c \
-  $(SDK_ROOT)/components/ble/ble_radio_notification/ble_radio_notification.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
@@ -130,6 +129,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/nfc_tag/nfc_tag.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ringbuffer.c \
+  $(PROJ_DIR)/ruuvi.nrf_sdk15_0_overrides.c/ble_radio_notification.c \
   $(PROJ_DIR)/tasks/task_adc.c \
   $(PROJ_DIR)/tasks/task_bluetooth.c \
   $(PROJ_DIR)/tasks/task_led.c \
