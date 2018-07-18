@@ -50,7 +50,7 @@ ruuvi_status_t task_bluetooth_init(void)
 
   err_code |= ble4_nus_init();
   err_code |= ble4_dfu_init();
-  // err_code |= ble4_dis_init();
+  err_code |= ble4_dis_init();
   return err_code;
 }
 

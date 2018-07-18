@@ -1,10 +1,10 @@
-#include "tasks.h"
 #include "ruuvi_error.h"
 #include "ruuvi_sensor.h"
 #include "application_config.h"
 #include "boards.h"
 #include <stdbool.h>
 
+#include "acceleration.h"
 #include "lis2dh12_interface.h"
 #include "lis2dw12_interface.h"
 

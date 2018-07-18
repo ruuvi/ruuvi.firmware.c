@@ -10,7 +10,7 @@
 #include "boards.h"
 #include <stdbool.h>
 
-#define PLATFORM_LOG_MODULE_NAME application_environmental
+#define PLATFORM_LOG_MODULE_NAME application_adc
 #if MAIN_LOG_ENABLED
 #define PLATFORM_LOG_LEVEL       MAIN_LOG_LEVEL
 #define PLATFORM_LOG_INFO_COLOR  MAIN_INFO_COLOR

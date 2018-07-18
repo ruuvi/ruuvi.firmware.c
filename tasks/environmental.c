@@ -1,9 +1,9 @@
-#include "tasks.h"
 #include "application_config.h"
 #include "boards.h"
 #include <stdbool.h>
 
 #include "bme280_interface.h"
+#include "environmental.h"
 
 #define PLATFORM_LOG_MODULE_NAME application_environmental
 #if MAIN_LOG_ENABLED
