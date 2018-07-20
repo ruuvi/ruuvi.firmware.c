@@ -65,41 +65,18 @@
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/experimental_memobj/nrf_memobj.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/experimental_section_vars/nrf_section_iter.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/strerror/nrf_strerror.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/uart/retarget.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/nrf_bootloader_app_start_final.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/nrf_bootloader_app_start.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/nrf_bootloader_dfu_timers.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/nrf_bootloader_fw_activation.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/nrf_bootloader_info.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/nrf_bootloader_wdt.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/nrf_bootloader.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/dfu-cc.pb.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_handling_error.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_mbr.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_req_handler.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_settings_svci.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_settings.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_svci_handler.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_svci.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_transport.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_utils.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_validation.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu_ver_validation.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bootloader/dfu/nrf_dfu.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/fds/fds.c" />
+      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/strerror/nrf_strerror.c" />
     </folder>
     <folder Name="System">
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/mdk/ses_nRF_Startup.s" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/mdk/ses_nrf52_Vectors.s" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/mdk/system_nrf52.c" />
     </folder>
-    <folder Name="Board Definition">
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/boards/boards.c" />
-    </folder>
     <folder Name="nRF_Drivers">
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/integration/nrfx/legacy/nrf_drv_clock.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/integration/nrfx/legacy/nrf_drv_uart.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_clock.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_gpiote.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_power_clock.c" />
@@ -109,18 +86,13 @@
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_saadc.c" />
     </folder>
-    <folder Name="Board Support">
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bsp/bsp.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/libraries/bsp/bsp_btn_ble.c" />
-    </folder>
     <folder Name="Application">
       <file file_name="../../../main.c" />
-      <file file_name="../../../ruuvi.drivers.c/nrf5_sdk15_platform/sdk_config.h" />
       <folder
-        Name="Tasks"
+        Name="Configuration"
         exclude=""
-        filter="*.c;*.h"
-        path="../../../tasks"
+        filter="*.h"
+        path="../../../application_config"
         recurse="Yes" />
     </folder>
     <folder Name="nRF_Segger_RTT">
@@ -148,13 +120,9 @@
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/pm_mutex.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/security_dispatcher.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/peer_manager/security_manager.c" />
-      <file file_name="../../../ruuvi.nrf_sdk15_0_overrides.c/ble_radio_notification.c" />
     </folder>
     <folder Name="nRF_BLE_Services">
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/ble_services/ble_nus/ble_nus.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c" />
-      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/ble_services/ble_dfu/ble_dfu.c" />
       <configuration Name="Debug" build_exclude_from_build="No" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/ble/ble_services/ble_dis/ble_dis.c" />
     </folder>
@@ -179,16 +147,10 @@
       <file file_name="../../../ruuvi.drivers.c/ruuvi_driver_error.h" />
     </folder>
     <folder
-      Name="ruuvi.libraries.c"
+      Name="ruuvi.boards.c"
       exclude=""
-      filter="*.c"
-      path="../../../ruuvi.libraries.c"
-      recurse="Yes" />
-    <folder
-      Name="ruuvi.endpoints.c"
-      exclude=""
-      filter="*.c;*.h"
-      path="../../../ruuvi.endpoints.c"
+      filter="*.h"
+      path="../../../ruuvi.boards.c"
       recurse="Yes" />
   </project>
   <configuration
