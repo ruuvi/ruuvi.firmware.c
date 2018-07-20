@@ -163,12 +163,21 @@
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/softdevice/common/nrf_sdh_ble.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/components/softdevice/common/nrf_sdh_soc.c" />
     </folder>
-    <folder
-      Name="ruuvi.drivers.c"
-      exclude="STMems_Standard_C_drivers;nrf5_sdk14_platform"
-      filter="*.c"
-      path="../../../ruuvi.drivers.c"
-      recurse="Yes" />
+    <folder Name="ruuvi.drivers.c">
+      <folder
+        Name="interfaces"
+        exclude=""
+        filter="*.c *.h"
+        path="../../../ruuvi.drivers.c/interfaces"
+        recurse="Yes" />
+      <folder
+        Name="nrf5_sdk15_platform"
+        exclude=""
+        filter="*.c;*.h"
+        path="../../../ruuvi.drivers.c/nrf5_sdk15_platform"
+        recurse="Yes" />
+      <file file_name="../../../ruuvi.drivers.c/ruuvi_driver_error.h" />
+    </folder>
     <folder
       Name="ruuvi.libraries.c"
       exclude=""
