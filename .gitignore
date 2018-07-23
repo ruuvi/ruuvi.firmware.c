@@ -56,10 +56,6 @@ dkms.conf
 # Mac OSX files
 .DS_Store
 
-# SDKs
-nRF5_SDK*
-s132_nrf52_5.1.0_softdevice.hex
-
 # Build folder
 Output/
 
