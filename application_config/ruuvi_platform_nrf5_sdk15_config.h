@@ -5,8 +5,15 @@
  * Author: Otso Jousimaa <otso@ojousima.net>
  */
 
-#define NRF5_SDK15_PLATFORM_ENABLED 1
+#include "application_config.h"
+
+#ifndef RUUVI_PLATFORM_NRF5_SDK15_CONFIG_H
+#define RUUVI_PLATFORM_NRF5_SDK15_CONFIG_H
+
 #if NRF5_SDK15_PLATFORM_ENABLED
 #define NRF5_SDK15_GPIO_ENABLED 1
 #define NRF5_SDK15_YIELD_ENABLED 1
+#define NRF5_SDK15_LOG_ENABLED APPLICATION_LOG_ENABLED
+#endif
+
 #endif
