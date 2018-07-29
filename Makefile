@@ -1,4 +1,4 @@
-.PHONY: all fw 
+.PHONY: all fw clean
 
 all: fw 
 
@@ -10,5 +10,5 @@ fw:
 
 clean:
 	@echo cleaning build files…
-	$(MAKE) -C targets/ruuvitag_b/armgcc
+	$(MAKE) -C targets/ruuvitag_b/armgcc clean
 
