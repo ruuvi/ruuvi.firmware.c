@@ -26,4 +26,12 @@ Please let us know your thoughts on the direction and structure of the project. 
 Is the structure of the project sensible to you? Pull requests and GitHub issues are welcome, but new features will not be accepted at this time. 
 
 # Licensing
-BSD-3
+Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
+
+# Changelog
+## 3.2.0
+Adds logging and error code handling
+
+## 3.1.1
+Put external sensors to sleep and then put MCU to sleep.
+
