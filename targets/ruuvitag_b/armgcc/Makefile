@@ -110,30 +110,9 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(PROJ_DIR)/main.c \
-  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoints.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/lis2dh12_interface.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/bme280_interface.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/adc/adc.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_advertisement.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_gatt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_stack.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/gpio.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/pin_interrupt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/platform_error.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/platform_scheduler.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/spi.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/timer.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/yield.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/nfc_tag/nfc_tag.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ringbuffer.c \
-  $(PROJ_DIR)/ruuvi.nrf_sdk15_0_overrides.c/ble_radio_notification.c \
-  $(PROJ_DIR)/tasks/task_adc.c \
-  $(PROJ_DIR)/tasks/task_bluetooth.c \
-  $(PROJ_DIR)/tasks/task_led.c \
-  $(PROJ_DIR)/tasks/task_spi.c 
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/log/ruuvi_platform_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -214,25 +193,10 @@ INC_FOLDERS += \
   $(SDK_ROOT)/integration/nrfx \
   $(PROJ_DIR)/application_config \
   $(PROJ_DIR)/ruuvi.boards.c \
-  $(PROJ_DIR)/ruuvi.endpoints.c/ \
   $(PROJ_DIR)/ruuvi.drivers.c/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
-  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/adc/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/communication \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/scheduler \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/timer \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ \
-  $(PROJ_DIR)/tasks
 
 
 

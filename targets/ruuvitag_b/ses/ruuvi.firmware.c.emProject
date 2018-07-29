@@ -145,7 +145,6 @@
         path="../../../ruuvi.drivers.c/nrf5_sdk15_platform"
         recurse="Yes" />
       <file file_name="../../../ruuvi.drivers.c/ruuvi_driver_error.h" />
-      <file file_name="../../../ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_log.h" />
     </folder>
     <folder
       Name="ruuvi.boards.c"

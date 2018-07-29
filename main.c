@@ -5,6 +5,7 @@
  * Author: Otso Jousimaa <otso@ojousima.net>
  **/
 
+#include "application_config.h"
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_yield.h"
@@ -16,7 +17,7 @@ int main(void)
 {
   // Init logging
   ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
-  status |= ruuvi_platform_log_init(RUUVI_INTERFACE_LOG_INFO);
+  status |= ruuvi_platform_log_init(APPLICATION_LOG_LEVEL);
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Logging started\r\n");
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
@@ -52,8 +53,11 @@ int main(void)
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_MISO_PIN, RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
-  char message[128];
-  snprintf (message, 128, "%s:%s GPIO ready, status %d, entering main loop\r\n", __FILE__, __LINE__, status);
+  char message[APPLICATION_LOG_BUFFER_SIZE];
+  size_t index = 0;
+  index += snprintf (message, APPLICATION_LOG_BUFFER_SIZE, "%s:%d GPIO ready, status ", __FILE__, __LINE__);
+  index += ruuvi_platform_error_to_string(status, message + index, sizeof(message) - index);
+  index += snprintf( message + index, sizeof(message) - index,", entering main loop\r\n");
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, message);
 
   while (1)
