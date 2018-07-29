@@ -34,7 +34,6 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/peer_manager/pm_mutex.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_dispatcher.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_manager.c \
-  $(SDK_ROOT)/components/boards/boards.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(SDK_ROOT)/components/libraries/atomic_fifo/nrf_atfifo.c \
   $(SDK_ROOT)/components/libraries/atomic_flags/nrf_atflags.c \
@@ -96,23 +95,20 @@ SRC_FILES += \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
-  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_spi.c \
-  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spi.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(PROJ_DIR)/main.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/log/ruuvi_platform_log.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -195,6 +191,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.boards.c \
   $(PROJ_DIR)/ruuvi.drivers.c/ \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
 
@@ -214,7 +211,6 @@ OPT = -O3 -g3
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 CFLAGS += -DBOARD_RUUVITAG_B
-CFLAGS += -DBOARD_CUSTOM
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DBME280_FLOAT_ENABLE
