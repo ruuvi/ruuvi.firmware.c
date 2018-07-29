@@ -1,4 +1,6 @@
 # ruuvi.firmware.c
+[![Build Status](http://jenkins.ruuvi.com:8080/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com:8080/job/ruuvi.firmware.c)
+
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. 
 
