@@ -94,6 +94,12 @@
         filter="*.h"
         path="../../../application_config"
         recurse="Yes" />
+      <folder
+        Name="tasks"
+        exclude=""
+        filter="*.c;*.h"
+        path="../../../tasks"
+        recurse="Yes" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/external/segger_rtt/SEGGER_RTT.c" />

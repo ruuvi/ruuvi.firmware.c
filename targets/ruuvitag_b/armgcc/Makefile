@@ -108,7 +108,8 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/log/ruuvi_platform_log.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
+  $(PROJ_DIR)/tasks/task_led.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -194,6 +195,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
+  $(PROJ_DIR)/tasks/
 
 
 

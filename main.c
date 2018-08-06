@@ -10,6 +10,7 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_boards.h"
+#include "task_led.h"
 
 #include <stdio.h>
 
@@ -18,7 +19,6 @@ int main(void)
   // Init logging
   ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
   status |= ruuvi_platform_log_init(APPLICATION_LOG_LEVEL);
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Logging started\r\n");
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Init yield
@@ -27,10 +27,13 @@ int main(void)
 
   // Init GPIO
   status |= ruuvi_platform_gpio_init();
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Peripherals initialized\r\n");
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
-  // Turn off sensors∫
+  // LEDs high / inactive
+  status |= task_led_init();
+  status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
+
+  // Turn off sensors
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_SS_ACCELERATION_PIN,  RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
   status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_SS_ACCELERATION_PIN,  RUUVI_INTERFACE_GPIO_HIGH);
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN, RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
@@ -41,12 +44,6 @@ int main(void)
   status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_SCK_PIN,  RUUVI_INTERFACE_GPIO_HIGH);
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_MOSI_PIN, RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
   status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_MOSI_PIN, RUUVI_INTERFACE_GPIO_HIGH);
-
-  // LEDs high / inactive
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_LED_RED,   RUUVI_INTERFACE_GPIO_MODE_OUTPUT_HIGHDRIVE);
-  status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_LED_RED,   RUUVI_INTERFACE_GPIO_HIGH);
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_LED_GREEN, RUUVI_INTERFACE_GPIO_MODE_OUTPUT_HIGHDRIVE);
-  status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_LED_GREEN, RUUVI_INTERFACE_GPIO_HIGH);
 
   // Button, and SPI MISO lines pulled up
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_BUTTON_1,     RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP);
@@ -60,10 +57,19 @@ int main(void)
   index += snprintf( message + index, sizeof(message) - index,", entering main loop\r\n");
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, message);
 
+  status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
+
+  if(RUUVI_DRIVER_SUCCESS == status)
+  {
+    status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_ON);
+  }
+  ruuvi_platform_delay_ms(1000);
+  status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_OFF);
+
   while (1)
   {
-    ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Going to sleep\r\n");
-    ruuvi_platform_yield();
-    ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Waking up\r\n");
+    status |= task_led_cycle();
+    RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+    ruuvi_platform_delay_ms(500);
   }
 }
