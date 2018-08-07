@@ -20,6 +20,8 @@
 // Pick a power of 2 for nRF5 backed. 128 is recommended.
 #define APPLICATION_LOG_BUFFER_SIZE 128
 
+
+
 // Use nRF5 SDK15
 #define NRF5_SDK15_PLATFORM_ENABLED 1
 
