@@ -10,6 +10,7 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_boards.h"
+#include "task_button.h"
 #include "task_led.h"
 
 #include <stdio.h>
@@ -32,6 +33,9 @@ int main(void)
   // LEDs high / inactive
   status |= task_led_init();
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
+  
+  // Initialize button with led_cycle task
+  status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_led_cycle);
 
   // Turn off sensors
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_SS_ACCELERATION_PIN,  RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
@@ -45,17 +49,9 @@ int main(void)
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_MOSI_PIN, RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
   status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_MOSI_PIN, RUUVI_INTERFACE_GPIO_HIGH);
 
-  // Button, and SPI MISO lines pulled up
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_BUTTON_1,     RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP);
+  // SPI MISO line is pulled up
   status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_MISO_PIN, RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-
-  char message[APPLICATION_LOG_BUFFER_SIZE];
-  size_t index = 0;
-  index += snprintf (message, APPLICATION_LOG_BUFFER_SIZE, "%s:%d GPIO ready, status ", __FILE__, __LINE__);
-  index += ruuvi_platform_error_to_string(status, message + index, sizeof(message) - index);
-  index += snprintf( message + index, sizeof(message) - index,", entering main loop\r\n");
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, message);
 
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
 
@@ -65,11 +61,9 @@ int main(void)
   }
   ruuvi_platform_delay_ms(1000);
   status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_OFF);
-
+ 
   while (1)
   {
-    status |= task_led_cycle();
-    RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-    ruuvi_platform_delay_ms(500);
+    ruuvi_platform_yield();
   }
 }
