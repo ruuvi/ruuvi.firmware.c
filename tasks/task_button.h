@@ -1,5 +1,5 @@
 /**
- * Ruuvi Firmware 3.x LED tasks. 
+ * Ruuvi Firmware 3.x Button tasks. 
  *
  * License: BSD-3
  * Author: Otso Jousimaa <otso@ojousima.net>
