@@ -8,7 +8,7 @@
 #include "application_config.h"
 
 #ifndef NRF5_SDK15_APPLICATION_CONFIG_H
-#define NRF5_SDK15_APPLICATION_CONFIG_H 
+#define NRF5_SDK15_APPLICATION_CONFIG_H
 
 // Log data will be handled immidiately, use minimal buffer size of 128 bytes
 #define NRF_LOG_ENABLED APPLICATION_LOG_ENABLED
@@ -17,7 +17,7 @@
   #error "APPLICATION_LOG_BUFFER_SIZE must be a power of 2 and at least 128"
 #else
   #define NRF_LOG_BUFSIZE APPLICATION_LOG_BUFFER_SIZE
-#endif 
+#endif
 #define NRF_LOG_ALLOW_OVERFLOW 0
 
 // Select one backend
@@ -26,5 +26,16 @@
 
 // Auto retry requires initialized timer/scheduler module
 #define NRF_PWR_MGMT_CONFIG_AUTO_SHUTDOWN_RETRY 0
+
+#define SPI_ENABLED                        APPLICATION_SPI_ENABLED
+#define SPI_INSTANCE                       0
+#define SPI_IRQ_PRIORITY                   7
+#define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
+// <0=> NRF_GPIO_PIN_NOPULL
+// <1=> NRF_GPIO_PIN_PULLDOWN
+// <3=> NRF_GPIO_PIN_PULLUP
+#define NRF_SPI_DRV_MISO_PULLUP_CFG        1
+#define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
+#define SPI0_USE_EASY_DMA                  0
 
 #endif
