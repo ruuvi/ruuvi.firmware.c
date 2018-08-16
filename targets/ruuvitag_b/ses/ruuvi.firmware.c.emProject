@@ -24,7 +24,8 @@
       gcc_debugging_level="Level 3"
       gcc_entry_point="Reset_Handler"
       linker_output_format="hex"
-      linker_printf_fmt_level="long"
+      linker_printf_fmt_level="long long"
+      linker_printf_fp_enabled="Float"
       linker_printf_width_precision_supported="Yes"
       linker_section_placement_file="flash_placement.xml"
       linker_section_placement_macros="FLASH_PH_START=0x0;FLASH_PH_SIZE=0x80000;RAM_PH_START=0x20000000;RAM_PH_SIZE=0x10000;FLASH_START=0x26000;FLASH_SIZE=0x5a000;RAM_START=0x20002a98;RAM_SIZE=0xd568"
@@ -150,8 +151,15 @@
         filter="*.c;*.h"
         path="../../../ruuvi.drivers.c/nrf5_sdk15_platform"
         recurse="Yes" />
-      <file file_name="ruuvi_driver_error.h" />
       <file file_name="../../../ruuvi.drivers.c/ruuvi_driver_sensor.h" />
+      <file file_name="../../../ruuvi.drivers.c/ruuvi_driver_sensor.c" />
+      <folder
+        Name="BME280_driver"
+        exclude="examples"
+        filter="*.c"
+        path="../../../ruuvi.drivers.c/BME280_driver"
+        recurse="Yes" />
+      <file file_name="../../../ruuvi.drivers.c/ruuvi_driver_error.h" />
     </folder>
     <folder
       Name="ruuvi.boards.c"

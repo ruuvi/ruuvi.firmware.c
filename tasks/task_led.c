@@ -1,4 +1,5 @@
 #include "task_led.h"
+#include "task_environmental.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_gpio.h"
 #include <stddef.h>
@@ -31,5 +32,6 @@ ruuvi_driver_status_t task_led_cycle(void)
   uint8_t leds[] = RUUVI_BOARD_LEDS_LIST;
   err_code |= ruuvi_platform_gpio_toggle(leds[phase++]);
   if(RUUVI_BOARD_LEDS_NUMBER <= phase) { phase = 0; }
+  task_environmental_data_log(RUUVI_INTERFACE_LOG_INFO);
   return err_code;
 }

@@ -26,4 +26,29 @@
 // Use nRF5 SDK15
 #define NRF5_SDK15_PLATFORM_ENABLED              1
 
+/**
+ * Environmental sensor configuration
+ **/
+// Sample rate is in Hz. This configures only the sensor, not transmission rate of data.
+#define APPLICATION_ENVIRONMENTAL_SAMPLERATE 1
+
+// Resolution and scale cannot be adjusted
+#define APPLICATION_ENVIRONMENTAL_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+#define APPLICATION_ENVIRONMENTAL_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+
+// Valid values for BME280 are: (RUUVI_DRIVER_SENSOR_DSP_)LAST, IIR, OS
+// IIR slows step response but lowers noise
+// OS increases power consumption but lowers noise.
+// See https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
+#define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_LAST
+
+// No effect on _LAST, use 1. On _OS and _IIR valid values are 2, 4, 8 and 16.
+#define APPLICATION_ENVIRONMENTAL_DSPPARAM   1
+
+// (RUUVI_DRIVER_SENSOR_CFG_)SLEEP, SINGLE or CONTINUOUS
+#define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+
+// Allow BME280 support compilation
+#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED 1
+
 #endif

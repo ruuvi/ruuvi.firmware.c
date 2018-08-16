@@ -11,6 +11,7 @@
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_boards.h"
 #include "task_button.h"
+#include "task_environmental.h"
 #include "task_led.h"
 
 #include <stdio.h>
@@ -33,25 +34,15 @@ int main(void)
   // LEDs high / inactive
   status |= task_led_init();
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
-  
+
   // Initialize button with led_cycle task
   status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_led_cycle);
-
-  // Turn off sensors
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_SS_ACCELERATION_PIN,  RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
-  status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_SS_ACCELERATION_PIN,  RUUVI_INTERFACE_GPIO_HIGH);
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN, RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
-  status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN, RUUVI_INTERFACE_GPIO_HIGH);
-
-  // Put SPI lines into HIGH state to avoid power leaks
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_SCK_PIN,  RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
-  status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_SCK_PIN,  RUUVI_INTERFACE_GPIO_HIGH);
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_MOSI_PIN, RUUVI_INTERFACE_GPIO_MODE_OUTPUT_STANDARD);
-  status |= ruuvi_platform_gpio_write    (RUUVI_BOARD_SPI_MOSI_PIN, RUUVI_INTERFACE_GPIO_HIGH);
-
-  // SPI MISO line is pulled up
-  status |= ruuvi_platform_gpio_configure(RUUVI_BOARD_SPI_MISO_PIN, RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
+  // Initialize SPI - TODO
+  // Initialize environmental
+  status |= task_environmental_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
 
@@ -61,7 +52,7 @@ int main(void)
   }
   ruuvi_platform_delay_ms(1000);
   status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_OFF);
- 
+
   while (1)
   {
     ruuvi_platform_yield();
