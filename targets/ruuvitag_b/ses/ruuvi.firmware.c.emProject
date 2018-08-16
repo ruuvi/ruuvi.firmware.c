@@ -86,6 +86,9 @@
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_spi.c" />
+      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/modules/nrfx/drivers/src/nrfx_spim.c" />
+      <file file_name="../../../../nRF5_SDK_15.0.0_a53641a/integration/nrfx/legacy/nrf_drv_spi.c" />
     </folder>
     <folder Name="Application">
       <file file_name="../../../main.c" />

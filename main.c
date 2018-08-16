@@ -13,6 +13,7 @@
 #include "task_button.h"
 #include "task_environmental.h"
 #include "task_led.h"
+#include "task_spi.h"
 
 #include <stdio.h>
 
@@ -39,7 +40,10 @@ int main(void)
   status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_led_cycle);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
-  // Initialize SPI - TODO
+  // Initialize SPI
+  status |= task_spi_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
   // Initialize environmental
   status |= task_environmental_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
