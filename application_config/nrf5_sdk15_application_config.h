@@ -34,7 +34,7 @@
 // <0=> NRF_GPIO_PIN_NOPULL
 // <1=> NRF_GPIO_PIN_PULLDOWN
 // <3=> NRF_GPIO_PIN_PULLUP
-#define NRF_SPI_DRV_MISO_PULLUP_CFG        1
+#define NRF_SPI_DRV_MISO_PULLUP_CFG        0
 #define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
 #define SPI0_USE_EASY_DMA                  0
 

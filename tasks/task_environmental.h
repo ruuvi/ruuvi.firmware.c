@@ -28,5 +28,10 @@ ruuvi_driver_status_t task_environmental_init(void);
  */
 ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_severity_t level);
 
+/**
+ * Blink RED led for the duration of task. Get environmental data and print it on console.
+ */
+ruuvi_driver_status_t task_environmental_on_button(void);
+
 
 #endif

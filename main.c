@@ -37,7 +37,7 @@ int main(void)
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
 
   // Initialize button with led_cycle task
-  status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_led_cycle);
+  status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_environmental_on_button);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Initialize SPI
