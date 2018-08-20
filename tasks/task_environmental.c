@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 static ruuvi_driver_sensor_t environmental_sensor = {0};
+
 static ruuvi_driver_status_t task_environmental_configure(void)
 {
   ruuvi_driver_sensor_configuration_t config;
@@ -60,11 +61,25 @@ ruuvi_driver_status_t task_environmental_init(void)
   return RUUVI_DRIVER_ERROR_NOT_FOUND;
 }
 
+ruuvi_driver_status_t task_environmental_sample(void)
+{
+  if(NULL == environmental_sensor.mode_set) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+  uint8_t mode = RUUVI_DRIVER_SENSOR_CFG_SINGLE;
+  return environmental_sensor.mode_set(&mode);
+}
+
 ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_severity_t level)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_interface_environmental_data_t data;
   if(NULL == environmental_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+
+  // If the mode is single, take a new sample.
+  if(APPLICATION_ENVIRONMENTAL_MODE == RUUVI_DRIVER_SENSOR_CFG_SINGLE)
+  {
+    err_code |= task_environmental_sample();
+  }
+
   err_code |= environmental_sensor.data_get(&data);
   char message[128] = {0};
   snprintf(message, sizeof(message), "Time: %llu\r\n", data.timestamp_ms);

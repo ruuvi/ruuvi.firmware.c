@@ -1,3 +1,9 @@
+/**
+ * Ruuvi Firmware 3.x SPI tasks.
+ *
+ * License: BSD-3
+ * Author: Otso Jousimaa <otso@ojousima.net>
+ **/
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_log.h"

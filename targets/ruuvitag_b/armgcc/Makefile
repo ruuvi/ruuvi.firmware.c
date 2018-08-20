@@ -95,23 +95,34 @@ SRC_FILES += \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT_printf.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_spi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(PROJ_DIR)/main.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/ruuvi_driver_sensor.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/environmental/ruuvi_platform_environmental_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio_interrupt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/log/ruuvi_platform_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/ruuvi_platform_spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
   $(PROJ_DIR)/tasks/task_button.c \
-  $(PROJ_DIR)/tasks/task_led.c
+  $(PROJ_DIR)/tasks/task_environmental.c \
+  $(PROJ_DIR)/tasks/task_led.c \
+  $(PROJ_DIR)/tasks/task_spi.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -193,8 +204,12 @@ INC_FOLDERS += \
   $(PROJ_DIR)/application_config \
   $(PROJ_DIR)/ruuvi.boards.c \
   $(PROJ_DIR)/ruuvi.drivers.c/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
+  $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
   $(PROJ_DIR)/tasks/

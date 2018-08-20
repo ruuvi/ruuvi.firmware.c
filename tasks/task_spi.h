@@ -1,10 +1,9 @@
 /**
- * Ruuvi Firmware 3.x Environmental tasks.
+ * Ruuvi Firmware 3.x SPI tasks.
  *
  * License: BSD-3
  * Author: Otso Jousimaa <otso@ojousima.net>
  **/
-
 #ifndef  TASK_SPI_H
 #define  TASK_SPI_H
 

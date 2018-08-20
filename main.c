@@ -44,12 +44,14 @@ int main(void)
   status |= task_spi_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
-  // Initialize environmental
+  // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED if
+  // DSP was configured, log warning
   status |= task_environmental_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
 
+  // Turn GREEN LED on if BME280 was found
   if(RUUVI_DRIVER_SUCCESS == status)
   {
     status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_ON);

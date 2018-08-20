@@ -33,5 +33,10 @@ ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_seve
  */
 ruuvi_driver_status_t task_environmental_on_button(void);
 
+/**
+ *  Command environmental sensor to take a single sample.
+ **/
+ruuvi_driver_status_t task_environmental_sample(void);
+
 
 #endif
