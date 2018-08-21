@@ -51,4 +51,12 @@
 // Allow BME280 support compilation
 #define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED 1
 
+// Allow using MCU as environmental (temperature) sensor
+#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED 1
+
+
+// Allow LIS2DH12 support compilation
+#define RUUVI_INTERFACE_ACCELERATION_LIS2DH12_ENABLED 1
+
+
 #endif
