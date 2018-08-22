@@ -96,8 +96,6 @@ ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_seve
 ruuvi_driver_status_t task_environmental_on_button(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  err_code |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
   err_code |= task_environmental_data_log(RUUVI_INTERFACE_LOG_INFO);
-  err_code |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
   return err_code;
 }

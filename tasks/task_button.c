@@ -2,7 +2,9 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_yield.h"
+#include "task_acceleration.h"
 #include "task_button.h"
+#include "task_environmental.h"
 #include <stddef.h>
 
 static task_button_fp_t button_callback = NULL;
@@ -20,5 +22,13 @@ ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope, task_
   button_callback = action;
   err_code |= ruuvi_platform_gpio_interrupt_init(interrupt_table, sizeof(interrupt_table));
   err_code |= ruuvi_platform_gpio_interrupt_enable(RUUVI_BOARD_BUTTON_1, slope, RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP, on_button);
+  return err_code;
+}
+
+ruuvi_driver_status_t task_button_on_press(void)
+{
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code |= task_acceleration_on_button();
+  err_code |= task_environmental_on_button();
   return err_code;
 }

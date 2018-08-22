@@ -10,6 +10,7 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_boards.h"
+#include "task_acceleration.h"
 #include "task_button.h"
 #include "task_environmental.h"
 #include "task_led.h"
@@ -36,20 +37,23 @@ int main(void)
   status |= task_led_init();
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
 
-  // Initialize button with led_cycle task
-  status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_environmental_on_button);
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-
   // Initialize SPI
   status |= task_spi_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED if
   // DSP was configured, log warning
-  status |= task_environmental_init();
+  status = task_environmental_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
-  status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
+  status |= task_acceleration_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED);
+
+  // Initialize button with on_button task
+  status = task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
+  status = task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
 
   // Turn GREEN LED on if BME280 was found
   if(RUUVI_DRIVER_SUCCESS == status)
@@ -59,8 +63,16 @@ int main(void)
   ruuvi_platform_delay_ms(1000);
   status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_OFF);
 
+  // Reset status flag
+  status = RUUVI_DRIVER_SUCCESS;
+
   while (1)
   {
-    ruuvi_platform_yield();
+    // Turn RED LED off. Check status. Reset if any error occured. Enter sleep.
+    status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
+    RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+    status |= ruuvi_platform_yield();
+    //Turn RED LED on when we exit sleep
+    status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
   }
 }
