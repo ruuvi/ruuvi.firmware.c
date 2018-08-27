@@ -68,11 +68,6 @@ int main(void)
 
   while (1)
   {
-    // Turn RED LED off. Check status. Reset if any error occured. Enter sleep.
-    status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
-    RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
     status |= ruuvi_platform_yield();
-    //Turn RED LED on when we exit sleep
-    status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
   }
 }

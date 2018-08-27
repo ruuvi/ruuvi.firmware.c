@@ -5,6 +5,7 @@
     <ProgramSection alignment="0x100" load="Yes" name=".vectors" start="$(FLASH_START)" />
     <ProgramSection alignment="4" load="Yes" name=".init" />
     <ProgramSection alignment="4" load="Yes" name=".init_rodata" />
+    <ProgramSection alignment="4" load="Yes" name=".fini" />
     <ProgramSection alignment="4" load="Yes" name=".text" />
     <ProgramSection alignment="4" keep="Yes" load="Yes" name=".sdh_soc_observers" inputsections="*(SORT(.sdh_soc_observers*))" address_symbol="__start_sdh_soc_observers" end_symbol="__stop_sdh_soc_observers" />
     <ProgramSection alignment="4" keep="Yes" load="Yes" name=".sdh_ble_observers" inputsections="*(SORT(.sdh_ble_observers*))" address_symbol="__start_sdh_ble_observers" end_symbol="__stop_sdh_ble_observers" />

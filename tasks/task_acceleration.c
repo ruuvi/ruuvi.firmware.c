@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 #include <stdio.h>
+#include <inttypes.h>
 
 static ruuvi_driver_sensor_t acceleration_sensor = {0};
 
@@ -59,7 +60,7 @@ ruuvi_driver_status_t task_acceleration_data_log(const ruuvi_interface_log_sever
 
   err_code |= acceleration_sensor.data_get(&data);
   char message[128] = {0};
-  snprintf(message, sizeof(message), "Time: %llu\r\n", data.timestamp_ms);
+  snprintf(message, sizeof(message), "Time: %"PRIu64"\r\n", data.timestamp_ms);
   ruuvi_platform_log(level, message);
   snprintf(message, sizeof(message), "X: %.3f\r\n", data.x_g);
   ruuvi_platform_log(level, message);
