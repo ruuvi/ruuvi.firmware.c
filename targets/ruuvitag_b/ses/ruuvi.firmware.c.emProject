@@ -163,6 +163,10 @@
         path="../../../ruuvi.drivers.c/BME280_driver"
         recurse="Yes" />
       <file file_name="../../../ruuvi.drivers.c/ruuvi_driver_error.h" />
+      <folder Name="STM_drivers">
+        <file file_name="../../../ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c" />
+        <file file_name="../../../ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.h" />
+      </folder>
     </folder>
     <folder
       Name="ruuvi.boards.c"

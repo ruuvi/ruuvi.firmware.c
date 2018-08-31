@@ -6,7 +6,7 @@ SDK_ROOT := ../../../../nRF5_SDK_15.0.0_a53641a
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
-  LINKER_SCRIPT  := ruuvi_gcc_nrf52.ld
+  LINKER_SCRIPT  := ruuvi.firmware.c.ld
 
 # Source files common to all targets
 SRC_FILES += \
@@ -109,9 +109,11 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/ruuvi_driver_sensor.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ruuvi_interface_lis2dh12.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/environmental/ruuvi_platform_environmental_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio_interrupt.c \
@@ -119,6 +121,9 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/ruuvi_platform_spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
+  $(PROJ_DIR)/tasks/task_acceleration.c \
   $(PROJ_DIR)/tasks/task_button.c \
   $(PROJ_DIR)/tasks/task_environmental.c \
   $(PROJ_DIR)/tasks/task_led.c \
@@ -206,12 +211,14 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/ \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
+  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
   $(PROJ_DIR)/tasks/
 
 
@@ -297,6 +304,7 @@ LDFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 LDFLAGS += -Wl,--gc-sections
 # use newlib in nano version
 LDFLAGS += --specs=nano.specs
+LDFLAGS += -u _printf_float
 
 nrf52832_xxaa: CFLAGS += -D__HEAP_SIZE=8192
 nrf52832_xxaa: CFLAGS += -D__STACK_SIZE=8192

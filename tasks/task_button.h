@@ -1,5 +1,5 @@
 /**
- * Ruuvi Firmware 3.x Button tasks. 
+ * Ruuvi Firmware 3.x Button tasks.
  *
  * License: BSD-3
  * Author: Otso Jousimaa <otso@ojousima.net>
@@ -20,8 +20,15 @@ typedef ruuvi_driver_status_t(*task_button_fp_t)(void);
  * parameter slope: slopes to interrupt on. (RUUVI_INTERFACE_GPIO_SLOPE_)HITOLO, LOTOHI or TOGGLE
  * parameter action: Function to be called when button interrupt occurs
  *
- * return: Status code from the stack. RUUVI_DRIVER_SUCCESS if no errors occured. 
+ * return: Status code from the stack. RUUVI_DRIVER_SUCCESS if no errors occured.
  **/
 ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope, task_button_fp_t action);
+
+/**
+ * Calls other Button tasks.
+ *
+ * return: Status code from the stack. RUUVI_DRIVER_SUCCESS if no errors occured.
+ */
+ruuvi_driver_status_t task_button_on_press(void);
 
 #endif
