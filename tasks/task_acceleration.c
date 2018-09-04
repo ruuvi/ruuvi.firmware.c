@@ -48,7 +48,7 @@ ruuvi_driver_status_t task_acceleration_init(void)
     }
   #endif
 
-  // Return error if usable environmental sensor was not found.
+  // Return error if usable acceleration sensor was not found.
   return RUUVI_DRIVER_ERROR_NOT_FOUND;
 }
 
