@@ -24,7 +24,6 @@ static ruuvi_driver_status_t test_run(ruuvi_driver_sensor_init_fp init, ruuvi_dr
 
 ruuvi_driver_status_t test_adc_run(void)
 {
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   uint8_t handle = RUUVI_INTERFACE_ADC_AINVDD;
 

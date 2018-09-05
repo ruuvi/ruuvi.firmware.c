@@ -114,6 +114,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/adc/ruuvi_platform_adc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/environmental/ruuvi_platform_environmental_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio_interrupt.c \
@@ -124,10 +125,15 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
   $(PROJ_DIR)/tasks/task_acceleration.c \
+  $(PROJ_DIR)/tasks/task_adc.c \
   $(PROJ_DIR)/tasks/task_button.c \
   $(PROJ_DIR)/tasks/task_environmental.c \
   $(PROJ_DIR)/tasks/task_led.c \
   $(PROJ_DIR)/tasks/task_spi.c \
+  $(PROJ_DIR)/tests/test_acceleration.c \
+  $(PROJ_DIR)/tests/test_adc.c \
+  $(PROJ_DIR)/tests/test_environmental.c \
+  $(PROJ_DIR)/tests/test_sensor.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -212,6 +218,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/adc \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
@@ -219,7 +226,8 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
-  $(PROJ_DIR)/tasks/
+  $(PROJ_DIR)/tasks/ \
+  $(PROJ_DIR)/tests/
 
 
 
@@ -247,6 +255,7 @@ CFLAGS += -DNRF52_PAN_74
 CFLAGS += -DNRF_DFU_SVCI_ENABLED
 CFLAGS += -DNRF_DFU_TRANSPORT_BLE=1
 CFLAGS += -DNRF_SD_BLE_API_VERSION=6
+CFLAGS += -DRUUVI_RUN_TESTS
 CFLAGS += -DS132
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DNRF_CRYPTO_MAX_INSTANCE_COUNT=1
