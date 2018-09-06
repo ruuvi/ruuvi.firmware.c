@@ -36,6 +36,17 @@
 ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, const ruuvi_driver_bus_t bus, const uint8_t handle);
 
 /**
+ *  Test that sensor sample rate, scale and resolution setters and getters work as expected.
+ *
+ * - MIN, MAX, DEFAULT and NO_CHANGE must always return RUUVI_DRIVER_SUCCESS
+ * - On any parameter set between 1 and 200, if driver returns SUCCESS, the returned value must be at least as much as what was set.
+ * - GET must return same value as SET had as an output.
+ * - Get and Set should return RUUVI_DRIVER_ERROR_NULL if pointer to the value is NULL. May return other error if check for it triggers first.
+ *
+ */
+ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, const ruuvi_driver_bus_t bus, const uint8_t handle);
+
+/**
  * Get total number of tests run and total number of tests passed.
  *
  * parameter total:   pointer to value which will be set to the number of tests run

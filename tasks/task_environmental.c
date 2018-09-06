@@ -83,7 +83,7 @@ ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_seve
 
   err_code |= environmental_sensor.data_get(&data);
   char message[128] = {0};
-  snprintf(message, sizeof(message), "Time: %"PRIu64"\r\n", data.timestamp_ms);
+  snprintf(message, sizeof(message), "Time: %u\r\n", data.timestamp_ms&0xFFFFFFFF);
   ruuvi_platform_log(level, message);
   snprintf(message, sizeof(message), "Temperature: %.2f\r\n", data.temperature_c);
   ruuvi_platform_log(level, message);

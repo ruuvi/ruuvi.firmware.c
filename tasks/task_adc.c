@@ -33,7 +33,7 @@ ruuvi_driver_status_t task_adc_init(void)
   uint8_t handle = RUUVI_INTERFACE_ADC_AINVDD;
 
   err_code |= ruuvi_interface_adc_mcu_init(&adc_sensor, bus, handle);
-  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_FOUND);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
 
   if(RUUVI_DRIVER_SUCCESS == err_code)
   {
@@ -41,7 +41,7 @@ ruuvi_driver_status_t task_adc_init(void)
     return err_code;
   }
 
-  // Return error if usable environmental sensor was not found.
+  // Return error if ADC could not be configured
   return RUUVI_DRIVER_ERROR_NOT_FOUND;
 }
 
@@ -59,7 +59,7 @@ ruuvi_driver_status_t task_adc_data_log(const ruuvi_interface_log_severity_t lev
 
   err_code |= adc_sensor.data_get(&data);
   char message[128] = {0};
-  snprintf(message, sizeof(message), "Time: %"PRIu64"\r\n", data.timestamp_ms);
+  snprintf(message, sizeof(message), "Time: %u\r\n", data.timestamp_ms&0xFFFFFFFF);
   ruuvi_platform_log(level, message);
   snprintf(message, sizeof(message), "Battery: %.3f\r\n", data.adc_v);
   ruuvi_platform_log(level, message);

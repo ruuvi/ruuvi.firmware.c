@@ -15,6 +15,7 @@
 #include "task_button.h"
 #include "task_environmental.h"
 #include "task_led.h"
+#include "task_rtc.h"
 #include "task_spi.h"
 #include "test_sensor.h"
 
@@ -43,6 +44,10 @@ int main(void)
 
   // Initialize SPI
   status |= task_spi_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
+  // Initialize RTC
+  status |= task_rtc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   #if RUUVI_RUN_TESTS

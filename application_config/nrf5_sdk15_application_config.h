@@ -38,4 +38,7 @@
 #define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
 #define SPI0_USE_EASY_DMA                  0
 
+// 0 is used by the softdevice, 1 is used by scheduler / timer
+#define RTC_INSTANCE 2
+
 #endif
