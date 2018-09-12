@@ -31,6 +31,9 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.8.0
+Adds RTC
+
 ## 3.7.0
 Adds battery measurement
 
