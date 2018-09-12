@@ -100,6 +100,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
@@ -119,16 +120,17 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio_interrupt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/log/ruuvi_platform_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/rtc/ruuvi_platform_rtc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/ruuvi_platform_spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
   $(PROJ_DIR)/tasks/task_acceleration.c \
   $(PROJ_DIR)/tasks/task_adc.c \
   $(PROJ_DIR)/tasks/task_button.c \
   $(PROJ_DIR)/tasks/task_environmental.c \
   $(PROJ_DIR)/tasks/task_led.c \
+  $(PROJ_DIR)/tasks/task_rtc.c \
   $(PROJ_DIR)/tasks/task_spi.c \
   $(PROJ_DIR)/tests/test_acceleration.c \
   $(PROJ_DIR)/tests/test_adc.c \
@@ -222,6 +224,7 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/rtc \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \

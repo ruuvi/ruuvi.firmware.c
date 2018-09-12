@@ -59,7 +59,7 @@ ruuvi_driver_status_t task_adc_data_log(const ruuvi_interface_log_severity_t lev
 
   err_code |= adc_sensor.data_get(&data);
   char message[128] = {0};
-  snprintf(message, sizeof(message), "Time: %u\r\n", data.timestamp_ms&0xFFFFFFFF);
+  snprintf(message, sizeof(message), "Time: %lu\r\n", (uint32_t)(data.timestamp_ms&0xFFFFFFFF));
   ruuvi_platform_log(level, message);
   snprintf(message, sizeof(message), "Battery: %.3f\r\n", data.adc_v);
   ruuvi_platform_log(level, message);

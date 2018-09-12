@@ -247,7 +247,6 @@ ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, 
   {
     return RUUVI_DRIVER_ERROR_SELFTEST;
   }
-  passed++;
   return RUUVI_DRIVER_SUCCESS;
 }
 

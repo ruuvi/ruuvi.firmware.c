@@ -42,6 +42,7 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
  * - On any parameter set between 1 and 200, if driver returns SUCCESS, the returned value must be at least as much as what was set.
  * - GET must return same value as SET had as an output.
  * - Get and Set should return RUUVI_DRIVER_ERROR_NULL if pointer to the value is NULL. May return other error if check for it triggers first.
+ * - If setting up parameter is not supported, for example with fixed resolution or single-shot measurements only, return RUUVI_DRIVER_SENSOR_CFG_DEFAULT
  *
  */
 ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, const ruuvi_driver_bus_t bus, const uint8_t handle);

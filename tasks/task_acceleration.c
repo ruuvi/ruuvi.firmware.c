@@ -60,7 +60,7 @@ ruuvi_driver_status_t task_acceleration_data_log(const ruuvi_interface_log_sever
 
   err_code |= acceleration_sensor.data_get(&data);
   char message[128] = {0};
-  snprintf(message, sizeof(message), "Time: %u\r\n", (uint32_t)(data.timestamp_ms&0xFFFFFFFF));
+  snprintf(message, sizeof(message), "Time: %lu\r\n", (uint32_t)(data.timestamp_ms&0xFFFFFFFF));
   ruuvi_platform_log(level, message);
   snprintf(message, sizeof(message), "X: %.3f\r\n", data.x_g);
   ruuvi_platform_log(level, message);
