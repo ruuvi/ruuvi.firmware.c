@@ -80,3 +80,11 @@ ruuvi_driver_status_t task_adc_on_button(void)
   err_code |= task_adc_data_log(RUUVI_INTERFACE_LOG_INFO);
   return err_code;
 }
+
+ruuvi_driver_status_t task_adc_data_get(ruuvi_interface_adc_data_t* const data)
+{
+  if(NULL == data) { return RUUVI_DRIVER_ERROR_NULL; }
+  if(NULL == adc_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+  return adc_sensor.data_get(data);
+
+}

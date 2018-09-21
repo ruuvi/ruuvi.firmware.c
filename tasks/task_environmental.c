@@ -94,6 +94,13 @@ ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_seve
   return err_code;
 }
 
+ruuvi_driver_status_t task_environmental_data_get(ruuvi_interface_environmental_data_t* const data)
+{
+  if(NULL == data) { return RUUVI_DRIVER_ERROR_NULL; }
+  if(NULL == environmental_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+  return environmental_sensor.data_get(data);
+}
+
 ruuvi_driver_status_t task_environmental_on_button(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;

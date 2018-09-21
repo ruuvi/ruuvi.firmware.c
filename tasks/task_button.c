@@ -5,6 +5,7 @@
 #include "ruuvi_interface_yield.h"
 #include "task_acceleration.h"
 #include "task_adc.h"
+#include "task_advertisement.h"
 #include "task_button.h"
 #include "task_environmental.h"
 #include "task_led.h"
@@ -40,9 +41,10 @@ ruuvi_driver_status_t task_button_on_press(void)
   {
 
     err_code |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
-    err_code |= task_acceleration_on_button();
+    /*err_code |= task_acceleration_on_button();
     err_code |= task_environmental_on_button();
-    err_code |= task_adc_on_button();
+    err_code |= task_adc_on_button();*/
+    err_code |= task_advertisement_send_3();
     err_code |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
   }

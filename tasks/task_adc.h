@@ -11,6 +11,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
+#include "ruuvi_interface_adc.h"
 #include "ruuvi_interface_log.h"
 
 /**
@@ -23,6 +24,11 @@ ruuvi_driver_status_t task_adc_init(void);
  * Prints adc data to log at given severity
  */
 ruuvi_driver_status_t task_adc_data_log(const ruuvi_interface_log_severity_t level);
+
+/**
+ * Populates data with latest sample. Remember to trigger sampling with task_adc_sample if you're in single shot mode
+ */
+ruuvi_driver_status_t task_adc_data_get(ruuvi_interface_adc_data_t* const data);
 
 /**
  * Get adc data and print it on console.

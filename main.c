@@ -12,6 +12,7 @@
 #include "ruuvi_boards.h"
 #include "task_acceleration.h"
 #include "task_adc.h"
+#include "task_advertisement.h"
 #include "task_button.h"
 #include "task_environmental.h"
 #include "task_led.h"
@@ -61,6 +62,10 @@ int main(void)
   snprintf(message, sizeof(message), "Tests ran: %u, passed: %u\r\n", tests_run, tests_passed);
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, message);
   #endif
+
+  // Initialize BLE
+  status |= task_advertisement_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Initialize ADC
   status |= task_adc_init();

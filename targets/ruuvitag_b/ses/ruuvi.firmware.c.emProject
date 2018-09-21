@@ -185,6 +185,12 @@
     <configuration
       Name="Debug"
       c_preprocessor_definitions="RUUVI_RUN_TESTS" />
+    <folder
+      Name="ruuvi.endpoints.c"
+      exclude=""
+      filter="*.c;*.h"
+      path="../../../ruuvi.endpoints.c"
+      recurse="Yes" />
   </project>
   <configuration
     Name="Release"

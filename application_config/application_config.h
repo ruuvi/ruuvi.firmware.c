@@ -8,6 +8,7 @@
 #ifndef APPLICATION_CONFIG_H
 #define APPLICATION_CONFIG_H
 
+#define APPLICATION_BLUETOOTH_ENABLED            1
 #define APPLICATION_GPIO_ENABLED                 1
 #define APPLICATION_GPIO_INTERRUPT_ENABLED       1
 #define APPLICATION_ENVIRONMENTAL_ADC_ENABLED    1
@@ -89,4 +90,12 @@
 #define APPLICATION_ADC_DSPPARAM    1
 #define APPLICATION_ADC_MODE       RUUVI_DRIVER_SENSOR_CFG_SINGLE
 
+/**
+ * Bluetooth configuration
+ *
+ */
+
+// Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
+#define APPLICATION_ADVERTISING_INTERVAL 1010
+#define APPLICATION_ADVERTISING_POWER    RUUVI_BOARD_TX_POWER_MAX
 #endif
