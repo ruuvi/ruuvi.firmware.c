@@ -38,7 +38,6 @@ ruuvi_driver_status_t task_advertisement_send_3(void)
   err_code |= task_environmental_data_get(&environmental);
   err_code |= task_adc_data_get(&battery);
 
-  uint8_t tx_buffer[] = {0};
   ruuvi_endpoint_3_data_t data;
   data.accelerationx_g = acclereration.x_g;
   data.accelerationy_g = acclereration.y_g;
