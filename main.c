@@ -20,7 +20,6 @@
 #include "task_spi.h"
 #include "test_sensor.h"
 
-
 #include <stdio.h>
 
 int main(void)

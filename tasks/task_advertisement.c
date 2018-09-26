@@ -1,3 +1,10 @@
+/**
+ * Ruuvi Firmware 3.x advertisement tasks.
+ *
+ * License: BSD-3
+ * Author: Otso Jousimaa <otso@ojousima.net>
+ **/
+
 #include "application_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"

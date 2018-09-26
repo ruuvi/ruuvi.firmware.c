@@ -8,16 +8,20 @@
 #ifndef APPLICATION_CONFIG_H
 #define APPLICATION_CONFIG_H
 
+// Flags which determine which c-modules are compiled in.
+// These modules may reserve some RAM and FLASH, so if you
+// do not need module you can disable it.
 #define APPLICATION_BLUETOOTH_ENABLED            1
 #define APPLICATION_GPIO_ENABLED                 1
 #define APPLICATION_GPIO_INTERRUPT_ENABLED       1
 #define APPLICATION_ENVIRONMENTAL_ADC_ENABLED    1
 #define APPLICATION_ENVIRONMENTAL_MCU_ENABLED    1
 #define APPLICATION_ENVIRONMENTAL_BME280_ENABLED 1
+#define APPLICATION_NFC_ENABLED                  1
+#define APPLICATION_POWER_ENABLED                1
 #define APPLICATION_RTC_MCU_ENABLED              1
 #define APPLICATION_SPI_ENABLED                  1
 #define APPLICATION_YIELD_ENABLED                1
-
 #define APPLICATION_LOG_ENABLED                  1
 #define APPLICATION_LOG_LEVEL                    RUUVI_INTERFACE_LOG_INFO
 #define APPLICATION_LOG_BACKEND_RTT_ENABLED      1
