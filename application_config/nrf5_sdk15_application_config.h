@@ -27,6 +27,10 @@
 // Auto retry requires initialized timer/scheduler module
 #define NRF_PWR_MGMT_CONFIG_AUTO_SHUTDOWN_RETRY 0
 
+// DC/DC functions. Power and clock must have equal IRQ priorities.
+#define NRFX_POWER_ENABLED APPLICATION_POWER_ENABLED
+#define NRFX_POWER_CONFIG_IRQ_PRIORITY NRFX_CLOCK_CONFIG_IRQ_PRIORITY
+
 #define SPI_ENABLED                        APPLICATION_SPI_ENABLED
 #define SPI_INSTANCE                       0
 #define SPI_IRQ_PRIORITY                   7
