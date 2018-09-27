@@ -8,24 +8,7 @@
 #ifndef APPLICATION_CONFIG_H
 #define APPLICATION_CONFIG_H
 
-// Flags which determine which c-modules are compiled in.
-// These modules may reserve some RAM and FLASH, so if you
-// do not need module you can disable it.
-#define APPLICATION_BLUETOOTH_ENABLED            1
-#define APPLICATION_GPIO_ENABLED                 1
-#define APPLICATION_GPIO_INTERRUPT_ENABLED       1
-#define APPLICATION_ENVIRONMENTAL_ADC_ENABLED    1
-#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED    1
-#define APPLICATION_ENVIRONMENTAL_BME280_ENABLED 1
-#define APPLICATION_NFC_ENABLED                  1
-#define APPLICATION_POWER_ENABLED                1
-#define APPLICATION_RTC_MCU_ENABLED              1
-#define APPLICATION_SPI_ENABLED                  1
-#define APPLICATION_YIELD_ENABLED                1
-#define APPLICATION_LOG_ENABLED                  1
-#define APPLICATION_LOG_LEVEL                    RUUVI_INTERFACE_LOG_INFO
-#define APPLICATION_LOG_BACKEND_RTT_ENABLED      1
-#define APPLICATION_LOG_BACKEND_UART_ENABLED     0
+#define APPLICATION_FW_VERSION "3.10.0"
 
 // Pick a power of 2 for nRF5 backed. 128 is recommended.
 #define APPLICATION_LOG_BUFFER_SIZE              128
@@ -39,7 +22,7 @@
 // Sample rate is in Hz. This configures only the sensor, not transmission rate of data.
 #define APPLICATION_ENVIRONMENTAL_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
 
-// Resolution and scale cannot be adjusted
+// Resolution and scale cannot be adjusted on BME280
 #define APPLICATION_ENVIRONMENTAL_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 #define APPLICATION_ENVIRONMENTAL_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
@@ -57,9 +40,6 @@
 
 // Allow BME280 support compilation
 #define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED 1
-
-// Allow using MCU as environmental (temperature) sensor
-#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED 1
 
 /**
  * Accelerometer configuration
@@ -98,8 +78,34 @@
  * Bluetooth configuration
  *
  */
-
 // Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
 #define APPLICATION_ADVERTISING_INTERVAL 1010
 #define APPLICATION_ADVERTISING_POWER    RUUVI_BOARD_TX_POWER_MAX
+
+/**
+ * Flags which determine which c-modules are compiled in.
+ * These modules may reserve some RAM and FLASH, so if you
+ * do not need module you can disable it.
+ */
+#define APPLICATION_ADC_ENABLED                     1
+#define APPLICATION_COMMUNICATION_ENABLED           1 // Common functions for communication
+#define APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED 1 // Advertising and GATT
+#define APPLICATION_COMMUNICATION_NFC_ENABLED       1
+#define APPLICATION_GPIO_ENABLED                    1
+#define APPLICATION_GPIO_INTERRUPT_ENABLED          1
+#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED       1
+#define APPLICATION_ENVIRONMENTAL_BME280_ENABLED    1
+#define APPLICATION_POWER_ENABLED                   1
+#define APPLICATION_RTC_MCU_ENABLED                 1
+#define APPLICATION_SPI_ENABLED                     1
+#define APPLICATION_YIELD_ENABLED                   1
+#define APPLICATION_LOG_ENABLED                     1
+// RUUVI_INTERFACE_LOG_ ERROR, WARNING, INFO, DEBUG
+#define APPLICATION_LOG_LEVEL                       RUUVI_INTERFACE_LOG_INFO
+
+// Choose one. RTT is recommended, but does not work on devices
+// with readback protection enabled
+#define APPLICATION_LOG_BACKEND_RTT_ENABLED         1
+#define APPLICATION_LOG_BACKEND_UART_ENABLED        0
+
 #endif

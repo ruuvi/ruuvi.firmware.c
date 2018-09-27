@@ -16,6 +16,7 @@
 #include "task_button.h"
 #include "task_environmental.h"
 #include "task_led.h"
+#include "task_nfc.h"
 #include "task_power.h"
 #include "task_rtc.h"
 #include "task_spi.h"
@@ -53,6 +54,10 @@ int main(void)
 
   // Initialize power
   status |= task_power_dcdc_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
+  // Initialize nfc
+  status |= task_nfc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   #if RUUVI_RUN_TESTS
