@@ -31,6 +31,12 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.10.0
+Adds NFC tag functionality - read only
+
+## 3.9.0
+Adds BLE broadcasts
+
 ## 3.8.0
 Adds RTC
 
