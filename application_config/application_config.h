@@ -8,7 +8,7 @@
 #ifndef APPLICATION_CONFIG_H
 #define APPLICATION_CONFIG_H
 
-#define APPLICATION_FW_VERSION "3.10.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.10.0"
 
 // Pick a power of 2 for nRF5 backed. 128 is recommended.
 #define APPLICATION_LOG_BUFFER_SIZE              128
@@ -81,6 +81,20 @@
 // Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
 #define APPLICATION_ADVERTISING_INTERVAL 1010
 #define APPLICATION_ADVERTISING_POWER    RUUVI_BOARD_TX_POWER_MAX
+
+/**
+ * NFC configuration
+ */
+
+// Longest text in a text field, i.e. "FW: ruuvi.firmware.c 3.10.0
+#define APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE (32)
+// Longest binary message
+#define APPLICATION_COMMUNICATION_NFC_DATA_BUFFER_SIZE APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE
+// 3 text records (version, address, id) and data record
+#define APPLICATION_COMMUNICATION_NFC_MAX_RECORDS      (4)
+// 2 length bytes + 3 * text record + 1 * data record + 4 * 9 bytes for record header
+// Conservers RAM for 3 * text buffer size + 1 * data buffer size + NDEF_FILE_SIZE
+#define APPLICATION_COMMUNICATION_NFC_NDEF_FILE_SIZE   (166)
 
 /**
  * Flags which determine which c-modules are compiled in.
