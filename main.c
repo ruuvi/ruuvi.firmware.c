@@ -6,8 +6,8 @@
  **/
 
 #include "application_config.h"
-#include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_boards.h"
 #include "task_acceleration.h"
@@ -19,7 +19,9 @@
 #include "task_nfc.h"
 #include "task_power.h"
 #include "task_rtc.h"
+#include "task_scheduler.h"
 #include "task_spi.h"
+#include "task_timer.h"
 #include "test_sensor.h"
 
 #include <stdio.h>
@@ -48,8 +50,10 @@ int main(void)
   status |= task_spi_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
-  // Initialize RTC
+  // Initialize RTC, timer and scheduler
   status |= task_rtc_init();
+  status |= task_timer_init();
+  status |= task_scheduler_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Initialize power
@@ -72,10 +76,6 @@ int main(void)
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, message);
   #endif
 
-  // Initialize BLE
-  status |= task_advertisement_init();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-
   // Initialize ADC
   status |= task_adc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
@@ -93,6 +93,10 @@ int main(void)
   status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND | RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
+  // Initialize BLE
+  status |= task_advertisement_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
   // Turn RED led off. Turn GREEN LED on if no errors occured
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
   if(RUUVI_DRIVER_SUCCESS == status)
@@ -106,7 +110,14 @@ int main(void)
 
   while (1)
   {
-    status = ruuvi_platform_yield();
+    // Turn off activity led
+    status = task_led_write(RUUVI_BOARD_LED_RED, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
+    // Sleep
+    status |= ruuvi_platform_yield();
+    // Turn on activity led
+    status |= task_led_write(RUUVI_BOARD_LED_RED, RUUVI_BOARD_LEDS_ACTIVE_STATE);
+    // Execute scheduled tasks
+     status |= ruuvi_platform_scheduler_execute();
     // Reset only on fatal error
     RUUVI_DRIVER_ERROR_CHECK(status, ~RUUVI_DRIVER_ERROR_FATAL);
   }

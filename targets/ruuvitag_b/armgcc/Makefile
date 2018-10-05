@@ -128,7 +128,9 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/power/ruuvi_platform_power.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/rtc/ruuvi_platform_rtc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/ruuvi_platform_scheduler.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/ruuvi_platform_spi.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ruuvi_platform_timer.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoint_3.c \
@@ -141,7 +143,9 @@ SRC_FILES += \
   $(PROJ_DIR)/tasks/task_nfc.c \
   $(PROJ_DIR)/tasks/task_power.c \
   $(PROJ_DIR)/tasks/task_rtc.c \
+  $(PROJ_DIR)/tasks/task_scheduler.c \
   $(PROJ_DIR)/tasks/task_spi.c \
+  $(PROJ_DIR)/tasks/task_timer.c \
   $(PROJ_DIR)/tests/test_acceleration.c \
   $(PROJ_DIR)/tests/test_adc.c \
   $(PROJ_DIR)/tests/test_environmental.c \
@@ -237,9 +241,12 @@ INC_FOLDERS += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/power \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/rtc \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/scheduler \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/timer \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ \
   $(PROJ_DIR)/ruuvi.endpoints.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
   $(PROJ_DIR)/tasks/ \

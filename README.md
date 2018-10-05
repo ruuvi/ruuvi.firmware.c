@@ -31,6 +31,11 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.11.0
+ * Add scheduler and timer, update transmitted data once per second.
+ * Environmental sensor is now in continuous mode and has IIR filtering at 16x (was oversampling)
+ * ADC is now read once per minute
+
 ## 3.10.0
 Adds NFC tag functionality - read only
 

@@ -5,6 +5,8 @@
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_scheduler.h"
+#include "ruuvi_interface_timer.h"
 #include "task_environmental.h"
 #include "task_led.h"
 
@@ -12,7 +14,21 @@
 #include <stddef.h>
 #include <stdio.h>
 
+RUUVI_PLATFORM_TIMER_ID_DEF(environmental_timer);
 static ruuvi_driver_sensor_t environmental_sensor = {0};
+
+//handler for scheduled accelerometer event
+static void task_environmental_scheduler_task(void *p_event_data, uint16_t event_size)
+{
+  // No action necessary
+}
+
+// Timer callback, schedule accelerometer event here.
+static void task_environmental_timer_cb(void* p_context)
+{
+  ruuvi_platform_scheduler_event_put(NULL, 0, task_environmental_scheduler_task);
+}
+
 
 static ruuvi_driver_status_t task_environmental_configure(void)
 {
@@ -32,6 +48,9 @@ ruuvi_driver_status_t task_environmental_init(void)
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   uint8_t handle = 0;
+
+  // Initialize timer for environmental task. Note: the timer is not started.
+  err_code |= ruuvi_platform_timer_create(&environmental_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_environmental_timer_cb);
 
   #if RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
     err_code = RUUVI_DRIVER_SUCCESS;

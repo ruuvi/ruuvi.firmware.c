@@ -8,9 +8,9 @@
 #ifndef APPLICATION_CONFIG_H
 #define APPLICATION_CONFIG_H
 
-#define APPLICATION_FW_VERSION "RuuviFW 3.10.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.11.0"
 
-// Pick a power of 2 for nRF5 backed. 128 is recommended.
+// Pick a power of 2 for nRF5 backend. 128 is recommended.
 #define APPLICATION_LOG_BUFFER_SIZE              128
 
 // Use nRF5 SDK15
@@ -30,13 +30,13 @@
 // IIR slows step response but lowers noise
 // OS increases power consumption but lowers noise.
 // See https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
-#define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_OS
+#define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_IIR
 
 // No effect on _LAST, use 1. On _OS and _IIR valid values are 2, 4, 8 and 16.
 #define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_MAX
 
 // (RUUVI_DRIVER_SENSOR_CFG_)SLEEP, SINGLE or CONTINUOUS
-#define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_SINGLE
+#define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
 
 // Allow BME280 support compilation
 #define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED 1
@@ -67,12 +67,13 @@
 /**
  *  ADC configuration
  */
-#define APPLICATION_ADC_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
-#define APPLICATION_ADC_RESOLUTION 10
-#define APPLICATION_ADC_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
-#define APPLICATION_ADC_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_LAST
-#define APPLICATION_ADC_DSPPARAM    1
-#define APPLICATION_ADC_MODE       RUUVI_DRIVER_SENSOR_CFG_SINGLE
+#define APPLICATION_ADC_SAMPLERATE         RUUVI_DRIVER_SENSOR_CFG_MIN // Valid for continuous mode
+#define APPLICATION_ADC_RESOLUTION         10
+#define APPLICATION_ADC_SCALE              RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+#define APPLICATION_ADC_DSPFUNC            RUUVI_DRIVER_SENSOR_DSP_LAST
+#define APPLICATION_ADC_DSPPARAM           1
+#define APPLICATION_ADC_MODE               RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+#define APPLICATION_ADC_SAMPLE_INTERVAL_MS 30000 // Valid for single mode
 
 /**
  * Bluetooth configuration
@@ -90,11 +91,17 @@
 #define APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE (32)
 // Longest binary message
 #define APPLICATION_COMMUNICATION_NFC_DATA_BUFFER_SIZE APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE
-// 3 text records (version, address, id) and data record
+// 3 text records (version, address, id) and a data record
 #define APPLICATION_COMMUNICATION_NFC_MAX_RECORDS      (4)
 // 2 length bytes + 3 * text record + 1 * data record + 4 * 9 bytes for record header
 // Conservers RAM for 3 * text buffer size + 1 * data buffer size + NDEF_FILE_SIZE
 #define APPLICATION_COMMUNICATION_NFC_NDEF_FILE_SIZE   (166)
+
+/**
+ * Task scheduler configuration
+ */
+#define APPLICATION_TASK_DATA_MAX_SIZE 0
+#define APPLICATION_TASK_QUEUE_MAX_LENGTH 10
 
 /**
  * Flags which determine which c-modules are compiled in.
@@ -111,7 +118,9 @@
 #define APPLICATION_ENVIRONMENTAL_BME280_ENABLED    1
 #define APPLICATION_POWER_ENABLED                   1
 #define APPLICATION_RTC_MCU_ENABLED                 1
+#define APPLICATION_SCHEDULER_ENABLED               1
 #define APPLICATION_SPI_ENABLED                     1
+#define APPLICATION_TIMER_ENABLED                   1
 #define APPLICATION_YIELD_ENABLED                   1
 #define APPLICATION_LOG_ENABLED                     1
 // RUUVI_INTERFACE_LOG_ ERROR, WARNING, INFO, DEBUG
