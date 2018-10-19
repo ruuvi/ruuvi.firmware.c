@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 NAME="ruuvifw"
-VERSION=$(git rev-parse HEAD)
+VERSION=$(git rev-parse --short HEAD)
 while getopts "n:v:" option;
 do
 case "${option}"
