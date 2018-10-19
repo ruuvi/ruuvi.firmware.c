@@ -58,7 +58,14 @@ dkms.conf
 
 # Build folder
 Output/
+_build/
 
 # SES files
 *.emSession
 *.jlink
+
+# Compiled packages
+*.zip
+
+# Keys
+*.pem

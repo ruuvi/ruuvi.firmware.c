@@ -13,6 +13,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/common/ble_advdata.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c \
+  $(SDK_ROOT)/components/ble/ble_radio_notification/ble_radio_notification.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
@@ -258,13 +259,14 @@ INC_FOLDERS += \
 # Libraries common to all targets
 LIB_FILES += \
  $(SDK_ROOT)/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a \
- $(SDK_ROOT)/external/nrf_oberon/lib/nrf52/liboberon_2.0.4.a \
+ $(SDK_ROOT)/external/nrf_oberon/lib/nrf52/liboberon_2.0.5.a \
 
 # Optimization flags
 OPT = -O3 -g3
 # Uncomment the line below to enable link time optimization
 #OPT += -flto
 
+CFLAGS += $(MODE)
 # C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
