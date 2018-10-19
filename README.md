@@ -5,15 +5,14 @@ Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and ext
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. 
 
 # Setting up
-## SDK 15.0
-Download [Nordic SDK15](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) and install it one level above the project root. 
+## SDK 15.2
+Download [Nordic SDK15.2](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) and install it one level above the project root. 
 
 ## Submodules
 Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project.
 
 ## Toolchain
-ARMGCC is currently no supported, but you can follow this [Ruuvi blog post](https://blog.ruuvi.com/ruuvitag-dev-environment-e4b16e2d59e9) and setup the makefile.
-Pull requests for updated makefiles are gratefully accepted. 
+ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com:8080/job/ruuvi.firmware.c/), it's recommended to use SES for developing.
 
 Segger Embedded Studio can be set up by following this [RuuviLab Tool post](https://lab.ruuvi.com/ses/).
 
@@ -31,6 +30,9 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.12.0
+ - Bootloader in a [separate repository](https://github.com/ruuvi/ruuvi.nrf5_sdk15_bootloader.c)
+
 ## 3.11.0
  * Add scheduler and timer, update transmitted data once per second.
  * Environmental sensor is now in continuous mode and has IIR filtering at 16x (was oversampling)
