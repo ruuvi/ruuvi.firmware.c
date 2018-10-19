@@ -33,4 +33,4 @@ nrfjprog --family nrf52 --reset
 
 mv packet.hex ruuvitag_b\_ses\_$NAME\_$VERSION\_full.hex
 cp Output/Debug/Exe/ruuvi.firmware.c.hex ruuvitag_b\_ses\_$NAME\_$VERSION\_app.hex
-nrfutil pkg generate --application Output/Debug/Exe/ruuvi.firmware.c.hex --application-version 1 --application-version-string "$VERSION" --hw-version 0x0b --sd-req 0xA9 --key-file ruuvi_open_private.pem ruuvitag_b\_ses\_$NAME\_$VERSION\_dfu.zip
+nrfutil pkg generate --application Output/Debug/Exe/ruuvi.firmware.c.hex --application-version 1 --application-version-string "$VERSION" --hw-version 0x0b --sd-req 0xAF --key-file ruuvi_open_private.pem ruuvitag_b\_ses\_$NAME\_$VERSION\_dfu.zip
