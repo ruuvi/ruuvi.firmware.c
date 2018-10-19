@@ -60,10 +60,6 @@ int main(void)
   status |= task_power_dcdc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
-  // Initialize nfc
-  status |= task_nfc_init();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-
   #if RUUVI_RUN_TESTS
   // Tests will initialize and uninitialize the sensors, run this before using them in application
   test_sensor_run();
@@ -76,21 +72,25 @@ int main(void)
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, message);
   #endif
 
+  // Initialize nfc
+  status |= task_nfc_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
   // Initialize ADC
   status |= task_adc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
-  // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED if
-  // DSP was configured, log warning
+  // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED on RuuviTag basic
+  // if DSP was configured, log warning
   status |= task_environmental_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
-  // Allow NOT FOUND in case we're running on basic model, NOT_SUPPORTED in case we have previous error from BME280
-  status |= task_acceleration_init();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND | RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  // Allow NOT FOUND in case we're running on basic model
+  status = task_acceleration_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
 
-  // Initialize button with on_button task, do not reset on errors from model Basic
-  status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
+  // Initialize button with on_button task
+  status = task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND | RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
   // Initialize BLE
@@ -104,9 +104,8 @@ int main(void)
     status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_ON);
     ruuvi_platform_delay_ms(1000);
   }
-  // Reset any previous errors, turn LEDs off, continue unless fatal error occurs
-  status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_OFF);
-  RUUVI_DRIVER_ERROR_CHECK(status, ~RUUVI_DRIVER_ERROR_FATAL);
+  // Reset any previous errors, turn LEDs off
+  status = task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_OFF);
 
   while (1)
   {

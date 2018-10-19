@@ -7,8 +7,9 @@
 
 #ifndef APPLICATION_CONFIG_H
 #define APPLICATION_CONFIG_H
+#include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 
-#define APPLICATION_FW_VERSION "RuuviFW 3.11.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.13.0"
 
 // Pick a power of 2 for nRF5 backend. 128 is recommended.
 #define APPLICATION_LOG_BUFFER_SIZE              128
@@ -17,9 +18,24 @@
 #define NRF5_SDK15_PLATFORM_ENABLED              1
 
 /**
+ * Data format configuration
+ */
+// Voltage mode - select one
+#ifndef APPLICATION_BATTERY_VOLTAGE_MODE
+#define APPLICATION_BATTERY_VOLTAGE_SIMPLE   0  // Simple mode: Not synchronized to anything, sampled at regular interval
+#define APPLICATION_BATTERY_VOLTAGE_RADIO    1  // Radio mode: Voltage is sampled after radio tx, refreshed after interval has passed.
+#define APPLICATION_BATTERY_VOLTAGE_DROOP    0  // Droop mode: Battery is read after TX and after a brief recovery period. Droop is reported
+#endif
+#define APPLICATION_BATTERY_DROOP_DELAY_MS   2  // Milliseconds between active and recovered tx
+#if(APPLICATION_BATTERY_VOLTAGE_SIMPLE + APPLICATION_BATTERY_VOLTAGE_RADIO + APPLICATION_BATTERY_VOLTAGE_DROOP != 1)
+  #error "Select application battery voltage monitor mode by defining one constant as 1"
+#endif
+
+/**
  * Environmental sensor configuration
  **/
 // Sample rate is in Hz. This configures only the sensor, not transmission rate of data.
+#ifndef APPLICATION_ENVIRONMENTAL_CONFIGURED
 #define APPLICATION_ENVIRONMENTAL_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
 
 // Resolution and scale cannot be adjusted on BME280
@@ -37,6 +53,8 @@
 
 // (RUUVI_DRIVER_SENSOR_CFG_)SLEEP, SINGLE or CONTINUOUS
 #define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+#endif
+
 
 // Allow BME280 support compilation
 #define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED 1
@@ -44,22 +62,23 @@
 /**
  * Accelerometer configuration
  **/
+ #ifndef APPLICATION_ACCELERATION_CONFIGURED
+  // 1, 10, 25, 50, 100, 200 for LIS2DH12
+  #define APPLICATION_ACCELEROMETER_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
 
-// 1, 10, 25, 50, 100, 200 for LIS2DH12
-#define APPLICATION_ACCELEROMETER_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
+  // 8, 10, 12 for LIS2DH12
+  #define APPLICATION_ACCELEROMETER_RESOLUTION 10
 
-// 8, 10, 12 for LIS2DH12
-#define APPLICATION_ACCELEROMETER_RESOLUTION 10
+  // 2, 4, 8, 16 for LIS2DH12
+  #define APPLICATION_ACCELEROMETER_SCALE   RUUVI_DRIVER_SENSOR_CFG_MIN
 
-// 2, 4, 8, 16 for LIS2DH12
-#define APPLICATION_ACCELEROMETER_SCALE   RUUVI_DRIVER_SENSOR_CFG_MIN
+  // LAST or HIGH_PASS
+  #define APPLICATION_ACCELEROMETER_DSPFUNC RUUVI_DRIVER_SENSOR_DSP_LAST
+  #define APPLICATION_ACCELEROMETER_DSPPARAM 1
 
-// LAST or HIGH_PASS
-#define APPLICATION_ACCELEROMETER_DSPFUNC RUUVI_DRIVER_SENSOR_DSP_LAST
-#define APPLICATION_ACCELEROMETER_DSPPARAM 1
-
-// SLEEP or CONTINUOUS
-#define APPLICATION_ACCELEROMETER_MODE RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+  // SLEEP or CONTINUOUS
+  #define APPLICATION_ACCELEROMETER_MODE RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+#endif
 
 // Allow LIS2DH12 support compilation
 #define RUUVI_INTERFACE_ACCELERATION_LIS2DH12_ENABLED 1
@@ -72,7 +91,7 @@
 #define APPLICATION_ADC_SCALE              RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 #define APPLICATION_ADC_DSPFUNC            RUUVI_DRIVER_SENSOR_DSP_LAST
 #define APPLICATION_ADC_DSPPARAM           1
-#define APPLICATION_ADC_MODE               RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+#define APPLICATION_ADC_MODE               RUUVI_DRIVER_SENSOR_CFG_SINGLE // Note: call to task_adc_sample will leave the ADC in single-shot mode. Use data get only in continuous mode
 #define APPLICATION_ADC_SAMPLE_INTERVAL_MS 30000 // Valid for single mode
 
 /**
@@ -80,13 +99,14 @@
  *
  */
 // Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
-#define APPLICATION_ADVERTISING_INTERVAL 1010
-#define APPLICATION_ADVERTISING_POWER    RUUVI_BOARD_TX_POWER_MAX
+#ifndef APPLICATION_ADVERTISING_CONFIGURED
+  #define APPLICATION_ADVERTISING_INTERVAL 1010
+  #define APPLICATION_ADVERTISING_POWER    RUUVI_BOARD_TX_POWER_MAX
+#endif
 
 /**
  * NFC configuration
  */
-
 // Longest text in a text field, i.e. "FW: ruuvi.firmware.c 3.10.0
 #define APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE (32)
 // Longest binary message
@@ -106,12 +126,13 @@
 /**
  * Flags which determine which c-modules are compiled in.
  * These modules may reserve some RAM and FLASH, so if you
- * do not need module you can disable it.
+ * do not need module you can disable it. The modules might also
+ * have some dependencies between themselves.
  */
 #define APPLICATION_ADC_ENABLED                     1
 #define APPLICATION_COMMUNICATION_ENABLED           1 // Common functions for communication
 #define APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED 1 // Advertising and GATT
-#define APPLICATION_COMMUNICATION_NFC_ENABLED       1
+#define APPLICATION_COMMUNICATION_NFC_ENABLED       1 // NFC
 #define APPLICATION_GPIO_ENABLED                    1
 #define APPLICATION_GPIO_INTERRUPT_ENABLED          1
 #define APPLICATION_ENVIRONMENTAL_MCU_ENABLED       1
@@ -129,6 +150,6 @@
 // Choose one. RTT is recommended, but does not work on devices
 // with readback protection enabled
 #define APPLICATION_LOG_BACKEND_RTT_ENABLED         1
-#define APPLICATION_LOG_BACKEND_UART_ENABLED        0
+//#define APPLICATION_LOG_BACKEND_UART_ENABLED        0 // UART not implemented
 
 #endif
