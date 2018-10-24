@@ -11,6 +11,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_log.h"
+#include <stdbool.h>
 
 /**
  * Test that sensor init and uninit works as expected.
@@ -44,8 +45,45 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
  * - Get and Set should return RUUVI_DRIVER_ERROR_NULL if pointer to the value is NULL. May return other error if check for it triggers first.
  * - If setting up parameter is not supported, for example with fixed resolution or single-shot measurements only, return RUUVI_DRIVER_SENSOR_CFG_DEFAULT
  *
+ * parameter init:   Function pointer to sensor initialization
+ * parameter bus:    Bus of the sensor, RUUVI_DRIVER_BUS_NONE, _I2C or _SPI
+ * parameter handle: Handle of the sensor, such as SPI GPIO pin, I2C address or ADC channel.
+ *
+ * return: RUUVI_DRIVER_SUCCESS if the tests passed, error code from the test otherwise.
  */
 ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, const ruuvi_driver_bus_t bus, const uint8_t handle);
+
+/**
+ * Test that sensor modes work as expected
+ *
+ * - Sensor must be in SLEEP mode after init
+ * - Sensor must return all values as INVALID if sensor is read before first sample
+ * - Sensor must be in SLEEP mode after mode has been set to SINGLE
+ * - Sensor must have new data after setting mode to SINGLE returns
+ * - Sensor must same values, including timestamp, on successive calls to DATA_GET after SINGLE sample
+ * - Sensor must stay in CONTINUOUS mode after being set to continuous
+ * - Sensor must return RUUVI_DRIVER_ERROR_INVALID_STATE if set to SINGLE while in continuous mode  and remain in continuous mode
+ * - Sensor must return updated data in CONTINUOUS mode, at least timestamp has to be updated after two ms wait.
+ * - Sensor is allowed to buffer data in CONTINUOUS mode.
+ *   * if data is buffered and more samples are available, sensor must return RUUVI_DRIVER_STATUS_MORE_AVAILABLE
+ *
+ * parameter init:   Function pointer to sensor initialization
+ * parameter bus:    Bus of the sensor, RUUVI_DRIVER_BUS_NONE, _I2C or _SPI
+ * parameter handle: Handle of the sensor, such as SPI GPIO pin, I2C address or ADC channel.
+ *
+ * return: RUUVI_DRIVER_SUCCESS if the tests passed, error code from the test otherwise.
+ */
+ruuvi_driver_status_t test_sensor_modes(ruuvi_driver_sensor_init_fp init, ruuvi_driver_bus_t bus, uint8_t handle);
+
+/**
+ * Register a test as being run. Increments counter of total tests.
+ * Read results with test_sensor_status
+ *
+ * parameter passed: True if your test was successful.
+ *
+ * return RUUVI_DRIVER_SUCCESS
+ */
+ruuvi_driver_status_t test_sensor_register(bool passed);
 
 /**
  * Get total number of tests run and total number of tests passed.

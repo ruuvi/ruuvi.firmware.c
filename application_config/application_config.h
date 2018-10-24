@@ -12,7 +12,7 @@
 #define APPLICATION_FW_VERSION "RuuviFW 3.13.0"
 
 // Pick a power of 2 for nRF5 backend. 128 is recommended.
-#define APPLICATION_LOG_BUFFER_SIZE              128
+#define APPLICATION_LOG_BUFFER_SIZE              1024
 
 // Use nRF5 SDK15
 #define NRF5_SDK15_PLATFORM_ENABLED              1

@@ -14,8 +14,10 @@
 
 #if RUUVI_RUN_TESTS
 
-static size_t total  = 0;
-static size_t passed = 0;
+// Number of times to run test on statistics-dependent tests, such as sampling noise.
+#define MAX_RETRIES 5
+static size_t m_total  = 0;
+static size_t m_passed = 0;
 
 ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, const ruuvi_driver_bus_t bus, const uint8_t handle)
 {
@@ -23,14 +25,17 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
   ruuvi_driver_sensor_t DUT;
   memset(&DUT, 0, sizeof(DUT));
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  bool test_ok = true;
   bool failed = false;
-  total++;
+
   err_code = init(&DUT, bus, handle);
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-    failed = true;
+    test_ok = false;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // - None of the sensor function pointers may be NULL after init
   if(DUT.init              == NULL ||
@@ -49,25 +54,33 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
      DUT.scale_get         == NULL ||
      DUT.scale_set         == NULL)
   {
-    failed = true;
     RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    test_ok = false;
+    failed = true;
   }
+  test_sensor_register(test_ok);
 
   // - Sensor must return RUUVI_DRIVER_ERROR_INVALID_STATE when initializing sensor which is already init
   err_code = init(&DUT, bus, handle);
   if(RUUVI_DRIVER_ERROR_INVALID_STATE != err_code)
   {
     RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    test_ok = false;
     failed = true;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // - Sensor must return RUUVI_DRIVER_SUCCESS on first uninit
   err_code = DUT.uninit(&DUT, bus, handle);
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
     RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    test_ok = false;
     failed = true;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // - All of sensor function pointers must be NULL after uninit
   if(DUT.init              != NULL ||
@@ -86,16 +99,23 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
      DUT.scale_get         != NULL ||
      DUT.scale_set         != NULL)
   {
-    failed = true;
     RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    test_ok = false;
+    failed = true;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
   // - Sensor initialization must be successful after uninit.
   err_code = init(&DUT, bus, handle);
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+    test_ok = false;
     failed = true;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // - Init and Uninit must return RUUVI_DRIVER_ERROR_NULL if pointer to sensor struct is NULL
   err_code = init(NULL, bus, handle);
@@ -103,8 +123,11 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
   if(RUUVI_DRIVER_ERROR_NULL != err_code)
   {
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+    test_ok = false;
     failed = true;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // Uninitialise sensor after test
   DUT.uninit(&DUT, bus, handle);
@@ -113,14 +136,7 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
   {
     return RUUVI_DRIVER_ERROR_SELFTEST;
   }
-  passed++;
-  return RUUVI_DRIVER_SUCCESS;
-}
 
-ruuvi_driver_status_t test_sensor_status(size_t* tests_total, size_t* tests_passed)
-{
-  *tests_total =  total;
-  *tests_passed = passed;
   return RUUVI_DRIVER_SUCCESS;
 }
 
@@ -130,7 +146,7 @@ static ruuvi_driver_status_t test_sensor_setup_set_get(ruuvi_driver_sensor_setup
   uint8_t config = 0;
   uint8_t original = 0;
   bool failed = false;
-  total++;
+
   // Test constant values
   uint8_t cfg_constants[] = { RUUVI_DRIVER_SENSOR_CFG_DEFAULT, RUUVI_DRIVER_SENSOR_CFG_MAX, RUUVI_DRIVER_SENSOR_CFG_MIN, RUUVI_DRIVER_SENSOR_CFG_NO_CHANGE };
 
@@ -146,6 +162,11 @@ static ruuvi_driver_status_t test_sensor_setup_set_get(ruuvi_driver_sensor_setup
       failed = true;
       RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
     }
+  }
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
   }
 
   // Test values 1 ... 200
@@ -174,9 +195,16 @@ static ruuvi_driver_status_t test_sensor_setup_set_get(ruuvi_driver_sensor_setup
       break;
     }
     // Break on not supported
-    if(RUUVI_DRIVER_ERROR_NOT_SUPPORTED == err_code) { break;}
+    if(RUUVI_DRIVER_ERROR_NOT_SUPPORTED == err_code)
+    {
+      break;
+    }
+
     // Return error on any other error code
-    if(RUUVI_DRIVER_SUCCESS != err_code) { return RUUVI_DRIVER_ERROR_SELFTEST; }
+    if(RUUVI_DRIVER_SUCCESS != err_code)
+    {
+      return RUUVI_DRIVER_ERROR_SELFTEST;
+    }
   }
 
   // Check NULL check
@@ -186,6 +214,7 @@ static ruuvi_driver_status_t test_sensor_setup_set_get(ruuvi_driver_sensor_setup
       failed = true;
       RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
   }
+
   err_code = get(NULL);
   if(RUUVI_DRIVER_ERROR_NULL != err_code)
   {
@@ -198,7 +227,6 @@ static ruuvi_driver_status_t test_sensor_setup_set_get(ruuvi_driver_sensor_setup
     return RUUVI_DRIVER_ERROR_SELFTEST;
   }
 
-  passed++;
   return RUUVI_DRIVER_SUCCESS;
 }
 
@@ -207,13 +235,18 @@ ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, 
   // - Sensor must return RUUVI_DRIVER_SUCCESS on first init.
   ruuvi_driver_sensor_t DUT;
   memset(&DUT, 0, sizeof(DUT));
+
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
   bool failed = false;
+  bool test_ok = true;
+
   err_code = init(&DUT, bus, handle);
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
     failed = true;
+    // Init is test elsewhere, do not register result.
   }
 
   // Test scale
@@ -222,7 +255,10 @@ ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, 
   {
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
     failed = true;
+    test_ok = false;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // Test samplerate
   err_code = test_sensor_setup_set_get(DUT.samplerate_set, DUT.samplerate_get);
@@ -230,7 +266,10 @@ ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, 
   {
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
     failed = true;
+    test_ok = false;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // Test resolution
   err_code = test_sensor_setup_set_get(DUT.resolution_set, DUT.resolution_get);
@@ -238,7 +277,10 @@ ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, 
   {
     RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
     failed = true;
+    test_ok = false;
   }
+  test_sensor_register(test_ok);
+  test_ok = true;
 
   // Uninitialise sensor after test
   DUT.uninit(&DUT, bus, handle);
@@ -247,6 +289,172 @@ ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, 
   {
     return RUUVI_DRIVER_ERROR_SELFTEST;
   }
+  return RUUVI_DRIVER_SUCCESS;
+}
+
+ruuvi_driver_status_t test_sensor_modes(ruuvi_driver_sensor_init_fp init, ruuvi_driver_bus_t bus, uint8_t handle)
+{
+  // - Sensor must return RUUVI_DRIVER_SUCCESS on first init.
+  ruuvi_driver_sensor_t DUT;
+  memset(&DUT, 0, sizeof(DUT));
+
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  bool failed = false;
+  bool test_ok = true;
+
+  err_code = init(&DUT, bus, handle);
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
+    // Init is test elsewhere, do not register result.
+  }
+
+  // - Sensor must be in SLEEP mode after init
+  uint8_t mode;
+  err_code = DUT.mode_get(&mode);
+  if(RUUVI_DRIVER_SUCCESS != err_code || RUUVI_DRIVER_SENSOR_CFG_SLEEP != mode)
+  {
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // - Sensor must return all values as INVALID if sensor is read before first sample
+  ruuvi_driver_sensor_data_t invalid_data;
+  invalid_data.timestamp = RUUVI_DRIVER_SENSOR_INVALID_TIMSTAMP;
+  invalid_data.value0    = RUUVI_DRIVER_SENSOR_INVALID_VALUE;
+  invalid_data.value1    = RUUVI_DRIVER_SENSOR_INVALID_VALUE;
+  invalid_data.value2    = RUUVI_DRIVER_SENSOR_INVALID_VALUE;
+  ruuvi_driver_sensor_data_t new_data = {0};
+  err_code = DUT.data_get(&new_data);
+  if(RUUVI_DRIVER_SUCCESS != err_code ||  memcmp (&invalid_data, &new_data, sizeof(ruuvi_driver_sensor_data_t)))
+  {
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // - Sensor must be in SLEEP mode after mode has been set to SINGLE
+  mode = RUUVI_DRIVER_SENSOR_CFG_SINGLE;
+  err_code = DUT.mode_set(&mode);
+  if(RUUVI_DRIVER_SUCCESS != err_code || RUUVI_DRIVER_SENSOR_CFG_SLEEP != mode)
+  {
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // - Sensor must have new data after setting mode to SINGLE returns
+  err_code = DUT.data_get(&new_data);
+  if(RUUVI_DRIVER_SUCCESS != err_code || 0 == memcmp (&invalid_data, &new_data, sizeof(ruuvi_driver_sensor_data_t)))
+  {
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // - Sensor must same values, including timestamp, on successive calls to DATA_GET after SINGLE sample
+  ruuvi_driver_sensor_data_t old_data = {0};
+  memcpy(&old_data, &new_data, sizeof(ruuvi_driver_sensor_data_t));
+  // - Sensor must have new data after setting mode to SINGLE returns
+  err_code = DUT.data_get(&new_data);
+  if(RUUVI_DRIVER_SUCCESS != err_code || 0 == memcmp (&invalid_data, &new_data, sizeof(ruuvi_driver_sensor_data_t)))
+  {
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // - Sensor must stay in CONTINUOUS mode after being set to continuous.
+  mode = RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS;
+  err_code = DUT.mode_set(&mode);
+  if(RUUVI_DRIVER_SUCCESS != err_code || RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS != mode)
+  {
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // - Sensor must return RUUVI_DRIVER_ERROR_INVALID_STATE if set to SINGLE while in continuous mode and remain in continuous mode
+  mode = RUUVI_DRIVER_SENSOR_CFG_SINGLE;
+  err_code = DUT.mode_set(&mode);
+  if(RUUVI_DRIVER_ERROR_INVALID_STATE != err_code || RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS != mode)
+  {
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+    failed = true;
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // Sensor must return updated data in CONTINUOUS mode, at least timestamp has to be updated after two ms wait.
+  uint8_t samplerate = RUUVI_DRIVER_SENSOR_CFG_MAX;
+  err_code = DUT.samplerate_set(&samplerate);
+  uint32_t interval = (1000 / samplerate);
+
+  int retries = 0;
+  for(; retries < MAX_RETRIES; retries++)
+  {
+    err_code |= DUT.data_get(&old_data);
+    ruuvi_platform_delay_ms(2*interval);
+    err_code |= DUT.data_get(&new_data);
+    if(old_data.timestamp == new_data.timestamp || RUUVI_DRIVER_SUCCESS != err_code)
+    {
+     RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_INTERNAL, ~RUUVI_DRIVER_ERROR_FATAL);
+     failed = true;
+     test_ok = false;
+     break;
+    }
+
+    if(old_data.value0 != new_data.value0
+     ||old_data.value1 != new_data.value2
+     ||old_data.value2 != new_data.value2)
+    {
+      break;
+    }
+  }
+
+  if(MAX_RETRIES == retries)
+  {
+    failed = true;
+    test_ok = false;
+  }
+  test_sensor_register(test_ok);
+  test_ok = true;
+
+  // Uninitialise sensor after test
+  DUT.uninit(&DUT, bus, handle);
+
+  if(failed)
+  {
+    return RUUVI_DRIVER_ERROR_SELFTEST;
+  }
+  return RUUVI_DRIVER_SUCCESS;
+}
+
+ruuvi_driver_status_t test_sensor_status(size_t* tests_total, size_t* tests_passed)
+{
+  *tests_total =  m_total;
+  *tests_passed = m_passed;
+  return RUUVI_DRIVER_SUCCESS;
+}
+
+ruuvi_driver_status_t test_sensor_register(bool passed)
+{
+  m_total++;
+  if(passed) { m_passed++; }
   return RUUVI_DRIVER_SUCCESS;
 }
 
