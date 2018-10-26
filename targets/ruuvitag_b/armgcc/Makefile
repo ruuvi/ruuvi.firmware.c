@@ -135,6 +135,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoint_3.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoint_5.c \
   $(PROJ_DIR)/tasks/task_acceleration.c \
   $(PROJ_DIR)/tasks/task_adc.c \
   $(PROJ_DIR)/tasks/task_advertisement.c \

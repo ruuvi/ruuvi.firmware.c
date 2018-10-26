@@ -43,7 +43,7 @@ static void task_acceleration_fifo_full_task(void *p_event_data, uint16_t event_
   size_t data_len = sizeof(data);
   err_code |= ruuvi_interface_lis2dh12_fifo_read(&data_len, data);
   char msg[APPLICATION_LOG_BUFFER_SIZE] = { 0 };
-  snprintf(msg, sizeof(msg), "%u: Read %u data points\r\n", (uint32_t)ruuvi_platform_rtc_millis(), data_len);
+  snprintf(msg, sizeof(msg), "%lu: Read %u data points\r\n", (uint32_t)ruuvi_platform_rtc_millis(), data_len);
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, msg);
   /*for(int ii = 0; ii < data_len; ii++)
   {
