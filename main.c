@@ -80,18 +80,19 @@ int main(void)
   status |= task_adc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
+  // Initialize button with on_button task
+  status = task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND | RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+
   // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED on RuuviTag basic
   // if DSP was configured, log warning
   status |= task_environmental_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
   // Allow NOT FOUND in case we're running on basic model
+  // TODO: Requires task_button to init GPIO
   status = task_acceleration_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
-
-  // Initialize button with on_button task
-  status = task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND | RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
 
   // Initialize BLE
   status |= task_advertisement_init();

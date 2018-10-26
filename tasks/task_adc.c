@@ -18,9 +18,9 @@
 
 RUUVI_PLATFORM_TIMER_ID_DEF(adc_timer);
 static ruuvi_driver_sensor_t adc_sensor = {0};
-static uint64_t t_sample = 0;
-static float droop = 0;
-static float after_tx = 0;
+static volatile uint64_t t_sample = 0;
+static volatile float droop = 0;
+static volatile float after_tx = 0;
 
 /* Use these functions for using ADC at regular, timed intervals
  * Remember to start the timer at init

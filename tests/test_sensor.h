@@ -22,6 +22,7 @@
  * - Sensor must return RUUVI_DRIVER_SUCCESS on first uninit
  * - All of sensor function pointers must be NULL after uninit
  * - Sensor configuration is not defined after init, however the sensor must be in lowest-power state available.
+ * - Sensor mode_get must return RUUVI_DRIVER_SENSOR_CFG_SLEEP after init.
  * - Sensor configuration is not defined after uninit, however the sensor must be in lowest-power state available.
  *   - Sensor power consumption is not tested by this test.
  * - Sensor initialization must be successful after uninit.
@@ -43,7 +44,8 @@ ruuvi_driver_status_t test_sensor_init(const ruuvi_driver_sensor_init_fp init, c
  * - On any parameter set between 1 and 200, if driver returns SUCCESS, the returned value must be at least as much as what was set.
  * - GET must return same value as SET had as an output.
  * - Get and Set should return RUUVI_DRIVER_ERROR_NULL if pointer to the value is NULL. May return other error if check for it triggers first.
- * - If setting up parameter is not supported, for example with fixed resolution or single-shot measurements only, return RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+ * - If setting up parameter is not supported, for example on sensor with fixed resolution or single-shot measurements only, return RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+ * - Sensor must return RUUVI_DRIVER_ERROR_INVALID_STATE if sensor is not in SLEEP mode while one of parameters is being set
  *
  * parameter init:   Function pointer to sensor initialization
  * parameter bus:    Bus of the sensor, RUUVI_DRIVER_BUS_NONE, _I2C or _SPI
@@ -63,8 +65,9 @@ ruuvi_driver_status_t test_sensor_setup(const ruuvi_driver_sensor_init_fp init, 
  * - Sensor must same values, including timestamp, on successive calls to DATA_GET after SINGLE sample
  * - Sensor must stay in CONTINUOUS mode after being set to continuous
  * - Sensor must return RUUVI_DRIVER_ERROR_INVALID_STATE if set to SINGLE while in continuous mode  and remain in continuous mode
+ * - Sensor must return RUUVI_DRIVER_ERROR_NULL if null mode is passed as a parameter
  * - Sensor must return updated data in CONTINUOUS mode, at least timestamp has to be updated after two ms wait.
- * - Sensor is allowed to buffer data in CONTINUOUS mode.
+ *   * Sensor is allowed to buffer data in CONTINUOUS mode.
  *   * if data is buffered and more samples are available, sensor must return RUUVI_DRIVER_STATUS_MORE_AVAILABLE
  *
  * parameter init:   Function pointer to sensor initialization

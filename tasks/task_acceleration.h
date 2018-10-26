@@ -36,4 +36,9 @@ ruuvi_driver_status_t task_acceleration_data_get(ruuvi_interface_acceleration_da
  */
 ruuvi_driver_status_t task_acceleration_on_button(void);
 
+/**
+ * Get number of movement counts
+ */
+ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t * const count);
+
 #endif

@@ -12,7 +12,7 @@
 #define APPLICATION_FW_VERSION "RuuviFW 3.13.0"
 
 // Pick a power of 2 for nRF5 backend. 128 is recommended.
-#define APPLICATION_LOG_BUFFER_SIZE              1024
+#define APPLICATION_LOG_BUFFER_SIZE              256
 
 // Use nRF5 SDK15
 #define NRF5_SDK15_PLATFORM_ENABLED              1
@@ -36,23 +36,23 @@
  **/
 // Sample rate is in Hz. This configures only the sensor, not transmission rate of data.
 #ifndef APPLICATION_ENVIRONMENTAL_CONFIGURED
-#define APPLICATION_ENVIRONMENTAL_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
+  #define APPLICATION_ENVIRONMENTAL_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
 
-// Resolution and scale cannot be adjusted on BME280
-#define APPLICATION_ENVIRONMENTAL_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
-#define APPLICATION_ENVIRONMENTAL_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+  // Resolution and scale cannot be adjusted on BME280
+  #define APPLICATION_ENVIRONMENTAL_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+  #define APPLICATION_ENVIRONMENTAL_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
-// Valid values for BME280 are: (RUUVI_DRIVER_SENSOR_DSP_)LAST, IIR, OS
-// IIR slows step response but lowers noise
-// OS increases power consumption but lowers noise.
-// See https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
-#define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_IIR
+  // Valid values for BME280 are: (RUUVI_DRIVER_SENSOR_DSP_)LAST, IIR, OS
+  // IIR slows step response but lowers noise
+  // OS increases power consumption but lowers noise.
+  // See https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
+  #define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_IIR
 
-// No effect on _LAST, use 1. On _OS and _IIR valid values are 2, 4, 8 and 16.
-#define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_MAX
+  // No effect on _LAST, use 1. On _OS and _IIR valid values are 2, 4, 8 and 16.
+  #define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_MAX
 
-// (RUUVI_DRIVER_SENSOR_CFG_)SLEEP, SINGLE or CONTINUOUS
-#define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+  // (RUUVI_DRIVER_SENSOR_CFG_)SLEEP, SINGLE or CONTINUOUS
+  #define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
 #endif
 
 
@@ -64,7 +64,7 @@
  **/
  #ifndef APPLICATION_ACCELERATION_CONFIGURED
   // 1, 10, 25, 50, 100, 200 for LIS2DH12
-  #define APPLICATION_ACCELEROMETER_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
+  #define APPLICATION_ACCELEROMETER_SAMPLERATE 10
 
   // 8, 10, 12 for LIS2DH12
   #define APPLICATION_ACCELEROMETER_RESOLUTION 10
@@ -78,6 +78,9 @@
 
   // SLEEP or CONTINUOUS
   #define APPLICATION_ACCELEROMETER_MODE RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+
+  // Up to scale
+  #define APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD 0.100f
 #endif
 
 // Allow LIS2DH12 support compilation
@@ -102,6 +105,7 @@
 #ifndef APPLICATION_ADVERTISING_CONFIGURED
   #define APPLICATION_ADVERTISING_INTERVAL 1010
   #define APPLICATION_ADVERTISING_POWER    RUUVI_BOARD_TX_POWER_MAX
+  #define APPLICATION_DATA_FORMAT 5
 #endif
 
 /**
