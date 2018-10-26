@@ -9,7 +9,7 @@
 #define APPLICATION_CONFIG_H
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 
-#define APPLICATION_FW_VERSION "RuuviFW 3.13.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.14.0"
 
 // Pick a power of 2 for nRF5 backend. 128 is recommended.
 #define APPLICATION_LOG_BUFFER_SIZE              256

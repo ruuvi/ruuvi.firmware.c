@@ -30,6 +30,13 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.14.0
+ - Add interrupts to accelerometer
+ - Add data format 5 support
+
+## 3.13.0
+ - Synchronize battery measurements to radio
+
 ## 3.12.0
  - Bootloader in a [separate repository](https://github.com/ruuvi/ruuvi.nrf5_sdk15_bootloader.c)
 
