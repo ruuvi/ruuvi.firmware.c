@@ -3,7 +3,9 @@
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
+#include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
+#include "ruuvi_interface_log.h"
 #include "task_acceleration.h"
 #include "task_adc.h"
 #include "task_advertisement.h"
@@ -19,6 +21,8 @@ static ruuvi_interface_gpio_interrupt_fp_t interrupt_table[RUUVI_BOARD_GPIO_NUMB
 static void on_button(ruuvi_interface_gpio_evt_t event)
 {
   if(NULL != button_callback) { button_callback(); }
+  ruuvi_interface_watchdog_feed();
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Watchdog fed\r\n");
 }
 
 ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope, task_button_fp_t action)

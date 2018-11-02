@@ -8,6 +8,7 @@
 #include "application_config.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_scheduler.h"
+#include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_boards.h"
 #include "task_acceleration.h"
@@ -32,6 +33,12 @@ int main(void)
   ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
   status |= ruuvi_platform_log_init(APPLICATION_LOG_LEVEL);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
+  // Init watchdog here if tests are not being run
+  #if (!RUUVI_RUN_TESTS)
+  status |= ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  #endif
 
   // Init yield
   status |= ruuvi_platform_yield_init();
@@ -70,6 +77,8 @@ int main(void)
   char message[128] = {0};
   snprintf(message, sizeof(message), "Tests ran: %u, passed: %u\r\n", tests_run, tests_passed);
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, message);
+  // Init watchdog after tests. Normally init at the start of the program
+  ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
   #endif
 
   // Initialize nfc

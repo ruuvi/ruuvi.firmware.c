@@ -146,6 +146,8 @@
 #define APPLICATION_SCHEDULER_ENABLED               1
 #define APPLICATION_SPI_ENABLED                     1
 #define APPLICATION_TIMER_ENABLED                   1
+#define APPLICATION_WATCHDOG_ENABLED                1
+#define APPLICATION_WATCHDOG_INTERVAL_MS            120000u
 #define APPLICATION_YIELD_ENABLED                   1
 #define APPLICATION_LOG_ENABLED                     1
 // RUUVI_INTERFACE_LOG_ ERROR, WARNING, INFO, DEBUG
