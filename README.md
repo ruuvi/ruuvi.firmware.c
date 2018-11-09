@@ -30,6 +30,16 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.16.0
+ - Add GATT profile
+ - Stream accelerometer data over GATT / NUS
+ - Tigger watchdog if data is not sent over NUS for 120 seconds
+ - Disable data advertising
+ - Disable activity interrupts from LIS2DH12
+
+## 3.15.0
+ - Add watchdog, reset if button is not pressed.
+
 ## 3.14.0
  - Add interrupts to accelerometer
  - Add data format 5 support
