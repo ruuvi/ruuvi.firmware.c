@@ -123,6 +123,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_nfc.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_radio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_ble4_advertising.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_ble4_gatt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/environmental/ruuvi_platform_environmental_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio_interrupt.c \
@@ -143,6 +144,7 @@ SRC_FILES += \
   $(PROJ_DIR)/tasks/task_advertisement.c \
   $(PROJ_DIR)/tasks/task_button.c \
   $(PROJ_DIR)/tasks/task_environmental.c \
+  $(PROJ_DIR)/tasks/task_gatt.c \
   $(PROJ_DIR)/tasks/task_led.c \
   $(PROJ_DIR)/tasks/task_nfc.c \
   $(PROJ_DIR)/tasks/task_power.c \

@@ -69,11 +69,13 @@ static void on_fifo (ruuvi_interface_gpio_evt_t event)
   ruuvi_platform_scheduler_event_put(NULL, 0, task_acceleration_fifo_full_task);
 }
 
+/*
 static void on_movement (ruuvi_interface_gpio_evt_t event)
 {
   ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Activity\r\n");
   m_nbr_movements++;
 }
+*/
 
 static ruuvi_driver_status_t task_acceleration_configure(void)
 {
@@ -182,4 +184,5 @@ ruuvi_driver_status_t task_acceleration_fifo_use(const bool enable)
     err_code |= ruuvi_interface_lis2dh12_fifo_use(false);
     err_code |= ruuvi_interface_lis2dh12_fifo_interrupt_use(false);
   }
+  return err_code;
 }

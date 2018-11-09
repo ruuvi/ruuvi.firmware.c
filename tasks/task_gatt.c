@@ -111,7 +111,7 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
 
     case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
       // Space for trailing <\r><\n><NULL>
-      snprintf(str, data_len+3, "%s\r\n", p_data);
+      snprintf(str, data_len+3, "%s\r\n", (char *)p_data);
       ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, str);
       break;
 
