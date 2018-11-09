@@ -16,6 +16,7 @@
 #include "task_advertisement.h"
 #include "task_button.h"
 #include "task_environmental.h"
+#include "task_gatt.h"
 #include "task_led.h"
 #include "task_nfc.h"
 #include "task_power.h"
@@ -104,7 +105,8 @@ int main(void)
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
 
   // Initialize BLE
-  status |= task_advertisement_init();
+  //  status |= task_advertisement_init();
+  status |= task_gatt_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Turn RED led off. Turn GREEN LED on if no errors occured
@@ -127,6 +129,7 @@ int main(void)
     status |= task_led_write(RUUVI_BOARD_LED_RED, RUUVI_BOARD_LEDS_ACTIVE_STATE);
     // Execute scheduled tasks
      status |= ruuvi_platform_scheduler_execute();
+
     // Reset only on fatal error
     RUUVI_DRIVER_ERROR_CHECK(status, ~RUUVI_DRIVER_ERROR_FATAL);
   }

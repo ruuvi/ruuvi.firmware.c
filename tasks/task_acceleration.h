@@ -41,4 +41,11 @@ ruuvi_driver_status_t task_acceleration_on_button(void);
  */
 ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t * const count);
 
+/*
+ * Enable or disable FIFO
+ *
+ * parameter enable: True to enable FIFO, false to disable FIFO
+ */
+ruuvi_driver_status_t task_acceleration_fifo_use(const bool enable);
+
 #endif

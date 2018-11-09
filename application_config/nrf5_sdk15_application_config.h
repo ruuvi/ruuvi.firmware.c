@@ -51,4 +51,10 @@
 // 0 is used by the softdevice, 1 is used by scheduler / timer
 #define NRF5_SDK15_RTC_INSTANCE 2
 
+#define BLE_DFU_ENABLED APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define BLE_DIS_ENABLED APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define BLE_NUS_ENABLED APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define NRF_SDH_BLE_VS_UUID_COUNT BLE_DFU_ENABLED + \
+                                  BLE_DIS_ENABLED + \
+                                  BLE_NUS_ENABLED
 #endif
