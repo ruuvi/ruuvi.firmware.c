@@ -10,11 +10,11 @@ v) VERSION=${OPTARG};;
 esac
 done
 
-bootloader="ruuvitag_b_bootloader_3.0.0_s132_6.1.0_debug.hex"     
+bootloader="ruuvitag_b_bootloader_3.0.1_s132_6.1.0_debug.hex"     
 if [ -f $bootloader ]; then
    echo "Found bootloader."
 else
-   wget https://github.com/ruuvi/ruuvi.nrf5_sdk15_bootloader.c/releases/download/3.0.0/ruuvitag_b_bootloader_3.0.0_s132_6.1.0_debug.hex
+   wget https://github.com/ruuvi/ruuvi.nrf5_sdk15_bootloader.c/releases/download/3.0.0/ruuvitag_b_bootloader_3.0.1_s132_6.1.0_debug.hex
 fi
 
 key="ruuvi_open_private.pem"     
