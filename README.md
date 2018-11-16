@@ -30,6 +30,13 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.17.0
+- Add NFC writes to tag
+- Disable GATT
+- Use activity interrupts, advertise data format 5
+- Trigger watchdog if data is not sent via NFC, GATT or advertisement for 120 seconds.
+- 27 uA current consumption at 3V
+
 ## 3.16.0
  - Add GATT profile
  - Stream accelerometer data over GATT / NUS
