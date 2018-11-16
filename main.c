@@ -105,8 +105,8 @@ int main(void)
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
 
   // Initialize BLE
-  //  status |= task_advertisement_init();
-  status |= task_gatt_init();
+  status |= task_advertisement_init();
+//  status |= task_gatt_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Turn RED led off. Turn GREEN LED on if no errors occured

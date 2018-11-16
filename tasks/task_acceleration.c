@@ -58,7 +58,11 @@ static void task_acceleration_fifo_full_task(void *p_event_data, uint16_t event_
     memcpy(gatt_msg.data, msg, 20);
     gatt_msg.data_length = 20;
     // Loop here until data is sent
-    while(RUUVI_DRIVER_SUCCESS != task_gatt_send(&gatt_msg));
+    // TODO: Handle case where NUS disconnection happens here
+    while(RUUVI_DRIVER_SUCCESS != task_gatt_send(&gatt_msg))
+    {
+      ruuvi_platform_yield();
+    };
   }
 
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
@@ -69,13 +73,13 @@ static void on_fifo (ruuvi_interface_gpio_evt_t event)
   ruuvi_platform_scheduler_event_put(NULL, 0, task_acceleration_fifo_full_task);
 }
 
-/*
+
 static void on_movement (ruuvi_interface_gpio_evt_t event)
 {
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Activity\r\n");
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_DEBUG, "Activity\r\n");
   m_nbr_movements++;
 }
-*/
+
 
 static ruuvi_driver_status_t task_acceleration_configure(void)
 {
@@ -113,13 +117,13 @@ ruuvi_driver_status_t task_acceleration_init(void)
       err_code |= task_acceleration_configure();
 
       float ths = APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD;
-//      err_code |= ruuvi_interface_lis2dh12_activity_interrupt_use(true, &ths);
+      err_code |= ruuvi_interface_lis2dh12_activity_interrupt_use(true, &ths);
 
       // Let pins settle
       ruuvi_platform_delay_ms(10);
       // Setup FIFO and activity interrupts
       err_code |= ruuvi_platform_gpio_interrupt_enable(RUUVI_BOARD_INT_ACC1_PIN, RUUVI_INTERFACE_GPIO_SLOPE_LOTOHI, RUUVI_INTERFACE_GPIO_MODE_INPUT_NOPULL, on_fifo);
-//      err_code |= ruuvi_platform_gpio_interrupt_enable(RUUVI_BOARD_INT_ACC2_PIN, RUUVI_INTERFACE_GPIO_SLOPE_LOTOHI, RUUVI_INTERFACE_GPIO_MODE_INPUT_NOPULL, on_movement);
+      err_code |= ruuvi_platform_gpio_interrupt_enable(RUUVI_BOARD_INT_ACC2_PIN, RUUVI_INTERFACE_GPIO_SLOPE_LOTOHI, RUUVI_INTERFACE_GPIO_MODE_INPUT_NOPULL, on_movement);
       char msg[APPLICATION_LOG_BUFFER_SIZE] = { 0 };
       snprintf(msg, sizeof(msg), "Configured interrupt threshold at %.3f mg\r\n", ths);
       ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, msg);

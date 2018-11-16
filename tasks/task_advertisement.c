@@ -17,6 +17,7 @@
 #include "ruuvi_interface_environmental.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_timer.h"
+#include "ruuvi_interface_watchdog.h"
 #include "task_adc.h"
 #include "task_advertisement.h"
 #include "task_acceleration.h"
@@ -28,9 +29,11 @@ static ruuvi_interface_communication_t channel;
 //handler for scheduled advertisement event
 static void task_advertisement_scheduler_task(void *p_event_data, uint16_t event_size)
 {
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   // Update BLE data
-  if(APPLICATION_DATA_FORMAT == 3) { task_advertisement_send_3(); }
-  if(APPLICATION_DATA_FORMAT == 5) { task_advertisement_send_5(); }
+  if(APPLICATION_DATA_FORMAT == 3) { err_code |= task_advertisement_send_3(); }
+  if(APPLICATION_DATA_FORMAT == 5) { err_code |= task_advertisement_send_5(); }
+  if(RUUVI_DRIVER_SUCCESS == err_code) { ruuvi_interface_watchdog_feed(); }
 
 }
 

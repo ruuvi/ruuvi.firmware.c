@@ -109,6 +109,18 @@
   #define APPLICATION_DATA_FORMAT                       5
 #endif
 
+// Apple connection parameter quidelines:
+// Slave latency <= 30
+// 2 seconds <= timeout <= 6 seconds
+// Interval MIN % 15 ms == 0. Interval MIN >= 15 ms.
+// Interval MIN + 15 ms <= Interval MAX OR Interval MIN == Interval MAX == 15
+// Interval Max * (slave latency + 1) <= 2 seconds
+// Interval MAX + (slave latency +1) * 3 < connSupervisionTimeout
+#define APPLICATION_GATT_CONN_INTERVAL_MIN_MS      15
+#define APPLICATION_GATT_CONN_INTERVAL_MAX_MS      45
+#define APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS 30   // Slave latency. How many intervals can be skipped. 31 * 45 < 2000
+#define APPLICATION_GATT_CONN_TIMEOUT_MS           5600 // 31 * 45 * 3 < 5600
+
 /**
  * NFC configuration
  */
