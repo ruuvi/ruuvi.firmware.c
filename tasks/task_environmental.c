@@ -29,9 +29,24 @@ static void task_environmental_timer_cb(void* p_context)
   ruuvi_platform_scheduler_event_put(NULL, 0, task_environmental_scheduler_task);
 }
 
-
-static ruuvi_driver_status_t task_environmental_configure(void)
+ruuvi_driver_status_t task_environmental_configure(ruuvi_driver_sensor_configuration_t* config)
 {
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "\r\nAttempting to configure environmental with:\r\n");
+  // Use empty in place of unit
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "");
+  err_code |= environmental_sensor.configuration_set(&environmental_sensor, config);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Actual configuration:\r\n");
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "");
+  return err_code;
+}
+
+ruuvi_driver_status_t task_environmental_init(void)
+{
+  // Assume "Not found", gets set to "Success" if a usable sensor is present
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   ruuvi_driver_sensor_configuration_t config;
   config.samplerate    = APPLICATION_ENVIRONMENTAL_SAMPLERATE;
   config.resolution    = APPLICATION_ENVIRONMENTAL_RESOLUTION;
@@ -39,14 +54,6 @@ static ruuvi_driver_status_t task_environmental_configure(void)
   config.dsp_function  = APPLICATION_ENVIRONMENTAL_DSPFUNC;
   config.dsp_parameter = APPLICATION_ENVIRONMENTAL_DSPPARAM;
   config.mode          = APPLICATION_ENVIRONMENTAL_MODE;
-  if(NULL == environmental_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
-  return environmental_sensor.configuration_set(&environmental_sensor, &config);
-}
-
-ruuvi_driver_status_t task_environmental_init(void)
-{
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   uint8_t handle = 0;
 
   // Initialize timer for environmental task. Note: the timer is not started.
@@ -62,7 +69,7 @@ ruuvi_driver_status_t task_environmental_init(void)
 
     if(RUUVI_DRIVER_SUCCESS == err_code)
     {
-      err_code |= task_environmental_configure();
+      err_code |= task_environmental_configure(&config);
       return err_code;
     }
   #endif
@@ -73,11 +80,11 @@ ruuvi_driver_status_t task_environmental_init(void)
     RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
     if(RUUVI_DRIVER_SUCCESS == err_code)
     {
-      err_code |= task_environmental_configure();
+      err_code |= task_environmental_configure(&config);
       return err_code;
     }
   #endif
-  // Return error if usable environmental sensor was not found.
+
   return RUUVI_DRIVER_ERROR_NOT_FOUND;
 }
 

@@ -100,18 +100,16 @@ static void task_adc_trigger_on_radio(const ruuvi_interface_communication_radio_
   }
 }
 
-
-static ruuvi_driver_status_t task_adc_configure(void)
+ruuvi_driver_status_t task_adc_configure(ruuvi_driver_sensor_configuration_t* config)
 {
-  ruuvi_driver_sensor_configuration_t config;
-  config.samplerate    = APPLICATION_ADC_SAMPLERATE;
-  config.resolution    = APPLICATION_ADC_RESOLUTION;
-  config.scale         = APPLICATION_ADC_SCALE;
-  config.dsp_function  = APPLICATION_ADC_DSPFUNC;
-  config.dsp_parameter = APPLICATION_ADC_DSPPARAM;
-  config.mode          = APPLICATION_ADC_MODE;
-  if(NULL == adc_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
-  return adc_sensor.configuration_set(&adc_sensor, &config);
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "\r\nAttempting to configure ADC with:\r\n");
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "V");
+  err_code |= adc_sensor.configuration_set(&adc_sensor, config);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Actual configuration:\r\n");
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "V");
+  return err_code;
 }
 
 ruuvi_driver_status_t task_adc_init(void)
@@ -119,6 +117,13 @@ ruuvi_driver_status_t task_adc_init(void)
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   uint8_t handle = RUUVI_INTERFACE_ADC_AINVDD;
+  ruuvi_driver_sensor_configuration_t config;
+  config.samplerate    = APPLICATION_ADC_SAMPLERATE;
+  config.resolution    = APPLICATION_ADC_RESOLUTION;
+  config.scale         = APPLICATION_ADC_SCALE;
+  config.dsp_function  = APPLICATION_ADC_DSPFUNC;
+  config.dsp_parameter = APPLICATION_ADC_DSPPARAM;
+  config.mode          = APPLICATION_ADC_MODE;
 
   // Initialize timer for adc task.
   // Note: the timer is not started.
@@ -131,7 +136,8 @@ ruuvi_driver_status_t task_adc_init(void)
 
   if(RUUVI_DRIVER_SUCCESS == err_code)
   {
-    err_code |= task_adc_configure();
+
+    err_code |=  task_adc_configure(&config);
 
     // Start the ADC timer here if you use timer-based battery measurement
     if(true == APPLICATION_BATTERY_VOLTAGE_SIMPLE)

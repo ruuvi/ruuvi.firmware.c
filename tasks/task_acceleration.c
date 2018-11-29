@@ -80,9 +80,22 @@ static void on_movement (ruuvi_interface_gpio_evt_t event)
   m_nbr_movements++;
 }
 
-
-static ruuvi_driver_status_t task_acceleration_configure(void)
+ruuvi_driver_status_t task_acceleration_configure(ruuvi_driver_sensor_configuration_t* config)
 {
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "\r\nAttempting to configure accelerometer with:\r\n");
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "g");
+  err_code |= acceleration_sensor.configuration_set(&acceleration_sensor, config);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Actual configuration:\r\n");
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "g");
+  return err_code;
+}
+
+ruuvi_driver_status_t task_acceleration_init(void)
+{
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   ruuvi_driver_sensor_configuration_t config;
   config.samplerate    = APPLICATION_ACCELEROMETER_SAMPLERATE;
   config.resolution    = APPLICATION_ACCELEROMETER_RESOLUTION;
@@ -90,14 +103,6 @@ static ruuvi_driver_status_t task_acceleration_configure(void)
   config.dsp_function  = APPLICATION_ACCELEROMETER_DSPFUNC;
   config.dsp_parameter = APPLICATION_ACCELEROMETER_DSPPARAM;
   config.mode          = APPLICATION_ACCELEROMETER_MODE;
-  if(NULL == acceleration_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
-  return acceleration_sensor.configuration_set(&acceleration_sensor, &config);
-}
-
-ruuvi_driver_status_t task_acceleration_init(void)
-{
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   uint8_t handle = 0;
   m_nbr_movements = 0;
 
@@ -114,8 +119,8 @@ ruuvi_driver_status_t task_acceleration_init(void)
 
     if(RUUVI_DRIVER_SUCCESS == err_code)
     {
-      err_code |= task_acceleration_configure();
 
+      err_code |= task_acceleration_configure(&config);
       float ths = APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD;
       err_code |= ruuvi_interface_lis2dh12_activity_interrupt_use(true, &ths);
 

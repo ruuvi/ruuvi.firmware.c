@@ -35,6 +35,8 @@ int main(void)
   status |= ruuvi_platform_log_init(APPLICATION_LOG_LEVEL);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Program start \r\n");
+
   // Init watchdog here if tests are not being run
   #if (!RUUVI_RUN_TESTS)
   status |= ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
@@ -70,6 +72,7 @@ int main(void)
 
   #if RUUVI_RUN_TESTS
   // Tests will initialize and uninitialize the sensors, run this before using them in application
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Running extended self-tests, this might take a while\r\n");
   test_sensor_run();
 
   // Print unit test status, activate tests by building in DEBUG configuration under SES
