@@ -52,8 +52,23 @@ ruuvi_driver_status_t task_advertisement_init(void)
   err_code |= ruuvi_interface_communication_ble4_advertising_tx_power_set(&target_power);
   err_code |= ruuvi_interface_communication_ble4_advertising_manufacturer_id_set(RUUVI_BOARD_BLE_MANUFACTURER_ID);
   err_code |= ruuvi_platform_timer_create(&advertisement_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_advertisement_timer_cb);
-  err_code |= ruuvi_platform_timer_start(advertisement_timer, APPLICATION_ADVERTISING_INTERVAL);
   return err_code;
+}
+
+ruuvi_driver_status_t task_advertisement_uninit(void)
+{
+  return ruuvi_interface_communication_ble4_advertising_uninit(&channel);
+}
+
+ruuvi_driver_status_t task_advertisement_start(void)
+{
+  // TODO: Synchronise data update to advertisement TX
+  return ruuvi_platform_timer_start(advertisement_timer, APPLICATION_ADVERTISING_INTERVAL);
+}
+
+ruuvi_driver_status_t task_advertisement_stop(void)
+{
+  return ruuvi_platform_timer_stop(advertisement_timer);
 }
 
 ruuvi_driver_status_t task_advertisement_send_3(void)

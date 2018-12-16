@@ -38,9 +38,6 @@ ruuvi_driver_status_t task_gatt_init(void)
   memcpy(dis.model, RUUVI_BOARD_MODEL_STRING, sizeof(RUUVI_BOARD_MODEL_STRING));
   memcpy(dis.manufacturer, RUUVI_BOARD_MANUFACTURER_STRING, sizeof(RUUVI_BOARD_MANUFACTURER_STRING));
 
-  err_code |= ruuvi_interface_communication_radio_init(RUUVI_INTERFACE_COMMUNICATION_RADIO_GATT);
-  // Init fails if something else - such as advertising - as reserved radio.
-  if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
   err_code |= ruuvi_interface_communication_ble4_gatt_init();
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
 
@@ -87,8 +84,6 @@ ruuvi_driver_status_t task_gatt_on_advertisement(ruuvi_interface_communication_e
 ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt, void* p_data, size_t data_len)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  // 20 bytes GATT message + NULL + <\r><\n>
-  char str[23] = { 0 };
   switch(evt)
   {
     case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
@@ -104,6 +99,7 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
     case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
       ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Disconnected \r\n");
       err_code |= task_acceleration_fifo_use(false);
+      // Todo: data advertising
       ruuvi_interface_communication_ble4_gatt_advertise_connectablity(true, "Ruuvi", true, true);
       break;
 
@@ -112,9 +108,7 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
-      // Space for trailing <\r><\n><NULL>
-      snprintf(str, sizeof(str), "%s\r\n", (char *)p_data);
-      ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, str);
+      // Schedule handling command
       break;
 
     default:
