@@ -23,13 +23,13 @@
 // IIR slows step response but lowers noise
 // OS increases power consumption but lowers noise.
 // See https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
-#define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_IIR
+#define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_LAST
 
 // No effect on _LAST, use 1. On _OS and _IIR valid values are 2, 4, 8 and 16.
-#define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_MAX
+#define APPLICATION_ENVIRONMENTAL_DSPPARAM   1
 
 // (RUUVI_DRIVER_SENSOR_CFG_)SLEEP, SINGLE or CONTINUOUS
-#define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+#define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_SINGLE
 
 
 /**

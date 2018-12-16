@@ -66,5 +66,6 @@
 #define SLAVE_LATENCY                    APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS                             /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                 MSEC_TO_UNITS((APPLICATION_GATT_CONN_TIMEOUT_MS), (UNIT_10_MS))            /**< Connection supervisory timeout (4 seconds). */
 
+#define FDS_VIRTUAL_PAGES APPLICATION_FLASH_DATA_PAGES_NUMBER
 
 #endif

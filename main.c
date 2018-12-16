@@ -16,6 +16,7 @@
 #include "task_advertisement.h"
 #include "task_button.h"
 #include "task_environmental.h"
+#include "task_flash.h"
 #include "task_gatt.h"
 #include "task_led.h"
 #include "task_nfc.h"
@@ -107,9 +108,14 @@ int main(void)
   status = task_acceleration_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
 
-  // Initialize BLE
+  // Initialize BLE - does not start advertising
   status |= task_advertisement_init();
-//  status |= task_gatt_init();
+  status |= task_advertisement_start();
+  // status |= task_gatt_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+
+  status |= task_flash_init();
+  status |= task_flash_demo();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 
   // Turn RED led off. Turn GREEN LED on if no errors occured

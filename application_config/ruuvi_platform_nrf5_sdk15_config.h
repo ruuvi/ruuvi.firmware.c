@@ -18,6 +18,7 @@
 // 2,3 after SD timing critical events. 6, 7 after SD non-critical events.
 #define NRF5_SDK15_RADIO_IRQ_PRIORITY                     3
 #define NRF5_SDK15_COMMUNICATION_NFC_ENABLED              APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NRF5_SDK15_FLASH_ENABLED                          APPLICATION_FLASH_ENABLED
 #define NRF5_SDK15_GPIO_ENABLED                           APPLICATION_GPIO_ENABLED
 #define NRF5_SDK15_GPIO_INTERRUPT_ENABLED                 APPLICATION_GPIO_INTERRUPT_ENABLED
 #define NRF5_SDK15_LOG_ENABLED                            APPLICATION_LOG_ENABLED

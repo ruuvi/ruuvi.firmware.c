@@ -9,7 +9,7 @@
 #define APPLICATION_CONFIG_H
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 
-#define APPLICATION_FW_VERSION "RuuviFW 3.16.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.17.0"
 
 // Pick a power of 2 for nRF5 backend. 128 is recommended.
 #define APPLICATION_LOG_BUFFER_SIZE              256
@@ -150,6 +150,7 @@
 #define APPLICATION_COMMUNICATION_ENABLED           1 // Common functions for communication
 #define APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED 1 // Advertising and GATT
 #define APPLICATION_COMMUNICATION_NFC_ENABLED       1 // NFC
+#define APPLICATION_FLASH_ENABLED                   1
 #define APPLICATION_GPIO_ENABLED                    1
 #define APPLICATION_GPIO_INTERRUPT_ENABLED          1
 #define APPLICATION_ENVIRONMENTAL_MCU_ENABLED       1
@@ -170,5 +171,7 @@
 // with readback protection enabled
 #define APPLICATION_LOG_BACKEND_RTT_ENABLED         1
 //#define APPLICATION_LOG_BACKEND_UART_ENABLED        0 // UART not implemented
+
+#define  APPLICATION_FLASH_DATA_PAGES_NUMBER        20
 
 #endif
