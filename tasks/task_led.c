@@ -1,54 +1,36 @@
-#include <string.h>
-#include "ruuvi_endpoints.h"
 #include "task_led.h"
-#include "boards.h"
-#include "gpio.h"
+#include "task_environmental.h"
+#include "ruuvi_driver_error.h"
+#include "ruuvi_interface_gpio.h"
+#include <stddef.h>
 
-// Initialize relevant GPIO pins as standard drive outputs.
-// Deactivate leds
-ruuvi_status_t task_led_init(void)
+ruuvi_driver_status_t task_led_init(void)
 {
-  ruuvi_status_t err_code = RUUVI_SUCCESS;
-  err_code |= platform_gpio_init();
-  uint8_t leds[] = LEDS_LIST;
-  for(size_t ii = 0; ii < LEDS_NUMBER; ii++)
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code |= ruuvi_platform_gpio_init();
+  uint8_t leds[] = RUUVI_BOARD_LEDS_LIST;
+  for(size_t ii = 0; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
   {
-    platform_gpio_configure(leds[ii], RUUVI_GPIO_MODE_OUTPUT_STANDARD);
-    platform_gpio_write(leds[ii], !LEDS_ACTIVE_STATE);
+    ruuvi_platform_gpio_configure(leds[ii], RUUVI_INTERFACE_GPIO_MODE_OUTPUT_HIGHDRIVE);
+    ruuvi_platform_gpio_write(leds[ii], !RUUVI_BOARD_LEDS_ACTIVE_STATE);
   }
 
   return err_code;
 }
 
-// TODO: send back error if type is not actuator configuration.
-ruuvi_endpoint_status_t led_handler(ruuvi_standard_message_t* const message)
+ruuvi_driver_status_t task_led_write(uint8_t led, task_led_state_t state)
 {
-  if(NULL == message)                        { return ENDPOINT_HANDLER_NULL; }
-  if(LED != message->destination_endpoint)   { return ENDPOINT_INVALID; }
-  if(ACTUATOR_CONFIGRATION != message->type) { return ENDPOINT_INVALID; }
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code |= ruuvi_platform_gpio_write(led, state);
+  return err_code;
+}
 
-  ruuvi_actuator_configuration_t* config = (void*)message->payload;
-  bool success = true;
-  uint8_t leds[] = LEDS_LIST;
-  
-  if(LEDS_NUMBER > config->channel)
-  {
-      if(config->duty_cycle) { platform_gpio_write(leds[config->channel], LEDS_ACTIVE_STATE); }
-      else                   { platform_gpio_write(leds[config->channel], !LEDS_ACTIVE_STATE); }
-  }
-  else
-  {
-      // Signal error by writing invalid to channel
-      config->channel = ENDPOINT_INVALID;
-      success = false;
-  }
-
-  // If message was understood, switch destination and source, set type as acknowledgement
-  // and set payload to success
-  uint8_t source = message->source_endpoint;
-  message->source_endpoint = message->destination_endpoint;
-  message->destination_endpoint = source;
-  message->type = ACKNOWLEDGEMENT;
-  if (success) { memset(message->payload, 0 , sizeof(message->payload)); }
-  return ENDPOINT_SUCCESS;
+ruuvi_driver_status_t task_led_cycle(void)
+{
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  static uint8_t phase = 0;
+  uint8_t leds[] = RUUVI_BOARD_LEDS_LIST;
+  err_code |= ruuvi_platform_gpio_toggle(leds[phase++]);
+  if(RUUVI_BOARD_LEDS_NUMBER <= phase) { phase = 0; }
+  return err_code;
 }

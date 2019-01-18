@@ -2,17 +2,18 @@ PROJECT_NAME     := ruuvi_firmware_ruuvitag_b_s132
 TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../../../../nRF5_SDK_15.0.0_a53641a
+SDK_ROOT := ../../../../nRF5_SDK_15.2.0_9412b96
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
-  LINKER_SCRIPT  := ruuvi_gcc_nrf52.ld
+  LINKER_SCRIPT  := ruuvi.firmware.c.ld
 
 # Source files common to all targets
 SRC_FILES += \
   $(SDK_ROOT)/components/ble/common/ble_advdata.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c \
+  $(SDK_ROOT)/components/ble/ble_radio_notification/ble_radio_notification.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_bonded.c \
   $(SDK_ROOT)/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c \
@@ -31,10 +32,8 @@ SRC_FILES += \
   $(SDK_ROOT)/components/ble/peer_manager/peer_id.c \
   $(SDK_ROOT)/components/ble/peer_manager/peer_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/pm_buffer.c \
-  $(SDK_ROOT)/components/ble/peer_manager/pm_mutex.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_dispatcher.c \
   $(SDK_ROOT)/components/ble/peer_manager/security_manager.c \
-  $(SDK_ROOT)/components/boards/boards.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(SDK_ROOT)/components/libraries/atomic_fifo/nrf_atfifo.c \
   $(SDK_ROOT)/components/libraries/atomic_flags/nrf_atflags.c \
@@ -55,19 +54,20 @@ SRC_FILES += \
   $(SDK_ROOT)//components/libraries/crypto/nrf_crypto_hash.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_init.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_rng.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_rtt.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_serial.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_backend_uart.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_default_backends.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_frontend.c \
-  $(SDK_ROOT)/components/libraries/experimental_log/src/nrf_log_str_formatter.c \
-  $(SDK_ROOT)/components/libraries/experimental_memobj/nrf_memobj.c \
+  $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_rtt.c \
+  $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_serial.c \
+  $(SDK_ROOT)/components/libraries/log/src/nrf_log_backend_uart.c \
+  $(SDK_ROOT)/components/libraries/log/src/nrf_log_default_backends.c \
+  $(SDK_ROOT)/components/libraries/log/src/nrf_log_frontend.c \
+  $(SDK_ROOT)/components/libraries/log/src/nrf_log_str_formatter.c \
+  $(SDK_ROOT)/components/libraries/memobj/nrf_memobj.c \
   $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
   $(SDK_ROOT)/components/libraries/fds/fds.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_sd.c \
   $(SDK_ROOT)/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c \
   $(SDK_ROOT)/components/libraries/queue/nrf_queue.c \
+  $(SDK_ROOT)/components/libraries/ringbuf/nrf_ringbuf.c \
   $(SDK_ROOT)/components/libraries/scheduler/app_scheduler.c \
   $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
   $(SDK_ROOT)/components/libraries/timer/app_timer.c \
@@ -97,43 +97,65 @@ SRC_FILES += \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_rng.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_spi.c \
-  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_spi.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uarte.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_wdt.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
   $(PROJ_DIR)/main.c \
-  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoints.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/ruuvi_driver_sensor.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/lis2dh12_interface.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/bme280_interface.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/adc/adc.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_advertisement.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_gatt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ble4/ble4_stack.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/gpio.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/pin_interrupt.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/platform_error.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/platform_scheduler.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/spi.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/timer.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/yield.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/nfc_tag/nfc_tag.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ruuvi_interface_lis2dh12.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/adc/ruuvi_platform_adc_mcu.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_nfc.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_radio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_ble4_advertising.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/communication/ruuvi_platform_communication_ble4_gatt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/environmental/ruuvi_platform_environmental_mcu.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ruuvi_platform_gpio_interrupt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/log/ruuvi_platform_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/power/ruuvi_platform_power.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/rtc/ruuvi_platform_rtc_mcu.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_platform_error.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/ruuvi_platform_scheduler.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/ruuvi_platform_spi.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ruuvi_platform_timer.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/watchdog/ruuvi_platform_watchdog.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/yield/ruuvi_platform_yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ringbuffer.c \
-  $(PROJ_DIR)/ruuvi.nrf_sdk15_0_overrides.c/ble_radio_notification.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoint_3.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/ruuvi_endpoint_5.c \
+  $(PROJ_DIR)/tasks/task_acceleration.c \
   $(PROJ_DIR)/tasks/task_adc.c \
-  $(PROJ_DIR)/tasks/task_bluetooth.c \
+  $(PROJ_DIR)/tasks/task_advertisement.c \
+  $(PROJ_DIR)/tasks/task_button.c \
+  $(PROJ_DIR)/tasks/task_environmental.c \
+  $(PROJ_DIR)/tasks/task_gatt.c \
   $(PROJ_DIR)/tasks/task_led.c \
-  $(PROJ_DIR)/tasks/task_spi.c 
+  $(PROJ_DIR)/tasks/task_nfc.c \
+  $(PROJ_DIR)/tasks/task_power.c \
+  $(PROJ_DIR)/tasks/task_rtc.c \
+  $(PROJ_DIR)/tasks/task_scheduler.c \
+  $(PROJ_DIR)/tasks/task_spi.c \
+  $(PROJ_DIR)/tasks/task_timer.c \
+  $(PROJ_DIR)/tests/test_acceleration.c \
+  $(PROJ_DIR)/tests/test_adc.c \
+  $(PROJ_DIR)/tests/test_environmental.c \
+  $(PROJ_DIR)/tests/test_sensor.c
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -168,8 +190,8 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_sw \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon \
   $(SDK_ROOT)/components/libraries/delay \
-  $(SDK_ROOT)/components/libraries/experimental_log \
-  $(SDK_ROOT)/components/libraries/experimental_memobj \
+  $(SDK_ROOT)/components/libraries/log \
+  $(SDK_ROOT)/components/libraries/memobj \
   $(SDK_ROOT)/components/libraries/experimental_section_vars \
   $(SDK_ROOT)/components/libraries/fds \
   $(SDK_ROOT)/components/libraries/pwr_mgmt \
@@ -178,12 +200,13 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/stack_info/ \
   $(SDK_ROOT)/components/libraries/strerror \
   $(SDK_ROOT)/components/libraries/svc \
+  $(SDK_ROOT)/components/libraries/ringbuf \
   $(SDK_ROOT)/components/libraries/util \
   $(SDK_ROOT)/components/libraries/timer \
   $(SDK_ROOT)/components/libraries/button \
   $(SDK_ROOT)/components/libraries/fstorage \
   $(SDK_ROOT)/components/libraries/mutex \
-  $(SDK_ROOT)/components/libraries/experimental_log/src \
+  $(SDK_ROOT)/components/libraries/log/src \
   $(SDK_ROOT)/components/nfc/ndef/launchapp/ \
   $(SDK_ROOT)/components/nfc/ndef/generic/message \
   $(SDK_ROOT)/components/nfc/ndef/generic/record \
@@ -214,53 +237,56 @@ INC_FOLDERS += \
   $(SDK_ROOT)/integration/nrfx \
   $(PROJ_DIR)/application_config \
   $(PROJ_DIR)/ruuvi.boards.c \
-  $(PROJ_DIR)/ruuvi.endpoints.c/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/ \
+  $(PROJ_DIR)/ruuvi.drivers.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/adc/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/adc \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/communication \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/power \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/rtc \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/scheduler \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/timer \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/watchdog \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/ \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ \
-  $(PROJ_DIR)/tasks
+  $(PROJ_DIR)/ruuvi.endpoints.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
+  $(PROJ_DIR)/tasks/ \
+  $(PROJ_DIR)/tests/
 
 
 
 # Libraries common to all targets
 LIB_FILES += \
  $(SDK_ROOT)/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a \
- $(SDK_ROOT)/external/nrf_oberon/lib/nrf52/liboberon_2.0.4.a \
+ $(SDK_ROOT)/external/nrf_oberon/lib/nrf52/liboberon_2.0.5.a \
 
 # Optimization flags
 OPT = -O3 -g3
 # Uncomment the line below to enable link time optimization
 #OPT += -flto
 
+CFLAGS += $(MODE)
 # C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 CFLAGS += -DBOARD_RUUVITAG_B
-CFLAGS += -DBOARD_CUSTOM
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DBME280_FLOAT_ENABLE
 CFLAGS += -DNRF52
 CFLAGS += -DNRF52832_XXAA
-CFLAGS += -DHAL_NFC_ENGINEERING_BC_FTPAN_WORKAROUND
 CFLAGS += -DNRF52_PAN_74
 CFLAGS += -DNRF_DFU_SVCI_ENABLED
 CFLAGS += -DNRF_DFU_TRANSPORT_BLE=1
 CFLAGS += -DNRF_SD_BLE_API_VERSION=6
+CFLAGS += -DRUUVI_RUN_TESTS
 CFLAGS += -DS132
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DNRF_CRYPTO_MAX_INSTANCE_COUNT=1
@@ -270,9 +296,10 @@ CFLAGS += -DuECC_SQUARE_FUNC=0
 CFLAGS += -DuECC_SUPPORT_COMPRESSED_POINT=0
 CFLAGS += -DuECC_VLI_NATIVE_LITTLE_ENDIAN=1
 CFLAGS += -DSWI_DISABLE0
+CFLAGS += -DNDEBUG
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
-CFLAGS +=  -Wall -Werror
+CFLAGS += -Wall -Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing -fstack-usage
@@ -318,6 +345,7 @@ LDFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 LDFLAGS += -Wl,--gc-sections
 # use newlib in nano version
 LDFLAGS += --specs=nano.specs
+LDFLAGS += -u _printf_float
 
 nrf52832_xxaa: CFLAGS += -D__HEAP_SIZE=8192
 nrf52832_xxaa: CFLAGS += -D__STACK_SIZE=8192
@@ -348,25 +376,3 @@ TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 include $(TEMPLATE_PATH)/Makefile.common
 
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
-
-.PHONY: flash flash_softdevice erase
-
-# Flash the program
-flash: $(OUTPUT_DIRECTORY)/nrf52832_xxaa.hex
-	@echo Flashing: $<
-	nrfjprog -f nrf52 --program $< --sectorerase
-	nrfjprog -f nrf52 --reset
-
-# Flash softdevice
-flash_softdevice:
-	@echo Flashing: s132_nrf52_5.0.0_softdevice.hex
-	nrfjprog -f nrf52 --program $(SDK_ROOT)/components/softdevice/s132/hex/s132_nrf52_5.0.0_softdevice.hex --sectorerase
-	nrfjprog -f nrf52 --reset
-
-erase:
-	nrfjprog -f nrf52 --eraseall
-
-SDK_CONFIG_FILE := ../config/sdk_config.h
-CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
-sdk_config:
-	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)
