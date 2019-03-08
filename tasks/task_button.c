@@ -22,7 +22,7 @@ static void on_button(ruuvi_interface_gpio_evt_t event)
 {
   if(NULL != button_callback) { button_callback(); }
   ruuvi_interface_watchdog_feed();
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Watchdog fed\r\n");
+  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Watchdog feed\r\n");
 }
 
 ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope, task_button_fp_t action)
