@@ -7,3 +7,6 @@
 [submodule "ruuvi.endpoints.c"]
 	path = ruuvi.endpoints.c
 	url = https://github.com/ruuvi/ruuvi.endpoints.c
+[submodule "ruuvi.libraries.c"]
+	path = ruuvi.libraries.c
+	url = https://github.com/ruuvi/ruuvi.libraries.c
