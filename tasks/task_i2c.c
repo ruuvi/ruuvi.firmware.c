@@ -39,7 +39,9 @@ ruuvi_driver_status_t task_i2c_init(void)
 
     default:
       config.frequency = RUUVI_INTERFACE_I2C_FREQUENCY_100k;
-      ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, "Unknown I2C frequency, defaulting to 100k\r\n");
+      ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING,
+                          "Unknown I2C frequency, defaulting to 100k\r\n");
   }
+
   return ruuvi_interface_i2c_init(&config);
 }

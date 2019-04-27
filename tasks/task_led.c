@@ -14,6 +14,7 @@ ruuvi_driver_status_t task_led_init(void)
   }
 
   uint8_t leds[] = RUUVI_BOARD_LEDS_LIST;
+
   for(size_t ii = 0; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
   {
     ruuvi_interface_gpio_configure(leds[ii], RUUVI_INTERFACE_GPIO_MODE_OUTPUT_HIGHDRIVE);
@@ -36,6 +37,8 @@ ruuvi_driver_status_t task_led_cycle(void)
   static uint8_t phase = 0;
   uint8_t leds[] = RUUVI_BOARD_LEDS_LIST;
   err_code |= ruuvi_interface_gpio_toggle(leds[phase++]);
+
   if(RUUVI_BOARD_LEDS_NUMBER <= phase) { phase = 0; }
+
   return err_code;
 }

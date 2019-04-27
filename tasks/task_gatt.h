@@ -29,7 +29,8 @@ ruuvi_driver_status_t task_gatt_init(void);
 /**
  * Event handler for NUS events
  */
-ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt, void* p_data, size_t data_len);
+ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
+                                        void* p_data, size_t data_len);
 
 /**
  * Send given message via NUS

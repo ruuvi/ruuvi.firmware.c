@@ -17,7 +17,7 @@
  */
 #define APPLICATION_LOG_BUFFER_SIZE           256
 
-/** 
+/**
  * @brief enable compilation of NRF5 SDK15 implementation of driver interface functions.
  * Only one implementation can be enabled at a time.
  */
@@ -27,9 +27,9 @@
  * @brief Battery voltage measurement mode configuration
  */
 #ifndef APPLICATION_BATTERY_VOLTAGE_MODE
-#define APPLICATION_BATTERY_VOLTAGE_SIMPLE   0  //<! Simple mode: Not synchronized to anything, sampled at regular interval
-#define APPLICATION_BATTERY_VOLTAGE_RADIO    1  //<! Radio mode: Voltage is sampled after radio tx, refreshed after interval has passed.
-#define APPLICATION_BATTERY_VOLTAGE_DROOP    0  //<! Droop mode: Battery is read after TX and after a brief recovery period. Droop is reported
+  #define APPLICATION_BATTERY_VOLTAGE_SIMPLE   0  //<! Simple mode: Not synchronized to anything, sampled at regular interval
+  #define APPLICATION_BATTERY_VOLTAGE_RADIO    1  //<! Radio mode: Voltage is sampled after radio tx, refreshed after interval has passed.
+  #define APPLICATION_BATTERY_VOLTAGE_DROOP    0  //<! Droop mode: Battery is read after TX and after a brief recovery period. Droop is reported
 #endif
 #define APPLICATION_BATTERY_DROOP_DELAY_MS   2  //<! Milliseconds between active and recovered tx
 #if(APPLICATION_BATTERY_VOLTAGE_SIMPLE + APPLICATION_BATTERY_VOLTAGE_RADIO + APPLICATION_BATTERY_VOLTAGE_DROOP != 1)
@@ -49,31 +49,31 @@
   /** @brief BME280 cannot adjust scale, use default */
   #define APPLICATION_ENVIRONMENTAL_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
-  /** @brief DSP configuration of environmental sensor. 
-   * Valid values for BME280 are: (RUUVI_DRIVER_SENSOR_DSP_)LAST, LOW_PASS, OS
-   * Low pass slows step response but lowers noise
-   * Ooversampling (OS) increases power consumption but lowers noise.
-   * @see https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
-   */
+  /** @brief DSP configuration of environmental sensor.
+  * Valid values for BME280 are: (RUUVI_DRIVER_SENSOR_DSP_)LAST, LOW_PASS, OS
+  * Low pass slows step response but lowers noise
+  * Ooversampling (OS) increases power consumption but lowers noise.
+  * @see https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
+  */
   #define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_LOW_PASS
 
   /** @brief Parameter to DSP function.
-   * The parameter affects how agressively the DSP is applied, higher means 
-   * stronger effect. For example Oversampling with parameter 8 means 8 samples are averaged for one sample.
-   *
-   * Valid values are RUUVI_DRIVER_SENSOR_CFG_MAX, RUUVI_DRIVER_SENSOR_CFG_MIN, RUUVI_DRIVER_SENSOR_CFG_DEFAULT.
-   * 1, 2, 4, 8, 16
-   */
+  * The parameter affects how agressively the DSP is applied, higher means
+  * stronger effect. For example Oversampling with parameter 8 means 8 samples are averaged for one sample.
+  *
+  * Valid values are RUUVI_DRIVER_SENSOR_CFG_MAX, RUUVI_DRIVER_SENSOR_CFG_MIN, RUUVI_DRIVER_SENSOR_CFG_DEFAULT.
+  * 1, 2, 4, 8, 16
+  */
   #define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_MAX
 
   /**
-   * @brief default mode of environmental sensor. 
-   * Valid values are RUUVI_DRIVER_SENSOR_CFG_SLEEP, RUUVI_DRIVER_SENSOR_CFG_SINGLE and RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS.
-   * Sleep enters lowest-power mode possible. 
-   * Single commands sensor to take a new sample, waits sample to be available and then returns the data from sensor.
-   * Continuous keeps the sensor running on the background regardless of how often data is read.
-   * Continuous is recommended mode for most applications.
-   */
+  * @brief default mode of environmental sensor.
+  * Valid values are RUUVI_DRIVER_SENSOR_CFG_SLEEP, RUUVI_DRIVER_SENSOR_CFG_SINGLE and RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS.
+  * Sleep enters lowest-power mode possible.
+  * Single commands sensor to take a new sample, waits sample to be available and then returns the data from sensor.
+  * Continuous keeps the sensor running on the background regardless of how often data is read.
+  * Continuous is recommended mode for most applications.
+  */
   #define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
 #endif
 
@@ -92,54 +92,54 @@
  **/
 #ifndef APPLICATION_ACCELERATION_CONFIGURED
   /** @brief sample rate of accelerometer
-   *
-   * This controls only internal sampling of accelerometer, not reading frequency of data.
-   * Valid values are 1, 10, 25, 50, 100, 200 for LIS2DH12
-   * @c RUUVI_DRIVER_CFG_MIN, @c RUUVI_DRIVER_CFG_MAX, and @c RUUVI_DRIVER_CFG_DEFAULT, are valid for all sensors.
-   */
+  *
+  * This controls only internal sampling of accelerometer, not reading frequency of data.
+  * Valid values are 1, 10, 25, 50, 100, 200 for LIS2DH12
+  * @c RUUVI_DRIVER_CFG_MIN, @c RUUVI_DRIVER_CFG_MAX, and @c RUUVI_DRIVER_CFG_DEFAULT, are valid for all sensors.
+  */
   #define APPLICATION_ACCELEROMETER_SAMPLERATE 1
 
   /** @brief Resolution of accelerometer, in bits.
-   *
-   * This controls only internal sampling of accelerometer, not reading frequency of data.
-   * Valid values are  8, 10, 12 for LIS2DH12
-   * @c RUUVI_DRIVER_SENSOR_CFG_MIN, @c RUUVI_DRIVER_SENSOR_CFG_MAX, and @c RUUVI_DRIVER_SENSOR_CFG_DEFAULT, are valid for all sensors.
-   */
+  *
+  * This controls only internal sampling of accelerometer, not reading frequency of data.
+  * Valid values are  8, 10, 12 for LIS2DH12
+  * @c RUUVI_DRIVER_SENSOR_CFG_MIN, @c RUUVI_DRIVER_SENSOR_CFG_MAX, and @c RUUVI_DRIVER_SENSOR_CFG_DEFAULT, are valid for all sensors.
+  */
   #define APPLICATION_ACCELEROMETER_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
   /** @brief Scale of accelerometer, in G (9.81 m / s^2).
-   *
-   * This controls only internal sampling of accelerometer, not reading frequency of data.
-   * Valid values are  2, 4, 8, 16 for LIS2DH12
-   * @c RUUVI_DRIVER_CFG_MIN, @c RUUVI_DRIVER_CFG_MAX, and @c RUUVI_DRIVER_CFG_DEFAULT, are valid for all sensors.
-   */
+  *
+  * This controls only internal sampling of accelerometer, not reading frequency of data.
+  * Valid values are  2, 4, 8, 16 for LIS2DH12
+  * @c RUUVI_DRIVER_CFG_MIN, @c RUUVI_DRIVER_CFG_MAX, and @c RUUVI_DRIVER_CFG_DEFAULT, are valid for all sensors.
+  */
   #define APPLICATION_ACCELEROMETER_SCALE   RUUVI_DRIVER_SENSOR_CFG_MIN
 
   /** @brief DPS function for accelerometer
-   *  Enable high-pass to filter out the gravity. 
-   */
+  *  Enable high-pass to filter out the gravity.
+  */
   #define APPLICATION_ACCELEROMETER_DSPFUNC RUUVI_DRIVER_SENSOR_DSP_HIGH_PASS
 
   /** @brief DPS parameter for accelerometer
-   *  Higher is more agressive. 
-   *  Valid values are  1, 2, 3, 4 for LIS2DH12
-   *  @c RUUVI_DRIVER_SENSOR_CFG_MIN, @c RUUVI_DRIVER_SENSOR_CFG_MAX, and @c RUUVI_DRIVER_SENSOR_CFG_DEFAULT, are valid for all sensors.
-   */
+  *  Higher is more agressive.
+  *  Valid values are  1, 2, 3, 4 for LIS2DH12
+  *  @c RUUVI_DRIVER_SENSOR_CFG_MIN, @c RUUVI_DRIVER_SENSOR_CFG_MAX, and @c RUUVI_DRIVER_SENSOR_CFG_DEFAULT, are valid for all sensors.
+  */
   #define APPLICATION_ACCELEROMETER_DSPPARAM RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
   /** @brief Operating mode for accelerometer
-   * Valid values are RUUVI_DRIVER_SENSOR_CFG_SLEEP, RUUVI_DRIVER_SENSOR_CFG_SINGLE and RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS.
-   * Sleep enters lowest-power mode possible. 
-   * Single commands sensor to take a new sample, waits sample to be available and then returns the data from sensor.
-   * Continuous keeps the sensor running on the background regardless of how often data is read.
-   * Continuous is recommended mode for most applications.
-   */
+  * Valid values are RUUVI_DRIVER_SENSOR_CFG_SLEEP, RUUVI_DRIVER_SENSOR_CFG_SINGLE and RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS.
+  * Sleep enters lowest-power mode possible.
+  * Single commands sensor to take a new sample, waits sample to be available and then returns the data from sensor.
+  * Continuous keeps the sensor running on the background regardless of how often data is read.
+  * Continuous is recommended mode for most applications.
+  */
   #define APPLICATION_ACCELEROMETER_MODE RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
 
   /**
-   * @brief activity interrupt threshold for accelerometer in G.
-   * Maximum is the scale of accelerometer.
-   */
+  * @brief activity interrupt threshold for accelerometer in G.
+  * Maximum is the scale of accelerometer.
+  */
   #define APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD 0.100f
 #endif
 

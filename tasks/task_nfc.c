@@ -23,9 +23,11 @@ ruuvi_driver_status_t task_nfc_init(void)
   written = snprintf((char*)(version_string + sizeof(fw_prefix)),
                      APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE - sizeof(fw_prefix),
                      "%s", APPLICATION_FW_VERSION);
-  if(!(written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written)) { err_code |= RUUVI_DRIVER_ERROR_DATA_SIZE; }
-  err_code |= ruuvi_interface_communication_nfc_fw_version_set(version_string, strlen((char*)version_string));
 
+  if(!(written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written)) { err_code |= RUUVI_DRIVER_ERROR_DATA_SIZE; }
+
+  err_code |= ruuvi_interface_communication_nfc_fw_version_set(version_string,
+              strlen((char*)version_string));
   uint64_t mac = 0;
   err_code |=  ruuvi_interface_communication_radio_address_get(&mac);
   uint8_t mac_buffer[6] = {0};
@@ -41,27 +43,31 @@ ruuvi_driver_status_t task_nfc_init(void)
                      APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE,
                      "MAC: %02X:%02X:%02X:%02X:%02X:%02X",
                      mac_buffer[0], mac_buffer[1], mac_buffer[2], mac_buffer[3], mac_buffer[4], mac_buffer[5]);
-  if(!(written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written)) { err_code |= RUUVI_DRIVER_ERROR_DATA_SIZE; }
-  err_code |= ruuvi_interface_communication_nfc_address_set(name, strlen((char*)name));
 
+  if(!(written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written)) { err_code |= RUUVI_DRIVER_ERROR_DATA_SIZE; }
+
+  err_code |= ruuvi_interface_communication_nfc_address_set(name, strlen((char*)name));
   uint64_t id = 0;
   err_code |= ruuvi_interface_communication_id_get(&id);
   uint8_t prefix[] = {'I', 'D', ':', ' '};
   uint8_t id_string[APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE] = { 0 };
   memcpy(id_string, prefix, sizeof(prefix));
-  uint32_t id0 = (id>>32) & 0xFFFFFFFF;
+  uint32_t id0 = (id >> 32) & 0xFFFFFFFF;
   uint32_t id1 = id & 0xFFFFFFFF;
   written = snprintf((char*)(id_string + sizeof(prefix)),
                      APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE - sizeof(prefix),
                      "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
-                     (unsigned int)(id0>>24)&0xFF, (unsigned int)(id0>>16)&0xFF,
-                     (unsigned int)(id0>>8)&0xFF, (unsigned int)id0&0xFF,
-                     (unsigned int)(id1>>24)&0xFF, (unsigned int)(id1>>16)&0xFF,
-                     (unsigned int)(id1>>8)&0xFF, (unsigned int)id1&0xFF);
+                     (unsigned int)(id0 >> 24) & 0xFF, (unsigned int)(id0 >> 16) & 0xFF,
+                     (unsigned int)(id0 >> 8) & 0xFF, (unsigned int)id0 & 0xFF,
+                     (unsigned int)(id1 >> 24) & 0xFF, (unsigned int)(id1 >> 16) & 0xFF,
+                     (unsigned int)(id1 >> 8) & 0xFF, (unsigned int)id1 & 0xFF);
+
   if(!(written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written)) { err_code |= RUUVI_DRIVER_ERROR_DATA_SIZE; }
+
   err_code |= ruuvi_interface_communication_nfc_id_set(id_string, strlen((char*)id_string));
   err_code |= ruuvi_interface_communication_nfc_init(&channel);
-  err_code |= ruuvi_interface_communication_nfc_data_set(); // Call this to setup data to buffers
+  err_code |=
+    ruuvi_interface_communication_nfc_data_set(); // Call this to setup data to buffers
   channel.on_evt = task_nfc_on_nfc;
   return err_code;
 }
@@ -71,24 +77,29 @@ ruuvi_driver_status_t task_nfc_send(ruuvi_interface_communication_message_t* mes
   return channel.send(message);
 }
 
-void task_acceleration_scheduler_task(void *p_event_data, uint16_t event_size)
+void task_acceleration_scheduler_task(void* p_event_data, uint16_t event_size)
 {
   // Message + null + <\r>\<n>
   char str[APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE + 3] = { 0 };
   ruuvi_interface_communication_message_t message = {0};
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  do{
-     message.data_length = sizeof(message.data);
-     memset(&(message.data), 0, sizeof(message.data));
-     err_code = channel.read(&message);
-     snprintf(str, sizeof(str), "%s\r\n", (char *)message.data);
-     ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, str);
-  }while(RUUVI_DRIVER_SUCCESS == err_code || RUUVI_DRIVER_STATUS_MORE_AVAILABLE == err_code);
+
+  do
+  {
+    message.data_length = sizeof(message.data);
+    memset(&(message.data), 0, sizeof(message.data));
+    err_code = channel.read(&message);
+    snprintf(str, sizeof(str), "%s\r\n", (char*)message.data);
+    ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, str);
+  } while(RUUVI_DRIVER_SUCCESS == err_code
+          || RUUVI_DRIVER_STATUS_MORE_AVAILABLE == err_code);
 }
 
-ruuvi_driver_status_t task_nfc_on_nfc(ruuvi_interface_communication_evt_t evt, void* p_data, size_t data_len)
+ruuvi_driver_status_t task_nfc_on_nfc(ruuvi_interface_communication_evt_t evt,
+                                      void* p_data, size_t data_len)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
   switch(evt)
   {
     case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
@@ -111,7 +122,7 @@ ruuvi_driver_status_t task_nfc_on_nfc(ruuvi_interface_communication_evt_t evt, v
 
     default:
       break;
-
   }
+
   return err_code;
 }

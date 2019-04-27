@@ -22,7 +22,8 @@ typedef ruuvi_driver_status_t(*task_button_fp_t)(void);
  *
  * return: Status code from the stack. RUUVI_DRIVER_SUCCESS if no errors occured.
  **/
-ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope, task_button_fp_t action);
+ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope,
+                                       task_button_fp_t action);
 
 /**
  * Calls other Button tasks.

@@ -1,0 +1,85 @@
+# braces 
+#  foo
+#  {
+#     bar();
+#  }
+--style=break
+
+# extern "c" {
+--attach-extern-c
+
+#  do
+#  {
+#    foo();
+#  } while(bar());
+--attach-closing-while
+
+#  switch(foo)
+#  {
+#     case bar:
+#  	    baz();
+#  }
+--indent-switches
+
+# Indent by 2 spaces
+--indent=spaces=2
+--convert-tabs
+
+# #ifndef FOO
+#   #define FOO BAR
+# #endif
+--indent-preproc-block
+
+#  while(foo)
+#  {
+#    #if BAR
+#    baz();
+#    #else
+#    !baz();
+#    #endif
+#  }
+--indent-preproc-cond
+
+#  while(foo)
+#  {
+#    // Bar baz
+#    bar(baz);	
+#  }
+--indent-col1-comments
+
+#  baz = 1;
+#
+#  if(foo)
+#  {
+#  	 bar = 2;
+#  }
+#  else
+#  {
+#  	 bar = 1;
+#  }
+#
+#  foo = bar + baz;
+--break-blocks
+
+# if(bar * baz == foo)
+--pad-oper
+
+# remove space not requested above, i.e. bar ( baz, foo ) => bar(baz, foo)
+--unpad-paren
+
+# Remove extra lines
+--delete-empty-lines
+
+# char* foo
+--align-pointer=type
+
+#   if(foo)
+#     { bar(); baz(); }
+--add-one-line-braces
+--keep-one-line-blocks
+
+# 90 chars to fit github gist embedded in medium
+--max-code-length=90
+
+# End lines with LF
+--lineend=linux 

@@ -28,12 +28,14 @@ ruuvi_driver_status_t task_acceleration_init(void);
 /**
  * Prints Acceleration data to log at given severity
  */
-ruuvi_driver_status_t task_acceleration_data_log(const ruuvi_interface_log_severity_t level);
+ruuvi_driver_status_t task_acceleration_data_log(const ruuvi_interface_log_severity_t
+    level);
 
 /**
  * Get latest sample from the sensor. Remember to trigger sampling in case you're in single-shot mode
  */
-ruuvi_driver_status_t task_acceleration_data_get(ruuvi_interface_acceleration_data_t* const data);
+ruuvi_driver_status_t task_acceleration_data_get(ruuvi_interface_acceleration_data_t*
+    const data);
 
 /**
  * Get acceleration data and print it on console.
@@ -43,6 +45,6 @@ ruuvi_driver_status_t task_acceleration_on_button(void);
 /**
  * Get number of movement counts
  */
-ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t * const count);
+ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t* const count);
 
 #endif

@@ -39,12 +39,12 @@ ruuvi_driver_status_t task_adc_data_get(ruuvi_interface_adc_data_t* const data);
 
 /**
  * Populates data with voltage defined by mode in application_config.h
- * 
- * APPLICATION_BATTERY_VOLTAGE_SIMPLE: Latest sample, sample at call if ADC is in continuous mode. 
+ *
+ * APPLICATION_BATTERY_VOLTAGE_SIMPLE: Latest sample, sample at call if ADC is in continuous mode.
  *                                     Sample at APPLICATION_ADC_SAMPLE_INTERVAL_MS interval in single-shot mode
- * APPLICATION_BATTERY_VOLTAGE_RADIO:  Sample is synchronized to radio and updated at APPLICATION_ADC_SAMPLE_INTERVAL_MS. 
+ * APPLICATION_BATTERY_VOLTAGE_RADIO:  Sample is synchronized to radio and updated at APPLICATION_ADC_SAMPLE_INTERVAL_MS.
                                        Sets latest sample.
- * APPLICATION_BATTERY_VOLTAGE_DROOP:  Sample is synchronized to radio and updated at APPLICATION_ADC_SAMPLE_INTERVAL_MS. 
+ * APPLICATION_BATTERY_VOLTAGE_DROOP:  Sample is synchronized to radio and updated at APPLICATION_ADC_SAMPLE_INTERVAL_MS.
                                        Sets latest difference between radio active and recovered sample taken after APPLICATION_BATTERY_DROOP_DELAY_MS.
  *
  * returns RUUVI_DRIVER_SUCCESS on success

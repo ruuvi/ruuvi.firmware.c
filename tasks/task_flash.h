@@ -23,9 +23,11 @@
  */
 ruuvi_driver_status_t task_flash_init(void);
 
-ruuvi_driver_status_t task_flash_store(const uint32_t page_id, const uint32_t record_id, const char* const message, const size_t message_length);
+ruuvi_driver_status_t task_flash_store(const uint32_t page_id, const uint32_t record_id,
+                                       const char* const message, const size_t message_length);
 
-ruuvi_driver_status_t task_flash_load(const uint32_t page_id, const uint32_t record_id, char* const message, const size_t message_length);
+ruuvi_driver_status_t task_flash_load(const uint32_t page_id, const uint32_t record_id,
+                                      char* const message, const size_t message_length);
 
 ruuvi_driver_status_t task_flash_demo();
 

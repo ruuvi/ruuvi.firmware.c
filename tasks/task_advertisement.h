@@ -12,23 +12,23 @@
 #include "ruuvi_interface_communication_ble4_advertising.h"
 
 /**
- * Initializes data advertising. 
+ * Initializes data advertising.
  *
  * After calling this function radio module has been reserved to ble4 advertisements.
  * Parameters such as advertisement intercal and power are defined in application_config.h
  * Requires that timers have been initialized.
- * 
+ *
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
  */
 ruuvi_driver_status_t task_advertisement_init(void);
 
 /**
- * Uninitializes data advertising. 
+ * Uninitializes data advertising.
  *
  * After calling this function radio module has been released if it was reserved to ble4 advertisements.
  * Can be called even if advertising was not initialized.
- * 
+ *
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
  */
@@ -55,7 +55,7 @@ ruuvi_driver_status_t task_advertisement_stop(void);
 /**
  * Signal that advertising data should be updated.
  */
-void task_advertisement_scheduler_task(void *p_event_data, uint16_t event_size);
+void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size);
 
 /**
  * Reads sensors and encodes sensor data into Ruuvi format 3 (RAWv1).

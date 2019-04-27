@@ -26,12 +26,14 @@ ruuvi_driver_status_t task_environmental_init(void);
 /**
  * Prints environmental data to log at given severity
  */
-ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_severity_t level);
+ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_severity_t
+    level);
 
 /**
  * Get latest sample from the sensor. Remember to trigger sampling in case you're in single-shot mode
  */
-ruuvi_driver_status_t task_environmental_data_get(ruuvi_interface_environmental_data_t* const data);
+ruuvi_driver_status_t task_environmental_data_get(ruuvi_interface_environmental_data_t*
+    const data);
 
 /**
  * Blink RED led for the duration of task. Get environmental data and print it on console.

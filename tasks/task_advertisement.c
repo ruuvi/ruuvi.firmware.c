@@ -27,14 +27,16 @@ static ruuvi_interface_timer_id_t advertisement_timer;
 static ruuvi_interface_communication_t channel;
 
 //handler for scheduled advertisement event
-void task_advertisement_scheduler_task(void *p_event_data, uint16_t event_size)
+void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
   // Update BLE data
   if(APPLICATION_DATA_FORMAT == 3)    { err_code |= task_advertisement_send_3(); }
-  if(APPLICATION_DATA_FORMAT == 5)    { err_code |= task_advertisement_send_5(); }
-  if(RUUVI_DRIVER_SUCCESS == err_code) { ruuvi_interface_watchdog_feed(); }
 
+  if(APPLICATION_DATA_FORMAT == 5)    { err_code |= task_advertisement_send_5(); }
+
+  if(RUUVI_DRIVER_SUCCESS == err_code) { ruuvi_interface_watchdog_feed(); }
 }
 
 // Timer callback, schedule advertisement event here.
@@ -47,11 +49,14 @@ ruuvi_driver_status_t task_advertisement_init(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   err_code |= ruuvi_interface_communication_ble4_advertising_init(&channel);
-  err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(APPLICATION_ADVERTISING_INTERVAL);
+  err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(
+                APPLICATION_ADVERTISING_INTERVAL);
   int8_t target_power = APPLICATION_ADVERTISING_POWER;
   err_code |= ruuvi_interface_communication_ble4_advertising_tx_power_set(&target_power);
-  err_code |= ruuvi_interface_communication_ble4_advertising_manufacturer_id_set(RUUVI_BOARD_BLE_MANUFACTURER_ID);
-  err_code |= ruuvi_interface_timer_create(&advertisement_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_advertisement_timer_cb);
+  err_code |= ruuvi_interface_communication_ble4_advertising_manufacturer_id_set(
+                RUUVI_BOARD_BLE_MANUFACTURER_ID);
+  err_code |= ruuvi_interface_timer_create(&advertisement_timer,
+              RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_advertisement_timer_cb);
   return err_code;
 }
 
@@ -76,12 +81,10 @@ ruuvi_driver_status_t task_advertisement_send_3(void)
   ruuvi_interface_acceleration_data_t acclereration;
   ruuvi_interface_adc_data_t battery;
   ruuvi_interface_environmental_data_t environmental;
-
   // Get data from sensors
   err_code |= task_acceleration_data_get(&acclereration);
   err_code |= task_environmental_data_get(&environmental);
   err_code |= task_adc_battery_get(&battery);
-
   ruuvi_endpoint_3_data_t data;
   data.accelerationx_g = acclereration.x_g;
   data.accelerationy_g = acclereration.y_g;
@@ -94,7 +97,6 @@ ruuvi_driver_status_t task_advertisement_send_3(void)
   message.data_length = RUUVI_ENDPOINT_3_DATA_LENGTH;
   ruuvi_endpoint_3_encode(message.data, &data, RUUVI_DRIVER_FLOAT_INVALID);
   err_code |= channel.send(&message);
-
   return err_code;
 }
 
@@ -108,10 +110,10 @@ ruuvi_driver_status_t task_advertisement_send_5(void)
   // Data format 5 considers sequence with all bits set as invalid
   // TODO: Remove hardcoding, add sequence number getter
   if(0xFFFF == sequence) { sequence = 0; }
+
   ruuvi_interface_acceleration_data_t acclereration;
   ruuvi_interface_adc_data_t battery;
   ruuvi_interface_environmental_data_t environmental;
-
   // Get data from sensors
   err_code |= task_acceleration_data_get(&acclereration);
   err_code |= task_acceleration_movement_count_get(&movement_counter);
@@ -119,9 +121,9 @@ ruuvi_driver_status_t task_advertisement_send_5(void)
   // Data format 5 considers sequence with all bits set as invalid
   // TODO: Remove hardcoding,
   if(0xFF == movement_counter) { movement_counter = 0; }
+
   err_code |= task_environmental_data_get(&environmental);
   err_code |= task_adc_battery_get(&battery);
-
   ruuvi_endpoint_5_data_t data;
   data.accelerationx_g = acclereration.x_g;
   data.accelerationy_g = acclereration.y_g;
@@ -134,12 +136,9 @@ ruuvi_driver_status_t task_advertisement_send_5(void)
   data.measurement_count = sequence;
   data.movement_count = movement_counter;
   ruuvi_interface_communication_radio_address_get(&(data.address));
-
-
   ruuvi_interface_communication_message_t message;
   message.data_length = RUUVI_ENDPOINT_5_DATA_LENGTH;
   ruuvi_endpoint_5_encode(message.data, &data, RUUVI_DRIVER_FLOAT_INVALID);
   err_code |= channel.send(&message);
-
   return err_code;
 }
