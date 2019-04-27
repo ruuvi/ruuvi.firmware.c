@@ -103,9 +103,9 @@
    *
    * This controls only internal sampling of accelerometer, not reading frequency of data.
    * Valid values are  8, 10, 12 for LIS2DH12
-   * @c RUUVI_DRIVER_CFG_MIN, @c RUUVI_DRIVER_CFG_MAX, and @c RUUVI_DRIVER_CFG_DEFAULT, are valid for all sensors.
+   * @c RUUVI_DRIVER_SENSOR_CFG_MIN, @c RUUVI_DRIVER_SENSOR_CFG_MAX, and @c RUUVI_DRIVER_SENSOR_CFG_DEFAULT, are valid for all sensors.
    */
-  #define APPLICATION_ACCELEROMETER_RESOLUTION RUUVI_DRIVER_CFG_DEFAULT
+  #define APPLICATION_ACCELEROMETER_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
   /** @brief Scale of accelerometer, in G (9.81 m / s^2).
    *
@@ -123,9 +123,9 @@
   /** @brief DPS parameter for accelerometer
    *  Higher is more agressive. 
    *  Valid values are  1, 2, 3, 4 for LIS2DH12
-   *  @c RUUVI_DRIVER_CFG_MIN, @c RUUVI_DRIVER_CFG_MAX, and @c RUUVI_DRIVER_CFG_DEFAULT, are valid for all sensors.
+   *  @c RUUVI_DRIVER_SENSOR_CFG_MIN, @c RUUVI_DRIVER_SENSOR_CFG_MAX, and @c RUUVI_DRIVER_SENSOR_CFG_DEFAULT, are valid for all sensors.
    */
-  #define APPLICATION_ACCELEROMETER_DSPPARAM RUUVI_DRIVER_CFG_DEFAULT
+  #define APPLICATION_ACCELEROMETER_DSPPARAM RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
   /** @brief Operating mode for accelerometer
    * Valid values are RUUVI_DRIVER_SENSOR_CFG_SLEEP, RUUVI_DRIVER_SENSOR_CFG_SINGLE and RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS.
@@ -165,7 +165,7 @@
  */
 // Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
 #ifndef APPLICATION_ADVERTISING_CONFIGURED
-  #define APPLICATION_ADVERTISING_INTERVAL              (1000 * APPLICATION_ACCELEROMETER_DATASETS * 32 / 400) 
+  #define APPLICATION_ADVERTISING_INTERVAL              2020
   #define APPLICATION_CONNECTION_ADVERTISEMENT_INTERVAL 100
   #define APPLICATION_ADVERTISING_POWER                 RUUVI_BOARD_TX_POWER_MAX
   #define APPLICATION_DATA_FORMAT                       0x03
