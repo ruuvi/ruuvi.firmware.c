@@ -40,9 +40,20 @@
 #define NRFX_POWER_ENABLED             APPLICATION_POWER_ENABLED
 #define NRFX_POWER_CONFIG_IRQ_PRIORITY NRFX_CLOCK_CONFIG_IRQ_PRIORITY
 
+#define I2C_ENABLED                        APPLICATION_I2C_ENABLED
+#define I2C_INSTANCE                       1
+#define I2C1_ENABLED                       APPLICATION_I2C_ENABLED
+#define TWI_ENABLED                        I2C_ENABLED
+#define TWI1_ENABLED                       I2C_ENABLED
+#define TWI1_USE_EASY_DMA                  I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM1_ENABLED                 I2C_ENABLED
+#define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
+
 #define SPI_ENABLED                        APPLICATION_SPI_ENABLED
-#define SPI_INSTANCE                       0
-#define SPI_IRQ_PRIORITY                   7
+#define SPI_INSTANCE                       0 //<! Do not use same instance with I2C 
+#define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
 #define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
 // <0=> NRF_GPIO_PIN_NOPULL
 // <1=> NRF_GPIO_PIN_PULLDOWN
@@ -50,22 +61,26 @@
 #define NRF_SPI_DRV_MISO_PULLUP_CFG        0
 #define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
 #define SPI0_USE_EASY_DMA                  0
+#define NRFX_SPI0_ENABLED                  SPI_ENABLED
 
 // 0 is used by the softdevice, 1 is used by scheduler / timer
-#define NRF5_SDK15_RTC_INSTANCE 2
+#define NRF5_SDK15_RTC_INSTANCE            2
 
-#define BLE_DFU_ENABLED APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
-#define BLE_DIS_ENABLED APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
-#define BLE_NUS_ENABLED APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define NRF_BLE_GATT_ENABLED APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define NRF_BLE_QWR_ENABLED  APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define BLE_DFU_ENABLED      APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define BLE_DIS_ENABLED      APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+#define BLE_NUS_ENABLED      APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
 #define NRF_SDH_BLE_VS_UUID_COUNT BLE_DFU_ENABLED + \
                                   BLE_DIS_ENABLED + \
                                   BLE_NUS_ENABLED
 
-#define MIN_CONN_INTERVAL                MSEC_TO_UNITS(APPLICATION_GATT_CONN_INTERVAL_MIN_MS, UNIT_1_25_MS)    /**< Minimum acceptable connection interval (0.02 seconds). */
-#define MAX_CONN_INTERVAL                MSEC_TO_UNITS((APPLICATION_GATT_CONN_INTERVAL_MAX_MS), (UNIT_1_25_MS))    /**< Maximum acceptable connection interval (0.40 second). */
+#define MIN_CONN_INTERVAL                MSEC_TO_UNITS(APPLICATION_GATT_CONN_INTERVAL_MIN_MS, UNIT_1_25_MS)     /**< Minimum acceptable connection interval (0.02 seconds). */
+#define MAX_CONN_INTERVAL                MSEC_TO_UNITS((APPLICATION_GATT_CONN_INTERVAL_MAX_MS), (UNIT_1_25_MS)) /**< Maximum acceptable connection interval (0.40 second). */
 #define SLAVE_LATENCY                    APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS                             /**< Slave latency. */
-#define CONN_SUP_TIMEOUT                 MSEC_TO_UNITS((APPLICATION_GATT_CONN_TIMEOUT_MS), (UNIT_10_MS))            /**< Connection supervisory timeout (4 seconds). */
+#define CONN_SUP_TIMEOUT                 MSEC_TO_UNITS((APPLICATION_GATT_CONN_TIMEOUT_MS), (UNIT_10_MS))        /**< Connection supervisory timeout (4 seconds). */
 
+#define FDS_ENABLED       APPLICATION_FLASH_ENABLED
 #define FDS_VIRTUAL_PAGES APPLICATION_FLASH_DATA_PAGES_NUMBER
 
 #endif

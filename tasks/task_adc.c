@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-RUUVI_PLATFORM_TIMER_ID_DEF(adc_timer);
+static ruuvi_interface_timer_id_t adc_timer;
 static ruuvi_driver_sensor_t adc_sensor = {0};
 static volatile uint64_t t_sample = 0;
 static volatile float droop = 0;
@@ -45,7 +45,7 @@ static void task_adc_timer_cb(void* p_context)
   // Simple mode
   if(APPLICATION_BATTERY_VOLTAGE_SIMPLE)
   {
-    ruuvi_platform_scheduler_event_put(NULL, 0, task_adc_scheduler_task);
+    ruuvi_interface_scheduler_event_put(NULL, 0, task_adc_scheduler_task);
   }
 
   // Droop mode
@@ -74,12 +74,12 @@ static void task_adc_trigger_on_radio(const ruuvi_interface_communication_radio_
   if(RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER == evt)
   {
     // Sample
-    if((APPLICATION_ADC_SAMPLE_INTERVAL_MS < ruuvi_platform_rtc_millis() - t_sample || 0 == t_sample))
+    if((APPLICATION_ADC_SAMPLE_INTERVAL_MS < ruuvi_interface_rtc_millis() - t_sample || 0 == t_sample))
     {
       // TEST: LED ON to see the sample time relative to supply voltage, oscilloscope triggered by this signal
       // task_led_write(RUUVI_BOARD_LED_GREEN, RUUVI_BOARD_LEDS_ACTIVE_STATE);
 
-      t_sample = ruuvi_platform_rtc_millis();
+      t_sample = ruuvi_interface_rtc_millis();
       task_adc_sample();
 
       // Read radio-synched ADC sample
@@ -94,7 +94,7 @@ static void task_adc_trigger_on_radio(const ruuvi_interface_communication_radio_
       // Sample again for droop mode
       if(APPLICATION_BATTERY_VOLTAGE_DROOP)
       {
-        ruuvi_platform_timer_start(adc_timer, APPLICATION_BATTERY_DROOP_DELAY_MS);
+        ruuvi_interface_timer_start(adc_timer, APPLICATION_BATTERY_DROOP_DELAY_MS);
       }
     }
   }
@@ -103,11 +103,11 @@ static void task_adc_trigger_on_radio(const ruuvi_interface_communication_radio_
 ruuvi_driver_status_t task_adc_configure(ruuvi_driver_sensor_configuration_t* config)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "\r\nAttempting to configure ADC with:\r\n");
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "\r\nAttempting to configure ADC with:\r\n");
   ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "V");
   err_code |= adc_sensor.configuration_set(&adc_sensor, config);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Actual configuration:\r\n");
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Actual configuration:\r\n");
   ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "V");
   return err_code;
 }
@@ -129,7 +129,7 @@ ruuvi_driver_status_t task_adc_init(void)
   // Note: the timer is not started.
   // Note: use REPEATED mode for free-running sampling.
   ruuvi_interface_timer_mode_t mode = APPLICATION_BATTERY_VOLTAGE_SIMPLE ? RUUVI_INTERFACE_TIMER_MODE_REPEATED : RUUVI_INTERFACE_TIMER_MODE_SINGLE_SHOT;
-  err_code |= ruuvi_platform_timer_create(&adc_timer, mode, task_adc_timer_cb);
+  err_code |= ruuvi_interface_timer_create(&adc_timer, mode, task_adc_timer_cb);
 
   err_code |= ruuvi_interface_adc_mcu_init(&adc_sensor, bus, handle);
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
@@ -142,7 +142,7 @@ ruuvi_driver_status_t task_adc_init(void)
     // Start the ADC timer here if you use timer-based battery measurement
     if(true == APPLICATION_BATTERY_VOLTAGE_SIMPLE)
     {
-      err_code |= ruuvi_platform_timer_start(adc_timer, APPLICATION_ADC_SAMPLE_INTERVAL_MS);
+      err_code |= ruuvi_interface_timer_start(adc_timer, APPLICATION_ADC_SAMPLE_INTERVAL_MS);
     }
 
     // Configure the radio callback here to synchronize radio to ADC, unless we're in simple mode
@@ -172,9 +172,9 @@ ruuvi_driver_status_t task_adc_data_log(const ruuvi_interface_log_severity_t lev
   err_code |= adc_sensor.data_get(&data);
   char message[128] = {0};
   snprintf(message, sizeof(message), "Time: %lu\r\n", (uint32_t)(data.timestamp_ms&0xFFFFFFFF));
-  ruuvi_platform_log(level, message);
+  ruuvi_interface_log(level, message);
   snprintf(message, sizeof(message), "Battery: %.3f\r\n", data.adc_v);
-  ruuvi_platform_log(level, message);
+  ruuvi_interface_log(level, message);
   return err_code;
 }
 
@@ -201,10 +201,11 @@ ruuvi_driver_status_t task_adc_data_get(ruuvi_interface_adc_data_t* const data)
 
 ruuvi_driver_status_t task_adc_battery_get(ruuvi_interface_adc_data_t* const data)
 {
+  data->timestamp_ms = t_sample;
+  data->adc_v = RUUVI_DRIVER_FLOAT_INVALID;
   if(NULL == data) { return RUUVI_DRIVER_ERROR_NULL; }
   if(NULL == adc_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  data->timestamp_ms = t_sample;
   if(APPLICATION_BATTERY_VOLTAGE_SIMPLE) { err_code |= task_adc_data_get(data); }
   if(APPLICATION_BATTERY_VOLTAGE_RADIO)  { data->adc_v = after_tx; }
   if(APPLICATION_BATTERY_VOLTAGE_DROOP)  { data->adc_v = droop; }

@@ -36,11 +36,20 @@ ruuvi_driver_status_t test_environmental_run(void)
 
   #if RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
     err_code = RUUVI_DRIVER_SUCCESS;
-    // Only SPI supported for now
+    
+    #if RUUVI_BOARD_ENVIRONMENTAL_BME280_SPI_USE
     bus = RUUVI_DRIVER_BUS_SPI;
     handle = RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN;
     err_code = test_run(ruuvi_interface_bme280_init, bus, handle);
     RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
+    #endif
+
+    #if RUUVI_BOARD_ENVIRONMENTAL_BME280_I2C_USE
+    bus = RUUVI_DRIVER_BUS_I2C;
+    handle = RUUVI_BOARD_BME280_I2C_ADDRESS;
+    err_code = test_run(ruuvi_interface_bme280_init, bus, handle);
+    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
+    #endif 
   #endif
 
   #if RUUVI_BOARD_ENVIRONMENTAL_MCU_PRESENT

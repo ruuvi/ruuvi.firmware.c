@@ -23,16 +23,16 @@
 #include "task_acceleration.h"
 #include "task_environmental.h"
 
-RUUVI_PLATFORM_TIMER_ID_DEF(advertisement_timer);
+static ruuvi_interface_timer_id_t advertisement_timer;
 static ruuvi_interface_communication_t channel;
 
 //handler for scheduled advertisement event
-static void task_advertisement_scheduler_task(void *p_event_data, uint16_t event_size)
+void task_advertisement_scheduler_task(void *p_event_data, uint16_t event_size)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   // Update BLE data
-  if(APPLICATION_DATA_FORMAT == 3) { err_code |= task_advertisement_send_3(); }
-  if(APPLICATION_DATA_FORMAT == 5) { err_code |= task_advertisement_send_5(); }
+  if(APPLICATION_DATA_FORMAT == 3)    { err_code |= task_advertisement_send_3(); }
+  if(APPLICATION_DATA_FORMAT == 5)    { err_code |= task_advertisement_send_5(); }
   if(RUUVI_DRIVER_SUCCESS == err_code) { ruuvi_interface_watchdog_feed(); }
 
 }
@@ -40,7 +40,7 @@ static void task_advertisement_scheduler_task(void *p_event_data, uint16_t event
 // Timer callback, schedule advertisement event here.
 static void task_advertisement_timer_cb(void* p_context)
 {
-  ruuvi_platform_scheduler_event_put(NULL, 0, task_advertisement_scheduler_task);
+  ruuvi_interface_scheduler_event_put(NULL, 0, task_advertisement_scheduler_task);
 }
 
 ruuvi_driver_status_t task_advertisement_init(void)
@@ -51,7 +51,7 @@ ruuvi_driver_status_t task_advertisement_init(void)
   int8_t target_power = APPLICATION_ADVERTISING_POWER;
   err_code |= ruuvi_interface_communication_ble4_advertising_tx_power_set(&target_power);
   err_code |= ruuvi_interface_communication_ble4_advertising_manufacturer_id_set(RUUVI_BOARD_BLE_MANUFACTURER_ID);
-  err_code |= ruuvi_platform_timer_create(&advertisement_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_advertisement_timer_cb);
+  err_code |= ruuvi_interface_timer_create(&advertisement_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_advertisement_timer_cb);
   return err_code;
 }
 
@@ -62,13 +62,12 @@ ruuvi_driver_status_t task_advertisement_uninit(void)
 
 ruuvi_driver_status_t task_advertisement_start(void)
 {
-  // TODO: Synchronise data update to advertisement TX
-  return ruuvi_platform_timer_start(advertisement_timer, APPLICATION_ADVERTISING_INTERVAL);
+  return ruuvi_interface_timer_start(advertisement_timer, 1000);
 }
 
 ruuvi_driver_status_t task_advertisement_stop(void)
 {
-  return ruuvi_platform_timer_stop(advertisement_timer);
+  return ruuvi_interface_timer_stop(advertisement_timer);
 }
 
 ruuvi_driver_status_t task_advertisement_send_3(void)

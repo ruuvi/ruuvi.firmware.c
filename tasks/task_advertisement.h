@@ -53,6 +53,11 @@ ruuvi_driver_status_t task_advertisement_start(void);
 ruuvi_driver_status_t task_advertisement_stop(void);
 
 /**
+ * Signal that advertising data should be updated.
+ */
+void task_advertisement_scheduler_task(void *p_event_data, uint16_t event_size);
+
+/**
  * Reads sensors and encodes sensor data into Ruuvi format 3 (RAWv1).
  * Data is buffered and will be sent in next BLE advertisement as manufacturer specific data.
  * Data is transmitted until something else is written to buffer
@@ -71,5 +76,9 @@ ruuvi_driver_status_t task_advertisement_send_3(void);
  * returns error code from stack on error
  */
 ruuvi_driver_status_t task_advertisement_send_5(void);
+
+ruuvi_driver_status_t task_advertisement_send_ac(void);
+
+
 
 #endif

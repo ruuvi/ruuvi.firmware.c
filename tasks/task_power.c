@@ -7,10 +7,10 @@
 
 ruuvi_driver_status_t task_power_dcdc_init(void)
 {
-  ruuvi_interface_power_regulators_t regulators = RUUVI_INTERFACE_POWER_REGULATORS_DISABLED;
+  ruuvi_interface_power_regulators_t regulators = {0};
 
-  #ifdef RUUVI_BOARD_DCDC_INTERNAL_INSTALLED
-    if(RUUVI_BOARD_DCDC_INTERNAL_INSTALLED) regulators |= RUUVI_INTERFACE_POWER_REGULATORS_DCDC_INTERNAL;
+  #if RUUVI_BOARD_DCDC_INTERNAL_INSTALLED
+    if(RUUVI_BOARD_DCDC_INTERNAL_INSTALLED) regulators.DCDC_INTERNAL = 1;
   #endif
   return ruuvi_interface_power_regulators_enable(regulators);
 }

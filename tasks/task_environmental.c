@@ -14,7 +14,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-RUUVI_PLATFORM_TIMER_ID_DEF(environmental_timer);
+static ruuvi_interface_timer_id_t environmental_timer;
 static ruuvi_driver_sensor_t environmental_sensor = {0};
 
 //handler for scheduled accelerometer event
@@ -26,18 +26,18 @@ static void task_environmental_scheduler_task(void *p_event_data, uint16_t event
 // Timer callback, schedule accelerometer event here.
 static void task_environmental_timer_cb(void* p_context)
 {
-  ruuvi_platform_scheduler_event_put(NULL, 0, task_environmental_scheduler_task);
+  ruuvi_interface_scheduler_event_put(NULL, 0, task_environmental_scheduler_task);
 }
 
 ruuvi_driver_status_t task_environmental_configure(ruuvi_driver_sensor_configuration_t* config)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "\r\nAttempting to configure environmental with:\r\n");
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "\r\nAttempting to configure environmental with:\r\n");
   // Use empty in place of unit
   ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "");
   err_code |= environmental_sensor.configuration_set(&environmental_sensor, config);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Actual configuration:\r\n");
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Actual configuration:\r\n");
   ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "");
   return err_code;
 }
@@ -57,13 +57,21 @@ ruuvi_driver_status_t task_environmental_init(void)
   uint8_t handle = 0;
 
   // Initialize timer for environmental task. Note: the timer is not started.
-  err_code |= ruuvi_platform_timer_create(&environmental_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_environmental_timer_cb);
+  err_code |= ruuvi_interface_timer_create(&environmental_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_environmental_timer_cb);
 
   #if RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
     err_code = RUUVI_DRIVER_SUCCESS;
-    // Only SPI supported for now
+    
+    #if RUUVI_BOARD_ENVIRONMENTAL_BME280_SPI_USE
     bus = RUUVI_DRIVER_BUS_SPI;
     handle = RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN;
+    #endif
+
+    #if RUUVI_BOARD_ENVIRONMENTAL_BME280_I2C_USE
+    bus = RUUVI_DRIVER_BUS_I2C;
+    handle = RUUVI_BOARD_BME280_I2C_ADDRESS;
+    #endif
+
     err_code |= ruuvi_interface_bme280_init(&environmental_sensor, bus, handle);
     RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_FOUND);
 
@@ -110,13 +118,13 @@ ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_seve
   err_code |= environmental_sensor.data_get(&data);
   char message[128] = {0};
   snprintf(message, sizeof(message), "Time: %lu\r\n", (uint32_t)(data.timestamp_ms&0xFFFFFFFF));
-  ruuvi_platform_log(level, message);
+  ruuvi_interface_log(level, message);
   snprintf(message, sizeof(message), "Temperature: %.2f\r\n", data.temperature_c);
-  ruuvi_platform_log(level, message);
+  ruuvi_interface_log(level, message);
   snprintf(message, sizeof(message), "Pressure: %.2f\r\n" ,data.pressure_pa);
-  ruuvi_platform_log(level, message);
+  ruuvi_interface_log(level, message);
   snprintf(message, sizeof(message), "Humidity: %.2f\r\n", data.humidity_rh);
-  ruuvi_platform_log(level, message);
+  ruuvi_interface_log(level, message);
   return err_code;
 }
 

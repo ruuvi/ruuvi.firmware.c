@@ -2,6 +2,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
+#include "ruuvi_nrf5_sdk15_error.h"
 #include "ruuvi_interface_flash.h"
 #include "ruuvi_interface_log.h"
 #include "task_flash.h"
@@ -30,16 +31,16 @@ ruuvi_driver_status_t task_flash_load(const uint32_t page_id, const uint32_t rec
 
 ruuvi_driver_status_t task_flash_demo()
 {
-  ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Loading boot count from flash\r\n");
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Loading boot count from flash\r\n");
   char msg[128] = {0};
   if(RUUVI_DRIVER_SUCCESS == ruuvi_interface_flash_record_get(PAGE_ID, RECORD_ID, sizeof(msg), msg))
   {
     snprintf(msg + 4, sizeof(msg) - 4, "Got it, there's been %d boots\r\n", msg[0]);
-    ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, msg+4);
+    ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, msg+4);
   }
   else 
   {
-    ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "Boot count not found, maybe this is first boot?\r\n");  
+    ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Boot count not found, maybe this is first boot?\r\n");  
   }
   msg[0]++;
   return ruuvi_interface_flash_record_set(PAGE_ID, RECORD_ID, sizeof(msg), msg);

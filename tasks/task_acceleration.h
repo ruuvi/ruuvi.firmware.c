@@ -14,6 +14,10 @@
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_log.h"
 
+#define TASK_ACCELERATION_X_INDEX 0
+#define TASK_ACCELERATION_Y_INDEX 1
+#define TASK_ACCELERATION_Z_INDEX 2
+
 /**
  * Auto-detects and initializes acceleration sensor in low-power state
  * Reads supported sensors from board.h and tries to initialize them.
@@ -40,12 +44,5 @@ ruuvi_driver_status_t task_acceleration_on_button(void);
  * Get number of movement counts
  */
 ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t * const count);
-
-/*
- * Enable or disable FIFO
- *
- * parameter enable: True to enable FIFO, false to disable FIFO
- */
-ruuvi_driver_status_t task_acceleration_fifo_use(const bool enable);
 
 #endif

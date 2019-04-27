@@ -41,7 +41,7 @@ ruuvi_driver_status_t task_spi_init(void)
 
     default:
       config.frequency = RUUVI_INTERFACE_SPI_FREQUENCY_1M;
-      ruuvi_platform_log(RUUVI_INTERFACE_LOG_WARNING, "Unknown SPI frequency, defaulting to 1M\r\n");
+      ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, "Unknown SPI frequency, defaulting to 1M\r\n");
   }
-  return ruuvi_platform_spi_init(&config);
+  return ruuvi_interface_spi_init(&config);
 }

@@ -82,7 +82,7 @@ void task_acceleration_scheduler_task(void *p_event_data, uint16_t event_size)
      memset(&(message.data), 0, sizeof(message.data));
      err_code = channel.read(&message);
      snprintf(str, sizeof(str), "%s\r\n", (char *)message.data);
-     ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, str);
+     ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, str);
   }while(RUUVI_DRIVER_SUCCESS == err_code || RUUVI_DRIVER_STATUS_MORE_AVAILABLE == err_code);
 }
 
@@ -92,21 +92,21 @@ ruuvi_driver_status_t task_nfc_on_nfc(ruuvi_interface_communication_evt_t evt, v
   switch(evt)
   {
     case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
-      ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "NFC connected \r\n");
+      ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "NFC connected \r\n");
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
-      ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "NFC disconnected \r\n");
+      ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "NFC disconnected \r\n");
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_SENT:
-      ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "NFC data sent\r\n");
+      ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "NFC data sent\r\n");
       ruuvi_interface_watchdog_feed();
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
-      ruuvi_platform_log(RUUVI_INTERFACE_LOG_INFO, "NFC data received\r\n");
-      ruuvi_platform_scheduler_event_put(NULL, 0, task_acceleration_scheduler_task);
+      ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "NFC data received\r\n");
+      ruuvi_interface_scheduler_event_put(NULL, 0, task_acceleration_scheduler_task);
       break;
 
     default:

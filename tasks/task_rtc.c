@@ -11,6 +11,6 @@
 
 ruuvi_driver_status_t task_rtc_init(void)
 {
-  ruuvi_driver_sensor_timestamp_function_set(ruuvi_platform_rtc_millis);
-  return ruuvi_platform_rtc_init();
+  ruuvi_driver_sensor_timestamp_function_set(ruuvi_interface_rtc_millis);
+  return ruuvi_interface_rtc_init();
 }
