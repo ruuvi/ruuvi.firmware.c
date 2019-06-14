@@ -10,3 +10,6 @@
 [submodule "ruuvi.libraries.c"]
 	path = ruuvi.libraries.c
 	url = https://github.com/ruuvi/ruuvi.libraries.c
+[submodule "ruuvi.nrf_sdk15_0_overrides.c"]
+	path = ruuvi.nrf_sdk15_0_overrides.c
+	url = https://github.com/ruuvi/ruuvi.nrf_sdk15_0_overrides.c.git
