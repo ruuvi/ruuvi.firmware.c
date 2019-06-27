@@ -216,6 +216,12 @@
     <configuration
       Name="Longlife"
       c_preprocessor_definitions="APPLICATION_MODE_LONGLIFE" />
+    <folder
+      Name="ruuvi.libraries.c"
+      exclude=""
+      filter="*.c;*.h"
+      path="../../../ruuvi.libraries.c"
+      recurse="Yes" />
   </project>
   <configuration
     Name="Release"

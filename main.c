@@ -26,6 +26,10 @@
 #include "task_spi.h"
 #include "task_timer.h"
 #include "test_sensor.h"
+#include "test_acceleration.h"
+#include "test_adc.h"
+#include "test_environmental.h"
+#include "test_library.h"
 
 #include <stdio.h>
 
@@ -66,7 +70,11 @@ int main(void)
   // Tests will initialize and uninitialize the sensors, run this before using them in application
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO,
                       "Running extended self-tests, this might take a while\r\n");
-  test_sensor_run();
+  test_acceleration_run();
+  test_adc_run();
+  test_environmental_run();
+  test_library_run();
+
   // Print unit test status, activate tests by building in DEBUG configuration under SES
   size_t tests_run, tests_passed;
   test_sensor_status(&tests_run, &tests_passed);
