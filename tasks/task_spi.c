@@ -1,9 +1,3 @@
-/**
- * Ruuvi Firmware 3.x SPI tasks.
- *
- * License: BSD-3
- * Author: Otso Jousimaa <otso@ojousima.net>
- **/
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_log.h"
@@ -13,12 +7,12 @@
 ruuvi_driver_status_t task_spi_init(void)
 {
   ruuvi_interface_spi_init_config_t config;
-  uint8_t ss_pins[] = RUUVI_BOARD_SPI_SS_LIST;
-  config.mosi = RUUVI_BOARD_SPI_MOSI_PIN;
-  config.miso = RUUVI_BOARD_SPI_MISO_PIN;
-  config.sclk = RUUVI_BOARD_SPI_SCLK_PIN;
+  ruuvi_interface_gpio_id_t ss_pins[] = RUUVI_BOARD_SPI_SS_LIST;
+  config.mosi.pin = RUUVI_BOARD_SPI_MOSI_PIN;
+  config.miso.pin = RUUVI_BOARD_SPI_MISO_PIN;
+  config.sclk.pin = RUUVI_BOARD_SPI_SCLK_PIN;
   config.ss_pins = ss_pins;
-  config.ss_pins_number = sizeof(ss_pins);
+  config.ss_pins_number = sizeof(ss_pins)/sizeof(ruuvi_interface_gpio_id_t);
   // Assume mode 0 always.
   config.mode = RUUVI_INTERFACE_SPI_MODE_0;
 

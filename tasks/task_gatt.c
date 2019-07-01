@@ -75,16 +75,22 @@ ruuvi_driver_status_t task_gatt_init(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_interface_communication_ble4_gatt_dis_init_t dis = {0};
-  uint64_t id;
-  err_code |= ruuvi_interface_communication_id_get(&id);
+  uint64_t mac;
+  err_code |= ruuvi_interface_communication_radio_address_get(&mac);
+  uint8_t mac_buffer[6] = {0};
+  mac_buffer[0] = (mac >> 40) & 0xFF;
+  mac_buffer[1] = (mac >> 32) & 0xFF;
+  mac_buffer[2] = (mac >> 24) & 0xFF;
+  mac_buffer[3] = (mac >> 16) & 0xFF;
+  mac_buffer[4] = (mac >> 8) & 0xFF;
+  mac_buffer[5] = (mac >> 0) & 0xFF;
   size_t index = 0;
 
-  for(size_t ii = 0; ii < 8; ii ++)
+  for(size_t ii = 0; ii < 6; ii ++)
   {
-    index += snprintf(dis.deviceid + index, sizeof(dis.deviceid) - index, "%02X",
-                      (uint8_t)(id >> ((7 - ii) * 8)) & 0xFF);
+    index += snprintf(dis.deviceid + index, sizeof(dis.deviceid) - index, "%02X", mac_buffer[ii]);
 
-    if(ii < 7) { index += snprintf(dis.deviceid + index, sizeof(dis.deviceid) - index, ":"); }
+    if(ii < 5) { index += snprintf(dis.deviceid + index, sizeof(dis.deviceid) - index, ":"); }
   }
 
   memcpy(dis.fw_version, APPLICATION_FW_VERSION, sizeof(APPLICATION_FW_VERSION));
@@ -99,9 +105,6 @@ ruuvi_driver_status_t task_gatt_init(void)
   err_code |= ruuvi_interface_communication_ble4_gatt_dfu_init();
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |= ruuvi_interface_communication_ble4_gatt_dis_init(&dis);
-  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
-  err_code |= ruuvi_interface_communication_ble4_gatt_advertise_connectablity(true, "Ruuvi",
-              true, true);
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   size_t max_messages = sizeof(buffer) / sizeof(ruuvi_interface_communication_message_t);
   ringbuffer_init(&tx_buffer, max_messages, sizeof(ruuvi_interface_communication_message_t),
@@ -138,23 +141,18 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_interface_communication_message_t msg = {0};
+  ruuvi_interface_communication_message_t reply = {0};
+  
 
   switch(evt)
   {
     case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
       ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Connected \r\n");
-      memcpy(msg.data, "Hello! Here's data!", 20);
-      msg.data_length = 20;
-      buffer_index = 0;
-      task_gatt_send(&msg);
       break;
 
     // TODO: Handle case where connection was made but NUS was not registered
     case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
       ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Disconnected \r\n");
-      // Todo: data advertising
-      ruuvi_interface_communication_ble4_gatt_advertise_connectablity(true, "Ruuvi", true,
-          true);
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_SENT:
@@ -165,13 +163,21 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
       if(0 == buffer_index)
       {
         ruuvi_interface_scheduler_event_put(NULL, 0,  task_gatt_queue_process);
-        ruuvi_interface_watchdog_feed();
       }
 
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
-      // Schedule handling command
+      if(RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH < data_len)
+      {
+        ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, "Too long message received, discarding\r\n");
+        break;
+      }
+      msg.data_length = data_len;
+      reply.data_length = RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH;
+      memcpy(msg.data, p_data, msg.data_length);
+      task_communication_on_data(&msg, &reply);
+      task_gatt_send(&reply);
       break;
 
     default:

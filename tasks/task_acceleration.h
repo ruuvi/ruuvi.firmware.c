@@ -94,14 +94,14 @@ ruuvi_driver_status_t task_acceleration_data_get(ruuvi_interface_acceleration_da
  *
  * @param[in] data offsets
  */
-void task_acceleration_x_offset_set(uint8_t* const data);
+void task_acceleration_offset_x_set(uint8_t* const data);
 
 /**
  * @brief Read offsets configured by user
  *
  * @param[out] data offsets
  */
-void task_acceleration_x_offset_get(uint8_t* const data);
+void task_acceleration_offset_x_get(uint8_t* const data);
 
 /**
  * @brief Add offset to Y sensor reading. 
@@ -110,14 +110,14 @@ void task_acceleration_x_offset_get(uint8_t* const data);
  *
  * @param[in] data offsets
  */
-void task_acceleration_y_offset_set(uint8_t* const data);
+void task_acceleration_offset_y_set(uint8_t* const data);
 
 /**
  * @brief Read offsets configured by user
  *
  * @param[out] data offsets
  */
-void task_acceleration_y_offset_get(uint8_t* const data);
+void task_acceleration_offset_y_get(uint8_t* const data);
 
 /**
  * @brief Add offset to Z sensor reading. 
@@ -126,14 +126,14 @@ void task_acceleration_y_offset_get(uint8_t* const data);
  *
  * @param[in] data offsets
  */
-void task_acceleration_z_offset_set(uint8_t* const data);
+void task_acceleration_offset_z_set(uint8_t* const data);
 
 /**
  * @brief Read offsets configured by user
  *
  * @param[out] data offsets
  */
-void task_acceleration_z_offset_get(uint8_t* const data);
+void task_acceleration_offset_z_get(uint8_t* const data);
 
 
 /**

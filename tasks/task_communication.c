@@ -143,3 +143,38 @@ void task_communication_offsets_apply(ruuvi_driver_sensor_data_t* const data, co
   if(isfinite(data->value1) && isfinite(offsets->value1)) { data->value1 += offsets->value1; }
   if(isfinite(data->value2) && isfinite(offsets->value2)) { data->value2 += offsets->value2; }
 }
+
+ruuvi_driver_status_t task_communication_offsets_i32f32_to_float(const uint8_t* const offset, float* const converted)
+{
+  if(NULL == offset || NULL == converted) { return RUUVI_DRIVER_ERROR_NULL; }
+  int32_t integer = 0;
+  int32_t fraction = 0;
+  // uint8 array is big-endian, our CPU is little-endian. Convert.
+  integer |= offset[0] << 0;
+  integer |= offset[1] << 8;
+  integer |= offset[2] << 16;
+  integer |= offset[3] << 24;
+  fraction |= offset[4] << 0;
+  fraction |= offset[5] << 8;
+  fraction |= offset[6] << 16;
+  fraction |= offset[7] << 24;
+  *converted =  integer + (float)fraction/INT32_MAX;
+  return RUUVI_DRIVER_SUCCESS;
+}
+
+ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(const float* const offset, uint8_t* const converted)
+{
+  if(NULL == offset || NULL == converted) { return RUUVI_DRIVER_ERROR_NULL; }
+  int32_t integer = (int32_t)  *offset;
+  int32_t fraction = (int32_t) ((*offset-floor(*offset)) * INT32_MAX);
+  // uint8 array is big-endian, our CPU is little-endian. Convert.
+  converted[0] = (integer >> 0) & 0xFF;
+  converted[1] = (integer >> 8) & 0xFF;
+  converted[2] = (integer >> 16) & 0xFF;
+  converted[3] = (integer >> 12) & 0xFF;
+  converted[4] = (fraction >> 0) & 0xFF;
+  converted[5] = (fraction >> 5) & 0xFF;
+  converted[6] = (fraction >> 6) & 0xFF;
+  converted[7] = (fraction >> 7) & 0xFF;
+  return RUUVI_DRIVER_SUCCESS;
+}

@@ -42,24 +42,24 @@ static task_communication_api_t acceleration_api = {
 
 static task_communication_api_t acceleration_x_api = {
   .sensor = NULL,
-  .offset_set = task_acceleration_x_offset_set,
-  .offset_get = task_acceleration_x_offset_get,
+  .offset_set = task_acceleration_offset_x_set,
+  .offset_get = task_acceleration_offset_x_get,
   .data_target = NULL,
   .log_cfg     = NULL
 };
 
 static task_communication_api_t acceleration_y_api = {
   .sensor = NULL,
-  .offset_set = task_acceleration_y_offset_set,
-  .offset_get = task_acceleration_y_offset_get,
+  .offset_set = task_acceleration_offset_y_set,
+  .offset_get = task_acceleration_offset_y_get,
   .data_target = NULL,
   .log_cfg     = NULL
 };
 
 static task_communication_api_t acceleration_z_api = {
   .sensor = NULL,
-  .offset_set = task_acceleration_z_offset_set,
-  .offset_get = task_acceleration_z_offset_get,
+  .offset_set = task_acceleration_offset_z_set,
+  .offset_get = task_acceleration_offset_z_get,
   .data_target = NULL,
   .log_cfg     = NULL
 };
@@ -99,7 +99,7 @@ static void task_acceleration_movement_task(void* p_event_data, uint16_t event_s
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
 }
 
-void task_acceleration_x_offset_set(uint8_t* const data)
+void task_acceleration_offset_x_set(uint8_t* const data)
 {
   if(NULL == data)
   {
@@ -123,7 +123,7 @@ void task_acceleration_offset_x_get(uint8_t* const data)
   }
 }
 
-void task_acceleration_y_offset_set(uint8_t* const data)
+void task_acceleration_offset_y_set(uint8_t* const data)
 {
   if(NULL == data)
   {
@@ -147,7 +147,7 @@ void task_acceleration_offset_y_get(uint8_t* const data)
   }
 }
 
-void task_acceleration_z_offset_set(uint8_t* const data)
+void task_acceleration_offset_z_set(uint8_t* const data)
 {
   if(NULL == data)
   {
@@ -248,7 +248,7 @@ ruuvi_driver_status_t task_acceleration_data_get(ruuvi_interface_acceleration_da
   if(NULL == acceleration_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
 
   ruuvi_driver_status_t err_code = acceleration_sensor.data_get(data);
-  task_communication_offsets_apply(data, &offsets);
+  task_communication_offsets_apply((ruuvi_driver_sensor_data_t*)data, (ruuvi_driver_sensor_data_t*)&offsets);
 
   return err_code;
 }
@@ -287,6 +287,21 @@ ruuvi_driver_status_t task_acceleration_fifo_use(const bool enable)
 ruuvi_driver_status_t task_acceleration_api_get(task_communication_api_t** api)
 {
  *api = &acceleration_api;
+}
+
+ruuvi_driver_status_t task_acceleration_api_x_get(task_communication_api_t** api)
+{
+ *api = &acceleration_x_api;
+}
+
+ruuvi_driver_status_t task_acceleration_api_y_get(task_communication_api_t** api)
+{
+ *api = &acceleration_y_api;
+}
+
+ruuvi_driver_status_t task_acceleration_api_z_get(task_communication_api_t** api)
+{
+ *api = &acceleration_z_api;
 }
 
 ruuvi_driver_status_t task_acceleration_logging_configure(const task_api_data_target_t const target, const uint8_t interval)
