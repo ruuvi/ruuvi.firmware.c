@@ -8,6 +8,7 @@
 #include "application_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
+#include "ruuvi_interface_communication_ble4_advertising.h"
 #include "ruuvi_interface_communication_ble4_gatt.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_communication.h"
@@ -15,8 +16,9 @@
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_watchdog.h"
-#include "task_gatt.h"
 #include "task_acceleration.h"
+#include "task_advertisement.h"
+#include "task_gatt.h"
 #include "ringbuffer.h"
 
 #include <stdlib.h>
@@ -109,6 +111,10 @@ ruuvi_driver_status_t task_gatt_init(void)
   size_t max_messages = sizeof(buffer) / sizeof(ruuvi_interface_communication_message_t);
   ringbuffer_init(&tx_buffer, max_messages, sizeof(ruuvi_interface_communication_message_t),
                   &buffer);
+  char name[10];
+  snprintf(name, sizeof(name), "Ruuvi %02X%02X", mac_buffer[4], mac_buffer[5]); 
+  ruuvi_interface_communication_ble4_advertising_scan_response_setup(name, true);
+  ruuvi_interface_communication_ble4_advertising_type_set(CONNECTABLE_SCANNABLE);
   return err_code;
 }
 
@@ -146,13 +152,16 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
 
   switch(evt)
   {
+    // Note: This gets called only after the NUS notifications have been registered.
     case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
       ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Connected \r\n");
+      task_advertisement_stop();
       break;
 
     // TODO: Handle case where connection was made but NUS was not registered
     case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
       ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Disconnected \r\n");
+      task_advertisement_start();
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_SENT:
@@ -164,6 +173,7 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
       {
         ruuvi_interface_scheduler_event_put(NULL, 0,  task_gatt_queue_process);
       }
+      ruuvi_interface_watchdog_feed();
 
       break;
 
@@ -178,6 +188,7 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
       memcpy(msg.data, p_data, msg.data_length);
       task_communication_on_data(&msg, &reply);
       task_gatt_send(&reply);
+      ruuvi_interface_watchdog_feed();
       break;
 
     default:

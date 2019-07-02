@@ -98,7 +98,6 @@
       <file file_name="../../../../nRF5_SDK_15.2.0_9412b96/integration/nrfx/legacy/nrf_drv_spi.c" />
       <file file_name="../../../../nRF5_SDK_15.2.0_9412b96/modules/nrfx/drivers/src/nrfx_rtc.c" />
       <file file_name="../../../../nRF5_SDK_15.2.0_9412b96/modules/nrfx/drivers/src/nrfx_power.c" />
-      <file file_name="../../../../nRF5_SDK_15.2.0_9412b96/modules/nrfx/drivers/src/nrfx_wdt.c" />
     </folder>
     <folder Name="Application">
       <file file_name="../../../main.c" />

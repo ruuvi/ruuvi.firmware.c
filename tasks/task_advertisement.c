@@ -32,11 +32,13 @@ void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size)
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
   // Update BLE data
-  if(APPLICATION_DATA_FORMAT == 3)    { err_code |= task_advertisement_send_3(); }
+  if(APPLICATION_DATA_FORMAT == 3)     { err_code |= task_advertisement_send_3(); }
 
-  if(APPLICATION_DATA_FORMAT == 5)    { err_code |= task_advertisement_send_5(); }
+  if(APPLICATION_DATA_FORMAT == 5)     { err_code |= task_advertisement_send_5(); }
 
-  if(RUUVI_DRIVER_SUCCESS == err_code) { ruuvi_interface_watchdog_feed(); }
+  if(RUUVI_DRIVER_SUCCESS == err_code) { err_code |= ruuvi_interface_watchdog_feed(); }
+
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
 // Timer callback, schedule advertisement event here.
@@ -67,11 +69,18 @@ ruuvi_driver_status_t task_advertisement_uninit(void)
 
 ruuvi_driver_status_t task_advertisement_start(void)
 {
-  return ruuvi_interface_timer_start(advertisement_timer, 1000);
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code |= ruuvi_interface_communication_ble4_advertising_start();
+  err_code |= ruuvi_interface_timer_start(advertisement_timer, 1000);
+  return err_code;
 }
 
 ruuvi_driver_status_t task_advertisement_stop(void)
 {
+  // Ignore error code from stopping, as the advertisement will
+  // always be stopped but INVALID_STATE is returned if
+  // advertisement wasn't ongoing.
+  ruuvi_interface_communication_ble4_advertising_stop();
   return ruuvi_interface_timer_stop(advertisement_timer);
 }
 

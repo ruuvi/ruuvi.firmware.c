@@ -10,7 +10,7 @@
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
-#define APPLICATION_FW_VERSION "RuuviFW 3.18.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.20.0"
 
 /** @brief Bytes of RAM to conserve for printed log messages
  *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.
@@ -226,7 +226,11 @@
 #define APPLICATION_TIMER_ENABLED                   1
 #define APPLICATION_TIMER_MAX_INSTANCES             10 ///< Timers are allocated statically on RAM
 #define APPLICATION_WATCHDOG_ENABLED                1
-#define APPLICATION_WATCHDOG_INTERVAL_MS            120000u
+#if DEBUG
+  #define APPLICATION_WATCHDOG_INTERVAL_MS            120000u
+#else
+  #define APPLICATION_WATCHDOG_INTERVAL_MS            12000u
+#endif
 #define APPLICATION_YIELD_ENABLED                   1
 #define APPLICATION_LOG_ENABLED                     1
 // RUUVI_INTERFACE_LOG_ ERROR, WARNING, INFO, DEBUG

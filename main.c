@@ -105,8 +105,8 @@ int main(void)
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
   // Initialize BLE - does not start advertising
   status |= task_advertisement_init();
-  status |= task_advertisement_start();
   status |= task_gatt_init();
+  status |= task_advertisement_start();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   status |= task_flash_init();
   status |= task_flash_demo();

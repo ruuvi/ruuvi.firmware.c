@@ -60,7 +60,7 @@ void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size);
 /**
  * Reads sensors and encodes sensor data into Ruuvi format 3 (RAWv1).
  * Data is buffered and will be sent in next BLE advertisement as manufacturer specific data.
- * Data is transmitted until something else is written to buffer
+ * Data is transmitted until something else is written to buffer.
  *
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
@@ -68,17 +68,23 @@ void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size);
 ruuvi_driver_status_t task_advertisement_send_3(void);
 
 /**
- * Reads sensors and encodes sensor data into Ruuvi format 3 (RAWv1).
+ * Reads sensors and encodes sensor data into Ruuvi format 5 (RAWv2).
  * Data is buffered and will be sent in next BLE advertisement as manufacturer specific data.
- * Data is transmitted until something else is written to buffer
+ * Data is transmitted until something else is written to buffer.
  *
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
  */
 ruuvi_driver_status_t task_advertisement_send_5(void);
 
+/**
+ * Reads sensors and encodes sensor data into unofficial format AC (acceleration).
+ * Data is buffered and will be sent in next BLE advertisement as manufacturer specific data.
+ * Data is transmitted until something else is written to buffer.
+ *
+ * returns RUUVI_DRIVER_SUCCESS on success
+ * returns error code from stack on error
+ */
 ruuvi_driver_status_t task_advertisement_send_ac(void);
-
-
 
 #endif
