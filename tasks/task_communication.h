@@ -19,8 +19,8 @@
 
 #define TASK_COMMUNICATION_SENSOR_OFFSET_U16_INVALID 0xFFFF //!< Signal that sensor offsets were invalid / non-applicable
 
-/** @brief set up or read offsets from the task. */
-typedef void (*task_api_offset_fp_t)(uint8_t* const bytes);
+/** @brief set up or read offsets, data from the task. */
+typedef void (*task_api_data_fp_t)(uint8_t* const bytes);
 
 /** @brief Function pointer to send data to once available, for example send to RAM buffer */
 typedef ruuvi_driver_status_t (*task_api_data_target_t)(const ruuvi_driver_sensor_data_t* const data, const uint8_t source);
@@ -31,8 +31,9 @@ typedef ruuvi_driver_status_t (*task_api_log_cfg_t)(const task_api_data_target_t
 /** @brief API to control sensors. */
 typedef struct task_communication_api_t {
   ruuvi_driver_sensor_t* sensor;      //!< Sensor control functions, NULL if not applicable
-  task_api_offset_fp_t   offset_set;  //!< Function to setup offset
-  task_api_offset_fp_t   offset_get;  //!< Function to read offset
+  task_api_data_fp_t     offset_set;  //!< Function to setup offset
+  task_api_data_fp_t     offset_get;  //!< Function to read offset
+  task_api_data_fp_t     data_get;    //!< Function to value from sensor
   task_api_data_target_t data_target; //!< Function to send data to.
   task_api_log_cfg_t     log_cfg;     //!< Function to configure logging
 }task_communication_api_t;

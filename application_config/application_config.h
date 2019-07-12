@@ -10,7 +10,7 @@
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
-#define APPLICATION_FW_VERSION "RuuviFW 3.20.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.21.1"
 
 /** @brief Bytes of RAM to conserve for printed log messages
  *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.
@@ -55,7 +55,7 @@
   * Ooversampling (OS) increases power consumption but lowers noise.
   * @see https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
   */
-  #define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_DSP_LOW_PASS
+  #define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
   /** @brief Parameter to DSP function.
   * The parameter affects how agressively the DSP is applied, higher means
@@ -64,7 +64,7 @@
   * Valid values are RUUVI_DRIVER_SENSOR_CFG_MAX, RUUVI_DRIVER_SENSOR_CFG_MIN, RUUVI_DRIVER_SENSOR_CFG_DEFAULT.
   * 1, 2, 4, 8, 16
   */
-  #define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_MAX
+  #define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_DEFAULT
 
   /**
   * @brief default mode of environmental sensor.
@@ -86,6 +86,9 @@
 
 /** @brief Enable compiling BME280 I2C interface */
 #define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_I2C_ENABLED 0
+
+/** @brief Enable compiling SHTCX interface functions */
+#define RUUVI_INTERFACE_ENVIRONMENTAL_SHTCX_ENABLED 1
 
 /**
  * Accelerometer configuration
@@ -165,11 +168,15 @@
  */
 // Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
 #ifndef APPLICATION_ADVERTISING_CONFIGURED
+#if DEBUG
+  #define APPLICATION_ADVERTISING_INTERVAL              200
+#else
   #define APPLICATION_ADVERTISING_INTERVAL              2020
-  #define APPLICATION_CONNECTION_ADVERTISEMENT_INTERVAL 100
+#endif
   #define APPLICATION_ADVERTISING_POWER                 RUUVI_BOARD_TX_POWER_MAX
-  #define APPLICATION_DATA_FORMAT                       0x03
+  #define APPLICATION_DATA_FORMAT                       0x05
   #define APPLICATION_STANDBY_INTERVAL                  9900
+  #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL     2020
 #endif
 
 // Apple connection parameter quidelines:
@@ -227,7 +234,7 @@
 #define APPLICATION_TIMER_MAX_INSTANCES             10 ///< Timers are allocated statically on RAM
 #define APPLICATION_WATCHDOG_ENABLED                1
 #if DEBUG
-  #define APPLICATION_WATCHDOG_INTERVAL_MS            120000u
+  #define APPLICATION_WATCHDOG_INTERVAL_MS            1200000u
 #else
   #define APPLICATION_WATCHDOG_INTERVAL_MS            12000u
 #endif
@@ -241,7 +248,7 @@
 #define APPLICATION_LOG_BACKEND_RTT_ENABLED         1
 //#define APPLICATION_LOG_BACKEND_UART_ENABLED        0 // UART not implemented
 
-// 64 * 1024 words (4096 bytyes) = 262144 bytes = 256 kB.
-#define  APPLICATION_FLASH_DATA_PAGES_NUMBER        64
+// 10 * 1024 words (4096 bytyes) = 40960 bytes = 40 kB.
+#define  APPLICATION_FLASH_DATA_PAGES_NUMBER        10
 
 #endif

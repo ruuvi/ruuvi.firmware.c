@@ -71,7 +71,7 @@ ruuvi_driver_status_t task_advertisement_start(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   err_code |= ruuvi_interface_communication_ble4_advertising_start();
-  err_code |= ruuvi_interface_timer_start(advertisement_timer, 1000);
+  err_code |= ruuvi_interface_timer_start(advertisement_timer, APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL);
   return err_code;
 }
 

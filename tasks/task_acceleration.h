@@ -197,6 +197,17 @@ ruuvi_driver_status_t task_acceleration_api_z_get(task_communication_api_t** api
  */
 ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t* const count);
 
+/**
+ * @brief Configure logging of sensor data
+ *
+ * This function configures how sensor data should be logged. The logging target can be
+ * real-time, such as GATT or B LE advertisement or something more persistent, such as 
+ * RAM or FLASH buffer.
+ *
+ * @param[in] target Target logging backend(s) 
+ * @param[in] interval Logging interval, format TBD
+ * @return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED
+ */
 ruuvi_driver_status_t task_acceleration_logging_configure(const task_api_data_target_t const target, const uint8_t interval);
 
 #endif

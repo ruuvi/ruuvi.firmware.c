@@ -19,6 +19,7 @@
 #include "task_flash.h"
 #include "task_gatt.h"
 #include "task_led.h"
+#include "task_i2c.h"
 #include "task_nfc.h"
 #include "task_power.h"
 #include "task_rtc.h"
@@ -55,8 +56,9 @@ int main(void)
   status |= task_led_init();
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_ON);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  // Initialize SPI
+  // Initialize SPI, I2C
   status |= task_spi_init();
+  status |= task_i2c_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Initialize RTC, timer and scheduler
   status |= task_rtc_init();

@@ -3,6 +3,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_bme280.h"
+#include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_log.h"
 #include "test_sensor.h"
@@ -50,6 +51,14 @@ ruuvi_driver_status_t test_environmental_run(void)
     err_code = test_run(ruuvi_interface_bme280_init, bus, handle);
     RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
     #endif 
+  #endif
+
+  #if RUUVI_BOARD_ENVIRONMENTAL_SHTCX_PRESENT
+    err_code = RUUVI_DRIVER_SUCCESS;
+    bus = RUUVI_DRIVER_BUS_I2C;
+    handle = RUUVI_BOARD_SHTCX_I2C_ADDRESS;
+    err_code = test_run(ruuvi_interface_shtcx_init, bus, handle);
+    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
   #endif
 
   #if RUUVI_BOARD_ENVIRONMENTAL_MCU_PRESENT

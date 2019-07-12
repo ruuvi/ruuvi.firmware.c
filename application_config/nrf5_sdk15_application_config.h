@@ -46,6 +46,7 @@
 #define TWI_ENABLED                        I2C_ENABLED
 #define TWI1_ENABLED                       I2C_ENABLED
 #define TWI1_USE_EASY_DMA                  I2C_ENABLED
+#define NRFX_TWI_ENABLED                   I2C_ENABLED
 #define NRFX_TWIM_ENABLED                  I2C_ENABLED
 #define NRFX_TWIM_ENABLED                  I2C_ENABLED
 #define NRFX_TWIM1_ENABLED                 I2C_ENABLED

@@ -58,7 +58,7 @@ static void task_gatt_queue_process(void* p_event_data, uint16_t event_size)
 
   do
   {
-    if(buffer_index > ringbuffer_get_count(&tx_buffer)) { break; }
+    if(buffer_index >= ringbuffer_get_count(&tx_buffer)) { break; }
 
     // Bluetooth driver takes address of data. Therefore data must be stored
     // until it is sent - do not discard here.
@@ -112,7 +112,7 @@ ruuvi_driver_status_t task_gatt_init(void)
   ringbuffer_init(&tx_buffer, max_messages, sizeof(ruuvi_interface_communication_message_t),
                   &buffer);
   char name[10];
-  snprintf(name, sizeof(name), "Ruuvi %02X%02X", mac_buffer[4], mac_buffer[5]); 
+  snprintf(name, sizeof(name), "Ruuvi%02X%02X", mac_buffer[4], mac_buffer[5]); 
   ruuvi_interface_communication_ble4_advertising_scan_response_setup(name, true);
   ruuvi_interface_communication_ble4_advertising_type_set(CONNECTABLE_SCANNABLE);
   return err_code;
@@ -183,10 +183,15 @@ ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
         ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, "Too long message received, discarding\r\n");
         break;
       }
+      /*
       msg.data_length = data_len;
       reply.data_length = RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH;
       memcpy(msg.data, p_data, msg.data_length);
       task_communication_on_data(&msg, &reply);
+      task_gatt_send(&reply);
+      */
+      reply.data_length = data_len;
+      mempcpy(reply.data, p_data, data_len);
       task_gatt_send(&reply);
       ruuvi_interface_watchdog_feed();
       break;

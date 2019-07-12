@@ -85,6 +85,6 @@ ruuvi_driver_status_t task_advertisement_send_5(void);
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
  */
-ruuvi_driver_status_t task_advertisement_send_ac(void);
+//ruuvi_driver_status_t task_advertisement_send_ac(void);
 
 #endif
