@@ -11,6 +11,7 @@
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdio.h>
+#define RETURN_ON_ERROR(status) if(RUUVI_DRIVER_SUCCESS != status) { return status; }
 
 // Use own file for each test run to track the source of any errors.
 static ruuvi_driver_status_t test_run(ruuvi_driver_sensor_init_fp init, ruuvi_driver_bus_t bus, uint8_t handle)
@@ -18,7 +19,8 @@ static ruuvi_driver_status_t test_run(ruuvi_driver_sensor_init_fp init, ruuvi_dr
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   #ifdef RUUVI_RUN_TESTS
     err_code = test_sensor_init(init, bus, handle);
-    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
+    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST | RUUVI_DRIVER_ERROR_NOT_FOUND);
+    RETURN_ON_ERROR(err_code);
 
     err_code = test_sensor_setup(init, bus, handle);
     RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
@@ -42,7 +44,7 @@ ruuvi_driver_status_t test_environmental_run(void)
     bus = RUUVI_DRIVER_BUS_SPI;
     handle = RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN;
     err_code = test_run(ruuvi_interface_bme280_init, bus, handle);
-    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
+    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST | RUUVI_DRIVER_ERROR_NOT_FOUND);
     #endif
 
     #if RUUVI_BOARD_ENVIRONMENTAL_BME280_I2C_USE
@@ -58,7 +60,7 @@ ruuvi_driver_status_t test_environmental_run(void)
     bus = RUUVI_DRIVER_BUS_I2C;
     handle = RUUVI_BOARD_SHTCX_I2C_ADDRESS;
     err_code = test_run(ruuvi_interface_shtcx_init, bus, handle);
-    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
+    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST | RUUVI_DRIVER_ERROR_NOT_FOUND);
   #endif
 
   #if RUUVI_BOARD_ENVIRONMENTAL_MCU_PRESENT
