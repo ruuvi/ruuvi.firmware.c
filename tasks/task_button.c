@@ -15,6 +15,7 @@
 #include <stddef.h>
 
 static task_button_fp_t button_callback = NULL;
+// TODO: Refactor GPIO interrupts to their own task
 static ruuvi_interface_gpio_interrupt_fp_t interrupt_table[RUUVI_BOARD_GPIO_NUMBER + 1 ]
   = {0};
 

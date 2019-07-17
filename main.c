@@ -102,7 +102,6 @@ int main(void)
   status |= task_environmental_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
   // Allow NOT FOUND in case we're running on basic model
-  // TODO: Requires task_button to init GPIO
   status = task_acceleration_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
   // Initialize BLE - does not start advertising

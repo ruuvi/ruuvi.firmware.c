@@ -14,8 +14,10 @@
 ruuvi_driver_status_t task_i2c_init(void)
 {
   ruuvi_interface_i2c_init_config_t config;
-  config.sda = RUUVI_BOARD_I2C_SDA_PIN;
-  config.scl = RUUVI_BOARD_I2C_SCL_PIN;
+  ruuvi_interface_gpio_id_t scl = { .pin = RUUVI_BOARD_I2C_SCL_PIN };
+  ruuvi_interface_gpio_id_t sda = { .pin = RUUVI_BOARD_I2C_SDA_PIN };
+  config.sda = sda;
+  config.scl = scl;
 
   // XXX: Force SPI bus out
   /*ruuvi_interface_gpio_configure(RUUVI_BOARD_SPI_SS_ACCELEROMETER_PIN, RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP);

@@ -102,7 +102,7 @@ ruuvi_driver_status_t task_gatt_init(void)
   err_code |= ruuvi_interface_communication_ble4_gatt_init();
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |= ruuvi_interface_communication_ble4_gatt_nus_init(&channel);
-  channel.on_evt = task_gatt_on_gatt;
+  channel.on_evt = task_gatt_on_nus;
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |= ruuvi_interface_communication_ble4_gatt_dfu_init();
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
@@ -142,7 +142,10 @@ ruuvi_driver_status_t task_gatt_on_advertisement(ruuvi_interface_communication_e
 //  return RUUVI_DRIVER_SUCCESS;
 //}
 
-ruuvi_driver_status_t task_gatt_on_gatt(ruuvi_interface_communication_evt_t evt,
+/**
+ * This function is called on interrupt context - don't process data here, only schedule it for later.
+ */
+void task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
                                         void* p_data, size_t data_len)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
@@ -211,10 +214,9 @@ ruuvi_driver_status_t task_gatt_on_nfc(ruuvi_interface_communication_evt_t evt, 
 }
 */
 
-ruuvi_driver_status_t task_gatt_send(ruuvi_interface_communication_message_t* const msg)
+ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_message_t* const msg)
 {
   if(NULL == msg)          { return RUUVI_DRIVER_ERROR_NULL; }
-
   if(NULL == channel.send) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
 
   // Add to queue if there's room

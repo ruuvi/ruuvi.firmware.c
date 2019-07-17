@@ -20,6 +20,13 @@
 #include <string.h>
 #include <inttypes.h>
 
+#define RETURN_ON_NON_STD_MSG(incoming, reply)  if(NULL == incoming || \\
+                                                   RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH != incoming->data_length || \\
+                                                   NULL == reply ||                                                    \\
+                                                   RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH != reply->data_length) \\
+                                                   return RUUVI_DRIVER_ERROR_INVALID_PARAM 
+
+
 static ruuvi_driver_status_t task_communication_target_api_get(task_communication_api_t* api, uint8_t target)
 {
   if(NULL == api) { return RUUVI_DRIVER_ERROR_NULL; }
@@ -67,22 +74,17 @@ static ruuvi_driver_status_t task_communication_target_api_get(task_communicatio
 ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communication_message_t* const incoming, ruuvi_interface_communication_message_t* const reply)
 {
   // return error if data is not understood.
-  if(NULL == incoming ||
-     RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH != incoming->data_length ||
-     NULL == reply ||
-     RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH != reply->data_length)
-  {
-    return RUUVI_DRIVER_ERROR_INVALID_PARAM;   
-  }
+  RETURN_ON_NON_STD_MSG(incoming, reply);
 
   // Get target API
   task_communication_api_t api;
+  err_code |= task_communication_target_api_get(&api, incoming->data[RUUVI_ENDPOINT_STANDARD_DESTINATION_INDEX]);
   ruuvi_driver_sensor_configuration_t config;
   float offset;
   uint8_t payload[RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH];
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_driver_sensor_data_t data;
-  err_code |= task_communication_target_api_get(&api, incoming->data[RUUVI_ENDPOINT_STANDARD_DESTINATION_INDEX]);
+  
   // Unless something was done with the data, assume error
   reply->data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
 

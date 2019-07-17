@@ -15,6 +15,7 @@
 
 #include "task_acceleration.h"
 #include "task_advertisement.h"
+#include "task_button.h"
 #include "task_communication.h"
 #include "task_gatt.h"
 #include "task_led.h"
@@ -198,6 +199,10 @@ ruuvi_driver_status_t task_acceleration_init(void)
   config.mode          = APPLICATION_ACCELEROMETER_MODE;
   uint8_t handle = 0;
   m_nbr_movements = 0;
+
+  // XXX TODO: Refactor gpio init into it's own task
+  if(!ruuvi_interface_gpio_is_init()) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+
   #if RUUVI_BOARD_ACCELEROMETER_LIS2DH12_PRESENT
   err_code = RUUVI_DRIVER_SUCCESS;
   // Only SPI supported for now
