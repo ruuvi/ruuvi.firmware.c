@@ -164,7 +164,7 @@
       <folder
         Name="interfaces"
         exclude=""
-        filter="*.c *.h"
+        filter="*.c;*.h"
         path="../../../ruuvi.drivers.c/interfaces"
         recurse="Yes" />
       <folder
