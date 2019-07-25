@@ -79,9 +79,7 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
   task_communication_api_t* api;
   err_code |= task_communication_target_api_get(&api, incoming->data[RUUVI_ENDPOINT_STANDARD_DESTINATION_INDEX]);
   ruuvi_driver_sensor_configuration_t config;
-  float offset;
   uint8_t payload[RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH];
-  ruuvi_driver_sensor_data_t data;
   
   // Unless something was done with the data, assume error
   reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
@@ -96,7 +94,7 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
         reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
         break; 
       }
-      mempcpy(&config, &(incoming->data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
+      memcpy(&config, &(incoming->data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
       api->sensor->configuration_set(api->sensor, &config);
       // Intentional fallthrough to configuration read
 

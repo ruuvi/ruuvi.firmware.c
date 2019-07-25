@@ -203,6 +203,7 @@ ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
       break;
   }
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
+  return err_code;
 }
 
 /**
@@ -239,5 +240,7 @@ ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_
   }
 
   // Try to put data to ringbuffer
+  err_code = ruuvi_library_ringbuffer_queue(&ringbuf, msg, sizeof(ruuvi_interface_communication_message_t));
+  return err_code; 
   
 }

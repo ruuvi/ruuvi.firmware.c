@@ -13,7 +13,10 @@ ruuvi_driver_status_t task_led_init(void)
     err_code |= ruuvi_interface_gpio_init();
   }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-braces"
   ruuvi_interface_gpio_id_t leds[] = RUUVI_BOARD_LEDS_LIST;
+#pragma GCC diagnostic pop
 
   for(size_t ii = 0; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
   {

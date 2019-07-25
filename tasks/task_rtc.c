@@ -68,14 +68,14 @@ void task_rtc_comapi_offset_get(uint8_t* const bytes)
 void task_rtc_comapi_offset_set(uint8_t* const bytes)
 {
   if(NULL == bytes) { return; }
-  offset = bytes[0]  << 56 +
-           bytes[1]  << 48 +
-           bytes[2]  << 40 +
-           bytes[3]  << 32 +
-           bytes[4]  << 24 +
-           bytes[5]  << 16 +
-           bytes[6]  << 8 +
-           bytes[7]  << 0;
+  offset = ((uint64_t) bytes[0]  << 56) +
+           ((uint64_t) bytes[1]  << 48) +
+           ((uint64_t) bytes[2]  << 40) +
+           ((uint64_t) bytes[3]  << 32) +
+           ((uint64_t) bytes[4]  << 24) +
+           ((uint64_t) bytes[5]  << 16) +
+           ((uint64_t) bytes[6]  << 8)  +
+           ((uint64_t) bytes[7]  << 0);
 }
 
 void task_rtc_comapi_data_get(uint8_t* const bytes)
@@ -94,5 +94,7 @@ void task_rtc_comapi_data_get(uint8_t* const bytes)
 
 ruuvi_driver_status_t task_rtc_api_get(task_communication_api_t** api)
 {
+  if(NULL == api) { return RUUVI_DRIVER_ERROR_NULL;}
   *api = &rtc_api;
+  return RUUVI_DRIVER_SUCCESS;
 }

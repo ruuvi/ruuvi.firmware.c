@@ -7,7 +7,10 @@
 ruuvi_driver_status_t task_spi_init(void)
 {
   ruuvi_interface_spi_init_config_t config;
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-braces"
   ruuvi_interface_gpio_id_t ss_pins[] = RUUVI_BOARD_SPI_SS_LIST;
+#pragma GCC diagnostic pop
   config.mosi.pin = RUUVI_BOARD_SPI_MOSI_PIN;
   config.miso.pin = RUUVI_BOARD_SPI_MISO_PIN;
   config.sclk.pin = RUUVI_BOARD_SPI_SCLK_PIN;

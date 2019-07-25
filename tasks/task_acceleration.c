@@ -69,13 +69,14 @@ ruuvi_driver_status_t task_acceleration_configure(ruuvi_driver_sensor_configurat
     const config)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  float ths = APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD;
+  //float ths = APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD;
   LOG("\r\nAttempting to configure accelerometer with:\r\n");
   ruuvi_interface_log_sensor_configuration(TASK_ACCELERATION_LOG_LEVEL, config, "g");
   err_code |= acceleration_sensor.configuration_set(&acceleration_sensor, config);
   LOG("Actual configuration:\r\n");
   ruuvi_interface_log_sensor_configuration(TASK_ACCELERATION_LOG_LEVEL, config, "g");
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+  //acceleration_sensor.level_interrupt_set(true, &ths);
   return err_code;
 }
 
@@ -179,11 +180,6 @@ ruuvi_driver_status_t task_acceleration_on_activity(void* p_event_data, uint16_t
                                    task_acceleration_movement_task);
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   return err_code;
-}
-
-static void on_movement(ruuvi_interface_gpio_evt_t event)
-{
-  task_acceleration_on_activity(&event, sizeof(event));
 }
 
 ruuvi_driver_status_t task_acceleration_init(void)
@@ -291,22 +287,31 @@ ruuvi_driver_status_t task_acceleration_fifo_use(const bool enable)
 
 ruuvi_driver_status_t task_acceleration_api_get(task_communication_api_t** api)
 {
+ if(api == NULL) { return RUUVI_DRIVER_ERROR_NULL; }
  *api = &acceleration_api;
+ return RUUVI_DRIVER_SUCCESS;
+
 }
 
 ruuvi_driver_status_t task_acceleration_api_x_get(task_communication_api_t** api)
 {
+ if(api == NULL) { return RUUVI_DRIVER_ERROR_NULL; }
  *api = &acceleration_x_api;
+ return RUUVI_DRIVER_SUCCESS;
 }
 
 ruuvi_driver_status_t task_acceleration_api_y_get(task_communication_api_t** api)
 {
- *api = &acceleration_y_api;
+  if(api == NULL) { return RUUVI_DRIVER_ERROR_NULL; }
+  *api = &acceleration_y_api; 
+  return RUUVI_DRIVER_SUCCESS;
 }
 
 ruuvi_driver_status_t task_acceleration_api_z_get(task_communication_api_t** api)
 {
- *api = &acceleration_z_api;
+ if(api == NULL) { return RUUVI_DRIVER_ERROR_NULL; }
+  *api = &acceleration_z_api;
+  return RUUVI_DRIVER_SUCCESS;
 }
 
 ruuvi_driver_status_t task_acceleration_logging_configure(const task_api_data_target_t const target, const uint8_t interval)
