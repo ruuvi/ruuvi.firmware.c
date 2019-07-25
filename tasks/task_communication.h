@@ -38,9 +38,17 @@ typedef struct task_communication_api_t {
   task_api_log_cfg_t     log_cfg;     //!< Function to configure logging
 }task_communication_api_t;
 
-/** @brief handle incoming data and prepare a reply */
+/** @brief handle incoming data and prepare a reply 
+ * 
+ *  This function passes incoming data to relevant listener(s) and provides a function through which 
+ *  acknowledgment can be sent back.
+ *
+ * @param[in] incoming received data
+ * @param[in] reply_fp function pointer to which acknowledgment should be sent, reply_fp(acknowledge)
+ * @return RUUVI_DRIVER_SUCCESS on success
+ */
 ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communication_message_t* const incoming, 
-                                                 ruuvi_interface_communication_message_t* const reply);
+                                                 ruuvi_interface_communication_xfer_fp_t reply_fp);
 
 /** @brief convert uint8_t array into ruuvi_driver_sensor_data_t
  *  Offsets are encoded as a timestamp offset uint16_t in ms

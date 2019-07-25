@@ -91,3 +91,8 @@ void task_rtc_comapi_data_get(uint8_t* const bytes)
   bytes[6]  = millis >> 8;
   bytes[7]  = millis >> 0;
 }
+
+ruuvi_driver_status_t task_rtc_api_get(task_communication_api_t** api)
+{
+  *api = &rtc_api;
+}

@@ -10,7 +10,7 @@
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
-#define APPLICATION_FW_VERSION "RuuviFW 3.21.2"
+#define APPLICATION_FW_VERSION "RuuviFW 3.21.3"
 
 /** @brief Bytes of RAM to conserve for printed log messages
  *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.
@@ -207,7 +207,7 @@
 /**
  * Task scheduler configuration
  */
-#define APPLICATION_TASK_DATA_MAX_SIZE 0
+#define APPLICATION_TASK_DATA_MAX_SIZE    32   
 #define APPLICATION_TASK_QUEUE_MAX_LENGTH 20
 
 /**
@@ -217,6 +217,7 @@
  * have some dependencies between themselves.
  */
 #define APPLICATION_ADC_ENABLED                     1
+#define APPLICATION_ATOMIC_ENABLED                  1
 #define APPLICATION_COMMUNICATION_ENABLED           1 // Common functions for communication
 #define APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED 1 // Advertising and GATT
 #define APPLICATION_COMMUNICATION_NFC_ENABLED       1 // NFC

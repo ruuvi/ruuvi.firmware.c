@@ -8,6 +8,7 @@
 #include "application_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
+#include "ruuvi_interface_atomic.h"
 #include "ruuvi_interface_communication_ble4_advertising.h"
 #include "ruuvi_interface_communication_ble4_gatt.h"
 #include "ruuvi_interface_communication_radio.h"
@@ -16,6 +17,8 @@
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_watchdog.h"
+#include "ruuvi_library.h"
+#include "ruuvi_library_ringbuffer.h"
 #include "task_acceleration.h"
 #include "task_advertisement.h"
 #include "task_gatt.h"
@@ -25,53 +28,29 @@
 #include <stdio.h>
 #include <string.h>
 
-// Buffer for GATT data
-static uint8_t buffer[4096];
-static ringbuffer_t tx_buffer;
-static size_t buffer_index = 0;
+#ifndef TASK_GATT_LOG_LEVEL
+#define TASK_GATT_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
+#endif
 
-static ruuvi_interface_communication_t channel;
+#define LOG(msg) ruuvi_interface_log(TASK_GATT_LOG_LEVEL, msg)
+#define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
 
 
-// Push out queued gatt messages
-static void task_gatt_queue_process(void* p_event_data, uint16_t event_size)
-{
-  if(NULL == channel.send) { return; }
-
-  if(ringbuffer_empty(&tx_buffer))
-  {
-    ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Buffer processed\r\n");
-    return;
-  }
-
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  static uint64_t last = 0;
-  static uint8_t processed = 0;
-  char log[128];
-  snprintf(log, 128, "Processed %d elements in %lu ms\r\n", processed,
-           (uint32_t)(ruuvi_interface_rtc_millis() - last));
-  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, log);
-  processed = 0;
-  ruuvi_interface_communication_message_t* p_msg;
-  // Queue as many transmissions as possible
-  last = ruuvi_interface_rtc_millis();
-
-  do
-  {
-    if(buffer_index >= ringbuffer_get_count(&tx_buffer)) { break; }
-
-    // Bluetooth driver takes address of data. Therefore data must be stored
-    // until it is sent - do not discard here.
-    p_msg = ringbuffer_peek_at(&tx_buffer, buffer_index);
-    err_code = channel.send(p_msg);
-
-    if(RUUVI_DRIVER_SUCCESS == err_code)
-    {
-      buffer_index++;
-      processed++;
-    }
-  } while(RUUVI_DRIVER_SUCCESS == err_code);
-}
+static uint8_t buffer[1024];                      //!< Raw buffer for GATT data TX
+static ruuvi_interface_atomic_t buffer_wlock;
+static ruuvi_interface_atomic_t buffer_rlock;
+/** @brief Buffer structure for outgoing data */
+static ruuvi_library_ringbuffer_t ringbuf = {.head = 0,
+                                             .tail = 0,
+                                             .block_size = 32,
+                                             .storage_size = sizeof(buffer),
+                                             .index_mask = (sizeof(buffer) / 32) - 1,
+                                             .storage = buffer,
+                                             .lock = ruuvi_interface_atomic_flag,
+                                             .writelock = &buffer_wlock,
+                                             .readlock  = &buffer_rlock};
+static ruuvi_interface_atomic_t m_tx_scheduler_lock; //!< Flag for scheduled handling of TX done event.
+static ruuvi_interface_communication_t channel;   //!< API for sending data. 
 
 ruuvi_driver_status_t task_gatt_init(void)
 {
@@ -108,126 +87,157 @@ ruuvi_driver_status_t task_gatt_init(void)
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |= ruuvi_interface_communication_ble4_gatt_dis_init(&dis);
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
-  size_t max_messages = sizeof(buffer) / sizeof(ruuvi_interface_communication_message_t);
-  ringbuffer_init(&tx_buffer, max_messages, sizeof(ruuvi_interface_communication_message_t),
-                  &buffer);
-  char name[10];
-  snprintf(name, sizeof(name), "Ruuvi%02X%02X", mac_buffer[4], mac_buffer[5]); 
+  // Scan response has 31 payload bytes. 18 of those bytes are reserved for 2-byte header + 128-bit UUID. 
+  // This leaves 13 bytes for name + 2-byte header. Since NULL isn't transmitted we cap string at 12 bytes. 
+  char name[12];
+  snprintf(name, sizeof(name), "%s %02X%02X", RUUVI_BOARD_BLE_NAME_STRING, mac_buffer[4], mac_buffer[5]); 
+  // Send name + NUS UUID. Note that this doesn't update sofdevice buffer, you have to call
+  // advertising functions to encode data and start the advertisements. 
   ruuvi_interface_communication_ble4_advertising_scan_response_setup(name, true);
   ruuvi_interface_communication_ble4_advertising_type_set(CONNECTABLE_SCANNABLE);
   return err_code;
 }
 
-
-//ruuvi_driver_status_t task_gatt_on_accelerometer(ruuvi_interface_communication_evt_t evt)
-//{
-//  /*if(evt == FIFO_FULL)
-//  {
-//    // FIFO READ
-//
-//    // IF CONNECTED
-//      // FIFO SEND
-//  }*/
-//  return RUUVI_DRIVER_SUCCESS;
-//}
-/*
-ruuvi_driver_status_t task_gatt_on_advertisement(ruuvi_interface_communication_evt_t evt, void* p_data, size_t data_len)
+/**
+ * @brief Process event of data sent inside scheduler. 
+ *
+ * This function handles non-realtime cleanup after data has been sent, such as 
+ * removing ringbuffer elements which are in softdevice queue. 
+ *
+ * @param[in] p_context Pointer to a pointer to a ringbuffer into which reply data should be sent
+ * @param[in] data_len size of the pointer.
+ */
+static void task_gatt_communication_sent_scheduler(void* p_context, uint16_t data_len)
 {
-  return RUUVI_DRIVER_SUCCESS;
+  ruuvi_interface_atomic_flag(&m_tx_scheduler_lock, false);
 }
-*/
-//ruuvi_driver_status_t task_gatt_on_button(ruuvi_interface_communication_evt_t evt)
-//{
-//  // BECOME_CONNECTABLE
-//  return RUUVI_DRIVER_SUCCESS;
-//}
 
 /**
- * This function is called on interrupt context - don't process data here, only schedule it for later.
+ * @brief Queue new element into softdevice buffer if available.
+ *
+ * This function handles realtime feeding of softdevice from TX buffer. 
+ * It is meant to run in high-priority interrupt context. This function should only be called
+ * on RUUVI_INTERFACE_COMMUNICATION_SENT event to queue next TX into softdevice. 
  */
-void task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
+static void task_gatt_queue_process_interrupt()
+{
+  ruuvi_library_status_t status = RUUVI_LIBRARY_SUCCESS;
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_interface_communication_message_t* p_msg;
+  status = ruuvi_library_ringbuffer_dequeue(&ringbuf, &p_msg);
+  if(RUUVI_LIBRARY_SUCCESS == status)
+  {  
+    err_code = channel.send(p_msg);
+  }
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+}
+
+
+static void task_gatt_communication_received_scheduler(void* p_context, uint16_t data_len)
+{
+  if(data_len > RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH)
+  {
+    LOG("Received too long message, truncating\r\n");
+    data_len = RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH;
+  }
+  ruuvi_interface_communication_message_t message;
+  memcpy(message.data, p_context, data_len);
+  message.data_length=data_len;
+  LOG("<<<;");LOGHEX(message.data, data_len);LOG("\r\n");
+  task_communication_on_data(&message, task_gatt_send_asynchronous);
+}
+
+/**
+ * @brief handle NUS connection ended event. 
+ *
+ * This function gets called in scheduler after central has deregistered to Nordic
+ * UART Service notifications
+ */
+static void task_gatt_communication_disconnected_scheduler(void* p_context, uint16_t data_len)
+{
+  LOG("Disonnected\r\n");
+  task_advertisement_start();
+}
+
+/**
+ * @brief handle NUS connection established event. 
+ *
+ * This function gets called in scheduler after central has registered to Nordic
+ * UART Service notifications
+ */
+static void task_gatt_communication_connected_scheduler(void* p_context, uint16_t data_len)
+{
+  LOG("Connected\r\n");
+  task_advertisement_stop();
+}
+
+ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
                                         void* p_data, size_t data_len)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_interface_communication_message_t msg = {0};
-  ruuvi_interface_communication_message_t reply = {0};
-  
-
   switch(evt)
   {
     // Note: This gets called only after the NUS notifications have been registered.
     case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
-      ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Connected \r\n");
-      task_advertisement_stop();
+       err_code |= ruuvi_interface_scheduler_event_put(NULL, 0, task_gatt_communication_connected_scheduler);
       break;
 
-    // TODO: Handle case where connection was made but NUS was not registered
     case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
-      ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Disconnected \r\n");
-      task_advertisement_start();
+      err_code |= ruuvi_interface_scheduler_event_put(NULL, 0, task_gatt_communication_disconnected_scheduler);
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_SENT:
-      // Message has been sent. Decrease index, process queue.
-      buffer_index--;
-      ringbuffer_popqueue(&tx_buffer, &msg);
-
-      if(0 == buffer_index)
-      {
-        ruuvi_interface_scheduler_event_put(NULL, 0,  task_gatt_queue_process);
+      task_gatt_queue_process_interrupt();
+      // Schedule only one data sent event to avoid filling scheduler queue. 
+      if(false == m_tx_scheduler_lock) {
+        err_code |= ruuvi_interface_scheduler_event_put(NULL, 0, task_gatt_communication_sent_scheduler);
+        m_tx_scheduler_lock = true;
       }
-      ruuvi_interface_watchdog_feed();
-
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
-      if(RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH < data_len)
-      {
-        ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, "Too long message received, discarding\r\n");
-        break;
-      }
-      /*
-      msg.data_length = data_len;
-      reply.data_length = RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH;
-      memcpy(msg.data, p_data, msg.data_length);
-      task_communication_on_data(&msg, &reply);
-      task_gatt_send(&reply);
-      */
-      reply.data_length = data_len;
-      mempcpy(reply.data, p_data, data_len);
-      task_gatt_send(&reply);
-      ruuvi_interface_watchdog_feed();
+      err_code |= ruuvi_interface_scheduler_event_put(p_data, data_len, task_gatt_communication_received_scheduler);
       break;
 
     default:
       break;
   }
-
-  return err_code;
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
 }
 
-/*
-ruuvi_driver_status_t task_gatt_on_nfc(ruuvi_interface_communication_evt_t evt, void* p_data, size_t data_len)
-{
-  // BECOME_CONNECTABLE
-  return RUUVI_DRIVER_SUCCESS;
-}
-*/
-
+/**
+ * @brief Function for sending data out via Nordic UART Service
+ *
+ * This function must not be called from interrupt context, as it may add data  to circular
+ * buffer which gets consumed in interrupt context. The function will return immediately,
+ * with not guarantee or acknowledgement that the message will be received. 
+ * In general if this function returns successfully the message will be sent and 
+ * delivery verified by link layer, but if connection is lost before data is sent
+ * the data is lost. 
+ *
+ * @param[in] msg Message to be sent out. 
+ * @return RUUVI_DRIVER_SUCCESS if message was queued to softdevice or application ringbuffer
+ * @return RUUVI_DRIVER_ERROR_NULL if message is NULL
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE of GATT is not initialized
+ * @return RUUVI_DRIVER_ERROR_NO_MEM if message cannot be queued due to buffers being full. 
+ */
 ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_message_t* const msg)
 {
+  // State, input check
   if(NULL == msg)          { return RUUVI_DRIVER_ERROR_NULL; }
   if(NULL == channel.send) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-  // Add to queue if there's room
-  if(ringbuffer_full(&tx_buffer))
-  {
-    ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, "FIFO out of space\r\n");
-    return RUUVI_DRIVER_ERROR_NO_MEM;
+  // Try to put data to SD
+  err_code |= channel.send(msg);
+
+  // If success, return. Else put data to ringbuffer
+  if(RUUVI_DRIVER_SUCCESS == err_code) 
+  { 
+    LOG(">>>;");LOGHEX(msg->data, msg->data_length);LOG("\r\n");
+    return err_code; 
   }
 
-  ringbuffer_push(&tx_buffer, msg);
-  // schedule queue to be transmitted if tx is not already ongoing
-  ruuvi_interface_scheduler_event_put(NULL, 0,  task_gatt_queue_process);
-  return RUUVI_DRIVER_SUCCESS;
+  // Try to put data to ringbuffer
+  
 }

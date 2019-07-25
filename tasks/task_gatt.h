@@ -48,7 +48,7 @@ ruuvi_driver_status_t task_gatt_init(void);
  * @param data_len number of bytes in received data, 0 if p_data is NULL.
  * 
  */
-void task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
+ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
                       void* p_data, size_t data_len);
 
 /**
