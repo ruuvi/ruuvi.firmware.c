@@ -4,6 +4,7 @@ all: fw
 
 fw:
 	@echo build FW
+	# TODO: Check that repo is clean
 	git submodule update --init --recursive
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
 	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE

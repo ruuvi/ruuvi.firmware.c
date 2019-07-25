@@ -1,7 +1,11 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 NAME="ruuvifw"
-VERSION=$(git rev-parse --short HEAD)
+VERSION=$(git describe --exact-match --tags HEAD)
+if [ -z "$VERSION" ]; then
+  VERSION=$(git rev-parse --short HEAD)
+fi
+
 while getopts "n:v:" option;
 do
 case "${option}"

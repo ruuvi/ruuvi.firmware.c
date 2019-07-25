@@ -73,6 +73,7 @@ SRC_FILES += \
   $(SDK_ROOT)/components/libraries/timer/app_timer.c \
   $(SDK_ROOT)/components/libraries/util/app_error.c \
   $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
+  $(SDK_ROOT)/components/libraries/util/app_error_handler_gcc.c \
   $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
   $(SDK_ROOT)/components/libraries/util/nrf_assert.c \
   $(SDK_ROOT)/components/libraries/util/sdk_mapped_flags.c \
@@ -334,7 +335,7 @@ CFLAGS += -DuECC_SQUARE_FUNC=0
 CFLAGS += -DuECC_SUPPORT_COMPRESSED_POINT=0
 CFLAGS += -DuECC_VLI_NATIVE_LITTLE_ENDIAN=1
 CFLAGS += -DSWI_DISABLE0
-CFLAGS += -DNDEBUG
+CFLAGS += -DDEBUG
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror
