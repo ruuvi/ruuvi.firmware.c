@@ -176,6 +176,7 @@ SRC_FILES += \
   $(PROJ_DIR)/tasks/task_led.c \
   $(PROJ_DIR)/tasks/task_nfc.c \
   $(PROJ_DIR)/tasks/task_power.c \
+  $(PROJ_DIR)/tasks/task_pressure.c \
   $(PROJ_DIR)/tasks/task_rtc.c \
   $(PROJ_DIR)/tasks/task_scheduler.c \
   $(PROJ_DIR)/tasks/task_spi.c \
@@ -312,6 +313,8 @@ OPT = -O3 -g3
 #OPT += -flto
 
 CFLAGS += $(MODE)
+CFLAGS += $(RUN_TESTS)
+CFLAGS += $(DEBUG)
 # C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
@@ -325,7 +328,6 @@ CFLAGS += -DNRF52_PAN_74
 CFLAGS += -DNRF_DFU_SVCI_ENABLED
 CFLAGS += -DNRF_DFU_TRANSPORT_BLE=1
 CFLAGS += -DNRF_SD_BLE_API_VERSION=6
-CFLAGS += -DRUUVI_RUN_TESTS
 CFLAGS += -DS132
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DNRF_CRYPTO_MAX_INSTANCE_COUNT=1
@@ -335,7 +337,7 @@ CFLAGS += -DuECC_SQUARE_FUNC=0
 CFLAGS += -DuECC_SUPPORT_COMPRESSED_POINT=0
 CFLAGS += -DuECC_VLI_NATIVE_LITTLE_ENDIAN=1
 CFLAGS += -DSWI_DISABLE0
-CFLAGS += -DDEBUG
+CFLAGS += -DNDEBUG
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror

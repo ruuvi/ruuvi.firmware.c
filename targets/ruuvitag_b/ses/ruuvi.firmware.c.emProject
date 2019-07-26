@@ -243,6 +243,9 @@
     <folder Name="Docs">
       <file file_name="../../../README.md" />
     </folder>
+    <configuration
+      Name="Release"
+      gcc_optimization_level="Optimize For Size" />
   </project>
   <configuration
     Name="Release"

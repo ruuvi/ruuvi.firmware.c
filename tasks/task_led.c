@@ -47,3 +47,9 @@ ruuvi_driver_status_t task_led_cycle(void)
 
   return err_code;
 }
+
+void task_led_activity_indicate(const bool active)
+{
+  const task_led_state_t state = (active) ? RUUVI_BOARD_LEDS_ACTIVE_STATE : !RUUVI_BOARD_LEDS_ACTIVE_STATE;
+  task_led_write(RUUVI_BOARD_LED_RED, state);
+}

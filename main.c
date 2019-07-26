@@ -125,14 +125,12 @@ int main(void)
   // Reset any previous errors, turn LEDs off
   status = task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_OFF);
 
+  // Configure activity indication
+  ruuvi_interface_yield_indication_set(task_led_activity_indicate);
   while(1)
   {
-    // Turn off activity led
-    status = task_led_write(RUUVI_BOARD_LED_RED, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
     // Sleep
     status |= ruuvi_interface_yield();
-    // Turn on activity led
-    status |= task_led_write(RUUVI_BOARD_LED_RED, RUUVI_BOARD_LEDS_ACTIVE_STATE);
     // Execute scheduled tasks
     status |= ruuvi_interface_scheduler_execute();
     // Reset only on fatal error

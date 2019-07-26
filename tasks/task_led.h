@@ -42,4 +42,10 @@ ruuvi_driver_status_t task_led_write(const uint16_t led, const task_led_state_t 
  */
 ruuvi_driver_status_t task_led_cycle(void);
 
+/** 
+ * These functions indicata activity and sleep by turning led on while active
+ * and turning led off while in sleep. Configure ruuvi_interface_yield() to call these.
+ */
+void task_led_activity_indicate(const bool state);
+
 #endif
