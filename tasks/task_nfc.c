@@ -17,7 +17,7 @@ ruuvi_driver_status_t task_nfc_init(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   int written = 0;
-  uint8_t fw_prefix[] = {'F', 'W', ':', ' '};
+  uint8_t fw_prefix[] = {'S', 'W', ':', ' '};
   uint8_t version_string[APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE] = { 0 };
   memcpy(version_string, fw_prefix, sizeof(fw_prefix));
   written = snprintf((char*)(version_string + sizeof(fw_prefix)),
@@ -66,6 +66,10 @@ ruuvi_driver_status_t task_nfc_init(void)
 
   err_code |= ruuvi_interface_communication_nfc_id_set(id_string, strlen((char*)id_string));
   err_code |= ruuvi_interface_communication_nfc_init(&channel);
+  // Setup one NULL to DATA to match 1.x and 2.x NFC fields.
+  ruuvi_interface_communication_message_t msg;
+  msg.data_length = 1;
+  channel.send(&msg);
   err_code |=
     ruuvi_interface_communication_nfc_data_set(); // Call this to setup data to buffers
   channel.on_evt = task_nfc_on_nfc;

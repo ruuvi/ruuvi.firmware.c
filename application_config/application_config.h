@@ -121,7 +121,7 @@
   /** @brief DPS function for accelerometer
   *  Enable high-pass to filter out the gravity.
   */
-  #define APPLICATION_ACCELEROMETER_DSPFUNC RUUVI_DRIVER_SENSOR_DSP_HIGH_PASS
+  #define APPLICATION_ACCELEROMETER_DSPFUNC RUUVI_DRIVER_SENSOR_DSP_LAST
 
   /** @brief DPS parameter for accelerometer
   *  Higher is more agressive.
@@ -169,14 +169,14 @@
 // Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
 #ifndef APPLICATION_ADVERTISING_CONFIGURED
 #if DEBUG
-  #define APPLICATION_ADVERTISING_INTERVAL              200
+  #define APPLICATION_ADVERTISING_INTERVAL              211  //!< Apple guidelines, exact value would be 211.25  
 #else
-  #define APPLICATION_ADVERTISING_INTERVAL              2020
+  #define APPLICATION_ADVERTISING_INTERVAL              1285 //!< Apple guidelines max interval
 #endif
   #define APPLICATION_ADVERTISING_POWER                 RUUVI_BOARD_TX_POWER_MAX
   #define APPLICATION_DATA_FORMAT                       0x05
   #define APPLICATION_STANDBY_INTERVAL                  9900
-  #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL     2020
+  #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL     APPLICATION_ADVERTISING_INTERVAL
 #endif
 
 // Apple connection parameter quidelines:
