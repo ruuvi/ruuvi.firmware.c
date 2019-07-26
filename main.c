@@ -22,6 +22,7 @@
 #include "task_i2c.h"
 #include "task_nfc.h"
 #include "task_power.h"
+#include "task_pressure.h"
 #include "task_rtc.h"
 #include "task_scheduler.h"
 #include "task_spi.h"
@@ -100,7 +101,7 @@ int main(void)
                            RUUVI_DRIVER_ERROR_NOT_FOUND | RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
   // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED on RuuviTag basic
   // if DSP was configured, log warning
-  status |= task_environmental_init();
+  status = task_environmental_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
   // Allow NOT FOUND in case we're running on basic model
   status = task_acceleration_init();
@@ -116,9 +117,11 @@ int main(void)
   // Turn RED led off. Turn GREEN LED on if no errors occured
   status |= task_led_write(RUUVI_BOARD_LED_RED, TASK_LED_OFF);
 
-  if(RUUVI_DRIVER_SUCCESS == status)
+  task_led_activity_led_set(RUUVI_BOARD_LED_RED);
+  if(RUUVI_DRIVER_SUCCESS == status && task_pressure_is_init())
   {
     status |= task_led_write(RUUVI_BOARD_LED_GREEN, TASK_LED_ON);
+    task_led_activity_led_set(RUUVI_BOARD_LED_GREEN);
     ruuvi_interface_delay_ms(1000);
   }
 

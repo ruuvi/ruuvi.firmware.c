@@ -48,4 +48,9 @@ ruuvi_driver_status_t task_led_cycle(void);
  */
 void task_led_activity_indicate(const bool state);
 
+/**
+ * Set LED which is used to indicate activity.
+ */
+void task_led_activity_led_set(uint16_t led);
+
 #endif
