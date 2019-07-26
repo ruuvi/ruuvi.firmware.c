@@ -7,6 +7,7 @@
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_log.h"
 #include "task_environmental.h"
+#include "task_pressure.h"
 #include "task_led.h"
 
 #include <inttypes.h>
@@ -54,6 +55,8 @@ ruuvi_driver_status_t task_environmental_init(void)
   if(RUUVI_DRIVER_SUCCESS == err_code)
   {
     err_code |= task_environmental_configure(&config);
+    // Try to configure pressure sensor for the application. 
+    task_pressure_init();
     return err_code;
   }
   #endif
@@ -136,7 +139,16 @@ ruuvi_driver_status_t task_environmental_data_get(ruuvi_interface_environmental_
 
   if(NULL == environmental_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
 
-  return environmental_sensor.data_get(data);
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code = environmental_sensor.data_get(data);
+  if(RUUVI_DRIVER_FLOAT_INVALID == data->pressure_pa && task_pressure_is_init())
+  {
+    ruuvi_interface_environmental_data_t pressure_data;
+    err_code |= task_pressure_data_get(&pressure_data);
+    data->pressure_pa = pressure_data.pressure_pa;
+  }
+
+  return err_code;
 }
 
 ruuvi_driver_status_t task_environmental_on_button(void)

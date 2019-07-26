@@ -1,5 +1,5 @@
 # ruuvi.firmware.c
-[![Build Status](http://jenkins.ruuvi.com:8080/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com:8080/job/ruuvi.firmware.c)
+[![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. 
@@ -12,9 +12,10 @@ Download [Nordic SDK15.2](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15
 Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project.
 
 ## Toolchain
-ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com:8080/job/ruuvi.firmware.c/), it's recommended to use SES for developing.
+ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use SES for developing.
 
-Segger Embedded Studio can be set up by following this [RuuviLab Tool post](https://lab.ruuvi.com/ses/).
+Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
+and following Getting Started plugin instructions.
 
 # Usage
 Compile and flash the project to your board using SES. Instructions on how to use a bootloader will be added later on.
@@ -30,6 +31,14 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.22.0 
+ - Add low-power delay to drivers
+ - Try to initialize a separate pressure sensor if using SHTC as environmental sensor
+ - Add pressure sensor tasks
+
+## 3.19.0 ... # 3.21.0
+ - Various reworks and refactoring.
+
 ## 3.18.0
  - Use refactored drivers.
 

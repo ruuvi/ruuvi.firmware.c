@@ -240,6 +240,9 @@
       filter="*.c;*.h"
       path="../../../ruuvi.libraries.c"
       recurse="Yes" />
+    <folder Name="Docs">
+      <file file_name="../../../README.md" />
+    </folder>
   </project>
   <configuration
     Name="Release"

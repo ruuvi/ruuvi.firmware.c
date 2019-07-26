@@ -60,10 +60,11 @@ int main(void)
   status |= task_spi_init();
   status |= task_i2c_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  // Initialize RTC, timer and scheduler
+  // Initialize RTC, timer and scheduler. Enable low-power sleep.
   status |= task_rtc_init();
   status |= task_timer_init();
   status |= task_scheduler_init();
+  status |= ruuvi_interface_yield_low_power_enable(true);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Initialize power
   status |= task_power_dcdc_init();
