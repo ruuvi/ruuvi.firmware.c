@@ -10,7 +10,7 @@
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
-#define APPLICATION_FW_VERSION "RuuviFW 3.22.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.22.1"
 
 /** @brief Bytes of RAM to conserve for printed log messages
  *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.

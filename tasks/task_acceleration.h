@@ -15,6 +15,7 @@
 #include "ruuvi_interface_acceleration.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
+#include "ruuvi_interface_gpio_interrupt.h"
 #include "ruuvi_interface_log.h"
 #include "task_communication.h"
 
@@ -140,15 +141,7 @@ void task_acceleration_offset_z_get(uint8_t* const data);
  * @brief Callback function for activity detected by accelerometer
  * By default increments activity counter.
  */
-ruuvi_driver_status_t task_acceleration_on_activity(void* p_event_data, uint16_t event_size);
-
-
-/**
- * @brief Callback function for button press. 
- * By default does nothing, but signature is included for convenience of the user.
- * 
- */
-ruuvi_driver_status_t task_acceleration_on_button(void);
+void task_acceleration_on_activity(ruuvi_interface_gpio_evt_t event);
 
 /**
  * @brief Get API function pointers from sensor. 

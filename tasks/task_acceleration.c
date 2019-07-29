@@ -69,19 +69,20 @@ ruuvi_driver_status_t task_acceleration_configure(ruuvi_driver_sensor_configurat
     const config)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  //float ths = APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD;
+  float ths = APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD;
   LOG("\r\nAttempting to configure accelerometer with:\r\n");
   ruuvi_interface_log_sensor_configuration(TASK_ACCELERATION_LOG_LEVEL, config, "g");
   err_code |= acceleration_sensor.configuration_set(&acceleration_sensor, config);
   LOG("Actual configuration:\r\n");
   ruuvi_interface_log_sensor_configuration(TASK_ACCELERATION_LOG_LEVEL, config, "g");
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-  //acceleration_sensor.level_interrupt_set(true, &ths);
+  acceleration_sensor.level_interrupt_set(true, &ths);
   return err_code;
 }
 
 static void task_acceleration_movement_task(void* p_event_data, uint16_t event_size)
 {
+/*
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(
                 APPLICATION_ADVERTISING_INTERVAL);
@@ -99,6 +100,7 @@ static void task_acceleration_movement_task(void* p_event_data, uint16_t event_s
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   LOGD("Activity\r\n");
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
+*/
 }
 
 void task_acceleration_offset_x_set(uint8_t* const data)
@@ -173,13 +175,12 @@ void task_acceleration_offset_z_get(uint8_t* const data)
   }
 }
 
-ruuvi_driver_status_t task_acceleration_on_activity(void* p_event_data, uint16_t event_size)
+void task_acceleration_on_activity(ruuvi_interface_gpio_evt_t event)
 {
   m_nbr_movements++;
   ruuvi_driver_status_t err_code = ruuvi_interface_scheduler_event_put(NULL, 0,
                                    task_acceleration_movement_task);
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
-  return err_code;
 }
 
 ruuvi_driver_status_t task_acceleration_init(void)
@@ -209,6 +210,9 @@ ruuvi_driver_status_t task_acceleration_init(void)
 
   if(RUUVI_DRIVER_SUCCESS == err_code)
   {
+    ruuvi_interface_gpio_id_t pin = {.pin = RUUVI_BOARD_INT_ACC2_PIN};
+    err_code |= ruuvi_interface_gpio_interrupt_enable(pin, RUUVI_INTERFACE_GPIO_SLOPE_LOTOHI,
+              RUUVI_INTERFACE_GPIO_MODE_INPUT_NOPULL, task_acceleration_on_activity);
     err_code |= task_acceleration_configure(&config);
     return err_code;
   }
