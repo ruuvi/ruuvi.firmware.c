@@ -238,7 +238,7 @@
 #if DEBUG
   #define APPLICATION_WATCHDOG_INTERVAL_MS            1200000u
 #else
-  #define APPLICATION_WATCHDOG_INTERVAL_MS            12000u
+  #define APPLICATION_WATCHDOG_INTERVAL_MS            30000u
 #endif
 #define APPLICATION_YIELD_ENABLED                   1
 #define APPLICATION_LOG_ENABLED                     1

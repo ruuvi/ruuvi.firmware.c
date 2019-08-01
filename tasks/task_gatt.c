@@ -202,6 +202,7 @@ ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
     default:
       break;
   }
+  ruuvi_interface_watchdog_feed();
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   return err_code;
 }
