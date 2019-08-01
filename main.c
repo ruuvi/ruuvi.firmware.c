@@ -134,7 +134,7 @@ static void init_comms(void)
   #if APPLICATION_BUTTON_ENABLED
   // Initialize button with on_button task
   status = task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
-  RUUVI_DRIVER_ERROR_CHECK(status RUUVI_DRIVER_SUCCESS);
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
 
   #if APPLICATION_COMMUNICATION_NFC_ENABLED
@@ -181,7 +181,7 @@ int main(void)
   task_led_write(RUUVI_BOARD_LED_STATUS_OK, TASK_LED_OFF);
   // Configure activity indication
   ruuvi_interface_yield_indication_set(task_led_activity_indicate);
-  RUUVI_DRIVER_ERROR_CHECK(1, RUUVI_DRIVER_SUCCESS);
+  //RUUVI_DRIVER_ERROR_CHECK(1, RUUVI_DRIVER_SUCCESS);
   while(1)
   {
     // Sleep
