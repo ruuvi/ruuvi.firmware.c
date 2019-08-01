@@ -33,8 +33,9 @@ nrfutil settings generate --family NRF52 --application _build/nrf52832_xxaa.hex 
 mergehex -m ../../../../nRF5_SDK_15.2.0_9412b96/components/softdevice/s132/hex/s132_nrf52_6.1.0_softdevice.hex $BOOTLOADER settings.hex -o sbc.hex
 mergehex -m sbc.hex _build/nrf52832_xxaa.hex -o packet.hex
 
-rm ruuvitag_b_armgcc*$NAME*.hex
-rm ruuvitag_b_armgcc*$NAME*.zip
+rm ruuvitag_b_armgcc*${NAME}*.hex
+rm ruuvitag_b_armgcc*${NAME}*.zip
+rm ruuvitag_b_armgcc*${NAME}*.map
 
 mv packet.hex ruuvitag_b\_armgcc\_$NAME\_$VERSION\_full.hex
 mv _build/nrf52832_xxaa.map ruuvitag_b\_armgcc\_$NAME\_$VERSION\_app.map
