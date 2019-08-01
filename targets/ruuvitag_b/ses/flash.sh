@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")"
 MODE="Debug"
 NAME="dev"
 VERSION="0.0.1"
@@ -50,5 +51,5 @@ nrfjprog --family nrf52 --program packet.hex
 nrfjprog --family nrf52 --reset
 
 mv packet.hex ruuvitag_b\_ses\_$NAME\_$VERSION\_${MODE}\_full.hex
-cp Output/Debug/Exe/ruuvi.firmware.c.hex ruuvitag_b\_ses\_$NAME\_$VERSION\_${MODE}\_app.hex
+cp Output/${MODE}/Exe/ruuvi.firmware.c.hex ruuvitag_b\_ses\_$NAME\_$VERSION\_${MODE}\_app.hex
 nrfutil pkg generate --application Output/${MODE}/Exe/ruuvi.firmware.c.hex --application-version 1 --application-version-string "$VERSION" --hw-version 0x0b --sd-req 0xAF --key-file ruuvi_open_private.pem ruuvitag_b\_ses\_$NAME\_$VERSION\_${MODE}\_dfu.zip
