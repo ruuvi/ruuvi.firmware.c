@@ -13,7 +13,7 @@
 #include "task_environmental.h"
 #include "task_led.h"
 #include <stddef.h>
-
+#if APPLICATION_BUTTON_ENABLED
 static task_button_fp_t button_callback = NULL;
 
 // Wrapper to gpio interrupt function
@@ -28,12 +28,12 @@ ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope,
                                        task_button_fp_t action)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  #if APPLICATION_BUTTON_ENABLED
+
   button_callback = action;
   ruuvi_interface_gpio_id_t pin = {.pin = RUUVI_BOARD_BUTTON_1};
   err_code |= ruuvi_interface_gpio_interrupt_enable(pin, slope,
               RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP, on_button);
-  #endif
+
   return err_code;
 }
 
@@ -59,3 +59,10 @@ ruuvi_driver_status_t task_button_on_press(void)
 
   return err_code;
 }
+#else
+ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope,
+                                       task_button_fp_t action)
+{
+  return RUUVI_DRIVER_SUCCESS;
+}
+#endif

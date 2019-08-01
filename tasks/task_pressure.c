@@ -31,6 +31,8 @@ ruuvi_driver_status_t task_pressure_init(void)
 {
   // Assume "Not found", gets set to "Success" if a usable sensor is present
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+
+  #if RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
   ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
   ruuvi_driver_sensor_configuration_t config;
   config.samplerate    = APPLICATION_ENVIRONMENTAL_SAMPLERATE;
@@ -40,8 +42,6 @@ ruuvi_driver_status_t task_pressure_init(void)
   config.dsp_parameter = APPLICATION_ENVIRONMENTAL_DSPPARAM;
   config.mode          = APPLICATION_ENVIRONMENTAL_MODE;
   uint8_t handle = 0;
-
-  #if RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
   err_code = RUUVI_DRIVER_SUCCESS;
   #if RUUVI_BOARD_ENVIRONMENTAL_BME280_SPI_USE
   bus = RUUVI_DRIVER_BUS_SPI;
@@ -61,7 +61,7 @@ ruuvi_driver_status_t task_pressure_init(void)
   }
   #endif
 
-  return RUUVI_DRIVER_ERROR_NOT_FOUND;
+  return err_code;
 }
 
 ruuvi_driver_status_t task_pressure_data_get(ruuvi_interface_environmental_data_t*

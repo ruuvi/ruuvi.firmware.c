@@ -36,28 +36,36 @@
 
 #include <stdio.h>
 
-int main(void)
+/** Run tests which rely only on MCU. 
+ *  These tests require relevant peripherals being uninitialized
+ *  before tests and leave the peripherals uninitialized.
+ *  Production firmware should not run these tests. 
+ */
+static void run_mcu_tests()
 {
-  // Init logging
+  #if RUUVI_RUN_TESTS
+  test_adc_run();
+  test_library_run();
+  #endif
+}
+
+/*
+ * Initialize MCU peripherals. 
+ */
+static void init_mcu(void)
+{
+// Init logging
   ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
   status |= ruuvi_interface_log_init(APPLICATION_LOG_LEVEL);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Program start \r\n");
-  // Init watchdog here if tests are not being run
-  #if (!RUUVI_RUN_TESTS)
-  status = ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  #endif
   // Init yield
   status = ruuvi_interface_yield_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Init GPIO
   status = task_gpio_init();
-
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  // Initialize LED gpio pins, turn RED led on.
+  // Initialize LED gpio pins
   status |= task_led_init();
-  status |= task_led_write(RUUVI_BOARD_LED_ACTIVITY, TASK_LED_ON);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Initialize SPI, I2C
   status |= task_spi_init();
@@ -72,14 +80,27 @@ int main(void)
   // Initialize power
   status |= task_power_dcdc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  // Initialize ADC
+  status |= task_adc_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  // Initialize flash
+  status = task_flash_init();
+  status |= task_flash_demo();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+}
+
+/*
+ * Run series of selftests which verify the underlying drivers, libraries etc.
+ */
+static void run_sensor_tests(void)
+{
   #if RUUVI_RUN_TESTS
   // Tests will initialize and uninitialize the sensors, run this before using them in application
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO,
                       "Running extended self-tests, this might take a while\r\n");
-//  test_acceleration_run();
-  test_adc_run();
+  test_acceleration_run();
   test_environmental_run();
-  test_library_run();
+
 
   // Print unit test status, activate tests by building in DEBUG configuration under SES
   size_t tests_run, tests_passed;
@@ -89,19 +110,13 @@ int main(void)
            tests_passed);
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, message);
   // Init watchdog after tests. Normally init at the start of the program
-  ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
   #endif
-  // Initialize nfc
-  status |= task_nfc_init();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  // Initialize ADC
-  status |= task_adc_init();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  
-  // Initialize button with on_button task
-  status |= task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
-  RUUVI_DRIVER_ERROR_CHECK(status,
-                           RUUVI_DRIVER_ERROR_NOT_FOUND | RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
+}
+
+static void init_sensors(void)
+{
+  ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
   // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED on RuuviTag basic
   // if DSP was configured, log warning
   status = task_environmental_init();
@@ -111,38 +126,67 @@ int main(void)
   // Allow NOT FOUND in case we're running on basic model
   status = task_acceleration_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_FOUND);
-  // Initialize BLE - does not start advertising
+}
+
+static void init_comms(void)
+{
+  ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+  #if APPLICATION_BUTTON_ENABLED
+  // Initialize button with on_button task
+  status = task_button_init(RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
+  RUUVI_DRIVER_ERROR_CHECK(status RUUVI_DRIVER_SUCCESS);
+  #endif
+
+  #if APPLICATION_COMMUNICATION_NFC_ENABLED
+  // Initialize nfc
+  status |= task_nfc_init();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  #endif
+
+  #if APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+  // Initialize BLE - and start advertising.
   status = task_advertisement_init();
   status |= task_gatt_init();
   status |= task_advertisement_start();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  status |= task_flash_init();
-  status |= task_flash_demo();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  // Turn RED led off. Turn GREEN LED on if no errors occured
-  status |= task_led_write(RUUVI_BOARD_LED_ACTIVITY, TASK_LED_OFF);
+  #endif
+}
 
+int main(void)
+{
+  run_mcu_tests();  // Runs tests which do not rely on MCU peripherals being initialized
+  init_mcu();       // Initialize MCU peripherals, except for communication with users. 
+
+  task_led_write(RUUVI_BOARD_LED_ACTIVITY, TASK_LED_ON); // Turn activity led on
+  run_sensor_tests(); // Run tests which rely on MCU peripherals, for example sensor drivers
+  init_sensors();     // Initializes sensors with application-defined default mode.
+   // Initialize communication with outside world - BLE, NFC, Buttons
+   /* IMPORTANT! After this point pausing the program flow asserts,
+    * since softdevice asserts on missed timer. This includes debugger.
+    */
+  // run comms tests - TODO
+  init_comms();    
+
+  // Turn activity led off. Turn status_ok led on if no errors occured
+  task_led_write(RUUVI_BOARD_LED_ACTIVITY, TASK_LED_OFF);
   task_led_activity_led_set(RUUVI_BOARD_LED_ACTIVITY);
-  if(RUUVI_DRIVER_SUCCESS == status && task_pressure_is_init())
+  if(RUUVI_DRIVER_SUCCESS == ruuvi_driver_errors_clear())
   {
-    status |= task_led_write(RUUVI_BOARD_LED_STATUS_OK, TASK_LED_ON);
+    task_led_write(RUUVI_BOARD_LED_STATUS_OK, TASK_LED_ON);
     task_led_activity_led_set(RUUVI_BOARD_LED_STATUS_OK);
     ruuvi_interface_delay_ms(1000);
   }
 
-  // Reset any previous errors, turn LEDs off
-  status = task_led_write(RUUVI_BOARD_LED_STATUS_OK, TASK_LED_OFF);
-
+  // Turn LEDs off
+  task_led_write(RUUVI_BOARD_LED_STATUS_OK, TASK_LED_OFF);
   // Configure activity indication
   ruuvi_interface_yield_indication_set(task_led_activity_indicate);
   RUUVI_DRIVER_ERROR_CHECK(1, RUUVI_DRIVER_SUCCESS);
   while(1)
   {
     // Sleep
-    status |= ruuvi_interface_yield();
+    ruuvi_interface_yield();
     // Execute scheduled tasks
-    status |= ruuvi_interface_scheduler_execute();
-    // Reset only on fatal error
-    RUUVI_DRIVER_ERROR_CHECK(status, ~RUUVI_DRIVER_ERROR_FATAL);
+    ruuvi_interface_scheduler_execute();
   }
 }

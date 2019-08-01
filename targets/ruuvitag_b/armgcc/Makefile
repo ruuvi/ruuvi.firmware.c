@@ -172,6 +172,7 @@ SRC_FILES += \
   $(PROJ_DIR)/tasks/task_environmental.c \
   $(PROJ_DIR)/tasks/task_flash.c \
   $(PROJ_DIR)/tasks/task_gatt.c \
+  $(PROJ_DIR)/tasks/task_gpio.c \
   $(PROJ_DIR)/tasks/task_i2c.c \
   $(PROJ_DIR)/tasks/task_led.c \
   $(PROJ_DIR)/tasks/task_nfc.c \

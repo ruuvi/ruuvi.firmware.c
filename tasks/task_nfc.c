@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#if APPLICATION_COMMUNICATION_NFC_ENABLED
 static ruuvi_interface_communication_t channel;
 
 ruuvi_driver_status_t task_nfc_init(void)
@@ -130,3 +131,9 @@ ruuvi_driver_status_t task_nfc_on_nfc(ruuvi_interface_communication_evt_t evt,
 
   return err_code;
 }
+#else
+ruuvi_driver_status_t task_nfc_init(void)
+{
+  return  RUUVI_DRIVER_SUCCESS;
+}
+#endif
