@@ -1,7 +1,9 @@
 #include "application_config.h"
+#include "data_structures/ruuvi_library_ringbuffer.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
+#include "ruuvi_interface_atomic.h"
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_environmental_mcu.h"
@@ -14,7 +16,20 @@
 #include <stddef.h>
 #include <stdio.h>
 
-static ruuvi_driver_sensor_t environmental_sensor = {0};
+static ruuvi_driver_sensor_t environmental_sensor = {0}; // Sensor API
+static uint8_t buffer[1024];                      //!< Raw buffer for environmental logs
+static ruuvi_interface_atomic_t buffer_wlock;
+static ruuvi_interface_atomic_t buffer_rlock;
+/** @brief Buffer structure for outgoing data */
+static ruuvi_library_ringbuffer_t ringbuf = {.head = 0,
+                                             .tail = 0,
+                                             .block_size = 32,
+                                             .storage_size = sizeof(buffer),
+                                             .index_mask = (sizeof(buffer) / 32) - 1,
+                                             .storage = buffer,
+                                             .lock = ruuvi_interface_atomic_flag,
+                                             .writelock = &buffer_wlock,
+                                             .readlock  = &buffer_rlock};
 
 ruuvi_driver_status_t task_environmental_configure(ruuvi_driver_sensor_configuration_t*
     config)

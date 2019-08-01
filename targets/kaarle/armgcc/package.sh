@@ -33,10 +33,10 @@ nrfutil settings generate --family NRF52 --application _build/nrf52832_xxaa.hex 
 mergehex -m ../../../../nRF5_SDK_15.2.0_9412b96/components/softdevice/s132/hex/s132_nrf52_6.1.0_softdevice.hex $BOOTLOADER settings.hex -o sbc.hex
 mergehex -m sbc.hex _build/nrf52832_xxaa.hex -o packet.hex
 
-rm ruuvitag_b_armgcc*$NAME*.hex
-rm ruuvitag_b_armgcc*$NAME*.zip
+rm kaarle_armgcc*$NAME*.hex
+rm kaarle_armgcc*$NAME*.zip
 
-mv packet.hex ruuvitag_b\_armgcc\_$NAME\_$VERSION\_full.hex
-mv _build/nrf52832_xxaa.map ruuvitag_b\_armgcc\_$NAME\_$VERSION\_app.map
-cp _build/nrf52832_xxaa.hex ruuvitag_b\_armgcc\_$NAME\_$VERSION\_app.hex
-nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0x0b --sd-req 0xAF --key-file ruuvi_open_private.pem ruuvitag_b\_armgcc\_$NAME\_$VERSION\_dfu.zip
+mv packet.hex kaarle\_armgcc\_$NAME\_$VERSION\_full.hex
+mv _build/nrf52832_xxaa.map kaarle\_armgcc\_$NAME\_$VERSION\_app.map
+cp _build/nrf52832_xxaa.hex kaarle\_armgcc\_$NAME\_$VERSION\_app.hex
+nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0x0b --sd-req 0xAF --key-file ruuvi_open_private.pem kaarle\_armgcc\_$NAME\_$VERSION\_dfu.zip

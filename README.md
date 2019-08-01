@@ -31,6 +31,9 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
 
 # Changelog
+## 3.22.1 
+ - Use acceleration interrupts for movement counter
+
 ## 3.22.0 
  - Add low-power delay to drivers
  - Try to initialize a separate pressure sensor if using SHTC as environmental sensor

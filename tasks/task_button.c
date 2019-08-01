@@ -15,9 +15,6 @@
 #include <stddef.h>
 
 static task_button_fp_t button_callback = NULL;
-// TODO: Refactor GPIO interrupts to their own task
-static ruuvi_interface_gpio_interrupt_fp_t interrupt_table[RUUVI_BOARD_GPIO_NUMBER + 1 ]
-  = {0};
 
 // Wrapper to gpio interrupt function
 static void on_button(ruuvi_interface_gpio_evt_t event)
@@ -31,11 +28,12 @@ ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope,
                                        task_button_fp_t action)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  #if APPLICATION_BUTTON_ENABLED
   button_callback = action;
-  err_code |= ruuvi_interface_gpio_interrupt_init(interrupt_table, sizeof(interrupt_table));
   ruuvi_interface_gpio_id_t pin = {.pin = RUUVI_BOARD_BUTTON_1};
   err_code |= ruuvi_interface_gpio_interrupt_enable(pin, slope,
               RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP, on_button);
+  #endif
   return err_code;
 }
 
