@@ -4,6 +4,8 @@
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. 
 
+
+
 # Setting up
 ## SDK 15.2
 Download [Nordic SDK15.2](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) and install it one level above the project root. 

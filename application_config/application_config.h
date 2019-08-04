@@ -8,14 +8,10 @@
 #ifndef APPLICATION_CONFIG_H
 #define APPLICATION_CONFIG_H
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
+#include "ruuvi_boards.h"      // Includes information such as number of buttons and leds onboard
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
 #define APPLICATION_FW_VERSION "RuuviFW 3.23.0"
-
-/** @brief Bytes of RAM to conserve for printed log messages
- *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.
- */
-#define APPLICATION_LOG_BUFFER_SIZE           256
 
 /**
  * @brief enable compilation of NRF5 SDK15 implementation of driver interface functions.
@@ -216,6 +212,7 @@
  * do not need module you can disable it. The modules might also
  * have some dependencies between themselves.
  */
+#define APPLICATION_ACCELERATION_ENABLED            1
 #define APPLICATION_ADC_ENABLED                     1
 #define APPLICATION_ATOMIC_ENABLED                  1
 #define APPLICATION_BUTTON_ENABLED                  RUUVI_BOARD_BUTTONS_NUMBER
@@ -241,16 +238,26 @@
   #define APPLICATION_WATCHDOG_INTERVAL_MS            30000u
 #endif
 #define APPLICATION_YIELD_ENABLED                   1
+
+/** Number of GPIO interrupt lines */
+#define APPLICATION_GPIO_INTERRUPT_NUMBER           (2 * APPLICATION_ACCELERATION_ENABLED \
+                                                     + RUUVI_BOARD_BUTTONS_NUMBER)
+
+
+
 #define APPLICATION_LOG_ENABLED                     1
 // RUUVI_INTERFACE_LOG_ ERROR, WARNING, INFO, DEBUG
 #define APPLICATION_LOG_LEVEL                       RUUVI_INTERFACE_LOG_INFO
+/** @brief Bytes of RAM to conserve for printed log messages
+ *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.
+ */
+#define APPLICATION_LOG_BUFFER_SIZE                 256
 
 // Choose one. RTT is recommended, but does not work on devices
 // with readback protection enabled
 #define APPLICATION_LOG_BACKEND_RTT_ENABLED         1
-//#define APPLICATION_LOG_BACKEND_UART_ENABLED        0 // UART not implemented
+//#define APPLICATION_LOG_BACKEND_UART_ENABLED      0 // UART not implemented
 
-// 10 * 1024 words (4096 bytyes) = 40960 bytes = 40 kB.
-#define  APPLICATION_FLASH_DATA_PAGES_NUMBER        10
+#define  APPLICATION_FLASH_DATA_PAGES_NUMBER        RUUVI_BOARD_APP_PAGES
 
 #endif

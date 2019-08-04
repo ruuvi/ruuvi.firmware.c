@@ -16,7 +16,15 @@
 
 ruuvi_driver_status_t task_flash_init(void)
 {
-  return ruuvi_interface_flash_init();
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code |= ruuvi_interface_flash_init();
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    ruuvi_interface_flash_purge();
+    // Log fatal error which triggers bootloader
+    RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_FATAL, RUUVI_DRIVER_SUCCESS);
+  }
+  return err_code;
 }
 
 ruuvi_driver_status_t task_flash_store(const uint32_t page_id, const uint32_t record_id,
