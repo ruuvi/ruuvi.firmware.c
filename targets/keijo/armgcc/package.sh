@@ -14,12 +14,14 @@ n) NAME=${OPTARG};;
 v) VERSION=${OPTARG};;
 esac
 done
-BINNAME=ruuvitag_b\_armgcc\_${NAME}\_${VERSION}
-BOOTLOADER="ruuvitag_b_bootloader_3.1.0_s132_6.1.1.hex"     
+
+BINNAME=keijo\_armgcc\_${NAME}\_${VERSION}
+
+BOOTLOADER="keijo_bootloader_3.1.0_s112_6.1.1.hex"     
 if [ -f $BOOTLOADER ]; then
    echo "Found bootloader."
 else
-   wget https://github.com/ruuvi/ruuvi.nrf5_sdk15_bootloader.c/releases/download/3.1.0-beta/ruuvitag_b_s132_6.1.1_bootloader.hex
+   wget https://github.com/ruuvi/ruuvi.nrf5_sdk15_bootloader.c/releases/download/3.1.0-beta/keijo_s112_6.1.1_bootloader.hex
 fi
 
 key="ruuvi_open_private.pem"     
@@ -30,14 +32,14 @@ else
 fi
 
 nrfutil settings generate --family NRF52 --application _build/nrf52832_xxaa.hex --application-version 1  --bootloader-version 1 --bl-settings-version 1 settings.hex 
-mergehex -m ../../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/hex/s132_nrf52_6.1.0_softdevice.hex $BOOTLOADER settings.hex -o sbc.hex
+mergehex -m ../../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s112/hex/s112_nrf52_6.1.1_softdevice.hex $BOOTLOADER settings.hex -o sbc.hex
 mergehex -m sbc.hex _build/nrf52832_xxaa.hex -o packet.hex
 
-rm ruuvitag_b_armgcc*${NAME}*.hex
-rm ruuvitag_b_armgcc*${NAME}*.zip
-rm ruuvitag_b_armgcc*${NAME}*.map
+rm keijo_armgcc*${NAME}*.hex
+rm keijo_armgcc*${NAME}*.zip
+rm keijo_armgcc*${NAME}*.map
 
-mv packet.hex ruuvitag_b\_armgcc\_$NAME\_$VERSION\_full.hex
+mv packet.hex ${BINNAME}\_full.hex
 mv _build/nrf52832_xxaa.map ${BINNAME}\_app.map
 cp _build/nrf52832_xxaa.hex ${BINNAME}\_app.hex
-nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0xB0 --sd-req 0xB7 --key-file ruuvi_open_private.pem ${BINNAME}\_dfu.zip
+nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0xCE --sd-req 0xB8 --key-file ruuvi_open_private.pem \_dfu.zip

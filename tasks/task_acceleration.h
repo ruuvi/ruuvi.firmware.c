@@ -201,6 +201,6 @@ ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t* const count)
  * @param[in] interval Logging interval, format TBD
  * @return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED
  */
-ruuvi_driver_status_t task_acceleration_logging_configure(const task_api_data_target_t const target, const uint8_t interval);
+ruuvi_driver_status_t task_acceleration_logging_configure(const task_api_data_target_t target, const uint8_t interval);
 
 #endif

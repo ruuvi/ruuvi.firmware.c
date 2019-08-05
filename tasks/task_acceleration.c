@@ -318,7 +318,7 @@ ruuvi_driver_status_t task_acceleration_api_z_get(task_communication_api_t** api
   return RUUVI_DRIVER_SUCCESS;
 }
 
-ruuvi_driver_status_t task_acceleration_logging_configure(const task_api_data_target_t const target, const uint8_t interval)
+ruuvi_driver_status_t task_acceleration_logging_configure(const task_api_data_target_t target, const uint8_t interval)
 {
   return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
 }

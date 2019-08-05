@@ -32,7 +32,7 @@ ruuvi_driver_status_t task_rtc_init(void)
   return ruuvi_interface_rtc_init();
 }
 
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t const target, const uint8_t interval)
+ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target, const uint8_t interval)
 {
   return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
 }

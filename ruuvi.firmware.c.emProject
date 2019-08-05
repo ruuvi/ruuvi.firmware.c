@@ -29,7 +29,7 @@
       linker_printf_width_precision_supported="Yes"
       linker_section_placement_file="$(ProjectDir)/targets/ruuvitag_b/ses/flash_placement.xml"
       linker_section_placement_macros="FLASH_PH_START=0x0;FLASH_PH_SIZE=0x80000;RAM_PH_START=0x20000000;RAM_PH_SIZE=0x10000;FLASH_START=0x26000;FLASH_SIZE=0x4f000;RAM_START=0x20002450;RAM_SIZE=0xDBB0"
-      linker_section_placements_segments="FLASH RX 0x0 0x80000;RAM RWX 0x20000000 0x10000"
+      linker_section_placements_segments="FLASH RX 0x0 0x80000;RAM RWX 0x20000000 0x10000;uicr_bootloader_start_address RX 0x00000FF8 0x4;uicr_mbr_params_page RX 0x00000FFC 0x4;mbr_params_page RX 0x0007E000 0x1000;bootloader_settings_page RX 0x0007F000 0x1000"
       macros="CMSIS_CONFIG_TOOL=../nRF5_SDK_15.3.0_59ac345/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar"
       project_directory=""
       project_type="Executable" />
@@ -271,7 +271,7 @@
       linker_printf_width_precision_supported="Yes"
       linker_section_placement_file="$(ProjectDir)/targets/kaarle/ses/flash_placement.xml"
       linker_section_placement_macros="FLASH_PH_START=0x0;FLASH_PH_SIZE=0x80000;RAM_PH_START=0x20000000;RAM_PH_SIZE=0x10000;FLASH_START=0x26000;FLASH_SIZE=0x52000;RAM_START=0x20002450;RAM_SIZE=0xDBB0"
-      linker_section_placements_segments="FLASH RX 0x0 0x80000;RAM RWX 0x20000000 0x10000"
+      linker_section_placements_segments="FLASH RX 0x0 0x80000;RAM RWX 0x20000000 0x10000;uicr_bootloader_start_address RX 0x00000FF8 0x4;uicr_mbr_params_page RX 0x00000FFC 0x4;mbr_params_page RX 0x0007E000 0x1000;bootloader_settings_page RX 0x0007F000 0x1000"
       macros="CMSIS_CONFIG_TOOL=../nRF5_SDK_15.3.0_59ac345/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar"
       project_directory=""
       project_type="Executable" />
