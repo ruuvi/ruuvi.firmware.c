@@ -16,8 +16,7 @@ SRC_FILES += ${COMMON_SOURCES}
 INC_FOLDERS += ${COMMON_INCLUDES}
 
 # Libraries common to all targets
-LIB_FILES += \
- $(SDK_ROOT)/external/nrf_oberon/lib/cortex-m4/soft-float/liboberon_2.0.7.a \
+LIB_FILES += 
 
 # Optimization flags
 OPT = -O3 -g3
@@ -48,7 +47,7 @@ CFLAGS += -DSWI_DISABLE0
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror
-CFLAGS += -mfloat-abi=soft -mfpu=soft
+CFLAGS += -mfloat-abi=soft
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing -fstack-usage
 CFLAGS += -fno-builtin -fshort-enums 
@@ -60,7 +59,7 @@ CXXFLAGS += $(OPT)
 ASMFLAGS += -g3
 ASMFLAGS += -mcpu=cortex-m4
 ASMFLAGS += -mthumb -mabi=aapcs
-ASMFLAGS += -mfloat-abi=soft -mfpu=soft
+ASMFLAGS += -mfloat-abi=soft
 ASMFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 ASMFLAGS += -DBOARD_KEIJO
 ASMFLAGS += -DBOARD_CUSTOM
@@ -85,7 +84,7 @@ ASMFLAGS += -DSWI_DISABLE0
 LDFLAGS += $(OPT)
 LDFLAGS += -mthumb -mabi=aapcs -L$(SDK_ROOT)/modules/nrfx/mdk -T$(LINKER_SCRIPT)
 LDFLAGS += -mcpu=cortex-m4
-LDFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
+LDFLAGS += -mfloat-abi=soft
 # let linker dump unused sections
 LDFLAGS += -Wl,--gc-sections
 # use newlib in nano version

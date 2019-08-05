@@ -35,11 +35,12 @@ kaarle:
 
 keijo: 
 	$(MAKE) -C targets/keijo/armgcc clean
+	$(MAKE) -C targets/keijo/armgcc DEBUG=-DNDEBUG
+	targets/kaarle/armgcc/package.sh -n ruuvifw_default
+	$(MAKE) -C targets/keijo/armgcc clean
 	$(MAKE) -C targets/keijo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG
 	targets/kaarle/armgcc/package.sh -n ruuvifw_longlife
-	$(MAKE) -C targets/keijo/armgcc clean
-	$(MAKE) -C targets/keijo/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS
-	targets/kaarle/armgcc/package.sh -n ruuvifw_test
+
 
 clean:
 	@echo cleaning build files…
