@@ -11,7 +11,7 @@
 #include "ruuvi_boards.h"      // Includes information such as number of buttons and leds onboard
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
-#define APPLICATION_FW_VERSION "RuuviFW 3.23.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.24.0"
 
 /**
  * @brief enable compilation of NRF5 SDK15 implementation of driver interface functions.
@@ -75,13 +75,13 @@
 
 
 /** @brief Enable compiling BME280 interface functions */
-#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED 1
+#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED     RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
 
 /** @brief Enable compiling BME280 SPI interface */
-#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_SPI_ENABLED 1
+#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_SPI_ENABLED RUUVI_BOARD_ENVIRONMENTAL_BME280_SPI_USE
 
 /** @brief Enable compiling BME280 I2C interface */
-#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_I2C_ENABLED 0
+#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_I2C_ENABLED RUUVI_BOARD_ENVIRONMENTAL_BME280_I2C_USE
 
 /** @brief Enable compiling SHTCX interface functions */
 #define RUUVI_INTERFACE_ENVIRONMENTAL_SHTCX_ENABLED 1
@@ -165,14 +165,15 @@
 // Avoid "even" values such as 100 or 1000 to eventually drift apart from the devices transmitting at same interval
 #ifndef APPLICATION_ADVERTISING_CONFIGURED
 #if DEBUG
-  #define APPLICATION_ADVERTISING_INTERVAL              211  //!< Apple guidelines, exact value would be 211.25  
+  #define APPLICATION_ADVERTISING_INTERVAL_MS           211  //!< Apple guidelines, exact value would be 211.25  
 #else
-  #define APPLICATION_ADVERTISING_INTERVAL              1285 //!< Apple guidelines max interval
+  #define APPLICATION_ADVERTISING_INTERVAL_MS           1285 //!< Apple guidelines max interval
 #endif
-  #define APPLICATION_ADVERTISING_POWER                 RUUVI_BOARD_TX_POWER_MAX
+  #define APPLICATION_ADVERTISING_POWER_DBM             RUUVI_BOARD_TX_POWER_MAX
   #define APPLICATION_DATA_FORMAT                       0x05
-  #define APPLICATION_STANDBY_INTERVAL                  9900
-  #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL     APPLICATION_ADVERTISING_INTERVAL
+  #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS  (APPLICATION_ADVERTISING_INTERVAL_MS * 2)
+  #define APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS   100
+  #define APPLICATION_ADVERTISING_STARTUP_PERIOD_MS     10000
 #endif
 
 // Apple connection parameter quidelines:
@@ -226,7 +227,7 @@
 #define APPLICATION_ENVIRONMENTAL_BME280_ENABLED    1
 #define APPLICATION_I2C_ENABLED                     1
 #define APPLICATION_POWER_ENABLED                   1
-#define APPLICATION_RTC_MCU_ENABLED                 1
+#define APPLICATION_RTC_MCU_ENABLED                 (RUUVI_BOARD_RTC_INSTANCES > 2)
 #define APPLICATION_SCHEDULER_ENABLED               1
 #define APPLICATION_SPI_ENABLED                     1
 #define APPLICATION_TIMER_ENABLED                   1

@@ -36,7 +36,7 @@
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
 
 
-static uint8_t buffer[1024];                      //!< Raw buffer for GATT data TX
+static uint8_t buffer[128];                      //!< Raw buffer for GATT data TX
 static ruuvi_interface_atomic_t buffer_wlock;
 static ruuvi_interface_atomic_t buffer_rlock;
 /** @brief Buffer structure for outgoing data */

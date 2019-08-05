@@ -26,13 +26,6 @@
 #define NRF_LOG_BACKEND_RTT_ENABLED  APPLICATION_LOG_BACKEND_RTT_ENABLED
 #define NRF_LOG_BACKEND_UART_ENABLED APPLICATION_LOG_BACKEND_UART_ENABLED
 
-#define NFC_T4T_HAL_ENABLED            APPLICATION_COMMUNICATION_NFC_ENABLED
-#define NFC_NDEF_RECORD_ENABLED        APPLICATION_COMMUNICATION_NFC_ENABLED
-#define NFC_NDEF_MSG_ENABLED           APPLICATION_COMMUNICATION_NFC_ENABLED
-#define NFC_NDEF_TEXT_RECORD_ENABLED   APPLICATION_COMMUNICATION_NFC_ENABLED
-#define NFC_NDEF_MSG_PARSER_ENABLED    APPLICATION_COMMUNICATION_NFC_ENABLED
-#define NFC_NDEF_RECORD_PARSER_ENABLED APPLICATION_COMMUNICATION_NFC_ENABLED
-
 #define NRF_FSTORAGE_ENABLED           APPLICATION_FLASH_ENABLED
 
 // Enable GPIOTE abstarction
@@ -67,12 +60,14 @@
 // Enable SAADC
 #define SAADC_ENABLED 1
 
+#if NRF52811_XXAA
 #define I2C_ENABLED                        APPLICATION_I2C_ENABLED
-#define I2C_INSTANCE                       1
-#define I2C1_ENABLED                       APPLICATION_I2C_ENABLED
+/** nRF52811 supports I2C only on a instance shared with SPI1, known as I2C instance 0 */
+#define I2C_INSTANCE                       0
+#define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
 #define TWI_ENABLED                        I2C_ENABLED
-#define TWI1_ENABLED                       I2C_ENABLED
-#define TWI1_USE_EASY_DMA                  I2C_ENABLED
+#define TWI0_ENABLED                       I2C_ENABLED
+#define TWI0_USE_EASY_DMA                  I2C_ENABLED
 #define NRFX_TWI_ENABLED                   I2C_ENABLED
 #define NRFX_TWIM_ENABLED                  I2C_ENABLED
 #define NRFX_TWIM_ENABLED                  I2C_ENABLED
@@ -80,7 +75,7 @@
 #define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
 
 #define SPI_ENABLED                        APPLICATION_SPI_ENABLED
-#define SPI_INSTANCE                       0 //<! Do not use same instance with I2C 
+#define SPI_INSTANCE                       0 //<! TWI0 shares SPI 1 instance on nRF52811. SPI Instance 0 is free.
 #define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
 #define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
 // <0=> NRF_GPIO_PIN_NOPULL
@@ -90,6 +85,31 @@
 #define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
 #define SPI0_USE_EASY_DMA                  0
 #define NRFX_SPI0_ENABLED                  SPI_ENABLED
+#else
+#define I2C_ENABLED                        APPLICATION_I2C_ENABLED
+#define I2C_INSTANCE                       0
+#define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
+#define TWI_ENABLED                        I2C_ENABLED
+#define TWI0_ENABLED                       I2C_ENABLED
+#define TWI0_USE_EASY_DMA                  I2C_ENABLED
+#define NRFX_TWI_ENABLED                   I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM1_ENABLED                 I2C_ENABLED
+#define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
+
+#define SPI_ENABLED                        APPLICATION_SPI_ENABLED
+#define SPI_INSTANCE                       1 //!< Do not share I2C/SPI instance on 52832. 
+#define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
+#define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
+// <0=> NRF_GPIO_PIN_NOPULL
+// <1=> NRF_GPIO_PIN_PULLDOWN
+// <3=> NRF_GPIO_PIN_PULLUP
+#define NRF_SPI_DRV_MISO_PULLUP_CFG        0
+#define SPI1_ENABLED                       APPLICATION_SPI_ENABLED
+#define SPI1_USE_EASY_DMA                  0
+#define NRFX_SPI0_ENABLED                  SPI_ENABLED
+#endif
 
 // 0 is used by the softdevice, 1 is used by scheduler / timer
 #define NRF5_SDK15_RTC_INSTANCE            2
@@ -119,6 +139,22 @@
 #define SLAVE_LATENCY                    APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS
 /**< Timeout if no connection event in this duration. At least a few expected connection events at max interval * slave latency */                             
 #define CONN_SUP_TIMEOUT                 MSEC_TO_UNITS((APPLICATION_GATT_CONN_TIMEOUT_MS), (UNIT_10_MS))        
+
+#define NRFX_NFCT_ENABLED              APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_T4T_HAL_ENABLED            APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_NDEF_RECORD_ENABLED        APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_NDEF_MSG_ENABLED           APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_NDEF_TEXT_RECORD_ENABLED   APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_NDEF_MSG_PARSER_ENABLED    APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_NDEF_RECORD_PARSER_ENABLED APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_PLATFORM_ENABLED           APPLICATION_COMMUNICATION_NFC_ENABLED
+// NFC requires Timer 4
+#if     !(TIMER_ENABLED)
+  #undef  TIMER_ENABLED
+  #define TIMER_ENABLED APPLICATION_COMMUNICATION_NFC_ENABLED
+#endif
+#define TIMER4_ENABLED  APPLICATION_COMMUNICATION_NFC_ENABLED
+#define NFC_NDEF_MSG_TAG_TYPE 4
 
 #define FDS_ENABLED       APPLICATION_FLASH_ENABLED
 #define FDS_VIRTUAL_PAGES APPLICATION_FLASH_DATA_PAGES_NUMBER

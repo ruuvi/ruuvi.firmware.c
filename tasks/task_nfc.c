@@ -70,9 +70,7 @@ ruuvi_driver_status_t task_nfc_init(void)
   // Setup one NULL to DATA to match 1.x and 2.x NFC fields.
   ruuvi_interface_communication_message_t msg;
   msg.data_length = 1;
-  channel.send(&msg);
-  err_code |=
-    ruuvi_interface_communication_nfc_data_set(); // Call this to setup data to buffers
+  err_code |= channel.send(&msg);
   channel.on_evt = task_nfc_on_nfc;
   return err_code;
 }

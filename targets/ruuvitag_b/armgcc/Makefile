@@ -2,7 +2,7 @@ PROJECT_NAME     := ruuvi_firmware_ruuvitag_b_s132
 TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ../../../../nRF5_SDK_15.2.0_9412b96
+SDK_ROOT := ../../../../nRF5_SDK_15.3.0_59ac345
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
@@ -102,7 +102,6 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rng.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_rtc.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_saadc.c \
@@ -126,6 +125,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c/ruuvi_interface_i2c_shtcx.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/power/ruuvi_interface_power_dummy.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/power/ruuvi_interface_rtx_dummy.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/adc/ruuvi_nrf5_sdk15_adc_mcu.c \
@@ -145,7 +145,7 @@ SRC_FILES += \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/rtc/ruuvi_nrf5_sdk15_rtc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi_nrf5_sdk15_error.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/scheduler/ruuvi_nrf5_sdk15_scheduler.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/sdk_overrides/nrfx_wdt.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/ruuvi.nrf5_sdk15_3_overrides.c/nrfx_wdt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/spi/ruuvi_nrf5_sdk15_spi.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ruuvi_nrf5_sdk15_timer.c \
   $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/watchdog/ruuvi_nrf5_sdk15_watchdog.c \

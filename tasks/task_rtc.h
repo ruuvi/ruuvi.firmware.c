@@ -13,6 +13,7 @@
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_log.h"
 #include "task_api.h"
+#include "task_communication.h"
 /**
  * Initializes the RTC and sets up timestamp function on sensor interface
  */

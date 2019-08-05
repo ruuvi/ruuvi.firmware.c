@@ -120,8 +120,6 @@ static void init_sensors(void)
   // Initialize environmental- nRF52 will return ERROR NOT SUPPORTED on RuuviTag basic
   // if DSP was configured, log warning
   status = task_environmental_init();
-  ruuvi_interface_environmental_data_t data;
-  task_environmental_data_get(&data);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
   // Allow NOT FOUND in case we're running on basic model
   status = task_acceleration_init();
@@ -181,7 +179,6 @@ int main(void)
   task_led_write(RUUVI_BOARD_LED_STATUS_OK, TASK_LED_OFF);
   // Configure activity indication
   ruuvi_interface_yield_indication_set(task_led_activity_indicate);
-  //RUUVI_DRIVER_ERROR_CHECK(1, RUUVI_DRIVER_SUCCESS);
   while(1)
   {
     // Sleep

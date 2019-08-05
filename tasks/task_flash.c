@@ -43,6 +43,7 @@ ruuvi_driver_status_t task_flash_demo()
 {
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Loading boot count from flash\r\n");
   char msg[128] = {0};
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
   if(RUUVI_DRIVER_SUCCESS == ruuvi_interface_flash_record_get(PAGE_ID, RECORD_ID,
       sizeof(msg), msg))
@@ -57,6 +58,20 @@ ruuvi_driver_status_t task_flash_demo()
   }
 
   msg[0]++;
-  return ruuvi_interface_flash_record_set(PAGE_ID, RECORD_ID, sizeof(msg), msg);
+  err_code = ruuvi_interface_flash_record_set(PAGE_ID, RECORD_ID, sizeof(msg), msg);
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING,
+                        "Failed to store to flash, running GC\r\n");
+    ruuvi_interface_flash_gc_run();
+    err_code = ruuvi_interface_flash_record_set(PAGE_ID, RECORD_ID, sizeof(msg), msg);
+    if(RUUVI_DRIVER_SUCCESS != err_code)
+    {
+      ruuvi_interface_log(RUUVI_INTERFACE_LOG_ERROR,
+                        "FATAL: can't free up flash\r\n");
+       RUUVI_DRIVER_ERROR_CHECK(RUUVI_DRIVER_ERROR_FATAL, RUUVI_DRIVER_SUCCESS);
+    }
+  }
+  return err_code;
 }
 

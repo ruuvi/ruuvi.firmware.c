@@ -229,9 +229,6 @@
       filter="*.c;*.h"
       path="../../../ruuvi.endpoints.c"
       recurse="Yes" />
-    <configuration
-      Name="Longlife"
-      c_preprocessor_definitions="APPLICATION_MODE_LONGLIFE" />
     <folder
       Name="ruuvi.libraries.c"
       exclude=""
@@ -241,17 +238,18 @@
     <folder Name="Docs">
       <file file_name="../../../README.md" />
     </folder>
-    <configuration
-      Name="Release"
-      gcc_optimization_level="Optimize For Size" />
   </project>
   <configuration
     Name="Release"
     c_preprocessor_definitions="NDEBUG"
     gcc_optimization_level="Optimize For Size" />
   <configuration
+      Name="Longlife"
+      c_preprocessor_definitions="APPLICATION_MODE_LONGLIFE; NDEBUG"
+      gcc_optimization_level="Optimize For Size" />
+  <configuration
     Name="Debug"
+    arm_target_trace_interface_type="None"
     c_preprocessor_definitions="DEBUG; DEBUG_NRF; RUUVI_RUN_TESTS"
     gcc_optimization_level="None" />
-  <configuration Name="Longlife" />
 </solution>
