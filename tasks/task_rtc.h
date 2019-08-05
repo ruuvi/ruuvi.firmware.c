@@ -30,7 +30,7 @@ ruuvi_driver_status_t task_rtc_init(void);
  * @param[in] interval Logging interval, format TBD
  * @return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED
  */
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t const target, const uint8_t interval);
+ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target, const uint8_t interval);
 
 /**
  * @brief set offset to system clock
@@ -102,7 +102,7 @@ void task_rtc_comapi_data_get(uint8_t* const bytes);
  */
 ruuvi_driver_status_t task_rtc_api_get(task_communication_api_t** api);
 
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t const target, const uint8_t interval);
+ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target, const uint8_t interval);
 
 
 #endif

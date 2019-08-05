@@ -2,22 +2,23 @@
 [![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
-Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. 
-
-
+Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in alpha stage,
+build maybe broken in obvious ways and not build at all or in non-obvious ways and fail on some Ruuvi boards. 
 
 # Setting up
-## SDK 15.2
-Download [Nordic SDK15.2](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) and install it one level above the project root. 
+## SDK 15.3
+Download [Nordic SDK15.3](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) and install it one level above the project root. 
 
 ## Submodules
-Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project.
+Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project. If any of the submodules has a changed remote, you'll need to run `git submodule sync --recursive` and again `git submodule update --init --recursive` to update the modules from new remotes. 
 
 ## Toolchain
-ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use SES for developing.
-
+ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use SES for developing. You can make the project and all variants by runnning "make" at top level of this repository. 
+ 
 Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
 and following Getting Started plugin instructions.
+
+Start SES and open `ruuvi.firmware.c.emProject` at root level, each of the target boards is in their own project.
 
 # Usage
 Compile and flash the project to your board using SES. Instructions on how to use a bootloader will be added later on.
@@ -30,9 +31,13 @@ Please let us know your thoughts on the direction and structure of the project. 
 Is the structure of the project sensible to you? Pull requests and GitHub issues are welcome, but new features will not be accepted at this time. 
 
 # Licensing
-Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which generally are BSD-compatible.
+Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.24.0 
+ - Initial support for "Keijo"-project
+ - Port to SDK15.3
+
 ## 3.23.0 
  - Initial support for "Kaarle"-project
 

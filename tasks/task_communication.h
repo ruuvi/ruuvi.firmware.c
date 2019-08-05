@@ -26,7 +26,7 @@ typedef void (*task_api_data_fp_t)(uint8_t* const bytes);
 typedef ruuvi_driver_status_t (*task_api_data_target_t)(const ruuvi_driver_sensor_data_t* const data, const uint8_t source);
 
 /** @brief Function to configure logging. */
-typedef ruuvi_driver_status_t (*task_api_log_cfg_t)(const task_api_data_target_t const target, const uint8_t interval);
+typedef ruuvi_driver_status_t (*task_api_log_cfg_t)(const task_api_data_target_t target, const uint8_t interval);
 
 /** @brief API to control sensors. */
 typedef struct task_communication_api_t {
