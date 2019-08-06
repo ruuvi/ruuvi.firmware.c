@@ -116,6 +116,7 @@ COMMON_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c/ruuvi_interface_i2c_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c/ruuvi_interface_i2c_shtcx.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log/ruuvi_interface_log_dummy.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/power/ruuvi_interface_power_dummy.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/rtc/ruuvi_interface_rtc_dummy.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi/ruuvi_interface_spi_bme280.c \

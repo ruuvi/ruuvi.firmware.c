@@ -24,6 +24,7 @@ OPT = -O3 -g3
 #OPT += -flto
 
 CFLAGS += $(MODE)
+CFLAGS += $(DEBUG)
 # C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY

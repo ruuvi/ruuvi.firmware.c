@@ -245,8 +245,11 @@
                                                      + RUUVI_BOARD_BUTTONS_NUMBER)
 
 
-
+#if DEBUG
 #define APPLICATION_LOG_ENABLED                     1
+#else 
+#define APPLICATION_LOG_ENABLED                     0
+#endif
 // RUUVI_INTERFACE_LOG_ ERROR, WARNING, INFO, DEBUG
 #define APPLICATION_LOG_LEVEL                       RUUVI_INTERFACE_LOG_INFO
 /** @brief Bytes of RAM to conserve for printed log messages
