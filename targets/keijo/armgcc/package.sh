@@ -33,11 +33,11 @@ fi
 
 rm keijo_armgcc*${NAME}*
 
-nrfutil settings generate --family NRF52 --application _build/nrf52832_xxaa.hex --application-version 1  --bootloader-version 1 --bl-settings-version 1 settings.hex 
+nrfutil settings generate --family NRF52 --application _build/nrf52811_xxaa.hex --application-version 1  --bootloader-version 1 --bl-settings-version 1 settings.hex 
 mergehex -m ../../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s112/hex/s112_nrf52_6.1.1_softdevice.hex $BOOTLOADER settings.hex -o sbc.hex
-mergehex -m sbc.hex _build/nrf52832_xxaa.hex -o packet.hex
+mergehex -m sbc.hex _build/nrf52811_xxaa.hex -o packet.hex
 
-nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0xCE --sd-req 0xB8 --key-file ruuvi_open_private.pem \_dfu.zip
+nrfutil pkg generate --application _build/nrf52811_xxaa.hex --application-version 1 --hw-version 0xCE --sd-req 0xB8 --key-file ruuvi_open_private.pem \_dfu.zip
 mv packet.hex ${BINNAME}\_full.hex
-mv _build/nrf52832_xxaa.map ${BINNAME}\_app.map
-mv _build/nrf52832_xxaa.hex ${BINNAME}\_app.hex
+mv _build/nrf52811_xxaa.map ${BINNAME}\_app.map
+mv _build/nrf52811_xxaa.hex ${BINNAME}\_app.hex
