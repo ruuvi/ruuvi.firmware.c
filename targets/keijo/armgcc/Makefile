@@ -5,8 +5,10 @@ OUTPUT_DIRECTORY := _build
 SDK_ROOT := ../../../../nRF5_SDK_15.3.0_59ac345
 PROJ_DIR := ../../..
 
+LDSCRIPT := $(if $(LDSCRIPT),$(LDSCRIPT),keijo.ld)
+
 $(OUTPUT_DIRECTORY)/nrf52811_xxaa.out: \
-  LINKER_SCRIPT  := keijo.ld
+  LINKER_SCRIPT  := $(LDSCRIPT)
 
 include ${PROJ_DIR}/gcc_sources.make
 
@@ -19,7 +21,7 @@ INC_FOLDERS += ${COMMON_INCLUDES}
 LIB_FILES += 
 
 # Optimization flags
-OPT = -O3 -g3
+OPT = -Os
 # Uncomment the line below to enable link time optimization
 #OPT += -flto
 
@@ -56,6 +58,7 @@ CFLAGS += -fno-builtin -fshort-enums
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)
 
+
 # Assembler flags common to all targets
 ASMFLAGS += -g3
 ASMFLAGS += -mcpu=cortex-m4
@@ -91,17 +94,17 @@ LDFLAGS += -Wl,--gc-sections
 # use newlib in nano version
 LDFLAGS += --specs=nano.specs
 
-nrf52832_xxaa: CFLAGS += -D__HEAP_SIZE=2048
-nrf52832_xxaa: CFLAGS += -D__STACK_SIZE=2048
-nrf52832_xxaa: ASMFLAGS += -D__HEAP_SIZE=2048
-nrf52832_xxaa: ASMFLAGS += -D__STACK_SIZE=2048
+nrf52811_xxaa: CFLAGS += -D__HEAP_SIZE=1024
+nrf52811_xxaa: CFLAGS += -D__STACK_SIZE=8192
+nrf52811_xxaa: ASMFLAGS += -D__HEAP_SIZE=104
+nrf52811_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
 
 # Add standard libraries at the very end of the linker input, after all objects
 # that may need symbols provided by these libraries.
 LIB_FILES += -lc -lnosys -lm
 
 
-.PHONY: default
+.PHONY: default print_cflags
 
 # Default target - first one defined
 default: nrf52811_xxaa
@@ -110,5 +113,8 @@ TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 
 
 include $(TEMPLATE_PATH)/Makefile.common
-
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
+
+print_cflags:
+	@echo "CFLAGS: " $(CFLAGS) "\n"
+
