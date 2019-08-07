@@ -68,12 +68,13 @@ static void init_mcu(void)
   status |= task_led_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Initialize SPI, I2C
-  status |= task_spi_init();
+  status = task_spi_init();
   status |= task_i2c_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Initialize RTC, timer and scheduler. Enable low-power sleep.
+  // Dummy implementation of RTC requires timer.
+  status = task_timer_init();
   status |= task_rtc_init();
-  status |= task_timer_init();
   status |= task_scheduler_init();
   status |= ruuvi_interface_yield_low_power_enable(true);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);

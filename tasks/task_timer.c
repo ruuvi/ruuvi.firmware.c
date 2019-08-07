@@ -4,5 +4,5 @@
 
 ruuvi_driver_status_t task_timer_init(void)
 {
-  return ruuvi_interface_timers_init();
+  return ruuvi_interface_timer_init();
 }

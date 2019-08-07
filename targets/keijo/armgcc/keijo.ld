@@ -6,7 +6,7 @@ GROUP(-lgcc -lc -lnosys)
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x19000, LENGTH = 0xF000
-  RAM (rwx) :  ORIGIN = 0x20001c18, LENGTH = 0x43e8
+  RAM (rwx) :  ORIGIN = 0x20001d48, LENGTH = 0x42b8
   uicr_bootloader_start_address (r) : ORIGIN = 0x00000FF8, LENGTH = 0x4
   uicr_mbr_params_page (r) : ORIGIN = 0x00000FFC, LENGTH = 0x4
   mbr_params_page (r) : ORIGIN = 0x0002E000, LENGTH = 0x1000
