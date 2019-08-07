@@ -54,7 +54,10 @@ static void run_mcu_tests()
  */
 static void init_mcu(void)
 {
-// Init logging
+  // Init watchdog
+  ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
+
+  // Init logging
   ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
   status |= ruuvi_interface_log_init(APPLICATION_LOG_LEVEL);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
@@ -99,9 +102,11 @@ static void run_sensor_tests(void)
   // Tests will initialize and uninitialize the sensors, run this before using them in application
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO,
                       "Running extended self-tests, this might take a while\r\n");
+  ruuvi_interface_watchdog_feed();
   test_acceleration_run();
+  ruuvi_interface_watchdog_feed();
   test_environmental_run();
-
+  ruuvi_interface_watchdog_feed();
 
   // Print unit test status, activate tests by building in DEBUG configuration under SES
   size_t tests_run, tests_passed;
@@ -112,7 +117,6 @@ static void run_sensor_tests(void)
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, message);
   // Init watchdog after tests. Normally init at the start of the program
   #endif
-  ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
 }
 
 static void init_sensors(void)
