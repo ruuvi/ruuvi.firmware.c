@@ -11,7 +11,7 @@
 #include "ruuvi_boards.h"      // Includes information such as number of buttons and leds onboard
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
-#define APPLICATION_FW_VERSION "RuuviFW 3.24.1"
+#define APPLICATION_FW_VERSION "RuuviFW 3.24.2"
 
 /**
  * @brief enable compilation of NRF5 SDK15 implementation of driver interface functions.

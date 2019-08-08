@@ -34,6 +34,13 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.24.2
+ - Switch Keijo to S140 for Coded PHY
+ - Discard Keijo GATT, bootlaoder
+
+## 3.24.1 
+ - Fit Keijo application in nRF52811
+
 ## 3.24.0 
  - Initial support for "Keijo"-project
  - Port to SDK15.3
