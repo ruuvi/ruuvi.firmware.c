@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#if APPLICATION_COMMUNICATION_GATT_ENABLED
+
 #ifndef TASK_GATT_LOG_LEVEL
 #define TASK_GATT_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
@@ -245,3 +247,4 @@ ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_
   return err_code; 
   
 }
+#endif

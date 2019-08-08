@@ -113,9 +113,12 @@ ruuvi_driver_status_t task_advertisement_uninit(void)
 ruuvi_driver_status_t task_advertisement_start(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  err_code |= ruuvi_interface_communication_ble4_advertising_start();
-  err_code |= advertisement_data_init(); // TODO: Allow populating data before starting advertisements
+  err_code = ruuvi_interface_communication_ble4_advertising_start();
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
+  err_code = advertisement_data_init();  // TODO: Allow populating data before starting advertisements
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |= ruuvi_interface_timer_start(advertisement_timer, APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   m_advertising_started = task_rtc_millis();
   return err_code;
 }

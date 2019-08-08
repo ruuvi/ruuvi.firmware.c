@@ -146,13 +146,20 @@ static void init_comms(void)
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
 
-  #if APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED
+  #if APPLICATION_COMMUNICATION_ADVERTISING_ENABLED
   // Initialize BLE - and start advertising.
   status = task_advertisement_init();
-  status |= task_gatt_init();
   status |= task_advertisement_start();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
+
+  #if APPLICATION_COMMUNICATION_GATT_ENABLED
+  status = task_gatt_init();
+  status |= ruuvi_interface_communication_ble4_advertising_stop();  // Reinitialize with scan response
+  status |= ruuvi_interface_communication_ble4_advertising_start();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  #endif
+
 }
 
 int main(void)

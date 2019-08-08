@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+#if APPLICATION_FLASH_ENABLED
 #define PAGE_ID 1
 #define RECORD_ID 1
 
@@ -74,4 +75,14 @@ ruuvi_driver_status_t task_flash_demo()
   }
   return err_code;
 }
+#else
+ruuvi_driver_status_t task_flash_init(void)
+{
+  return RUUVI_DRIVER_SUCCESS;
+}
 
+ruuvi_driver_status_t task_flash_demo()
+{
+  return RUUVI_DRIVER_SUCCESS;
+}
+#endif

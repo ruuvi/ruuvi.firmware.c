@@ -172,7 +172,7 @@
   #define APPLICATION_ADVERTISING_POWER_DBM             RUUVI_BOARD_TX_POWER_MAX
   #define APPLICATION_DATA_FORMAT                       0x05
   #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS  (APPLICATION_ADVERTISING_INTERVAL_MS * 2)
-  #define APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS   100
+  #define APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS   210
   #define APPLICATION_ADVERTISING_STARTUP_PERIOD_MS     10000
 #endif
 
@@ -213,26 +213,35 @@
  * do not need module you can disable it. The modules might also
  * have some dependencies between themselves.
  */
-#define APPLICATION_ACCELERATION_ENABLED            1
-#define APPLICATION_ADC_ENABLED                     1
-#define APPLICATION_ATOMIC_ENABLED                  1
-#define APPLICATION_BUTTON_ENABLED                  RUUVI_BOARD_BUTTONS_NUMBER
-#define APPLICATION_COMMUNICATION_ENABLED           1 // Common functions for communication
-#define APPLICATION_COMMUNICATION_BLUETOOTH_ENABLED 1 // Advertising and GATT
-#define APPLICATION_COMMUNICATION_NFC_ENABLED       RUUVI_BOARD_NFC_INTERNAL_INSTALLED
-#define APPLICATION_FLASH_ENABLED                   1
-#define APPLICATION_GPIO_ENABLED                    1
-#define APPLICATION_GPIO_INTERRUPT_ENABLED          1
-#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED       1
-#define APPLICATION_ENVIRONMENTAL_BME280_ENABLED    1
-#define APPLICATION_I2C_ENABLED                     1
-#define APPLICATION_POWER_ENABLED                   1
-#define APPLICATION_RTC_MCU_ENABLED                 (RUUVI_BOARD_RTC_INSTANCES > 2)
-#define APPLICATION_SCHEDULER_ENABLED               1
-#define APPLICATION_SPI_ENABLED                     1
-#define APPLICATION_TIMER_ENABLED                   1
-#define APPLICATION_TIMER_MAX_INSTANCES             10 ///< Timers are allocated statically on RAM
-#define APPLICATION_WATCHDOG_ENABLED                1
+#define APPLICATION_ACCELERATION_ENABLED              1
+#define APPLICATION_ADC_ENABLED                       1
+#define APPLICATION_ATOMIC_ENABLED                    1
+#define APPLICATION_BUTTON_ENABLED                    RUUVI_BOARD_BUTTONS_NUMBER
+#define APPLICATION_COMMUNICATION_ENABLED             1 // Common functions for communication
+#define APPLICATION_COMMUNICATION_ADVERTISING_ENABLED 1 // BLE Advertising
+#if NRF52811_XXAA
+#define APPLICATION_COMMUNICATION_GATT_ENABLED        0 // BLE GATT, requiresh Flash and advertising
+#else
+#define APPLICATION_COMMUNICATION_GATT_ENABLED        1 // BLE GATT, requiresh Flash and advertising
+#endif
+#define APPLICATION_COMMUNICATION_NFC_ENABLED         RUUVI_BOARD_NFC_INTERNAL_INSTALLED
+#if NRF52811_XXAA
+#define APPLICATION_FLASH_ENABLED                     0
+#else
+#define APPLICATION_FLASH_ENABLED                     1
+#endif
+#define APPLICATION_GPIO_ENABLED                      1
+#define APPLICATION_GPIO_INTERRUPT_ENABLED            1
+#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED         1
+#define APPLICATION_ENVIRONMENTAL_BME280_ENABLED      1
+#define APPLICATION_I2C_ENABLED                       1
+#define APPLICATION_POWER_ENABLED                     1
+#define APPLICATION_RTC_MCU_ENABLED                   (RUUVI_BOARD_RTC_INSTANCES > 2)
+#define APPLICATION_SCHEDULER_ENABLED                 1
+#define APPLICATION_SPI_ENABLED                       1
+#define APPLICATION_TIMER_ENABLED                     1
+#define APPLICATION_TIMER_MAX_INSTANCES               10 ///< Timers are allocated statically on RAM
+#define APPLICATION_WATCHDOG_ENABLED                  1
 #if DEBUG
   #define APPLICATION_WATCHDOG_INTERVAL_MS            1200000u
 #else
