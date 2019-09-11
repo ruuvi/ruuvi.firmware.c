@@ -28,6 +28,9 @@ typedef ruuvi_driver_status_t (*task_api_data_target_t)(const ruuvi_driver_senso
 /** @brief Function to configure logging. */
 typedef ruuvi_driver_status_t (*task_api_log_cfg_t)(const task_api_data_target_t target, const uint8_t interval);
 
+/** @brief Function to read logs. */
+typedef ruuvi_driver_status_t (*task_api_log_read_t)(const ruuvi_interface_communication_xfer_fp_t reply_fp, const ruuvi_interface_communication_message_t* const query);
+
 /** @brief API to control sensors. */
 typedef struct task_communication_api_t {
   ruuvi_driver_sensor_t* sensor;      //!< Sensor control functions, NULL if not applicable
@@ -36,6 +39,7 @@ typedef struct task_communication_api_t {
   task_api_data_fp_t     data_get;    //!< Function to value from sensor
   task_api_data_target_t data_target; //!< Function to send data to.
   task_api_log_cfg_t     log_cfg;     //!< Function to configure logging
+  task_api_log_read_t    log_read;    //!< Function to read logs
 }task_communication_api_t;
 
 /** @brief handle incoming data and prepare a reply 

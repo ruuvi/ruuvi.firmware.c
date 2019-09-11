@@ -51,15 +51,19 @@ static ruuvi_driver_status_t task_communication_target_api_get(task_communicatio
     case RUUVI_ENDPOINT_STANDARD_DESTINATION_RTC:
       task_rtc_api_get(api);
       break;
+
+    // All environmental values are controlled through the same API
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL:
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_TEMPERATURE:
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_HUMIDITY:
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE:
+      task_environmental_api_get(api);
+      break;
+
     /*
     case RUUVI_ENDPOINT_STANDARD_ADC:
       task_adc_api_get(api);
       break;
-
-    case RUUVI_ENDPOINT_STANDARD_ENVIRONMENTAL:
-      task_environmental_api_get(api);
-      break;
-
     */
     
     default:
@@ -142,6 +146,16 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
       api->data_get(payload);
       memcpy(&(reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), payload, RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
       reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_VALUE_WRITE;
+      break;
+
+    case RUUVI_ENDPOINT_STANDARD_LOG_VALUE_READ:
+      if(NULL == api->log_read)   
+      { 
+        reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+        break; 
+      }
+      api->log_read(reply_fp, incoming);
+      reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_LOG_VALUE_WRITE;
       break;
 
     /*

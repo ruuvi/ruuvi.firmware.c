@@ -12,9 +12,16 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_bme280.h"
+#include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_environmental.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_log.h"
+#include "task_communication.h"
+
+typedef struct {
+  uint32_t timestamp_s;   //seconds since device boot
+  int32_t temperature_cc; //centi-celcius   
+}temperature_log_t;
 
 /**
  * Auto-detects and initializes environmental sensor in low-power state
@@ -44,6 +51,20 @@ ruuvi_driver_status_t task_environmental_on_button(void);
  *  Command environmental sensor to take a single sample. Leaves sensor in sleep
  **/
 ruuvi_driver_status_t task_environmental_sample(void);
+
+/*
+ * @brief log data - dummy, todo
+ */
+ruuvi_driver_status_t task_environmental_log(void);
+
+/*
+ * @brief send logged data - dummy, todo
+ */
+
+ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communication_xfer_fp_t reply_fp,
+                                                  const ruuvi_interface_communication_message_t* const query);
+
+ruuvi_driver_status_t task_environmental_api_get(task_communication_api_t** api);
 
 
 #endif

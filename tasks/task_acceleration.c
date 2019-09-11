@@ -294,7 +294,6 @@ ruuvi_driver_status_t task_acceleration_api_get(task_communication_api_t** api)
  if(api == NULL) { return RUUVI_DRIVER_ERROR_NULL; }
  *api = &acceleration_api;
  return RUUVI_DRIVER_SUCCESS;
-
 }
 
 ruuvi_driver_status_t task_acceleration_api_x_get(task_communication_api_t** api)

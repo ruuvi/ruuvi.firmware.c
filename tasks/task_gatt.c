@@ -191,9 +191,8 @@ ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
     case RUUVI_INTERFACE_COMMUNICATION_SENT:
       task_gatt_queue_process_interrupt();
       // Schedule only one data sent event to avoid filling scheduler queue. 
-      if(false == m_tx_scheduler_lock) {
+      if(ruuvi_interface_atomic_flag(&m_tx_scheduler_lock, true)) {
         err_code |= ruuvi_interface_scheduler_event_put(NULL, 0, task_gatt_communication_sent_scheduler);
-        m_tx_scheduler_lock = true;
       }
       break;
 
