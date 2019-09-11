@@ -235,6 +235,7 @@ ruuvi_driver_status_t task_environmental_log(void)
     LOG("Discarded data... ");
   }
   LOG("Stored data\r\n");
+  return RUUVI_DRIVER_SUCCESS;
 }
 
 ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communication_xfer_fp_t reply_fp,
