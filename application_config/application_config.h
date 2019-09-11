@@ -12,7 +12,7 @@
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
 #ifndef APPLICATION_FW_VERSION
-#define APPLICATION_FW_VERSION "RuuviFW 3.25.0"
+#define APPLICATION_FW_VERSION "RuuviFW 3.25.1"
 #endif
 
 /**
