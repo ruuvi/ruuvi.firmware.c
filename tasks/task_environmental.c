@@ -34,7 +34,7 @@
 static ruuvi_driver_sensor_t environmental_sensor = {0}; // Sensor API
 static ruuvi_interface_timer_id_t environmental_timer;
 
-static uint8_t buffer[16384];                      //!< Raw buffer for environmental logs
+static uint8_t buffer[APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE]; //!< Raw buffer for environmental logs
 static ruuvi_interface_atomic_t buffer_wlock;
 static ruuvi_interface_atomic_t buffer_rlock;
 /** @brief Buffer structure for outgoing data */

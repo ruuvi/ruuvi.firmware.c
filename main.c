@@ -37,11 +37,13 @@
 
 #include <stdio.h>
 
+#if RUUVI_RUN_TESTS
 // Function to  print test result strings
 static void print_test(const char* const msg)
 {
   ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, msg);
 }
+#endif
 
 /** Run tests which rely only on MCU. 
  *  These tests require relevant peripherals being uninitialized
