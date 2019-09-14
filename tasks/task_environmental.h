@@ -20,8 +20,10 @@
 
 typedef struct {
   uint32_t timestamp_s;   //seconds since device boot
-  int32_t temperature_cc; //centi-celcius   
-}temperature_log_t;
+  float temperature_c;    //celcius   
+  float humidity_rh;      //RH-%
+  float pressure_pa;      //Pascals
+}environmental_log_t;
 
 /**
  * Auto-detects and initializes environmental sensor in low-power state

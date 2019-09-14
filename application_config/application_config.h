@@ -12,7 +12,7 @@
 
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
 #ifndef APPLICATION_FW_VERSION
-#define APPLICATION_FW_VERSION "RuuviFW 3.25.1"
+#define APPLICATION_FW_VERSION "RuuviFW 3.26.0"
 #endif
 
 /**
@@ -73,8 +73,23 @@
   * Continuous is recommended mode for most applications.
   */
   #define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+
+
+  
 #endif
 
+/**
+ * @brief interval at which environmental data is logged to tag. 
+ * As of 3.26.0 environmental data has 2^14 bytes of space which can fit
+ * 1024 environmental samples. 6s interval -> 10 minutes.
+ * 60 s interval -> 17 hours
+ * 10 minute interval -> week
+ */
+#if DEBUG
+  #define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (6*1000)
+#else
+  #define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (5*60*1000)
+#endif
 
 /** @brief Enable compiling BME280 interface functions */
 #define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED     RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT

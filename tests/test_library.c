@@ -1,4 +1,3 @@
-#include "ruuvi_interface_log.h"
 #include "ruuvi_library_test.h"
 #include "test_library.h"
 

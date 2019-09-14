@@ -154,8 +154,11 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
         reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
         break; 
       }
+      // This call blocks until error occurs or all the requested data has been sent. 
       api->log_read(reply_fp, incoming);
+      // Send end of data element
       reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_LOG_VALUE_WRITE;
+      memset(&(reply.data[3]), 0xFF, RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
       break;
 
     /*

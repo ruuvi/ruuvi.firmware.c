@@ -12,11 +12,11 @@
 #include "ruuvi_interface_timer.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_log.h"
-#include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_yield.h"
 #include "task_communication.h"
 #include "task_environmental.h"
 #include "task_pressure.h"
+#include "task_rtc.h"
 #include "task_led.h"
 
 #include <inttypes.h>
@@ -34,15 +34,15 @@
 static ruuvi_driver_sensor_t environmental_sensor = {0}; // Sensor API
 static ruuvi_interface_timer_id_t environmental_timer;
 
-static uint8_t buffer[1024];                      //!< Raw buffer for environmental logs
+static uint8_t buffer[16384];                      //!< Raw buffer for environmental logs
 static ruuvi_interface_atomic_t buffer_wlock;
 static ruuvi_interface_atomic_t buffer_rlock;
 /** @brief Buffer structure for outgoing data */
 static ruuvi_library_ringbuffer_t ringbuf = {.head = 0,
                                              .tail = 0,
-                                             .block_size = 8,
+                                             .block_size = sizeof(environmental_log_t),
                                              .storage_size = sizeof(buffer),
-                                             .index_mask = (sizeof(buffer) / 8) - 1,
+                                             .index_mask = (sizeof(buffer) / sizeof(environmental_log_t)) - 1,
                                              .storage = buffer,
                                              .lock = ruuvi_interface_atomic_flag,
                                              .writelock = &buffer_wlock,
@@ -104,7 +104,7 @@ ruuvi_driver_status_t task_environmental_init(void)
   config.mode          = APPLICATION_ENVIRONMENTAL_MODE;
   uint8_t handle = 0;
   ruuvi_interface_timer_create(&environmental_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_environmental_timer_cb);
-  ruuvi_interface_timer_start(environmental_timer, 6000);
+  ruuvi_interface_timer_start(environmental_timer, APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS);
 
   #if (RUUVI_BOARD_ENVIRONMENTAL_SHTCX_PRESENT && RUUVI_INTERFACE_ENVIRONMENTAL_SHTCX_ENABLED)
   err_code = RUUVI_DRIVER_SUCCESS;
@@ -223,16 +223,18 @@ ruuvi_driver_status_t task_environmental_log(void)
 {
   ruuvi_interface_environmental_data_t data;
   task_environmental_data_get(&data);
-  temperature_log_t log = { .timestamp_s = data.timestamp_ms/1000,
-                            .temperature_cc = data.temperature_c*100};
+  environmental_log_t log = { .timestamp_s   = data.timestamp_ms/1000,
+                              .temperature_c = data.temperature_c,
+                              .humidity_rh   = data.humidity_rh,
+                              .pressure_pa   = data.pressure_pa};
   ruuvi_library_status_t status = ruuvi_library_ringbuffer_queue(&ringbuf, &log, sizeof(log));
   // Drop old sample if buffer is full
   if(RUUVI_LIBRARY_ERROR_NO_MEM == status)
   {
-    temperature_log_t drop;
+    LOG("Discarded data... ");
+    environmental_log_t drop;
     ruuvi_library_ringbuffer_dequeue(&ringbuf, &drop);
     ruuvi_library_ringbuffer_queue(&ringbuf, &log, sizeof(log));
-    LOG("Discarded data... ");
   }
   LOG("Stored data\r\n");
   return RUUVI_DRIVER_SUCCESS;
@@ -243,14 +245,18 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
 {
   LOG("Preparing to send logs\r\n");
   ruuvi_interface_communication_message_t msg = { 0 };
-  uint64_t systime = ruuvi_interface_rtc_millis()/1000;
-  uint32_t now = (query->data[3] << 24) +
-                 (query->data[4] << 16) +
-                 (query->data[5] << 8) +
-                 (query->data[6] << 0);
+  uint64_t systime = task_rtc_millis()/1000;
+  uint32_t now =   (query->data[3] << 24) +
+                   (query->data[4] << 16) +
+                   (query->data[5] << 8) +
+                   (query->data[6] << 0);
+  uint32_t start = (query->data[7] << 24) +
+                   (query->data[8] << 16) +
+                   (query->data[9] << 8) +
+                   (query->data[10] << 0);
   uint32_t offset = (now > systime)? now-systime : 0;
 
-  temperature_log_t* p_log;
+  environmental_log_t* p_log;
   msg.data_length = RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH;
   msg.data[0] = query->data[1];
   msg.data[1] = query->data[0];
@@ -263,28 +269,75 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
     // Send logged element
     if(RUUVI_LIBRARY_SUCCESS == status)
     {
+      // Calculate real time of event
       uint32_t timestamp = offset + p_log->timestamp_s;
+      // Check if the event is in range to send. Continue if not
+      if(start > timestamp) { continue; } 
       msg.data[3] = timestamp >> 24;
       msg.data[4] = timestamp >> 16;
       msg.data[5] = timestamp >> 8;
       msg.data[6] = timestamp >> 0;
-      msg.data[7] = p_log->temperature_cc >> 24;
-      msg.data[8] = p_log->temperature_cc >> 16;
-      msg.data[9] = p_log->temperature_cc >> 8;
-      msg.data[10] = p_log->temperature_cc >> 0;
-    }
-    // Send end of data element
-    else
-    {
-      memset(&(msg.data[3]), 0xFF, RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-    }
-    // Repeat sending here
-    while(RUUVI_DRIVER_ERROR_RESOURCES == reply_fp(&msg))
-    {
-      // Execute scheduled tasks
-      ruuvi_interface_scheduler_execute();
-      // Sleep
-      ruuvi_interface_yield();
+      uint8_t destination = query->data[0];
+      // send temp, humi, pressure
+      if(RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL == destination ||
+         RUUVI_ENDPOINT_STANDARD_DESTINATION_TEMPERATURE   == destination)
+      {
+        int32_t temperature_cc = p_log->temperature_c*100;
+        msg.data[1] = RUUVI_ENDPOINT_STANDARD_DESTINATION_TEMPERATURE;
+        msg.data[7] = temperature_cc >> 24;
+        msg.data[8] = temperature_cc >> 16;
+        msg.data[9] = temperature_cc >> 8;
+        msg.data[10] = temperature_cc >> 0;
+    
+        // Repeat sending here - remember to execute scheduled events
+        while(RUUVI_LIBRARY_ERROR_NO_MEM == reply_fp(&msg))
+        {
+          // Execute scheduled tasks
+          //ruuvi_interface_scheduler_execute();
+          // Sleep
+          ruuvi_interface_yield();
+        }
+      }
+
+      if(RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL == destination ||
+         RUUVI_ENDPOINT_STANDARD_DESTINATION_HUMIDITY      == destination)
+      {
+        uint32_t humidity_crh = p_log->humidity_rh*100;
+        msg.data[1] = RUUVI_ENDPOINT_STANDARD_DESTINATION_HUMIDITY;
+        msg.data[7]  = humidity_crh >> 24;
+        msg.data[8]  = humidity_crh >> 16;
+        msg.data[9]  = humidity_crh >> 8;
+        msg.data[10] = humidity_crh >> 0;
+    
+        // Repeat sending here - remember to execute scheduled events
+        while(RUUVI_LIBRARY_ERROR_NO_MEM == reply_fp(&msg))
+        {
+          // Execute scheduled tasks
+          //ruuvi_interface_scheduler_execute();
+          // Sleep
+          ruuvi_interface_yield();
+        }
+      }
+
+      if(RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL == destination ||
+         RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE      == destination)
+      {
+        uint32_t pressure_pa = p_log->pressure_pa;
+        msg.data[1] = RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE;
+        msg.data[7]  = pressure_pa >> 24;
+        msg.data[8]  = pressure_pa >> 16;
+        msg.data[9]  = pressure_pa >> 8;
+        msg.data[10] = pressure_pa >> 0;
+    
+        // Repeat sending here - remember to execute scheduled events
+        while(RUUVI_LIBRARY_ERROR_NO_MEM == reply_fp(&msg))
+        {
+          // Execute scheduled tasks
+          //ruuvi_interface_scheduler_execute();
+          // Sleep
+          ruuvi_interface_yield();
+        }
+      }
     }
   }while(RUUVI_LIBRARY_SUCCESS == status);
   LOG("Logs sent\r\n");

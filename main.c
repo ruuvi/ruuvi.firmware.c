@@ -7,6 +7,7 @@
 
 #include "application_config.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
@@ -36,6 +37,12 @@
 
 #include <stdio.h>
 
+// Function to  print test result strings
+static void print_test(const char* const msg)
+{
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, msg);
+}
+
 /** Run tests which rely only on MCU. 
  *  These tests require relevant peripherals being uninitialized
  *  before tests and leave the peripherals uninitialized.
@@ -44,8 +51,13 @@
 static void run_mcu_tests()
 {
   #if RUUVI_RUN_TESTS
+  // Use task_rtc function to apply offset configured by user to sensor values.
+  ruuvi_driver_sensor_timestamp_function_set(ruuvi_interface_rtc_millis);
+  ruuvi_interface_rtc_init();
   test_adc_run();
-  test_library_run();
+  ruuvi_library_test_all_run(print_test);
+  ruuvi_interface_delay_ms(1000);
+  ruuvi_interface_rtc_uninit();
   #endif
 }
 
@@ -57,13 +69,8 @@ static void init_mcu(void)
   // Init watchdog
   ruuvi_interface_watchdog_init(APPLICATION_WATCHDOG_INTERVAL_MS);
 
-  // Init logging
-  ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
-  status |= ruuvi_interface_log_init(APPLICATION_LOG_LEVEL);
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Program start \r\n");
   // Init yield
-  status = ruuvi_interface_yield_init();
+  ruuvi_driver_status_t status = ruuvi_interface_yield_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Init GPIO
   status = task_gpio_init();
@@ -162,8 +169,18 @@ static void init_comms(void)
 
 }
 
+// Init logging
+static void init_logging(void)
+{
+  ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+  status |= ruuvi_interface_log_init(APPLICATION_LOG_LEVEL);
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Program start \r\n");
+}
+
 int main(void)
 {
+  init_logging();   // Initializes logging to user console
   run_mcu_tests();  // Runs tests which do not rely on MCU peripherals being initialized
   init_mcu();       // Initialize MCU peripherals, except for communication with users. 
 
