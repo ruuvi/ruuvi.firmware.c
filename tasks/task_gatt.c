@@ -38,7 +38,7 @@
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
 
 
-static uint8_t buffer[128];                      //!< Raw buffer for GATT data TX
+static uint8_t buffer[32*20];                   //!< Raw buffer for GATT data TX
 static ruuvi_interface_atomic_t buffer_wlock;
 static ruuvi_interface_atomic_t buffer_rlock;
 /** @brief Buffer structure for outgoing data */
@@ -240,7 +240,11 @@ ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_
     LOG(">>>;");LOGHEX(msg->data, msg->data_length);LOG("\r\n");
     return err_code; 
   }
-
+  // If the error code is something else than buffer full, return error. 
+  else if(err_code != RUUVI_DRIVER_ERROR_RESOURCES)
+  {
+    return err_code;
+  }
   // Try to put data to ringbuffer
   err_code = ruuvi_library_ringbuffer_queue(&ringbuf, msg, sizeof(ruuvi_interface_communication_message_t));
   return err_code; 

@@ -181,7 +181,7 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
   reply.data[RUUVI_ENDPOINT_STANDARD_DESTINATION_INDEX] = incoming->data[RUUVI_ENDPOINT_STANDARD_SOURCE_INDEX];
   reply.data[RUUVI_ENDPOINT_STANDARD_SOURCE_INDEX] = incoming->data[RUUVI_ENDPOINT_STANDARD_DESTINATION_INDEX];
   reply.data_length = RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH;
-  reply_fp(&reply);
+  while(RUUVI_DRIVER_ERROR_NO_MEM == reply_fp(&reply));
   return err_code;
 }
 
