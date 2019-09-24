@@ -5,10 +5,9 @@ all: sync clean ruuvitag_b kaarle keijo
 sync:
 	@echo Synchronizing GIT...
 	# TODO: reject if repo is not clean
-	git fetch --all && git submodule foreach --recursive git fetch --all
+	git fetch && git submodule foreach --recursive git submodule update --init --recursive
 	git submodule sync --recursive
 	git submodule update --recursive
-
 
 ruuvitag_b:
 	@echo build FW
