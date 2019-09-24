@@ -5,7 +5,7 @@ all: sync clean ruuvitag_b kaarle keijo
 sync:
 	@echo Synchronizing GIT...
 	# TODO: reject if repo is not clean
-	git submodule update --init --recursive --remote
+	git fetch --all && git submodule foreach --recursive git fetch --all
 	git submodule sync --recursive
 	git submodule update --recursive
 
