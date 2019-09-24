@@ -222,7 +222,9 @@ ruuvi_driver_status_t task_environmental_on_button(void)
 ruuvi_driver_status_t task_environmental_log(void)
 {
   ruuvi_interface_environmental_data_t data;
-  task_environmental_data_get(&data);
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code |= task_environmental_data_get(&data);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
   environmental_log_t log = { .timestamp_s   = data.timestamp_ms/1000,
                               .temperature_c = data.temperature_c,
                               .humidity_rh   = data.humidity_rh,
@@ -233,11 +235,15 @@ ruuvi_driver_status_t task_environmental_log(void)
   {
     LOG("Discarded data... ");
     environmental_log_t drop;
-    ruuvi_library_ringbuffer_dequeue(&ringbuf, &drop);
-    ruuvi_library_ringbuffer_queue(&ringbuf, &log, sizeof(log));
+    status = ruuvi_library_ringbuffer_dequeue(&ringbuf, &drop);
+    status |= ruuvi_library_ringbuffer_queue(&ringbuf, &log, sizeof(log));
   }
-  LOG("Stored data\r\n");
-  return RUUVI_DRIVER_SUCCESS;
+  RUUVI_DRIVER_ERROR_CHECK(status, ~RUUVI_DRIVER_ERROR_FATAL);
+  if(RUUVI_DRIVER_SUCCESS == (status | err_code))
+  {
+    LOG("Stored data\r\n");
+  }
+  return status | err_code;
 }
 
 ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communication_xfer_fp_t reply_fp,
@@ -263,16 +269,22 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
   msg.data[2] = RUUVI_ENDPOINT_STANDARD_LOG_VALUE_WRITE;
   ruuvi_library_status_t status = RUUVI_LIBRARY_SUCCESS;
   // As long as we have more elements
+  size_t index = 0;
   do
   {
-    status = ruuvi_library_ringbuffer_dequeue(&ringbuf, &p_log);
+    status = ruuvi_library_ringbuffer_peek(&ringbuf, &p_log, index++);
     // Send logged element
     if(RUUVI_LIBRARY_SUCCESS == status)
     {
       // Calculate real time of event
       uint32_t timestamp = offset + p_log->timestamp_s;
       // Check if the event is in range to send. Continue if not
-      if(start > timestamp) { continue; } 
+      if(0 == p_log->timestamp_s) 
+      { 
+        LOG("WARNING: Empty element\r\n");
+        continue;
+      } 
+      if(start > timestamp) { continue; }
       msg.data[3] = timestamp >> 24;
       msg.data[4] = timestamp >> 16;
       msg.data[5] = timestamp >> 8;
@@ -289,11 +301,9 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
         msg.data[9] = temperature_cc >> 8;
         msg.data[10] = temperature_cc >> 0;
     
-        // Repeat sending here - remember to execute scheduled events
+        // Repeat sending here
         while(RUUVI_LIBRARY_ERROR_NO_MEM == reply_fp(&msg))
         {
-          // Execute scheduled tasks
-          //ruuvi_interface_scheduler_execute();
           // Sleep
           ruuvi_interface_yield();
         }
@@ -309,11 +319,9 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
         msg.data[9]  = humidity_crh >> 8;
         msg.data[10] = humidity_crh >> 0;
     
-        // Repeat sending here - remember to execute scheduled events
+        // Repeat sending here
         while(RUUVI_LIBRARY_ERROR_NO_MEM == reply_fp(&msg))
         {
-          // Execute scheduled tasks
-          //ruuvi_interface_scheduler_execute();
           // Sleep
           ruuvi_interface_yield();
         }
@@ -329,11 +337,9 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
         msg.data[9]  = pressure_pa >> 8;
         msg.data[10] = pressure_pa >> 0;
     
-        // Repeat sending here - remember to execute scheduled events
+        // Repeat sending here
         while(RUUVI_LIBRARY_ERROR_NO_MEM == reply_fp(&msg))
         {
-          // Execute scheduled tasks
-          //ruuvi_interface_scheduler_execute();
           // Sleep
           ruuvi_interface_yield();
         }

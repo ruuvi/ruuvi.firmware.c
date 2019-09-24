@@ -22,7 +22,6 @@
 #include "task_acceleration.h"
 #include "task_advertisement.h"
 #include "task_gatt.h"
-#include "ringbuffer.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -34,11 +33,12 @@
 #define TASK_GATT_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
 
+#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
 #define LOG(msg) ruuvi_interface_log(TASK_GATT_LOG_LEVEL, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
 
 
-static uint8_t buffer[32*20];                   //!< Raw buffer for GATT data TX
+static uint8_t buffer[1024];                   //!< Raw buffer for GATT data TX. Must be power of two.
 static ruuvi_interface_atomic_t buffer_wlock;
 static ruuvi_interface_atomic_t buffer_rlock;
 /** @brief Buffer structure for outgoing data */
@@ -95,8 +95,9 @@ ruuvi_driver_status_t task_gatt_init(void)
   snprintf(name, sizeof(name), "%s %02X%02X", RUUVI_BOARD_BLE_NAME_STRING, mac_buffer[4], mac_buffer[5]); 
   // Send name + NUS UUID. Note that this doesn't update sofdevice buffer, you have to call
   // advertising functions to encode data and start the advertisements. 
-  ruuvi_interface_communication_ble4_advertising_scan_response_setup(name, true);
-  ruuvi_interface_communication_ble4_advertising_type_set(CONNECTABLE_SCANNABLE);
+  err_code |= ruuvi_interface_communication_ble4_advertising_scan_response_setup(name, true);
+  err_code |= ruuvi_interface_communication_ble4_advertising_type_set(CONNECTABLE_SCANNABLE);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   return err_code;
 }
 
@@ -127,9 +128,15 @@ static void task_gatt_queue_process_interrupt()
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   ruuvi_interface_communication_message_t* p_msg;
   status = ruuvi_library_ringbuffer_dequeue(&ringbuf, &p_msg);
+  LOGD("I");
   if(RUUVI_LIBRARY_SUCCESS == status)
   {  
+    LOG("RB>;");LOGHEX(p_msg->data, p_msg->data_length);LOG("\r\n");
     err_code = channel.send(p_msg);
+  }
+  else
+  {
+    LOGD("E");
   }
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 }
@@ -157,7 +164,7 @@ static void task_gatt_communication_received_scheduler(void* p_context, uint16_t
  */
 static void task_gatt_communication_disconnected_scheduler(void* p_context, uint16_t data_len)
 {
-  LOG("Disonnected\r\n");
+  LOG("Disconnected\r\n");
   task_advertisement_start();
 }
 
@@ -237,7 +244,7 @@ ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_
   // If success, return. Else put data to ringbuffer
   if(RUUVI_DRIVER_SUCCESS == err_code) 
   { 
-    LOG(">>>;");LOGHEX(msg->data, msg->data_length);LOG("\r\n");
+    LOG("SD>;");LOGHEX(msg->data, msg->data_length);LOG("\r\n");
     return err_code; 
   }
   // If the error code is something else than buffer full, return error. 
@@ -247,6 +254,10 @@ ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_
   }
   // Try to put data to ringbuffer
   err_code = ruuvi_library_ringbuffer_queue(&ringbuf, msg, sizeof(ruuvi_interface_communication_message_t));
+  if(RUUVI_DRIVER_SUCCESS == err_code)
+  {
+    LOGD(">RB;");LOGD("\r\n");
+  }
   return err_code; 
   
 }

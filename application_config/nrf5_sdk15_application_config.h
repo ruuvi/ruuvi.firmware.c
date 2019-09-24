@@ -21,6 +21,15 @@
   #define NRF_LOG_STR_PUSH_BUFFER_SIZE APPLICATION_LOG_BUFFER_SIZE
 #endif
 #define NRF_LOG_ALLOW_OVERFLOW 0
+// <i> The following modes are supported:
+// <i> - SKIP  - Do not block, output nothing.
+// <i> - TRIM  - Do not block, output as much as fits.
+// <i> - BLOCK - Wait until there is space in the buffer.
+#if DEBUG
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 2
+#else
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+#endif
 
 // Select one backend
 #define NRF_LOG_BACKEND_RTT_ENABLED  APPLICATION_LOG_BACKEND_RTT_ENABLED
