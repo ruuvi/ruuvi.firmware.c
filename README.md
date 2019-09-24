@@ -34,6 +34,9 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.26.2
+ - Fix Keijo build
+
 ## 3.26.1
  - Improve logging sent elements. 
  - Send 0xFFFFFFFF payload at the end of log data
