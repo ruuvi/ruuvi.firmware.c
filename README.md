@@ -34,6 +34,9 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.26.4
+ - Do not block if RTT logs are not read in debug mode
+
 ## 3.26.3
  - Fix build script in case of out-of-master submodule commits
 

@@ -22,11 +22,11 @@
 #endif
 #define NRF_LOG_ALLOW_OVERFLOW 0
 // <i> The following modes are supported:
-// <i> - SKIP  - Do not block, output nothing.
-// <i> - TRIM  - Do not block, output as much as fits.
-// <i> - BLOCK - Wait until there is space in the buffer.
+// <i> - 0 SKIP  - Do not block, output nothing.
+// <i> - 1 TRIM  - Do not block, output as much as fits.
+// <i> - 2 BLOCK - Wait until there is space in the buffer.
 #if DEBUG
-#define SEGGER_RTT_CONFIG_DEFAULT_MODE 2
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 #else
 #define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 #endif
