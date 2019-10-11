@@ -46,10 +46,9 @@ ruuvi_driver_status_t task_rtc_millis_offset_set(const int64_t _offset)
   return RUUVI_DRIVER_SUCCESS;
 }
 
-ruuvi_driver_status_t task_rtc__millis_offset_get(int64_t * const _offset)
+int64_t task_rtc_millis_offset_get()
 {
-  *_offset = offset;
-  return RUUVI_DRIVER_SUCCESS;
+  return offset;
 }
 
 void task_rtc_comapi_offset_get(uint8_t* const bytes)

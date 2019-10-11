@@ -115,12 +115,10 @@ ruuvi_driver_status_t task_nfc_on_nfc(ruuvi_interface_communication_evt_t evt,
 
     case RUUVI_INTERFACE_COMMUNICATION_SENT:
       ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "NFC data sent\r\n");
-      ruuvi_interface_watchdog_feed();
       break;
 
     case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
       ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "NFC data received\r\n");
-      ruuvi_interface_scheduler_event_put(NULL, 0, task_acceleration_scheduler_task);
       break;
 
     default:

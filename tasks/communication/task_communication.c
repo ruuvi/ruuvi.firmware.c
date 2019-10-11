@@ -32,26 +32,6 @@ static ruuvi_driver_status_t task_communication_target_api_get(task_communicatio
   
   switch(target)
   {
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION:
-      task_acceleration_api_get(api);
-      break;
-
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_X:
-      task_acceleration_api_x_get(api);
-      break;
-
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Y:
-      task_acceleration_api_y_get(api);
-      break;
-
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Z:
-      task_acceleration_api_z_get(api);
-      break;
-
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_RTC:
-      task_rtc_api_get(api);
-      break;
-
     // All environmental values are controlled through the same API
     case RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL:
     case RUUVI_ENDPOINT_STANDARD_DESTINATION_TEMPERATURE:
@@ -61,6 +41,17 @@ static ruuvi_driver_status_t task_communication_target_api_get(task_communicatio
       break;
 
     /*
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION:
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_X:
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Y:
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Z:
+      task_acceleration_api_get(api);
+      break;
+
+    case RUUVI_ENDPOINT_STANDARD_DESTINATION_RTC:
+      task_rtc_api_get(api);
+      break;
+
     case RUUVI_ENDPOINT_STANDARD_ADC:
       task_adc_api_get(api);
       break;

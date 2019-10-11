@@ -98,7 +98,6 @@ static void init_mcu(void)
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   // Initialize flash
   status = task_flash_init();
-  status |= task_flash_demo();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
 }
 

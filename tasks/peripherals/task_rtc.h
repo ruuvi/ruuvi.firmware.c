@@ -12,10 +12,11 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_log.h"
-#include "task_api.h"
 #include "task_communication.h"
 /**
- * Initializes the RTC and sets up timestamp function on sensor interface
+ * @brief Initializes the RTC and sets up timestamp function on sensor interface.
+ *
+ * @return RUUVI_DRIVER_SUCCESS on success
  */
 ruuvi_driver_status_t task_rtc_init(void);
 
@@ -51,16 +52,13 @@ ruuvi_driver_status_t task_rtc_millis_offset_set(const int64_t offset);
  * @brief get offset to system clock
  *
  * Values returned by @ref ruuvi_interface_rtc_millis are offset by this amount, which
- * can be positive or negative. Negative offset should be always smaller than current time,
- * otherwise error is returned.
+ * can be positive or negative. 
  *
  * This function is useful for synchronizing the clock with EPOCH, for example.
  *
- * @param[in] offset number of offset 
- * @return RUUVI_DRIVER_SUCCESS on success
- * @return RUUVI_DRIVER_ERROR_INVALID_PARAM if offset is larger negative value than current system time
+ * @return offset to system RTC.
  */
-ruuvi_driver_status_t task_rtc_millis_offset_get(const int64_t offset);
+int64_t task_rtc_millis_offset_get(void);
 
 /**
  * @brief Get milliseconds since init with summed offset.

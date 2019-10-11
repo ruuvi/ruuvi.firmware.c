@@ -330,6 +330,7 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
       if(RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL == destination ||
          RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE      == destination)
       {
+        if(isnan( p_log->pressure_pa)) { continue; }
         uint32_t pressure_pa = p_log->pressure_pa;
         msg.data[1] = RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE;
         msg.data[7]  = pressure_pa >> 24;
