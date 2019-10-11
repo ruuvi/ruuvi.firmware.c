@@ -55,7 +55,7 @@ static ruuvi_driver_status_t advertisement_data_init(void)
   ruuvi_interface_communication_radio_address_get(&(data.address));
   ruuvi_interface_communication_message_t message;
   message.data_length = RUUVI_ENDPOINT_5_DATA_LENGTH;
-  ruuvi_endpoint_5_encode(message.data, &data, RUUVI_DRIVER_FLOAT_INVALID);
+  ruuvi_endpoint_5_encode(message.data, &data);
   return   ruuvi_interface_communication_ble4_advertising_data_set(message.data, message.data_length);
 }
 
@@ -195,7 +195,7 @@ ruuvi_driver_status_t task_advertisement_send_5(void)
   ruuvi_interface_communication_radio_address_get(&(data.address));
   ruuvi_interface_communication_message_t message;
   message.data_length = RUUVI_ENDPOINT_5_DATA_LENGTH;
-  ruuvi_endpoint_5_encode(message.data, &data, RUUVI_DRIVER_FLOAT_INVALID);
+  ruuvi_endpoint_5_encode(message.data, &data);
   err_code |= channel.send(&message);
   return err_code;
 }

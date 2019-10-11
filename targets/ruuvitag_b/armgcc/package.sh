@@ -35,8 +35,8 @@ nrfutil settings generate --family NRF52 --application _build/nrf52832_xxaa.hex 
 mergehex -m ../../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex $BOOTLOADER settings.hex -o sbc.hex
 mergehex -m sbc.hex _build/nrf52832_xxaa.hex -o packet.hex
 
-nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0xB0 --sd-req 0xB7 --key-file ruuvi_open_private.pem ${BINNAME}\_dfu.zip
+nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0xB0 --sd-req 0xB7 --key-file ruuvi_open_private.pem ${BINNAME}\_dfu_app.zip
 nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --bootloader ${BOOTLOADER} --bootloader-version 2 --hw-version 0xB0 --sd-req 0x91,0xAF,0xB7 --sd-id 0xB7 --softdevice ../../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex  --key-file ruuvi_open_private.pem ${BINNAME}\_sdk12.3_to_15.3_dfu.zip --debug-mode
-mv packet.hex ruuvitag_b\_armgcc\_$NAME\_$VERSION\_full.hex
+mv packet.hex ${BINNAME}\_full.hex
 mv _build/nrf52832_xxaa.map ${BINNAME}\_app.map
 mv _build/nrf52832_xxaa.hex ${BINNAME}\_app.hex
