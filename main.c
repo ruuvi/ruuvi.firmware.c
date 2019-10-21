@@ -24,7 +24,6 @@
 #include "task_i2c.h"
 #include "task_nfc.h"
 #include "task_power.h"
-#include "task_pressure.h"
 #include "task_rtc.h"
 #include "task_scheduler.h"
 #include "task_spi.h"
@@ -163,8 +162,8 @@ static void init_comms(void)
 
   #if APPLICATION_COMMUNICATION_GATT_ENABLED
   status = task_gatt_init();
-  status |= ruuvi_interface_communication_ble4_advertising_stop();  // Reinitialize with scan response
-  status |= ruuvi_interface_communication_ble4_advertising_start();
+  status |= task_advertisement_stop();  // Reinitialize with scan response
+  status |= task_advertisement_start();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
 

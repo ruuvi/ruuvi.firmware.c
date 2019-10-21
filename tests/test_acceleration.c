@@ -12,7 +12,7 @@
 #include <inttypes.h>
 
 // Use own file for each test run to track the source of any errors.
-static ruuvi_driver_status_t test_run(ruuvi_driver_sensor_init_fp init, ruuvi_driver_bus_t bus, uint8_t handle)
+static ruuvi_driver_status_t test_run(const ruuvi_driver_sensor_init_fp init, const ruuvi_driver_bus_t bus, const uint8_t handle)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   #ifdef RUUVI_RUN_TESTS

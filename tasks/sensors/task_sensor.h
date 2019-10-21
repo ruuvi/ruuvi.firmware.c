@@ -30,5 +30,13 @@ ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
                                             ruuvi_driver_sensor_configuration_t* const config, 
                                             const char* const unit);
 
+/**
+ * @brief Read sensors and encode to given buffer in Ruuvi DF5.
+ *
+ * @param[in] buffer uint8_t array with length of 24 bytes.
+ * @return RUUVI_DRIVER_SUCCESS if data was encoded
+ */
+ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer);
+
 /*@}*/
 #endif

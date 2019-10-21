@@ -25,75 +25,7 @@
  */
 #define RUUVI_NRF5_SDK15_ENABLED              1
 
-/**
- * @brief Battery voltage measurement mode configuration
- */
-#ifndef APPLICATION_BATTERY_VOLTAGE_MODE
-  #define APPLICATION_BATTERY_VOLTAGE_SIMPLE   0  //<! Simple mode: Not synchronized to anything, sampled at regular interval
-  #define APPLICATION_BATTERY_VOLTAGE_RADIO    1  //<! Radio mode: Voltage is sampled after radio tx, refreshed after interval has passed.
-  #define APPLICATION_BATTERY_VOLTAGE_DROOP    0  //<! Droop mode: Battery is read after TX and after a brief recovery period. Droop is reported
-#endif
-#define APPLICATION_BATTERY_DROOP_DELAY_MS   2  //<! Milliseconds between active and recovered tx
-#if(APPLICATION_BATTERY_VOLTAGE_SIMPLE + APPLICATION_BATTERY_VOLTAGE_RADIO + APPLICATION_BATTERY_VOLTAGE_DROOP != 1)
-  #error "Select application battery voltage monitor mode by defining one constant as 1"
-#endif
 
-/**
- * Environmental sensor configuration
- **/
-#ifndef APPLICATION_ENVIRONMENTAL_CONFIGURED
-  /** @brief sample rate, in Hz. */
-  #define APPLICATION_ENVIRONMENTAL_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
-
-  /** @brief BME280 cannot adjust resolution, use default */
-  #define APPLICATION_ENVIRONMENTAL_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
-
-  /** @brief BME280 cannot adjust scale, use default */
-  #define APPLICATION_ENVIRONMENTAL_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
-
-  /** @brief DSP configuration of environmental sensor.
-  * Valid values for BME280 are: (RUUVI_DRIVER_SENSOR_DSP_)LAST, LOW_PASS, OS
-  * Low pass slows step response but lowers noise
-  * Ooversampling (OS) increases power consumption but lowers noise.
-  * @see https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
-  */
-  #define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_CFG_DEFAULT
-
-  /** @brief Parameter to DSP function.
-  * The parameter affects how agressively the DSP is applied, higher means
-  * stronger effect. For example Oversampling with parameter 8 means 8 samples are averaged for one sample.
-  *
-  * Valid values are RUUVI_DRIVER_SENSOR_CFG_MAX, RUUVI_DRIVER_SENSOR_CFG_MIN, RUUVI_DRIVER_SENSOR_CFG_DEFAULT.
-  * 1, 2, 4, 8, 16
-  */
-  #define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_DEFAULT
-
-  /**
-  * @brief default mode of environmental sensor.
-  * Valid values are RUUVI_DRIVER_SENSOR_CFG_SLEEP, RUUVI_DRIVER_SENSOR_CFG_SINGLE and RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS.
-  * Sleep enters lowest-power mode possible.
-  * Single commands sensor to take a new sample, waits sample to be available and then returns the data from sensor.
-  * Continuous keeps the sensor running on the background regardless of how often data is read.
-  * Continuous is recommended mode for most applications.
-  */
-  #define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
-
-
-  
-#endif
-
-/**
- * @brief interval at which environmental data is logged to tag. 
- * As of 3.26.0 environmental data has 2^14 bytes of space which can fit
- * 1024 environmental samples. 6s interval -> 10 minutes.
- * 60 s interval -> 17 hours
- * 10 minute interval -> week
- */
-#if DEBUG
-  #define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (6*1000)
-#else
-  #define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (5*60*1000)
-#endif
 
 #if BOARD_KEIJO
   #define APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE 1024
@@ -101,17 +33,10 @@
   #define APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE 16384
 #endif
 
-/** @brief Enable compiling BME280 interface functions */
-#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_ENABLED     RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
 
-/** @brief Enable compiling BME280 SPI interface */
-#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_SPI_ENABLED RUUVI_BOARD_ENVIRONMENTAL_BME280_SPI_USE
 
-/** @brief Enable compiling BME280 I2C interface */
-#define RUUVI_INTERFACE_ENVIRONMENTAL_BME280_I2C_ENABLED RUUVI_BOARD_ENVIRONMENTAL_BME280_I2C_USE
-
-/** @brief Enable compiling SHTCX interface functions */
-#define RUUVI_INTERFACE_ENVIRONMENTAL_SHTCX_ENABLED 1
+// @brief maximum number of environmental sensor options.
+#define APPLICATION_ENVIRONMENTAL_SENSORS_NUM 
 
 /**
  * Accelerometer configuration
@@ -203,6 +128,13 @@
   #define APPLICATION_ADVERTISING_STARTUP_PERIOD_MS     10000
 #endif
 
+// Scanning configuration
+#define APPLICATION_BLE_SCAN_ENABLED     0     //!< Do not scan advertisements by default.
+#define APPLICATION_BLE_SCAN_BUFFER_SIZE 31    //!< Bytes in BLE scanner buffer. 31 for normal advertisements, 256 for extended. 
+#define APPLICATION_SCAN_INTERVAL_MS     10000
+#define APPLICATION_SCAN_WINDOW_MS       100
+#define APPLICATION_SCAN_TIMEOUT_MS      10000
+
 // Apple connection parameter quidelines:
 // Slave latency <= 30
 // 2 seconds <= timeout <= 6 seconds
@@ -214,6 +146,9 @@
 #define APPLICATION_GATT_CONN_INTERVAL_MAX_MS      15
 #define APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS 31   // Slave latency. How many intervals can be skipped. 31 * 45 < 2000
 #define APPLICATION_GATT_CONN_TIMEOUT_MS           5600 // 31 * 45 * 3 < 5600
+
+// GATT functionality
+#define APPLICATION_GATT_HEARTBERAT_INTERVAL_MS    (60*1000)
 
 /**
  * NFC configuration
@@ -252,15 +187,105 @@
 #define APPLICATION_COMMUNICATION_GATT_ENABLED        1 // BLE GATT, requiresh Flash and advertising
 #endif
 #define APPLICATION_COMMUNICATION_NFC_ENABLED         RUUVI_BOARD_NFC_INTERNAL_INSTALLED
-#if NRF52811_XXAA
-#define APPLICATION_FLASH_ENABLED                     0
-#else
-#define APPLICATION_FLASH_ENABLED                     1
-#endif
 #define APPLICATION_GPIO_ENABLED                      1
 #define APPLICATION_GPIO_INTERRUPT_ENABLED            1
-#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED         1
-#define APPLICATION_ENVIRONMENTAL_BME280_ENABLED      1
+#define APPLICATION_ENVIRONMENTAL_ENABLED             1
+#define APPLICATION_ENVIRONMENTAL_BME280_ENABLED      (1 && RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT)
+#define APPLICATION_ENVIRONMENTAL_MCU_ENABLED         (1 && RUUVI_BOARD_ENVIRONMENTAL_MCU_PRESENT)
+#define APPLICATION_ENVIRONMENTAL_SHTCX_ENABLED       (1 && RUUVI_BOARD_ENVIRONMENTAL_SHTCX_PRESENT)
+/**
+ * Environmental sensor configuration
+ **/
+#ifndef APPLICATION_ENVIRONMENTAL_CONFIGURED
+  /** @brief sample rate, in Hz. */
+  #define APPLICATION_ENVIRONMENTAL_SAMPLERATE RUUVI_DRIVER_SENSOR_CFG_MIN
+
+  /** @brief BME280 cannot adjust resolution, use default */
+  #define APPLICATION_ENVIRONMENTAL_RESOLUTION RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+
+  /** @brief BME280 cannot adjust scale, use default */
+  #define APPLICATION_ENVIRONMENTAL_SCALE      RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+
+  /** @brief DSP configuration of environmental sensor.
+  * Valid values for BME280 are: (RUUVI_DRIVER_SENSOR_DSP_)LAST, LOW_PASS, OS
+  * Low pass slows step response but lowers noise
+  * Ooversampling (OS) increases power consumption but lowers noise.
+  * @see https://blog.ruuvi.com/humidity-sensor-673c5b7636fc and https://blog.ruuvi.com/dsp-compromises-3f264a6b6344
+  */
+  #define APPLICATION_ENVIRONMENTAL_DSPFUNC    RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+
+  /** @brief Parameter to DSP function.
+  * The parameter affects how agressively the DSP is applied, higher means
+  * stronger effect. For example Oversampling with parameter 8 means 8 samples are averaged for one sample.
+  *
+  * Valid values are RUUVI_DRIVER_SENSOR_CFG_MAX, RUUVI_DRIVER_SENSOR_CFG_MIN, RUUVI_DRIVER_SENSOR_CFG_DEFAULT.
+  * 1, 2, 4, 8, 16
+  */
+  #define APPLICATION_ENVIRONMENTAL_DSPPARAM   RUUVI_DRIVER_SENSOR_CFG_DEFAULT
+
+  /**
+  * @brief default mode of environmental sensor.
+  * Valid values are RUUVI_DRIVER_SENSOR_CFG_SLEEP, RUUVI_DRIVER_SENSOR_CFG_SINGLE and RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS.
+  * Sleep enters lowest-power mode possible.
+  * Single commands sensor to take a new sample, waits sample to be available and then returns the data from sensor.
+  * Continuous keeps the sensor running on the background regardless of how often data is read.
+  * Continuous is recommended mode for most applications.
+  */
+  #define APPLICATION_ENVIRONMENTAL_MODE       RUUVI_DRIVER_SENSOR_CFG_CONTINUOUS
+
+  #define APPLICATION_ENVIRONMENTAL_SHTCX_DSP_FUNC   APPLICATION_ENVIRONMENTAL_DSPFUNC
+  #define APPLICATION_ENVIRONMENTAL_SHTCX_DSP_PARAM  APPLICATION_ENVIRONMENTAL_DSPPARAM
+  /** @brief SHTCX uses simulated continous mode, i.e. a new sample is taken on data_get. */
+  #define APPLICATION_ENVIRONMENTAL_SHTCX_MODE       APPLICATION_ENVIRONMENTAL_MODE
+  #define APPLICATION_ENVIRONMENTAL_SHTCX_RESOLUTION APPLICATION_ENVIRONMENTAL_RESOLUTION
+  #define APPLICATION_ENVIRONMENTAL_SHTCX_SAMPLERATE APPLICATION_ENVIRONMENTAL_SAMPLERATE
+  #define APPLICATION_ENVIRONMENTAL_SHTCX_SCALE      APPLICATION_ENVIRONMENTAL_SCALE
+
+  /** @brief Slower response, lower noise. */
+  #define APPLICATION_ENVIRONMENTAL_BME280_DSP_FUNC   RUUVI_DRIVER_SENSOR_DSP_LOW_PASS
+  #define APPLICATION_ENVIRONMENTAL_BME280_DSP_PARAM  16
+  #define APPLICATION_ENVIRONMENTAL_BME280_MODE       APPLICATION_ENVIRONMENTAL_MODE
+  #define APPLICATION_ENVIRONMENTAL_BME280_RESOLUTION APPLICATION_ENVIRONMENTAL_RESOLUTION
+  #define APPLICATION_ENVIRONMENTAL_BME280_SAMPLERATE APPLICATION_ENVIRONMENTAL_SAMPLERATE
+  #define APPLICATION_ENVIRONMENTAL_BME280_SCALE      APPLICATION_ENVIRONMENTAL_SCALE
+
+  #define APPLICATION_ENVIRONMENTAL_MCU_DSP_FUNC   APPLICATION_ENVIRONMENTAL_DSPFUNC
+  #define APPLICATION_ENVIRONMENTAL_MCU_DSP_PARAM  APPLICATION_ENVIRONMENTAL_DSPPARAM
+  /** @brief MCU uses simulated continous mode, i.e. a new sample is taken on data_get. */
+  #define APPLICATION_ENVIRONMENTAL_MCU_MODE       APPLICATION_ENVIRONMENTAL_MODE
+  #define APPLICATION_ENVIRONMENTAL_MCU_RESOLUTION APPLICATION_ENVIRONMENTAL_RESOLUTION
+  #define APPLICATION_ENVIRONMENTAL_MCU_SAMPLERATE APPLICATION_ENVIRONMENTAL_SAMPLERATE
+  #define APPLICATION_ENVIRONMENTAL_MCU_SCALE      APPLICATION_ENVIRONMENTAL_SCALE
+
+  #define APPLICATION_ENVIRONMENTAL_NTC_DSP_FUNC   APPLICATION_ENVIRONMENTAL_DSPFUNC
+  #define APPLICATION_ENVIRONMENTAL_NTC_DSP_PARAM  APPLICATION_ENVIRONMENTAL_DSPPARAM
+  /** @brief NTC uses simulated continous mode, i.e. a new sample is taken on data_get. */
+  #define APPLICATION_ENVIRONMENTAL_NTC_MODE       APPLICATION_ENVIRONMENTAL_MODE
+  #define APPLICATION_ENVIRONMENTAL_NTC_RESOLUTION APPLICATION_ENVIRONMENTAL_RESOLUTION
+  #define APPLICATION_ENVIRONMENTAL_NTC_SAMPLERATE APPLICATION_ENVIRONMENTAL_SAMPLERATE
+  #define APPLICATION_ENVIRONMENTAL_NTC_SCALE      APPLICATION_ENVIRONMENTAL_SCALE
+
+  #define APPLICATION_ENVIRONMENTAL_LIS2DH12_DSP_FUNC   APPLICATION_ENVIRONMENTAL_DSPFUNC
+  #define APPLICATION_ENVIRONMENTAL_LIS2DH12_DSP_PARAM  APPLICATION_ENVIRONMENTAL_DSPPARAM
+  /** @brief NTC uses simulated continous mode, i.e. a new sample is taken on data_get. */
+  #define APPLICATION_ENVIRONMENTAL_LIS2DH12_MODE       APPLICATION_ENVIRONMENTAL_MODE
+  #define APPLICATION_ENVIRONMENTAL_LIS2DH12_RESOLUTION APPLICATION_ENVIRONMENTAL_RESOLUTION
+  #define APPLICATION_ENVIRONMENTAL_LIS2DH12_SAMPLERATE APPLICATION_ENVIRONMENTAL_SAMPLERATE
+  #define APPLICATION_ENVIRONMENTAL_LIS2DH12_SCALE      APPLICATION_ENVIRONMENTAL_SCALE
+#endif
+
+/**
+ * @brief interval at which environmental data is logged to tag. 
+ * As of 3.26.0 environmental data has 2^14 bytes of space which can fit
+ * 1024 environmental samples. 6s interval -> 10 minutes.
+ * 60 s interval -> 17 hours
+ * 10 minute interval -> week
+ */
+#if DEBUG
+  #define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (6*1000)
+#else
+  #define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (5*60*1000)
+#endif
 #define APPLICATION_I2C_ENABLED                       1
 #define APPLICATION_POWER_ENABLED                     1
 #define APPLICATION_RTC_MCU_ENABLED                   (RUUVI_BOARD_RTC_INSTANCES > 2)
@@ -298,6 +323,18 @@
 #define APPLICATION_LOG_BACKEND_RTT_ENABLED         1
 //#define APPLICATION_LOG_BACKEND_UART_ENABLED      0 // UART not implemented
 
-#define  APPLICATION_FLASH_DATA_PAGES_NUMBER        RUUVI_BOARD_APP_PAGES
+#if NRF52811_XXAA
+#define APPLICATION_FLASH_ENABLED                       0
+#else
+#define APPLICATION_FLASH_ENABLED                       1
+#endif
+#define APPLICATION_FLASH_DATA_PAGES_NUMBER             RUUVI_BOARD_APP_PAGES
+#define APPLICATION_FLASH_ENVIRONMENTAL_FILE            0xFE
+#define APPLICATION_FLASH_ENVIRONMENTAL_SHTCX_RECORD    0xE0
+#define APPLICATION_FLASH_ENVIRONMENTAL_BME280_RECORD   0xE1
+#define APPLICATION_FLASH_ENVIRONMENTAL_NTC_RECORD      0xE2
+#define APPLICATION_FLASH_ENVIRONMENTAL_MCU_RECORD      0xE3
+#define APPLICATION_FLASH_ENVIRONMENTAL_LIS2DH12_RECORD 0xE4
+
 
 #endif

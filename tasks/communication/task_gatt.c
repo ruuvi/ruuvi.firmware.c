@@ -131,7 +131,7 @@ static void task_gatt_queue_process_interrupt()
   LOGD("I");
   if(RUUVI_LIBRARY_SUCCESS == status)
   {  
-    LOG("RB>;");LOGHEX(p_msg->data, p_msg->data_length);LOG("\r\n");
+    LOGD("RB>;");LOGHEX(p_msg->data, p_msg->data_length);LOGD("\r\n");
     err_code = channel.send(p_msg);
   }
   else
@@ -177,7 +177,9 @@ static void task_gatt_communication_disconnected_scheduler(void* p_context, uint
 static void task_gatt_communication_connected_scheduler(void* p_context, uint16_t data_len)
 {
   LOG("Connected\r\n");
-  task_advertisement_stop();
+  task_communication_heartbeat_configure(APPLICATION_GATT_HEARTBERAT_INTERVAL_MS, 
+                                         18, 
+                                         task_gatt_send_asynchronous);
 }
 
 ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,

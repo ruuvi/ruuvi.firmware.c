@@ -12,6 +12,7 @@
 #include "task_button.h"
 #include "task_environmental.h"
 #include "task_led.h"
+#include "task_rtc.h"
 #include <stddef.h>
 #if APPLICATION_BUTTON_ENABLED
 static task_button_fp_t button_callback = NULL;
@@ -41,7 +42,7 @@ ruuvi_driver_status_t task_button_on_press(void)
 {
   static uint64_t last_press = 0;
   // returns UINT64_MAX if RTC is not running.
-  uint64_t now = ruuvi_interface_rtc_millis();
+  uint64_t now = task_rtc_millis();
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
   // Debounce button

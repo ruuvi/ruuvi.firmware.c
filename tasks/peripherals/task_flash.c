@@ -80,4 +80,21 @@ ruuvi_driver_status_t task_flash_demo()
 {
   return RUUVI_DRIVER_SUCCESS;
 }
+
+ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t record_id,
+                                       const void* const message, const size_t message_length)
+{
+  return RUUVI_DRIVER_ERROR_NOT_SUPPORTED;
+}
+
+ruuvi_driver_status_t task_flash_load(const uint16_t page_id, const uint16_t record_id,
+                                      void* const message, const size_t message_length)
+{
+  return RUUVI_DRIVER_ERROR_NOT_SUPPORTED;
+}
+
+bool task_flash_busy(void)
+{
+  return false;
+}
 #endif

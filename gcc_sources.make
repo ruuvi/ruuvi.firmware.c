@@ -156,25 +156,23 @@ COMMON_SOURCES= \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer.c \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer_test.c \
   $(PROJ_DIR)/ruuvi.libraries.c/ruuvi_library_test.c \
-  $(PROJ_DIR)/tasks/task_acceleration.c \
-  $(PROJ_DIR)/tasks/task_adc.c \
-  $(PROJ_DIR)/tasks/task_advertisement.c \
-  $(PROJ_DIR)/tasks/task_api.c \
-  $(PROJ_DIR)/tasks/task_button.c \
-  $(PROJ_DIR)/tasks/task_communication.c \
-  $(PROJ_DIR)/tasks/task_environmental.c \
-  $(PROJ_DIR)/tasks/task_flash.c \
-  $(PROJ_DIR)/tasks/task_gatt.c \
-  $(PROJ_DIR)/tasks/task_gpio.c \
-  $(PROJ_DIR)/tasks/task_i2c.c \
-  $(PROJ_DIR)/tasks/task_led.c \
-  $(PROJ_DIR)/tasks/task_nfc.c \
-  $(PROJ_DIR)/tasks/task_power.c \
-  $(PROJ_DIR)/tasks/task_pressure.c \
-  $(PROJ_DIR)/tasks/task_rtc.c \
-  $(PROJ_DIR)/tasks/task_scheduler.c \
-  $(PROJ_DIR)/tasks/task_spi.c \
-  $(PROJ_DIR)/tasks/task_timer.c \
+  $(PROJ_DIR)/tasks/actuators/task_led.c \
+  $(PROJ_DIR)/tasks/communication/task_advertisement.c \
+  $(PROJ_DIR)/tasks/communication/task_communication.c \
+  $(PROJ_DIR)/tasks/communication/task_gatt.c \
+  $(PROJ_DIR)/tasks/sensors/task_acceleration.c \
+  $(PROJ_DIR)/tasks/sensors/task_adc.c \
+  $(PROJ_DIR)/tasks/sensors/task_button.c \
+  $(PROJ_DIR)/tasks/sensors/task_environmental.c \
+  $(PROJ_DIR)/tasks/peripherals/task_flash.c \
+  $(PROJ_DIR)/tasks/peripherals/task_gpio.c \
+  $(PROJ_DIR)/tasks/peripherals/task_i2c.c \
+  $(PROJ_DIR)/tasks/peripherals/task_nfc.c \
+  $(PROJ_DIR)/tasks/peripherals/task_power.c \
+  $(PROJ_DIR)/tasks/peripherals/task_rtc.c \
+  $(PROJ_DIR)/tasks/peripherals/task_scheduler.c \
+  $(PROJ_DIR)/tasks/peripherals/task_spi.c \
+  $(PROJ_DIR)/tasks/peripherals/task_timer.c \
   $(PROJ_DIR)/tests/test_acceleration.c \
   $(PROJ_DIR)/tests/test_adc.c \
   $(PROJ_DIR)/tests/test_environmental.c \
