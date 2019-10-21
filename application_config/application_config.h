@@ -112,7 +112,6 @@
 #define APPLICATION_ADVERTISING_POWER_DBM             RUUVI_BOARD_TX_POWER_MAX
 #define APPLICATION_DATA_FORMAT                       0x05
 
-
 // Scanning configuration
 #define APPLICATION_BLE_SCAN_ENABLED     0     //!< Do not scan advertisements by default.
 #define APPLICATION_BLE_SCAN_BUFFER_SIZE 31    //!< Bytes in BLE scanner buffer. 31 for normal advertisements, 256 for extended. 
@@ -131,6 +130,7 @@
 #define APPLICATION_GATT_CONN_INTERVAL_MAX_MS      15
 #define APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS 29   // Slave latency. How many intervals can be skipped.
 #define APPLICATION_GATT_CONN_TIMEOUT_MS           5600 // 29 * 45 * 3 < 5600
+
 
 /**
  * NFC configuration
