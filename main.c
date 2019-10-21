@@ -34,15 +34,17 @@
 #include "test_environmental.h"
 #include "test_library.h"
 
+#include "SEGGER_RTT.h"
+
 #include <stdio.h>
 
-#if RUUVI_RUN_TESTS
-// Function to  print test result strings
-static void print_test(const char* const msg)
-{
-  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, msg);
-}
+#ifndef MAIN_LOG_LEVEL
+#define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
+
+#define LOG(msg) ruuvi_interface_log(MAIN_LOG_LEVEL, msg)
+#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
+#define LOGHEX(msg, len) ruuvi_interface_log_hex(MAIN_LOG_LEVEL, msg, len)
 
 /** Run tests which rely only on MCU. 
  *  These tests require relevant peripherals being uninitialized
@@ -52,13 +54,15 @@ static void print_test(const char* const msg)
 static void run_mcu_tests()
 {
   #if RUUVI_RUN_TESTS
+  LOG("'mcu_tests':{\r\n");
   // Use task_rtc function to apply offset configured by user to sensor values.
   ruuvi_driver_sensor_timestamp_function_set(ruuvi_interface_rtc_millis);
   ruuvi_interface_rtc_init();
   test_adc_run();
-  ruuvi_library_test_all_run(print_test);
+  test_library_run();
   ruuvi_interface_delay_ms(1000);
   ruuvi_interface_rtc_uninit();
+  LOG("}\r\n");
   #endif
 }
 
