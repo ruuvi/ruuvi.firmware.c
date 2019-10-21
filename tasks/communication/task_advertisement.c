@@ -33,8 +33,8 @@ static ruuvi_driver_status_t advertisement_data_init(void)
 {
 
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_endpoint_5_data_t data;
-  ruuvi_driver_sensor_data_t sensor;
+  ruuvi_endpoint_5_data_t data = { 0 };
+  ruuvi_driver_sensor_data_t sensor = {0};
   float sensor_values[7];
   sensor.data = sensor_values;
   sensor.fields.datas.acceleration_x_g = 1;
@@ -116,7 +116,8 @@ ruuvi_driver_status_t task_advertisement_uninit(void)
 ruuvi_driver_status_t task_advertisement_start(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  err_code = ruuvi_interface_communication_ble4_advertising_start();
+  err_code |= advertisement_data_init();
+  err_code |= ruuvi_interface_communication_ble4_advertising_start();
   err_code |=  ruuvi_interface_timer_start(advertisement_timer, APPLICATION_ADVERTISING_STARTUP_PERIOD_MS);
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |=  task_communication_heartbeat_configure(APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS, 
