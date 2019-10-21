@@ -231,6 +231,7 @@ static void heartbeat_send(void* p_event_data, uint16_t event_size)
     err_code = heartbeat_target(&msg); 
   }
   if(RUUVI_DRIVER_SUCCESS == err_code) { ruuvi_interface_watchdog_feed(); }
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
 static void heartbeat_schedule(void* p_context)
