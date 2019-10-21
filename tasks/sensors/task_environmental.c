@@ -34,7 +34,7 @@
 // Do not compile space for unused sensor drivers.
 // Define enum in order of default preference of sensor being used.
 // Default sensor can be overridden by calling a backend_set function.
-static enum{
+enum{
 #if APPLICATION_ENVIRONMENTAL_SHTCX_ENABLED
   ENV_SHTCX_INDEX,
 #endif
@@ -51,7 +51,7 @@ static enum{
   ENV_LIS2DH12_INDEX,
 #endif
   ENV_SENSOR_COUNT
-}indexes;
+};
 static ruuvi_driver_sensor_t  m_environmental_sensors[ENV_SENSOR_COUNT] = {0}; //!< Sensor APIs.
 static ruuvi_driver_sensor_t* m_active_sensor = NULL; //!< Sensor being used by application.
 

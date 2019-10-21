@@ -18,8 +18,12 @@
 #include <inttypes.h>
 
 static ruuvi_driver_sensor_t battery_sensor = {0};
+#if RUUVI_BOARD_HAS_NTC
 static ruuvi_driver_sensor_t ntc_sensor = {0};
+#endif
+#if RUUVI_BOARD_HAS_PHOTOSENSOR
 static ruuvi_driver_sensor_t photo_sensor = {0};
+#endif
 static volatile uint64_t t_battery_sample = 0;
 static volatile float after_tx = 0;
 

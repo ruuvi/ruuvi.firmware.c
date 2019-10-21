@@ -14,6 +14,7 @@ COMMON_SOURCES= \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
   $(SDK_ROOT)/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
+  $(SDK_ROOT)/components/ble/nrf_ble_scan/nrf_ble_scan.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatt_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatts_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/id_manager.c \
@@ -164,6 +165,7 @@ COMMON_SOURCES= \
   $(PROJ_DIR)/tasks/sensors/task_adc.c \
   $(PROJ_DIR)/tasks/sensors/task_button.c \
   $(PROJ_DIR)/tasks/sensors/task_environmental.c \
+  $(PROJ_DIR)/tasks/sensors/task_sensor.c \
   $(PROJ_DIR)/tasks/peripherals/task_flash.c \
   $(PROJ_DIR)/tasks/peripherals/task_gpio.c \
   $(PROJ_DIR)/tasks/peripherals/task_i2c.c \
