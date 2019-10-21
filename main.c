@@ -34,8 +34,6 @@
 #include "test_environmental.h"
 #include "test_library.h"
 
-#include "SEGGER_RTT.h"
-
 #include <stdio.h>
 
 #ifndef MAIN_LOG_LEVEL
@@ -151,12 +149,6 @@ static void init_comms(void)
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
 
-  #if APPLICATION_COMMUNICATION_NFC_ENABLED
-  // Initialize nfc
-  status |= task_nfc_init();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  #endif
-
   #if APPLICATION_COMMUNICATION_ADVERTISING_ENABLED
   // Initialize BLE - and start advertising.
   status = task_advertisement_init();
@@ -168,6 +160,13 @@ static void init_comms(void)
   status = task_gatt_init();
   status |= task_advertisement_stop();  // Reinitialize with scan response
   status |= task_advertisement_start();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  #endif
+
+  #if APPLICATION_COMMUNICATION_NFC_ENABLED
+  // Initialize nfc. Note that NFC requires initialized radio to get
+  // radio address.
+  status |= task_nfc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
 
