@@ -288,5 +288,8 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.libraries.c \
   $(PROJ_DIR)/ruuvi.libraries.c/analysis \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures \
-  $(PROJ_DIR)/tasks/ \
+  $(PROJ_DIR)/tasks/actuators \
+  $(PROJ_DIR)/tasks/communication \
+  $(PROJ_DIR)/tasks/peripherals \
+  $(PROJ_DIR)/tasks/sensors \
   $(PROJ_DIR)/tests/
