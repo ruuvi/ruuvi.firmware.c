@@ -4,6 +4,7 @@
 #include "ruuvi_endpoints.h"
 #include "ruuvi_endpoint_5.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
@@ -13,6 +14,7 @@
 
 #include "task_acceleration.h"
 #include "task_adc.h"
+#include "task_advertisement.h"
 #include "task_environmental.h"
 #include "task_rtc.h"
 #include "task_sensor.h"
@@ -249,8 +251,38 @@ ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(
   return RUUVI_DRIVER_SUCCESS;
 }
 
+static void select_next_backend()
+{
+  static uint8_t index = 0;
+  static const char list[4][9] = { "BME280", 
+                                   "LIS2DH12",
+                                   "SHTCX",
+                                   "nRF5TMP"};
+  static uint8_t ids[] = {0x28, 0x12, 0x35, 0xF5};
+  uint8_t id;
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  while(err_code == RUUVI_DRIVER_ERROR_NOT_FOUND)
+  {
+    err_code = task_environmental_backend_set(list[index]);
+    id = ids[index++];
+    index = index % sizeof(ids);
+  }
+
+  uint64_t address;
+  uint64_t mask = 0xFFFFFFFFFFFFFF00;
+  err_code |= ruuvi_interface_communication_radio_address_get(&address);
+  address &= mask;
+  address |= id;
+  err_code |= task_advertisement_stop();
+  err_code |= ruuvi_interface_communication_radio_address_set(address);
+  err_code |= task_advertisement_start();
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+}
+
 static void heartbeat_send(void* p_event_data, uint16_t event_size)
 {
+  select_next_backend();
+
   ruuvi_interface_communication_message_t msg = {0};
   task_sensor_encode_to_5((uint8_t*)&msg.data);
   msg.data_length = m_heartbeat_data_max_len;

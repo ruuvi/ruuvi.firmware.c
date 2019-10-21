@@ -103,7 +103,8 @@
 #define APPLICATION_ADC_DSPFUNC            RUUVI_DRIVER_SENSOR_DSP_LAST
 #define APPLICATION_ADC_DSPPARAM           1
 #define APPLICATION_ADC_MODE               RUUVI_DRIVER_SENSOR_CFG_SLEEP // Note: call to task_adc_sample will leave the ADC in single-shot mode. Use data get only in continuous mode
-#define APPLICATION_ADC_SAMPLE_INTERVAL_MS (60*1000) // Valid for single mode
+#define APPLICATION_ADC_SAMPLE_INTERVAL_MS (60*1000)
+
 
 /**
  * Bluetooth configuration

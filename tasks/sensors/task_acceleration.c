@@ -55,6 +55,7 @@ ruuvi_driver_status_t task_acceleration_init(void)
   // Only SPI supported for now
   bus = RUUVI_DRIVER_BUS_SPI;
   handle = RUUVI_BOARD_SPI_SS_ACCELEROMETER_PIN;
+
   err_code |= ruuvi_interface_lis2dh12_init(&acceleration_sensor, bus, handle);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 
