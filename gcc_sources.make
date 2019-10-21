@@ -189,6 +189,7 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt \
   $(SDK_ROOT)/components/ble/nrf_ble_qwr \
+  $(SDK_ROOT)/components/ble/nrf_ble_scan \
   $(SDK_ROOT)/components/ble/peer_manager \
   $(SDK_ROOT)/components/boards \
   $(SDK_ROOT)/components/libraries/atomic \
