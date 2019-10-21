@@ -56,5 +56,10 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
 
 ruuvi_driver_status_t task_environmental_api_get(task_communication_api_t** api);
 
+/*
+ * @brief pick backend
+ */
+ruuvi_driver_status_t task_environmental_backend_set(const char* const name);
+
 
 #endif

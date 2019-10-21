@@ -38,5 +38,15 @@ ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
  */
 ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer);
 
+/**
+ * @brief Search for requested sensor backend in given list of sensors. 
+ *
+ * @param[in] sensor_list array of sensor to search the backend from.
+ * @param[in] name NULL-terminated, max 9-byte (including trailing NULL) string representation of sensor.
+ * @return pointer to requested sensor if found
+ * @return NULL if requested sensor was not found
+ */
+ruuvi_driver_sensor_t* task_sensor_find_backend(ruuvi_driver_sensor_t* const sensor_list, const size_t count, const char* const name);
+
 /*@}*/
 #endif

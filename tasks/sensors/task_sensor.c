@@ -9,6 +9,8 @@
 #include "task_environmental.h"
 #include "task_sensor.h"
 
+#include <string.h>
+
 #ifndef TASK_SENSOR_LOG_LEVEL
 #define TASK_SENSOR_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
@@ -75,4 +77,17 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer)
   if(measurement_counter == UINT16_MAX) { measurement_counter = 0;}
   err_code = ruuvi_endpoint_5_encode(buffer, &ep5_data);
   return ((RUUVI_DRIVER_SUCCESS | RUUVI_ENDPOINT_SUCCESS) == (err_code | driver_code))? RUUVI_ENDPOINT_SUCCESS : RUUVI_ENDPOINT_ERROR_ENCODING;
+}
+
+ruuvi_driver_sensor_t* task_sensor_find_backend(ruuvi_driver_sensor_t* const sensor_list, const size_t count, const char* const name)
+{
+  ruuvi_driver_sensor_t* p_sensor = NULL;
+  for(size_t ii = 0; ii < count; ii++)
+  {
+    if(0 == strcmp(sensor_list[ii].name, name)){
+      p_sensor = &(sensor_list[ii]);
+      break;
+    }
+  }
+  return p_sensor;
 }

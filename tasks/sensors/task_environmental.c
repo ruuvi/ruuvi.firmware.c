@@ -7,6 +7,7 @@
 #include "ruuvi_interface_atomic.h"
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_lis2dh12.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_timer.h"
@@ -333,15 +334,17 @@ static ruuvi_driver_status_t initialize_lis2dh12(void)
   #if APPLICATION_ENVIRONMENTAL_LIS2DH12_ENABLED
   // Assume "Not found", gets set to "Success" if a usable sensor is present
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_FAIL;
+  uint8_t handle = 0;
   if(RUUVI_BOARD_ACCELEROMETER_LIS2DH12_SPI_USE)
   {
-    ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_SPI;
-    uint8_t handle = RUUVI_BOARD_SPI_SS_ACCELEROMETER_PIN;
+    bus = RUUVI_DRIVER_BUS_SPI;
+    handle = RUUVI_BOARD_SPI_SS_ACCELEROMETER_PIN;
   }
-  else { return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED: }
+  else { return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED; }
     // Initialize sensor.
-  err_code = ruuvi_interface_environmental_lis2dh12_init(&(m_environmental_sensors[ENV_LIS2DH12_INDEX]),
-                                                    bus, handle);
+  err_code = ruuvi_interface_lis2dh12_init(&(m_environmental_sensors[ENV_LIS2DH12_INDEX]),
+                                            bus, handle);
   // return if failed.
   if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
   // Wait for flash operation to finish
@@ -553,4 +556,16 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
   }while(RUUVI_LIBRARY_SUCCESS == status);
   LOG("Logs sent\r\n");
   return RUUVI_DRIVER_SUCCESS;
+}
+
+ruuvi_driver_status_t task_environmental_backend_set(const char* const name)
+{
+  ruuvi_driver_sensor_t* p_backend;
+  p_backend = task_sensor_find_backend(m_environmental_sensors, ENV_SENSOR_COUNT, name);
+  if(NULL != p_backend)
+  {
+    m_active_sensor = p_backend;
+    return RUUVI_DRIVER_SUCCESS;
+  }
+  return RUUVI_DRIVER_ERROR_NOT_FOUND;
 }
