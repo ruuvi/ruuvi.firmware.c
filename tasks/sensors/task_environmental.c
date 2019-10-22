@@ -32,6 +32,8 @@
 #define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_ENVIRONMENTAL_LOG_LEVEL, msg, len)
 
+static ruuvi_interface_timer_id_t m_log_timer;               //!< Timer for logging data
+
 // Do not compile space for unused sensor drivers.
 // Define enum in order of default preference of sensor being used.
 // Default sensor can be overridden by calling a backend_set function.
@@ -380,6 +382,16 @@ static ruuvi_driver_status_t initialize_lis2dh12(void)
   #endif
 }
 
+static void execute_log(void* event, uint16_t event_size)
+{
+  task_environmental_log();
+}
+
+static void schedule_log(void* p_context)
+{
+  ruuvi_interface_scheduler_event_put(NULL, 0, execute_log);
+}
+
 ruuvi_driver_status_t task_environmental_init(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
@@ -399,6 +411,13 @@ ruuvi_driver_status_t task_environmental_init(void)
     }
 
   }
+  // XXX - use generic logging
+  if(NULL == m_log_timer)
+  {
+    ruuvi_interface_timer_create(&m_log_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, schedule_log);
+  }
+
+  ruuvi_interface_timer_start(m_log_timer, APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS);
   return (NULL == m_active_sensor) ? RUUVI_DRIVER_ERROR_NOT_FOUND : RUUVI_DRIVER_SUCCESS;
 }
 

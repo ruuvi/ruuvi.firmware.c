@@ -16,6 +16,7 @@
 #endif
 
 #define LOG(msg) ruuvi_interface_log(TASK_SENSOR_LOG_LEVEL, msg)
+#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_SENSOR_LOG_LEVEL, msg, len)
 
 ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor, 
@@ -24,14 +25,14 @@ ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
 {
   if(NULL == sensor || NULL == config) { return RUUVI_DRIVER_ERROR_NULL; }
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  LOG("\r\nAttempting to configure "); 
-  LOG(sensor->name);
-  LOG(" with:\r\n");
-  ruuvi_interface_log_sensor_configuration(TASK_SENSOR_LOG_LEVEL, config, unit);
+  LOGD("\r\nAttempting to configure "); 
+  LOGD(sensor->name);
+  LOGD(" with:\r\n");
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_DEBUG, config, unit);
   err_code |= sensor->configuration_set(sensor, config);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-  LOG("Actual configuration:\r\n");
-  ruuvi_interface_log_sensor_configuration(TASK_SENSOR_LOG_LEVEL, config, unit);
+  LOGD("Actual configuration:\r\n");
+  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_DEBUG, config, unit);
   return err_code;
 }
 
