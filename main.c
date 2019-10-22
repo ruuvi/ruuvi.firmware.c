@@ -24,7 +24,6 @@
 #include "task_i2c.h"
 #include "task_nfc.h"
 #include "task_power.h"
-#include "task_pressure.h"
 #include "task_rtc.h"
 #include "task_scheduler.h"
 #include "task_spi.h"
@@ -37,13 +36,13 @@
 
 #include <stdio.h>
 
-#if RUUVI_RUN_TESTS
-// Function to  print test result strings
-static void print_test(const char* const msg)
-{
-  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, msg);
-}
+#ifndef MAIN_LOG_LEVEL
+#define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
+
+#define LOG(msg) ruuvi_interface_log(MAIN_LOG_LEVEL, msg)
+#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
+#define LOGHEX(msg, len) ruuvi_interface_log_hex(MAIN_LOG_LEVEL, msg, len)
 
 /** Run tests which rely only on MCU. 
  *  These tests require relevant peripherals being uninitialized
@@ -53,13 +52,15 @@ static void print_test(const char* const msg)
 static void run_mcu_tests()
 {
   #if RUUVI_RUN_TESTS
+  LOG("'mcu_tests':{\r\n");
   // Use task_rtc function to apply offset configured by user to sensor values.
   ruuvi_driver_sensor_timestamp_function_set(ruuvi_interface_rtc_millis);
   ruuvi_interface_rtc_init();
   test_adc_run();
-  ruuvi_library_test_all_run(print_test);
+  test_library_run();
   ruuvi_interface_delay_ms(1000);
   ruuvi_interface_rtc_uninit();
+  LOG("}\r\n");
   #endif
 }
 
@@ -148,12 +149,6 @@ static void init_comms(void)
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
 
-  #if APPLICATION_COMMUNICATION_NFC_ENABLED
-  // Initialize nfc
-  status |= task_nfc_init();
-  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  #endif
-
   #if APPLICATION_COMMUNICATION_ADVERTISING_ENABLED
   // Initialize BLE - and start advertising.
   status = task_advertisement_init();
@@ -163,8 +158,15 @@ static void init_comms(void)
 
   #if APPLICATION_COMMUNICATION_GATT_ENABLED
   status = task_gatt_init();
-  status |= ruuvi_interface_communication_ble4_advertising_stop();  // Reinitialize with scan response
-  status |= ruuvi_interface_communication_ble4_advertising_start();
+  status |= task_advertisement_stop();  // Reinitialize with scan response
+  status |= task_advertisement_start();
+  RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+  #endif
+
+  #if APPLICATION_COMMUNICATION_NFC_ENABLED
+  // Initialize nfc. Note that NFC requires initialized radio to get
+  // radio address.
+  status |= task_nfc_init();
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
   #endif
 

@@ -43,7 +43,7 @@ ruuvi_driver_status_t task_adc_data_get(ruuvi_interface_adc_data_t* const data);
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error.
  */
-ruuvi_driver_status_t task_adc_battery_get(ruuvi_interface_adc_data_t* const data);
+ruuvi_driver_status_t task_adc_battery_get(ruuvi_driver_sensor_data_t* const data);
 
 
 #endif

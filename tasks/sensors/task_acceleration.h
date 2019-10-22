@@ -5,7 +5,6 @@
  * @brief Acceleration and accelerometer related program tasks. 
  * @copyright Copyright 2019 Ruuvi Innovations.
  *   This project is released under the BSD-3-Clause License.
- *
  */
 
 #ifndef  TASK_ACCELERATION_H
@@ -68,7 +67,7 @@ ruuvi_driver_status_t task_acceleration_configuration_store(const ruuvi_driver_s
  * @return @c RUUVI_DRIVER_ERROR_NULL if @c data is @c NULL
  * @return @c RUUVI_DRIVER_ERROR_INVALID_STATE if accelerometer is not initialize.
  */
-ruuvi_driver_status_t task_acceleration_data_get(ruuvi_interface_acceleration_data_t*
+ruuvi_driver_status_t task_acceleration_data_get(ruuvi_driver_sensor_data_t*
     const data);
 
 /**

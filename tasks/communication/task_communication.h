@@ -33,13 +33,13 @@ typedef ruuvi_driver_status_t (*task_api_log_read_t)(const ruuvi_interface_commu
 
 /** @brief API to control sensors. */
 typedef struct task_communication_api_t {
-  ruuvi_driver_sensor_t* sensor;      //!< Sensor control functions, NULL if not applicable
-  task_api_data_fp_t     offset_set;  //!< Function to setup offset
-  task_api_data_fp_t     offset_get;  //!< Function to read offset
-  task_api_data_fp_t     data_get;    //!< Function to value from sensor
-  task_api_data_target_t data_target; //!< Function to send data to.
-  task_api_log_cfg_t     log_cfg;     //!< Function to configure logging
-  task_api_log_read_t    log_read;    //!< Function to read logs
+  ruuvi_driver_sensor_t** sensor;      //!< Sensor control functions, NULL if not applicable
+  task_api_data_fp_t      offset_set;  //!< Function to setup offset
+  task_api_data_fp_t      offset_get;  //!< Function to read offset
+  task_api_data_fp_t      data_get;    //!< Function to value from sensor
+  task_api_data_target_t  data_target; //!< Function to send data to.
+  task_api_log_cfg_t      log_cfg;     //!< Function to configure logging
+  task_api_log_read_t     log_read;    //!< Function to read logs
 }task_communication_api_t;
 
 /** @brief handle incoming data and prepare a reply 
@@ -114,5 +114,23 @@ ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(const float* co
  * @param[in]     offsets offsets to data. 0, NAN will be ignored.
  */
 void task_communication_offsets_apply(ruuvi_driver_sensor_data_t* const data, const ruuvi_driver_sensor_data_t* const offsets);
+
+/** 
+ * @brief Start sending a "hearbeat" signal over given channel to a connected device. 
+ * 
+ * Heartbeat is data format 5 encoded status. If the data format 5 payload doesn't fit into given max length,
+ * data is cropped to maximum transmittable size. New heartbeat can be configured over old one without stopping.
+ *
+ * @param[in] interval_ms interval to send the data, in milliseconds. Set to 0 to stop the heartbeat
+ * @param[in] max_len Maximum length of data to send. 
+ * @param[in] send function pointer to send the data through. May be NULL if interval is 0. 
+ *
+ * @return RUUVI_DRIVER_SUCCESS if heartbeat was initialized (or stopped)
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if timer cannot be initialized. 
+ * @return RUUVI_DRIVER_ERROR_NULL if interval wasn't 0 and send is NULL
+ * @return error code from stack on other error.
+ *
+ */
+ruuvi_driver_status_t task_communication_heartbeat_configure(const uint32_t interval_ms, const size_t max_len, const ruuvi_interface_communication_xfer_fp_t send);
 
 #endif

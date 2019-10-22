@@ -10,7 +10,9 @@ static void print_test(const char* const msg)
 
 void test_library_run(void)
 {
+  print_test("'library':{\r\n");
   ruuvi_library_test_all_run(print_test);
+  print_test("}\r\n");
 }
 #else
 // Dummy implementation

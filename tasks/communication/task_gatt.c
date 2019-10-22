@@ -36,6 +36,7 @@
 #define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
 #define LOG(msg) ruuvi_interface_log(TASK_GATT_LOG_LEVEL, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
+#define LOGDHEX(msg, len) ruuvi_interface_log_hex(RUUVI_INTERFACE_LOG_DEBUG, msg, len)
 
 
 static uint8_t buffer[1024];                   //!< Raw buffer for GATT data TX. Must be power of two.
@@ -131,7 +132,7 @@ static void task_gatt_queue_process_interrupt()
   LOGD("I");
   if(RUUVI_LIBRARY_SUCCESS == status)
   {  
-    LOG("RB>;");LOGHEX(p_msg->data, p_msg->data_length);LOG("\r\n");
+    LOGD("RB>;");LOGDHEX(p_msg->data, p_msg->data_length);LOGD("\r\n");
     err_code = channel.send(p_msg);
   }
   else
@@ -177,7 +178,9 @@ static void task_gatt_communication_disconnected_scheduler(void* p_context, uint
 static void task_gatt_communication_connected_scheduler(void* p_context, uint16_t data_len)
 {
   LOG("Connected\r\n");
-  task_advertisement_stop();
+  task_communication_heartbeat_configure(APPLICATION_GATT_HEARTBERAT_INTERVAL_MS, 
+                                         18, 
+                                         task_gatt_send_asynchronous);
 }
 
 ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
@@ -244,19 +247,20 @@ ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_
   // If success, return. Else put data to ringbuffer
   if(RUUVI_DRIVER_SUCCESS == err_code) 
   { 
-    LOG("SD>;");LOGHEX(msg->data, msg->data_length);LOG("\r\n");
+    LOG(">>>;");LOGHEX(msg->data, msg->data_length);LOG("\r\n");
     return err_code; 
   }
   // If the error code is something else than buffer full, return error. 
   else if(err_code != RUUVI_DRIVER_ERROR_RESOURCES)
   {
+    RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
     return err_code;
   }
   // Try to put data to ringbuffer
   err_code = ruuvi_library_ringbuffer_queue(&ringbuf, msg, sizeof(ruuvi_interface_communication_message_t));
   if(RUUVI_DRIVER_SUCCESS == err_code)
   {
-    LOGD(">RB;");LOGD("\r\n");
+    LOGD(">>>;");LOGD("\r\n");
   }
   return err_code; 
   

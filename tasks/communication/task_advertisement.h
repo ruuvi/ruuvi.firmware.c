@@ -52,39 +52,20 @@ ruuvi_driver_status_t task_advertisement_start(void);
  */
 ruuvi_driver_status_t task_advertisement_stop(void);
 
-/**
- * Signal that advertising data should be updated.
- */
-void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size);
-
-/**
- * Reads sensors and encodes sensor data into Ruuvi format 3 (RAWv1).
- * Data is buffered and will be sent in next BLE advertisement as manufacturer specific data.
- * Data is transmitted until something else is written to buffer.
+/** @brief Send given message as a BLE advertisement. 
  *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns error code from stack on error
- */
-ruuvi_driver_status_t task_advertisement_send_3(void);
-
-/**
- * Reads sensors and encodes sensor data into Ruuvi format 5 (RAWv2).
- * Data is buffered and will be sent in next BLE advertisement as manufacturer specific data.
- * Data is transmitted until something else is written to buffer.
+ *  This function configures the primary advertisement packet with the flags and manufacturer specific data.
+ *  Payload of the msg will be sent as the manufacturer specific data payload. 
+ *  Manufacturer ID is defined by RUUVI_BOARD_BLE_MANUFACTURER_ID in ruuvi_board.h. 
  *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns error code from stack on error
- */
-ruuvi_driver_status_t task_advertisement_send_5(void);
-
-/**
- * Reads sensors and encodes sensor data into unofficial format AC (acceleration).
- * Data is buffered and will be sent in next BLE advertisement as manufacturer specific data.
- * Data is transmitted until something else is written to buffer.
+ *  If the device is connectable, call @ref task_gatt_init to setup the scan response and flags to advertise 
+ *  connectability. 
  *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns error code from stack on error
- */
-//ruuvi_driver_status_t task_advertisement_send_ac(void);
+ *  @param[in] msg message to be sent as manufacturer specific data payload
+ *  @return    RUUVI_DRIVER_ERROR_NULL if msg is NULL
+ *  @return    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started. 
+ *  @return    error code from stack on other error.
+ */ 
+ruuvi_driver_status_t task_advertisement_send_data(ruuvi_interface_communication_message_t* const msg);
 
 #endif

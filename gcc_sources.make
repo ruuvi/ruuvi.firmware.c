@@ -14,6 +14,7 @@ COMMON_SOURCES= \
   $(SDK_ROOT)/components/ble/common/ble_srv_common.c \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt/nrf_ble_gatt.c \
   $(SDK_ROOT)/components/ble/nrf_ble_qwr/nrf_ble_qwr.c \
+  $(SDK_ROOT)/components/ble/nrf_ble_scan/nrf_ble_scan.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatt_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/gatts_cache_manager.c \
   $(SDK_ROOT)/components/ble/peer_manager/id_manager.c \
@@ -156,25 +157,24 @@ COMMON_SOURCES= \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer.c \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer_test.c \
   $(PROJ_DIR)/ruuvi.libraries.c/ruuvi_library_test.c \
-  $(PROJ_DIR)/tasks/task_acceleration.c \
-  $(PROJ_DIR)/tasks/task_adc.c \
-  $(PROJ_DIR)/tasks/task_advertisement.c \
-  $(PROJ_DIR)/tasks/task_api.c \
-  $(PROJ_DIR)/tasks/task_button.c \
-  $(PROJ_DIR)/tasks/task_communication.c \
-  $(PROJ_DIR)/tasks/task_environmental.c \
-  $(PROJ_DIR)/tasks/task_flash.c \
-  $(PROJ_DIR)/tasks/task_gatt.c \
-  $(PROJ_DIR)/tasks/task_gpio.c \
-  $(PROJ_DIR)/tasks/task_i2c.c \
-  $(PROJ_DIR)/tasks/task_led.c \
-  $(PROJ_DIR)/tasks/task_nfc.c \
-  $(PROJ_DIR)/tasks/task_power.c \
-  $(PROJ_DIR)/tasks/task_pressure.c \
-  $(PROJ_DIR)/tasks/task_rtc.c \
-  $(PROJ_DIR)/tasks/task_scheduler.c \
-  $(PROJ_DIR)/tasks/task_spi.c \
-  $(PROJ_DIR)/tasks/task_timer.c \
+  $(PROJ_DIR)/tasks/actuators/task_led.c \
+  $(PROJ_DIR)/tasks/communication/task_advertisement.c \
+  $(PROJ_DIR)/tasks/communication/task_communication.c \
+  $(PROJ_DIR)/tasks/communication/task_gatt.c \
+  $(PROJ_DIR)/tasks/sensors/task_acceleration.c \
+  $(PROJ_DIR)/tasks/sensors/task_adc.c \
+  $(PROJ_DIR)/tasks/sensors/task_button.c \
+  $(PROJ_DIR)/tasks/sensors/task_environmental.c \
+  $(PROJ_DIR)/tasks/sensors/task_sensor.c \
+  $(PROJ_DIR)/tasks/peripherals/task_flash.c \
+  $(PROJ_DIR)/tasks/peripherals/task_gpio.c \
+  $(PROJ_DIR)/tasks/peripherals/task_i2c.c \
+  $(PROJ_DIR)/tasks/peripherals/task_nfc.c \
+  $(PROJ_DIR)/tasks/peripherals/task_power.c \
+  $(PROJ_DIR)/tasks/peripherals/task_rtc.c \
+  $(PROJ_DIR)/tasks/peripherals/task_scheduler.c \
+  $(PROJ_DIR)/tasks/peripherals/task_spi.c \
+  $(PROJ_DIR)/tasks/peripherals/task_timer.c \
   $(PROJ_DIR)/tests/test_acceleration.c \
   $(PROJ_DIR)/tests/test_adc.c \
   $(PROJ_DIR)/tests/test_environmental.c \
@@ -191,6 +191,7 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ \
   $(SDK_ROOT)/components/ble/nrf_ble_gatt \
   $(SDK_ROOT)/components/ble/nrf_ble_qwr \
+  $(SDK_ROOT)/components/ble/nrf_ble_scan \
   $(SDK_ROOT)/components/ble/peer_manager \
   $(SDK_ROOT)/components/boards \
   $(SDK_ROOT)/components/libraries/atomic \
@@ -290,5 +291,8 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.libraries.c \
   $(PROJ_DIR)/ruuvi.libraries.c/analysis \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures \
-  $(PROJ_DIR)/tasks/ \
+  $(PROJ_DIR)/tasks/actuators \
+  $(PROJ_DIR)/tasks/communication \
+  $(PROJ_DIR)/tasks/peripherals \
+  $(PROJ_DIR)/tasks/sensors \
   $(PROJ_DIR)/tests/

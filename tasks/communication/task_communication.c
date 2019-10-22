@@ -2,17 +2,20 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_endpoints.h"
+#include "ruuvi_endpoint_5.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_timer.h"
+#include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
 
 #include "task_acceleration.h"
 #include "task_adc.h"
 #include "task_environmental.h"
 #include "task_rtc.h"
+#include "task_sensor.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -24,6 +27,9 @@
                                             RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH != incoming->data_length) \
                                             return RUUVI_DRIVER_ERROR_INVALID_PARAM 
 
+static ruuvi_interface_timer_id_t heartbeat_timer;               //!< Timer for heartbeat action
+static size_t m_heartbeat_data_max_len;                          //!< Maximum data length for heartbeat data
+static ruuvi_interface_communication_xfer_fp_t heartbeat_target; //!< Function to which send the hearbeat data
 
 static ruuvi_driver_status_t task_communication_target_api_get(task_communication_api_t** api, uint8_t target)
 {
@@ -90,7 +96,7 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
         break; 
       }
       memcpy(&config, &(incoming->data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-      api->sensor->configuration_set(api->sensor, &config);
+      (*(api->sensor))->configuration_set(*(api->sensor), &config);
       // Intentional fallthrough to configuration read
 
     case RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_READ:
@@ -99,7 +105,7 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
         reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
         break; 
       }
-      api->sensor->configuration_get(api->sensor, &config);
+      (*(api->sensor))->configuration_get(*(api->sensor), &config);
       memcpy(&(reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), &config, RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
       // Write state of sensor back to application
       reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_WRITE;
@@ -179,13 +185,6 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
   return err_code;
 }
 
-void task_communication_offsets_apply(ruuvi_driver_sensor_data_t* const data, const ruuvi_driver_sensor_data_t* const offsets)
-{
-  if(isfinite(data->value0) && isfinite(offsets->value0)) { data->value0 += offsets->value0; }
-  if(isfinite(data->value1) && isfinite(offsets->value1)) { data->value1 += offsets->value1; }
-  if(isfinite(data->value2) && isfinite(offsets->value2)) { data->value2 += offsets->value2; }
-}
-
 ruuvi_driver_status_t task_communication_offsets_i32f32_to_float(const uint8_t* const offset, float* const converted)
 {
   if(NULL == offset || NULL == converted) { return RUUVI_DRIVER_ERROR_NULL; }
@@ -219,4 +218,43 @@ ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(const float* co
   converted[6] = (fraction >> 6) & 0xFF;
   converted[7] = (fraction >> 7) & 0xFF;
   return RUUVI_DRIVER_SUCCESS;
+}
+
+static void heartbeat_send(void* p_event_data, uint16_t event_size)
+{
+  ruuvi_interface_communication_message_t msg = {0};
+  task_sensor_encode_to_5((uint8_t*)&msg.data);
+  msg.data_length = m_heartbeat_data_max_len;
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_INTERNAL;
+  if(NULL != heartbeat_target) 
+  { 
+    err_code = heartbeat_target(&msg); 
+  }
+  if(RUUVI_DRIVER_SUCCESS == err_code) { ruuvi_interface_watchdog_feed(); }
+  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+}
+
+static void heartbeat_schedule(void* p_context)
+{
+  ruuvi_interface_scheduler_event_put(NULL, 0, heartbeat_send);
+}
+
+ruuvi_driver_status_t task_communication_heartbeat_configure(const uint32_t interval_ms, const size_t max_len, const ruuvi_interface_communication_xfer_fp_t send)
+{
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  if(NULL == heartbeat_timer)
+  {
+    err_code |= ruuvi_interface_timer_create(&heartbeat_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, heartbeat_schedule);
+    if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
+  }
+  ruuvi_interface_timer_stop(heartbeat_timer);
+  if(NULL == send) { return RUUVI_DRIVER_ERROR_NULL; }
+  
+  m_heartbeat_data_max_len = max_len;
+  heartbeat_target = send;
+  if(0 != interval_ms) { 
+    err_code |= ruuvi_interface_timer_start(heartbeat_timer, interval_ms);
+  }
+  return err_code;
+
 }

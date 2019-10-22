@@ -18,8 +18,12 @@
 #include <inttypes.h>
 
 static ruuvi_driver_sensor_t battery_sensor = {0};
+#if RUUVI_BOARD_HAS_NTC
 static ruuvi_driver_sensor_t ntc_sensor = {0};
+#endif
+#if RUUVI_BOARD_HAS_PHOTOSENSOR
 static ruuvi_driver_sensor_t photo_sensor = {0};
+#endif
 static volatile uint64_t t_battery_sample = 0;
 static volatile float after_tx = 0;
 
@@ -60,10 +64,13 @@ static void task_adc_trigger_on_radio(const
       battery_sensor.mode_set(&mode);
       // Read radio-synched ADC sample
       ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
-      ruuvi_interface_adc_data_t active;
+      ruuvi_driver_sensor_data_t active = {0};
+      float values[1];
+      active.data = values;
+      active.fields.datas.voltage_v = 1;
       status |= battery_sensor.data_get(&active);
       RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-      after_tx = active.adc_v;
+      after_tx = ruuvi_driver_sensor_data_parse(&active, active.fields);
       // task_led_write(RUUVI_BOARD_LED_GREEN, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
       battery_sensor.uninit(&battery_sensor, RUUVI_DRIVER_BUS_NONE, RUUVI_INTERFACE_ADC_AINVDD);
       RUUVI_DRIVER_ERROR_CHECK(status, ~RUUVI_DRIVER_ERROR_FATAL);
@@ -76,10 +83,14 @@ ruuvi_driver_status_t task_adc_init(void)
   return RUUVI_DRIVER_SUCCESS;
 }
 
-ruuvi_driver_status_t task_adc_battery_get(ruuvi_interface_adc_data_t* const data)
+ruuvi_driver_status_t task_adc_battery_get(ruuvi_driver_sensor_data_t* const data)
 {
-  data->adc_v = after_tx;
   data->timestamp_ms = t_battery_sample;
+  float voltage = after_tx; // take snapshot of volatile var.
+  ruuvi_driver_sensor_data_t provided = {.data = &voltage,
+                                         .fields.datas.voltage_v=1,
+                                         .valid.datas.voltage_v=1};
+  ruuvi_driver_sensor_data_populate(data, &provided, (ruuvi_driver_sensor_data_fields_t){.datas.voltage_v=1});
   return RUUVI_DRIVER_SUCCESS;
 }
 

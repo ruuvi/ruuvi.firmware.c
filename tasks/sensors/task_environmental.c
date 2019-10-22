@@ -7,6 +7,7 @@
 #include "ruuvi_interface_atomic.h"
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_lis2dh12.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_timer.h"
@@ -15,10 +16,9 @@
 #include "ruuvi_interface_yield.h"
 #include "task_communication.h"
 #include "task_environmental.h"
-#include "task_pressure.h"
+#include "task_flash.h"
 #include "task_rtc.h"
-#include "task_led.h"
-
+#include "task_sensor.h"
 #include <inttypes.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -29,14 +29,38 @@
 #endif
 
 #define LOG(msg) ruuvi_interface_log(TASK_ENVIRONMENTAL_LOG_LEVEL, msg)
+#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_ENVIRONMENTAL_LOG_LEVEL, msg, len)
 
-static ruuvi_driver_sensor_t environmental_sensor = {0}; // Sensor API
-static ruuvi_interface_timer_id_t environmental_timer;
+static ruuvi_interface_timer_id_t m_log_timer;               //!< Timer for logging data
 
-static uint8_t buffer[APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE]; //!< Raw buffer for environmental logs
-static ruuvi_interface_atomic_t buffer_wlock;
-static ruuvi_interface_atomic_t buffer_rlock;
+// Do not compile space for unused sensor drivers.
+// Define enum in order of default preference of sensor being used.
+// Default sensor can be overridden by calling a backend_set function.
+enum{
+#if APPLICATION_ENVIRONMENTAL_SHTCX_ENABLED
+  ENV_SHTCX_INDEX,
+#endif
+#if APPLICATION_ENVIRONMENTAL_BME280_ENABLED
+  ENV_BME280_INDEX,
+#endif
+#if APPLICATION_ENVIRONMENTAL_NTC_ENABLED
+  ENV_LIS2DH12_INDEX,
+#endif
+#if APPLICATION_ENVIRONMENTAL_MCU_ENABLED
+  ENV_MCU_INDEX,
+#endif
+#if APPLICATION_ENVIRONMENTAL_LIS2DH12_ENABLED
+  ENV_LIS2DH12_INDEX,
+#endif
+  ENV_SENSOR_COUNT
+};
+static ruuvi_driver_sensor_t  m_environmental_sensors[ENV_SENSOR_COUNT] = {0}; //!< Sensor APIs.
+static ruuvi_driver_sensor_t* m_active_sensor = NULL; //!< Sensor being used by application.
+
+static uint8_t buffer[APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE]; //!< Raw buffer for environmental logs.
+static ruuvi_interface_atomic_t buffer_wlock; //!< Lock for writing to ringbuffer.
+static ruuvi_interface_atomic_t buffer_rlock; //!< Lock for reading from ringbuffer.
 /** @brief Buffer structure for outgoing data */
 static ruuvi_library_ringbuffer_t ringbuf = {.head = 0,
                                              .tail = 0,
@@ -49,7 +73,7 @@ static ruuvi_library_ringbuffer_t ringbuf = {.head = 0,
                                              .readlock  = &buffer_rlock};
 
 static task_communication_api_t environmental_api = {
-  .sensor      = &environmental_sensor,
+  .sensor      = &m_active_sensor,
   .offset_set  = NULL,
   .offset_get  = NULL,
   .data_target = NULL,
@@ -61,174 +85,376 @@ ruuvi_driver_status_t task_environmental_api_get(task_communication_api_t** api)
 {
  if(api == NULL) { return RUUVI_DRIVER_ERROR_NULL; }
  *api = &environmental_api;
- LOG("Returned API \r\n");
+ LOGD("Returned API \r\n");
  return RUUVI_DRIVER_SUCCESS;
 }
 
-ruuvi_driver_status_t task_environmental_configure(ruuvi_driver_sensor_configuration_t*
-    config)
+/** @brief Try to initialize SHTCX sensor 
+ *
+ * Looks up appropriate pin definitions from ruuvi_boards.h
+ * Tries to load driver configuration from flash. If flash configuration is not available,
+ * uses application defaults from application_config.h.
+ *
+ * @return RUUVI_DRIVER_SUCCESS if SHTCX is not enabled at compile time or if sensor is initialized.
+ * @return RUUVI_DRIVER_ERROR_NOT_FOUND if SHTCX does not reply on bus but it's expected to be available
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if some other user has already initialized the driver.
+ */
+static ruuvi_driver_status_t initialize_shtcx(void)
 {
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  LOG("\r\nAttempting to configure environmental with:\r\n");
-  // Use empty in place of unit
-  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "");
-  err_code |= environmental_sensor.configuration_set(&environmental_sensor, config);
-  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-  LOG("Actual configuration:\r\n");
-  ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_INFO, config, "");
-  return err_code;
+  #if APPLICATION_ENVIRONMENTAL_SHTCX_ENABLED
+  // Assume "Not found", gets set to "Success" if a usable sensor is present
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_I2C;
+  uint8_t handle = RUUVI_BOARD_SHTCX_I2C_ADDRESS;
+    // Initialize sensor.
+  err_code = ruuvi_interface_shtcx_init(&(m_environmental_sensors[ENV_SHTCX_INDEX]),
+                                                    bus, handle);
+  // return if failed.
+  if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  ruuvi_driver_sensor_configuration_t config;
+  err_code = task_flash_load(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                             APPLICATION_FLASH_ENVIRONMENTAL_SHTCX_RECORD,
+                             &config,
+                             sizeof(config));
+  // If there is no stored configuration, use defaults.
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    config.dsp_function  = APPLICATION_ENVIRONMENTAL_SHTCX_DSP_FUNC;
+    config.dsp_parameter = APPLICATION_ENVIRONMENTAL_SHTCX_DSP_PARAM;
+    config.mode          = APPLICATION_ENVIRONMENTAL_SHTCX_MODE;
+    config.resolution    = APPLICATION_ENVIRONMENTAL_SHTCX_RESOLUTION;
+    config.samplerate    = APPLICATION_ENVIRONMENTAL_SHTCX_SAMPLERATE;
+    config.scale         = APPLICATION_ENVIRONMENTAL_SHTCX_SCALE;
+    // Store defaults to flash
+    err_code = task_flash_store(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                APPLICATION_FLASH_ENVIRONMENTAL_SHTCX_RECORD,
+                                &config,
+                                sizeof(config));
+  }
+  // Check flash operation status, allow not supported in case we're on 811
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  // Configure sensor
+  return task_sensor_configure(&(m_environmental_sensors[ENV_SHTCX_INDEX]), &config, "");
+  #else
+  return RUUVI_DRIVER_SUCCESS;
+  #endif
 }
 
-static void task_environmental_scheduler_task(void* p_event_data, uint16_t event_size)
+/** @brief Try to initialize BME280 sensor 
+ *
+ * Looks up appropriate pin definitions from ruuvi_boards.h
+ * Tries to load driver configuration from flash. If flash configuration is not available,
+ * uses application defaults from application_config.h.
+ *
+ * @return RUUVI_DRIVER_SUCCESS if BME280 is not enabled at compile time or if sensor is initialized.
+ * @return RUUVI_DRIVER_ERROR_NOT_FOUND if BME280 does not reply on bus but it's expected to be available
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if some other user has already initialized the driver.
+ */
+static ruuvi_driver_status_t initialize_bme280(void)
+{
+  #if APPLICATION_ENVIRONMENTAL_BME280_ENABLED
+  // Assume "Not found", gets set to "Success" if a usable sensor is present
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_FAIL;
+  uint8_t handle = 0;
+  if(RUUVI_BOARD_ENVIRONMENTAL_BME280_SPI_USE)
+  {
+    bus = RUUVI_DRIVER_BUS_SPI;
+    handle = RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN;
+  }
+  else if(RUUVI_BOARD_ENVIRONMENTAL_BME280_I2C_USE)
+  {
+    bus = RUUVI_DRIVER_BUS_I2C;
+    handle = RUUVI_BOARD_BME280_I2C_ADDRESS;
+  }
+  else { return RUUVI_DRIVER_ERROR_NOT_SUPPORTED; }
+    // Initialize sensor.
+  err_code = ruuvi_interface_bme280_init(&(m_environmental_sensors[ENV_BME280_INDEX]),
+                                                    bus, handle);
+  // return if failed.
+  if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  ruuvi_driver_sensor_configuration_t config;
+  err_code = task_flash_load(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                             APPLICATION_FLASH_ENVIRONMENTAL_BME280_RECORD,
+                             &config,
+                             sizeof(config));
+  // If there is no stored configuration, use defaults.
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    config.dsp_function  = APPLICATION_ENVIRONMENTAL_BME280_DSP_FUNC;
+    config.dsp_parameter = APPLICATION_ENVIRONMENTAL_BME280_DSP_PARAM;
+    config.mode          = APPLICATION_ENVIRONMENTAL_BME280_MODE;
+    config.resolution    = APPLICATION_ENVIRONMENTAL_BME280_RESOLUTION;
+    config.samplerate    = APPLICATION_ENVIRONMENTAL_BME280_SAMPLERATE;
+    config.scale         = APPLICATION_ENVIRONMENTAL_BME280_SCALE;
+    // Store defaults to flash
+    err_code = task_flash_store(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                APPLICATION_FLASH_ENVIRONMENTAL_BME280_RECORD,
+                                &config,
+                                sizeof(config));
+  }
+  // Check flash operation status, allow not supported in case we're on 811
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  // Configure sensor
+  return task_sensor_configure(&(m_environmental_sensors[ENV_BME280_INDEX]), &config, "");
+  #else
+  return RUUVI_DRIVER_SUCCESS;
+  #endif
+}
+
+/** @brief Try to initialize NTC sensor 
+ *
+ * Looks up appropriate pin definitions from ruuvi_boards.h
+ * Tries to load driver configuration from flash. If flash configuration is not available,
+ * uses application defaults from application_config.h.
+ *
+ * @return RUUVI_DRIVER_SUCCESS if NTC is not enabled at compile time or if sensor is initialized.
+ * @return RUUVI_DRIVER_ERROR_NOT_FOUND if NTC does not reply on bus but it's expected to be available
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if some other user has already initialized the driver.
+ */
+static ruuvi_driver_status_t initialize_ntc(void)
+{
+  #if APPLICATION_ENVIRONMENTAL_NTC_ENABLED
+  // Assume "Not found", gets set to "Success" if a usable sensor is present
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
+  uint8_t handle = 0;
+    // Initialize sensor.
+  err_code = ruuvi_interface_environmental_ntc_init(&(m_environmental_sensors[ENV_NTC_INDEX]),
+                                                    bus, handle);
+  // return if failed.
+  if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  ruuvi_driver_sensor_configuration_t config;
+  err_code = task_flash_load(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                             APPLICATION_FLASH_ENVIRONMENTAL_NTC_RECORD,
+                             &config,
+                             sizeof(config));
+  // If there is no stored configuration, use defaults.
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    config.dsp_function  = APPLICATION_ENVIRONMENTAL_NTC_DSP_FUNC;
+    config.dsp_parameter = APPLICATION_ENVIRONMENTAL_NTC_DSP_PARAM;
+    config.mode          = APPLICATION_ENVIRONMENTAL_NTC_MODE;
+    config.resolution    = APPLICATION_ENVIRONMENTAL_NTC_RESOLUTION;
+    config.samplerate    = APPLICATION_ENVIRONMENTAL_NTC_SAMPLERATE;
+    config.scale         = APPLICATION_ENVIRONMENTAL_NTC_SCALE;
+    // Store defaults to flash
+    err_code = task_flash_store(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                APPLICATION_FLASH_ENVIRONMENTAL_NTC_RECORD,
+                                &config,
+                                sizeof(config));
+  }
+  // Check flash operation status, allow not supported in case we're on 811
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  // Configure sensor
+  return task_sensor_configure(&(m_environmental_sensors[ENV_NTC_INDEX]), &config, "");
+  #else
+  return RUUVI_DRIVER_SUCCESS;
+  #endif
+}
+
+/** @brief Try to initialize MCU sensor 
+ *
+ * Looks up appropriate pin definitions from ruuvi_boards.h
+ * Tries to load driver configuration from flash. If flash configuration is not available,
+ * uses application defaults from application_config.h.
+ *
+ * @return RUUVI_DRIVER_SUCCESS if MCU is not enabled at compile time or if sensor is initialized.
+ * @return RUUVI_DRIVER_ERROR_NOT_FOUND if MCU does not reply on bus but it's expected to be available
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if some other user has already initialized the driver.
+ */
+static ruuvi_driver_status_t initialize_mcu(void)
+{
+  #if APPLICATION_ENVIRONMENTAL_MCU_ENABLED
+  // Assume "Not found", gets set to "Success" if a usable sensor is present
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
+  uint8_t handle = 0;
+    // Initialize sensor.
+  err_code = ruuvi_interface_environmental_mcu_init(&(m_environmental_sensors[ENV_MCU_INDEX]),
+                                                    bus, handle);
+  // return if failed.
+  if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
+
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  ruuvi_driver_sensor_configuration_t config;
+  err_code = task_flash_load(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                             APPLICATION_FLASH_ENVIRONMENTAL_MCU_RECORD,
+                             &config,
+                             sizeof(config));
+  // If there is no stored configuration, use defaults.
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    config.dsp_function  = APPLICATION_ENVIRONMENTAL_MCU_DSP_FUNC;
+    config.dsp_parameter = APPLICATION_ENVIRONMENTAL_MCU_DSP_PARAM;
+    config.mode          = APPLICATION_ENVIRONMENTAL_MCU_MODE;
+    config.resolution    = APPLICATION_ENVIRONMENTAL_MCU_RESOLUTION;
+    config.samplerate    = APPLICATION_ENVIRONMENTAL_MCU_SAMPLERATE;
+    config.scale         = APPLICATION_ENVIRONMENTAL_MCU_SCALE;
+    // Store defaults to flash
+    err_code = task_flash_store(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                APPLICATION_FLASH_ENVIRONMENTAL_MCU_RECORD,
+                                &config,
+                                sizeof(config));
+  }
+  // Check flash operation status, allow not supported in case we're on 811
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  // Configure sensor
+  return task_sensor_configure(&(m_environmental_sensors[ENV_MCU_INDEX]), &config, "");
+  #else
+  return RUUVI_DRIVER_SUCCESS;
+  #endif
+}
+
+/** @brief Try to initialize LIS2DH12 as environmental sensor 
+ *
+ * Looks up appropriate pin definitions from ruuvi_boards.h
+ * Tries to load driver configuration from flash. If flash configuration is not available,
+ * uses application defaults from application_config.h.
+ *
+ * @return RUUVI_DRIVER_SUCCESS if LIS2DH12 environmental is not enabled at compile time or if sensor is initialized.
+ * @return RUUVI_DRIVER_ERROR_NOT_FOUND if LIS2DH12 environmental does not reply on bus but it's expected to be available
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if some other user has already initialized the driver.
+ */
+static ruuvi_driver_status_t initialize_lis2dh12(void)
+{
+  #if APPLICATION_ENVIRONMENTAL_LIS2DH12_ENABLED
+  // Assume "Not found", gets set to "Success" if a usable sensor is present
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_FAIL;
+  uint8_t handle = 0;
+  if(RUUVI_BOARD_ACCELEROMETER_LIS2DH12_SPI_USE)
+  {
+    bus = RUUVI_DRIVER_BUS_SPI;
+    handle = RUUVI_BOARD_SPI_SS_ACCELEROMETER_PIN;
+  }
+  else { return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED; }
+    // Initialize sensor.
+  err_code = ruuvi_interface_lis2dh12_init(&(m_environmental_sensors[ENV_LIS2DH12_INDEX]),
+                                            bus, handle);
+  // return if failed.
+  if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  ruuvi_driver_sensor_configuration_t config;
+  err_code = task_flash_load(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                             APPLICATION_FLASH_ENVIRONMENTAL_LIS2DH12_RECORD,
+                             &config,
+                             sizeof(config));
+  // If there is no stored configuration, use defaults.
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    config.dsp_function  = APPLICATION_ENVIRONMENTAL_LIS2DH12_DSP_FUNC;
+    config.dsp_parameter = APPLICATION_ENVIRONMENTAL_LIS2DH12_DSP_PARAM;
+    config.mode          = APPLICATION_ENVIRONMENTAL_LIS2DH12_MODE;
+    config.resolution    = APPLICATION_ENVIRONMENTAL_LIS2DH12_RESOLUTION;
+    config.samplerate    = APPLICATION_ENVIRONMENTAL_LIS2DH12_SAMPLERATE;
+    config.scale         = APPLICATION_ENVIRONMENTAL_LIS2DH12_SCALE;
+    // Store defaults to flash
+    err_code = task_flash_store(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                APPLICATION_FLASH_ENVIRONMENTAL_LIS2DH12_RECORD,
+                                &config,
+                                sizeof(config));
+  }
+  // Check flash operation status, allow not supported in case we're on 811
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  // Configure sensor
+  return task_sensor_configure(&(m_environmental_sensors[ENV_LIS2DH12_INDEX]), &config, "");
+  #else
+  return RUUVI_DRIVER_SUCCESS;
+  #endif
+}
+
+static void execute_log(void* event, uint16_t event_size)
 {
   task_environmental_log();
 }
 
-// Timer callback, schedule event here or execute it right away if it's timing-critical
-static void task_environmental_timer_cb(void* p_context)
+static void schedule_log(void* p_context)
 {
-  ruuvi_interface_scheduler_event_put(NULL, 0, task_environmental_scheduler_task);
+  ruuvi_interface_scheduler_event_put(NULL, 0, execute_log);
 }
 
 ruuvi_driver_status_t task_environmental_init(void)
 {
-  // Assume "Not found", gets set to "Success" if a usable sensor is present
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
-  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_NONE;
-  ruuvi_driver_sensor_configuration_t config;
-  config.samplerate    = APPLICATION_ENVIRONMENTAL_SAMPLERATE;
-  config.resolution    = APPLICATION_ENVIRONMENTAL_RESOLUTION;
-  config.scale         = APPLICATION_ENVIRONMENTAL_SCALE;
-  config.dsp_function  = APPLICATION_ENVIRONMENTAL_DSPFUNC;
-  config.dsp_parameter = APPLICATION_ENVIRONMENTAL_DSPPARAM;
-  config.mode          = APPLICATION_ENVIRONMENTAL_MODE;
-  uint8_t handle = 0;
-  ruuvi_interface_timer_create(&environmental_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, task_environmental_timer_cb);
-  ruuvi_interface_timer_start(environmental_timer, APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS);
-
-  #if (RUUVI_BOARD_ENVIRONMENTAL_SHTCX_PRESENT && RUUVI_INTERFACE_ENVIRONMENTAL_SHTCX_ENABLED)
-  err_code = RUUVI_DRIVER_SUCCESS;
-  bus = RUUVI_DRIVER_BUS_I2C;
-  handle = RUUVI_BOARD_SHTCX_I2C_ADDRESS;
-  err_code |= ruuvi_interface_shtcx_init(&environmental_sensor, bus, handle);
-  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_FOUND);
-
-  if(RUUVI_DRIVER_SUCCESS == err_code)
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  // Attempt to initialize all possible temperature backends.
+  err_code |= initialize_shtcx();
+  err_code |= initialize_bme280();
+  err_code |= initialize_ntc();
+  err_code |= initialize_mcu();
+  err_code |= initialize_lis2dh12();
+  // Use first valid backend as the default provider.
+  for(int ii = 0; ii < ENV_SENSOR_COUNT; ii++)
   {
-    err_code |= task_environmental_configure(&config);
-    // Try to configure pressure sensor for the application. 
-    task_pressure_init();
-    return err_code;
+    if(m_environmental_sensors[ii].provides.bitfield)
+    {
+      m_active_sensor = &(m_environmental_sensors[ii]);
+      break;
+    }
+
   }
-  #endif
-
-  #if RUUVI_BOARD_ENVIRONMENTAL_BME280_PRESENT
-  err_code = RUUVI_DRIVER_SUCCESS;
-  #if RUUVI_BOARD_ENVIRONMENTAL_BME280_SPI_USE
-  bus = RUUVI_DRIVER_BUS_SPI;
-  handle = RUUVI_BOARD_SPI_SS_ENVIRONMENTAL_PIN;
-  #endif
-  #if RUUVI_BOARD_ENVIRONMENTAL_BME280_I2C_USE
-  bus = RUUVI_DRIVER_BUS_I2C;
-  handle = RUUVI_BOARD_BME280_I2C_ADDRESS;
-  #endif
-  err_code |= ruuvi_interface_bme280_init(&environmental_sensor, bus, handle);
-  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_FOUND);
-
-  if(RUUVI_DRIVER_SUCCESS == err_code)
+  // XXX - use generic logging
+  if(NULL == m_log_timer)
   {
-    err_code |= task_environmental_configure(&config);
-    return err_code;
-  }
-  #endif
-
-  #if RUUVI_BOARD_ENVIRONMENTAL_MCU_PRESENT
-  err_code = RUUVI_DRIVER_SUCCESS;
-  err_code |= ruuvi_interface_environmental_mcu_init(&environmental_sensor, bus, handle);
-  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
-
-  if(RUUVI_DRIVER_SUCCESS == err_code)
-  {
-    err_code |= task_environmental_configure(&config);
-    return err_code;
+    ruuvi_interface_timer_create(&m_log_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, schedule_log);
   }
 
-  #endif
-  return RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_interface_timer_start(m_log_timer, APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS);
+  return (NULL == m_active_sensor) ? RUUVI_DRIVER_ERROR_NOT_FOUND : RUUVI_DRIVER_SUCCESS;
 }
 
 ruuvi_driver_status_t task_environmental_sample(void)
 {
-  if(NULL == environmental_sensor.mode_set) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+  if(NULL == m_active_sensor->mode_set) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
 
   uint8_t mode = RUUVI_DRIVER_SENSOR_CFG_SINGLE;
-  return environmental_sensor.mode_set(&mode);
+  return m_active_sensor->mode_set(&mode);
 }
 
-ruuvi_driver_status_t task_environmental_data_log(const ruuvi_interface_log_severity_t
-    level)
+ruuvi_driver_status_t task_environmental_data_get(ruuvi_driver_sensor_data_t* const p_data)
 {
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_interface_environmental_data_t data;
+  if(NULL == p_data) { return RUUVI_DRIVER_ERROR_NULL; }
 
-  if(NULL == environmental_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
-
-  // If the mode is single, take a new sample.
-  if(APPLICATION_ENVIRONMENTAL_MODE == RUUVI_DRIVER_SENSOR_CFG_SINGLE)
-  {
-    err_code |= task_environmental_sample();
-  }
-
-  err_code |= environmental_sensor.data_get(&data);
-  char message[128] = {0};
-  snprintf(message, sizeof(message), "Time: %lu\r\n",
-           (uint32_t)(data.timestamp_ms & 0xFFFFFFFF));
-  ruuvi_interface_log(level, message);
-  snprintf(message, sizeof(message), "Temperature: %.2f\r\n", data.temperature_c);
-  ruuvi_interface_log(level, message);
-  snprintf(message, sizeof(message), "Pressure: %.2f\r\n", data.pressure_pa);
-  ruuvi_interface_log(level, message);
-  snprintf(message, sizeof(message), "Humidity: %.2f\r\n", data.humidity_rh);
-  ruuvi_interface_log(level, message);
-  return err_code;
-}
-
-ruuvi_driver_status_t task_environmental_data_get(ruuvi_interface_environmental_data_t*
-    const data)
-{
-  if(NULL == data) { return RUUVI_DRIVER_ERROR_NULL; }
-
-  if(NULL == environmental_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+  if(NULL == m_active_sensor->data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
 
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  err_code = environmental_sensor.data_get(data);
-  if(RUUVI_DRIVER_FLOAT_INVALID == data->pressure_pa && task_pressure_is_init())
-  {
-    ruuvi_interface_environmental_data_t pressure_data;
-    err_code |= task_pressure_data_get(&pressure_data);
-    data->pressure_pa = pressure_data.pressure_pa;
-  }
-
-  return err_code;
-}
-
-ruuvi_driver_status_t task_environmental_on_button(void)
-{
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  err_code |= task_environmental_data_log(RUUVI_INTERFACE_LOG_INFO);
+  err_code = m_active_sensor->data_get(p_data);
   return err_code;
 }
 
 ruuvi_driver_status_t task_environmental_log(void)
 {
-  ruuvi_interface_environmental_data_t data;
+  ruuvi_driver_sensor_data_t data;
+  float values[3];
+  data.data = values;
+  data.fields.datas.temperature_c = 1;
+  data.fields.datas.humidity_rh = 1;
+  data.fields.datas.pressure_pa = 1;
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   err_code |= task_environmental_data_get(&data);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
   environmental_log_t log = { .timestamp_s   = data.timestamp_ms/1000,
-                              .temperature_c = data.temperature_c,
-                              .humidity_rh   = data.humidity_rh,
-                              .pressure_pa   = data.pressure_pa};
+                              .temperature_c = ruuvi_driver_sensor_data_parse(&data, (ruuvi_driver_sensor_data_fields_t){.datas.temperature_c = 1}),
+                              .humidity_rh   = ruuvi_driver_sensor_data_parse(&data, (ruuvi_driver_sensor_data_fields_t){.datas.humidity_rh = 1}),
+                              .pressure_pa   = ruuvi_driver_sensor_data_parse(&data, (ruuvi_driver_sensor_data_fields_t){.datas.pressure_pa = 1})};
   ruuvi_library_status_t status = ruuvi_library_ringbuffer_queue(&ringbuf, &log, sizeof(log));
   // Drop old sample if buffer is full
   if(RUUVI_LIBRARY_ERROR_NO_MEM == status)
@@ -349,4 +575,16 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
   }while(RUUVI_LIBRARY_SUCCESS == status);
   LOG("Logs sent\r\n");
   return RUUVI_DRIVER_SUCCESS;
+}
+
+ruuvi_driver_status_t task_environmental_backend_set(const char* const name)
+{
+  ruuvi_driver_sensor_t* p_backend;
+  p_backend = task_sensor_find_backend(m_environmental_sensors, ENV_SENSOR_COUNT, name);
+  if(NULL != p_backend)
+  {
+    m_active_sensor = p_backend;
+    return RUUVI_DRIVER_SUCCESS;
+  }
+  return RUUVI_DRIVER_ERROR_NOT_FOUND;
 }

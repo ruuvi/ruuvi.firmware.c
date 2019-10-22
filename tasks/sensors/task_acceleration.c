@@ -85,32 +85,10 @@ ruuvi_driver_status_t task_acceleration_init(void)
   return RUUVI_DRIVER_ERROR_NOT_FOUND;
 }
 
-ruuvi_driver_status_t task_acceleration_data_log(const ruuvi_interface_log_severity_t
-    level)
-{
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_interface_acceleration_data_t data;
 
-  if(NULL == acceleration_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
-
-  err_code |= acceleration_sensor.data_get(&data);
-  char message[128] = {0};
-  snprintf(message, sizeof(message), "Time: %lu\r\n",
-           (uint32_t)(data.timestamp_ms & 0xFFFFFFFF));
-  LOG(message);
-  snprintf(message, sizeof(message), "X: %.3f g, Y: %.3f g, Z: %.3f g\r\n", data.x_g, data.y_g, data.z_g);
-  LOG(message);
-  return err_code;
-}
-
-ruuvi_driver_status_t task_acceleration_data_get(ruuvi_interface_acceleration_data_t*
+ruuvi_driver_status_t task_acceleration_data_get(ruuvi_driver_sensor_data_t*
     const data)
 {
-  data->timestamp_ms = RUUVI_DRIVER_UINT64_INVALID;
-  data->x_g = RUUVI_DRIVER_FLOAT_INVALID;
-  data->y_g = RUUVI_DRIVER_FLOAT_INVALID;
-  data->z_g = RUUVI_DRIVER_FLOAT_INVALID;
-
   if(NULL == data) { return RUUVI_DRIVER_ERROR_NULL; }
 
   if(NULL == acceleration_sensor.data_get) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
