@@ -65,14 +65,14 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer)
 
   ruuvi_endpoint_5_data_t ep5_data = {0};
   ep5_data.accelerationx_g = ruuvi_driver_sensor_data_parse(&acceleration, (ruuvi_driver_sensor_data_fields_t){.datas.acceleration_x_g = 1});
-  ep5_data.accelerationz_g = ruuvi_driver_sensor_data_parse(&acceleration, (ruuvi_driver_sensor_data_fields_t){.datas.acceleration_y_g = 1});
-  ep5_data.accelerationy_g = ruuvi_driver_sensor_data_parse(&acceleration, (ruuvi_driver_sensor_data_fields_t){.datas.acceleration_z_g = 1});
+  ep5_data.accelerationy_g = ruuvi_driver_sensor_data_parse(&acceleration, (ruuvi_driver_sensor_data_fields_t){.datas.acceleration_y_g = 1});
+  ep5_data.accelerationz_g = ruuvi_driver_sensor_data_parse(&acceleration, (ruuvi_driver_sensor_data_fields_t){.datas.acceleration_z_g = 1});
   ep5_data.battery_v       = ruuvi_driver_sensor_data_parse(&battery, (ruuvi_driver_sensor_data_fields_t){.datas.voltage_v = 1});
   ep5_data.humidity_rh     = ruuvi_driver_sensor_data_parse(&environmental, (ruuvi_driver_sensor_data_fields_t){.datas.humidity_rh = 1});
   ep5_data.temperature_c   = ruuvi_driver_sensor_data_parse(&environmental, (ruuvi_driver_sensor_data_fields_t){.datas.temperature_c = 1});
   ep5_data.pressure_pa     = ruuvi_driver_sensor_data_parse(&environmental, (ruuvi_driver_sensor_data_fields_t){.datas.pressure_pa = 1});
-  ruuvi_interface_communication_radio_address_get(&(ep5_data.address));
-  ruuvi_interface_communication_ble4_advertising_tx_power_get(&ep5_data.tx_power);
+  driver_code |= ruuvi_interface_communication_radio_address_get(&(ep5_data.address));
+  driver_code |= ruuvi_interface_communication_ble4_advertising_tx_power_get(&ep5_data.tx_power);
   ep5_data.measurement_count = measurement_counter++;
   // Wrap measurement counter off the invalid.
   if(measurement_counter == UINT16_MAX) { measurement_counter = 0;}
