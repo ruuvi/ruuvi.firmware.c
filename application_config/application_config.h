@@ -13,9 +13,9 @@
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
 #ifndef APPLICATION_FW_VERSION
   #if DEBUG
-  #define APPLICATION_FW_VERSION "RuuviFW 3.27.0-DEBUG"
+  #define APPLICATION_FW_VERSION "RuuviFW 3.27.1-DEBUG"
   #else
-  #define APPLICATION_FW_VERSION "RuuviFW 3.27.0"
+  #define APPLICATION_FW_VERSION "RuuviFW 3.27.1"
   #endif
 #endif
 
@@ -144,8 +144,8 @@
 // Interval MAX + (slave latency +1) * 3 < connSupervisionTimeout
 #define APPLICATION_GATT_CONN_INTERVAL_MIN_MS      15
 #define APPLICATION_GATT_CONN_INTERVAL_MAX_MS      15
-#define APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS 31   // Slave latency. How many intervals can be skipped. 31 * 45 < 2000
-#define APPLICATION_GATT_CONN_TIMEOUT_MS           5600 // 31 * 45 * 3 < 5600
+#define APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS 29   // Slave latency. How many intervals can be skipped.
+#define APPLICATION_GATT_CONN_TIMEOUT_MS           5600 // 29 * 45 * 3 < 5600
 
 // GATT functionality
 #define APPLICATION_GATT_HEARTBERAT_INTERVAL_MS    APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS

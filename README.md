@@ -34,6 +34,14 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.27.1
+  - Fix errors in data format 5 encoding
+  - Known issue: timestamps are occasionally wrong in log data
+
+## 3.27.0
+  - Rework task structure
+  - Add "hearbeat" transmissions to GATT
+
 ## 3.26.5
  - Add SD+BL+APP DFU builds
 
