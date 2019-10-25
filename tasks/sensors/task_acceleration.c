@@ -14,6 +14,7 @@
 #include "task_acceleration.h"
 #include "task_gpio.h"
 #include "task_communication.h"
+#include "task_sensor.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -27,19 +28,6 @@
 
 static ruuvi_driver_sensor_t acceleration_sensor = {0};
 static uint8_t m_nbr_movements;
-
-ruuvi_driver_status_t task_acceleration_configure(ruuvi_driver_sensor_configuration_t*
-    const config)
-{
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  LOG("\r\nAttempting to configure accelerometer with:\r\n");
-  ruuvi_interface_log_sensor_configuration(TASK_ACCELERATION_LOG_LEVEL, config, "g");
-  err_code |= acceleration_sensor.configuration_set(&acceleration_sensor, config);
-  LOG("Actual configuration:\r\n");
-  ruuvi_interface_log_sensor_configuration(TASK_ACCELERATION_LOG_LEVEL, config, "g");
-  RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-  return err_code;
-}
 
 static void task_acceleration_on_activity(ruuvi_interface_gpio_evt_t event)
 {
@@ -76,7 +64,7 @@ ruuvi_driver_status_t task_acceleration_init(void)
     ruuvi_interface_gpio_id_t pin = {.pin = RUUVI_BOARD_INT_ACC2_PIN};
     err_code |= ruuvi_interface_gpio_interrupt_enable(pin, RUUVI_INTERFACE_GPIO_SLOPE_LOTOHI,
               RUUVI_INTERFACE_GPIO_MODE_INPUT_NOPULL, task_acceleration_on_activity);
-    err_code |= task_acceleration_configure(&config);
+    err_code |= task_sensor_configure(&acceleration_sensor, &config, "g");
     return err_code;
   }
 

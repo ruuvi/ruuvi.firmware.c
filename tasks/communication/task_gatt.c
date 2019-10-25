@@ -33,8 +33,9 @@
 #define TASK_GATT_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
 
-#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
 #define LOG(msg) ruuvi_interface_log(TASK_GATT_LOG_LEVEL, msg)
+#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
+#define LOGE(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_ERROR, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
 #define LOGDHEX(msg, len) ruuvi_interface_log_hex(RUUVI_INTERFACE_LOG_DEBUG, msg, len)
 
@@ -208,6 +209,10 @@ ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
 
     case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
       err_code |= ruuvi_interface_scheduler_event_put(p_data, data_len, task_gatt_communication_received_scheduler);
+      if(RUUVI_DRIVER_SUCCESS != err_code)
+      {
+        LOGE("No memory in op queue remaining, incoming data discarded\r\n");
+      }
       break;
 
     default:

@@ -34,6 +34,10 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.27.2
+  - Use busyloop in log flush to avoid getting stuck if logs are flushed in interrupt context
+  - Initialize variables in environmental logging to zero. Explicit U64->U32 timestamp typecast.
+
 ## 3.27.1
   - Fix errors in data format 5 encoding
   - Known issue: timestamps are occasionally wrong in log data

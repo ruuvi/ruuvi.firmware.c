@@ -30,6 +30,7 @@
 
 #define LOG(msg) ruuvi_interface_log(TASK_ENVIRONMENTAL_LOG_LEVEL, msg)
 #define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
+#define LOGW(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_ENVIRONMENTAL_LOG_LEVEL, msg, len)
 
 static ruuvi_interface_timer_id_t m_log_timer;               //!< Timer for logging data
@@ -442,7 +443,7 @@ ruuvi_driver_status_t task_environmental_data_get(ruuvi_driver_sensor_data_t* co
 
 ruuvi_driver_status_t task_environmental_log(void)
 {
-  ruuvi_driver_sensor_data_t data;
+  ruuvi_driver_sensor_data_t data = {0};
   float values[3];
   data.data = values;
   data.fields.datas.temperature_c = 1;
@@ -451,7 +452,14 @@ ruuvi_driver_status_t task_environmental_log(void)
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   err_code |= task_environmental_data_get(&data);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-  environmental_log_t log = { .timestamp_s   = data.timestamp_ms/1000,
+  uint64_t sampletime = data.timestamp_ms/1000;
+  uint32_t logtime    = (uint32_t)sampletime;
+  uint64_t systime = task_rtc_millis()/1000;
+  if(logtime > systime)
+  {
+    LOGW("Stored sample in the future\r\n");
+  }
+  environmental_log_t log = { .timestamp_s   = logtime,
                               .temperature_c = ruuvi_driver_sensor_data_parse(&data, (ruuvi_driver_sensor_data_fields_t){.datas.temperature_c = 1}),
                               .humidity_rh   = ruuvi_driver_sensor_data_parse(&data, (ruuvi_driver_sensor_data_fields_t){.datas.humidity_rh = 1}),
                               .pressure_pa   = ruuvi_driver_sensor_data_parse(&data, (ruuvi_driver_sensor_data_fields_t){.datas.pressure_pa = 1})};
@@ -508,6 +516,16 @@ ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communic
       if(0 == p_log->timestamp_s) 
       { 
         LOG("WARNING: Empty element\r\n");
+        continue;
+      }
+      if(now - offset < p_log->timestamp_s) 
+      { 
+        LOG("WARNING: Element in future\r\n");
+        continue;
+      }
+      if(now - offset - p_log->timestamp_s > (2*(ringbuf.index_mask * (APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS/1000)))) 
+      { 
+        LOG("WARNING: Element in distant past\r\n");
         continue;
       } 
       if(start > timestamp) { continue; }

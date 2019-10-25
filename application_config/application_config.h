@@ -315,7 +315,7 @@
 /** @brief Bytes of RAM to conserve for printed log messages
  *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.
  */
-#define APPLICATION_LOG_BUFFER_SIZE                 256
+#define APPLICATION_LOG_BUFFER_SIZE                 1024
 
 // Choose one. RTT is recommended, but does not work on devices
 // with readback protection enabled
