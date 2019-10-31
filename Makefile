@@ -1,7 +1,8 @@
-VERSION=$(git describe --exact-match --tags HEAD)
-if [ -z "$VERSION" ]; then
-  VERSION=$(git rev-parse --short HEAD)
-fi
+# Tag on this commit
+TAG := $(shell git describe --tags --exact-match)
+# Commit hash from git
+COMMIT := $(shell git rev-parse --short HEAD)
+VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
 
 .PHONY: all sync ruuvitag_b kaarle keijo clean
 
@@ -16,34 +17,34 @@ sync:
 
 
 ruuvitag_b:
-	@echo build FW
+	@echo build FW ${VERSION}
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=\"${VERSION}\""
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_default
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=\"${VERSION}\""
+	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_longlife
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=\"${VERSION}\""
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_test
 
 kaarle:
 	$(MAKE) -C targets/kaarle/armgcc clean
-	$(MAKE) -C targets/kaarle/armgcc DEBUG=-DNDEBUG
+	$(MAKE) -C targets/kaarle/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/kaarle/armgcc/package.sh -n ruuvifw_default
 	$(MAKE) -C targets/kaarle/armgcc clean
-	$(MAKE) -C targets/kaarle/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG
+	$(MAKE) -C targets/kaarle/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/kaarle/armgcc/package.sh -n ruuvifw_longlife
 	$(MAKE) -C targets/kaarle/armgcc clean
-	$(MAKE) -C targets/kaarle/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS
+	$(MAKE) -C targets/kaarle/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/kaarle/armgcc/package.sh -n ruuvifw_test
 
 keijo: 
 	$(MAKE) -C targets/keijo/armgcc clean
-	$(MAKE) -C targets/keijo/armgcc DEBUG=-DNDEBUG
+	$(MAKE) -C targets/keijo/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/keijo/armgcc/package.sh -n ruuvifw_default
 	$(MAKE) -C targets/keijo/armgcc clean
-	$(MAKE) -C targets/keijo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG
+	$(MAKE) -C targets/keijo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/keijo/armgcc/package.sh -n ruuvifw_longlife
 
 
