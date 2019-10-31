@@ -122,6 +122,7 @@ static ruuvi_driver_status_t initialize_shtcx(void)
   // If there is no stored configuration, use defaults.
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
+    LOG("SHTCX config not found on flash, using defaults\r\n");
     config.dsp_function  = APPLICATION_ENVIRONMENTAL_SHTCX_DSP_FUNC;
     config.dsp_parameter = APPLICATION_ENVIRONMENTAL_SHTCX_DSP_PARAM;
     config.mode          = APPLICATION_ENVIRONMENTAL_SHTCX_MODE;
@@ -188,6 +189,7 @@ static ruuvi_driver_status_t initialize_bme280(void)
   // If there is no stored configuration, use defaults.
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
+    LOG("BME280 config not found on flash, using defaults\r\n");
     config.dsp_function  = APPLICATION_ENVIRONMENTAL_BME280_DSP_FUNC;
     config.dsp_parameter = APPLICATION_ENVIRONMENTAL_BME280_DSP_PARAM;
     config.mode          = APPLICATION_ENVIRONMENTAL_BME280_MODE;
@@ -243,6 +245,7 @@ static ruuvi_driver_status_t initialize_ntc(void)
   // If there is no stored configuration, use defaults.
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
+    LOG("NTC config not found on flash, using defaults\r\n");
     config.dsp_function  = APPLICATION_ENVIRONMENTAL_NTC_DSP_FUNC;
     config.dsp_parameter = APPLICATION_ENVIRONMENTAL_NTC_DSP_PARAM;
     config.mode          = APPLICATION_ENVIRONMENTAL_NTC_MODE;
@@ -299,6 +302,7 @@ static ruuvi_driver_status_t initialize_mcu(void)
   // If there is no stored configuration, use defaults.
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
+    LOG("MCU Temp config not found on flash, using defaults\r\n");
     config.dsp_function  = APPLICATION_ENVIRONMENTAL_MCU_DSP_FUNC;
     config.dsp_parameter = APPLICATION_ENVIRONMENTAL_MCU_DSP_PARAM;
     config.mode          = APPLICATION_ENVIRONMENTAL_MCU_MODE;
@@ -360,6 +364,7 @@ static ruuvi_driver_status_t initialize_lis2dh12(void)
   // If there is no stored configuration, use defaults.
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
+    LOG("LIS2DH12 temp config not found on flash, using defaults\r\n");
     config.dsp_function  = APPLICATION_ENVIRONMENTAL_LIS2DH12_DSP_FUNC;
     config.dsp_parameter = APPLICATION_ENVIRONMENTAL_LIS2DH12_DSP_PARAM;
     config.mode          = APPLICATION_ENVIRONMENTAL_LIS2DH12_MODE;

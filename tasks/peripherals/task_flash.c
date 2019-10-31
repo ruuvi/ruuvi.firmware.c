@@ -28,11 +28,11 @@ ruuvi_driver_status_t task_flash_init(void)
   return err_code;
 }
 
-ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t record_id,
+ruuvi_driver_status_t task_flash_store(const uint16_t page_id, const uint16_t record_id,
                                        const void* const message, const size_t message_length)
 {
   ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
-  status = ruuvi_interface_flash_record_set(file_id, file_id, message_length, message);
+  status = ruuvi_interface_flash_record_set(page_id, record_id, message_length, message);
   if(RUUVI_DRIVER_ERROR_NO_MEM == status)
   {
     ruuvi_interface_flash_gc_run();
@@ -40,7 +40,7 @@ ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t re
     {
       ruuvi_interface_yield();
     }
-    status = ruuvi_interface_flash_record_set(file_id, file_id, message_length, message);
+    status = ruuvi_interface_flash_record_set(page_id, record_id, message_length, message);
   }
   return status;
 }
