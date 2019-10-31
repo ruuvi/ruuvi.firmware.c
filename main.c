@@ -178,7 +178,10 @@ static void init_logging(void)
   ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
   status |= ruuvi_interface_log_init(APPLICATION_LOG_LEVEL);
   RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
-  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Program start \r\n");
+  char version[128];
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, "Program start\r\n");
+  snprintf(version, sizeof(version), "Version: %s\r\n", APPLICATION_FW_VERSION);
+  ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, version);
 }
 
 int main(void)

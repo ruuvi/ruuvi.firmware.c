@@ -13,9 +13,9 @@
 /** @brief Version string, displayed in NFC read and GATT data on DIS */
 #ifndef APPLICATION_FW_VERSION
   #if DEBUG
-  #define APPLICATION_FW_VERSION "RuuviFW 3.27.1-DEBUG"
+  #define APPLICATION_FW_VERSION "RuuviFW 3.28.0-DEBUG"
   #else
-  #define APPLICATION_FW_VERSION "RuuviFW 3.27.1"
+  #define APPLICATION_FW_VERSION "RuuviFW 3.28.0"
   #endif
 #endif
 
@@ -334,6 +334,8 @@
 #define APPLICATION_FLASH_ENVIRONMENTAL_NTC_RECORD      0xE2
 #define APPLICATION_FLASH_ENVIRONMENTAL_MCU_RECORD      0xE3
 #define APPLICATION_FLASH_ENVIRONMENTAL_LIS2DH12_RECORD 0xE4
+#define APPLICATION_FLASH_ERROR_FILE                    0xEE
+#define APPLICATION_FLASH_ERROR_RECORD                  0xEE
 
 
 #endif

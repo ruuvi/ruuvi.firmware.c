@@ -1,3 +1,8 @@
+VERSION=$(git describe --exact-match --tags HEAD)
+if [ -z "$VERSION" ]; then
+  VERSION=$(git rev-parse --short HEAD)
+fi
+
 .PHONY: all sync ruuvitag_b kaarle keijo clean
 
 all: sync clean ruuvitag_b kaarle keijo
@@ -13,13 +18,13 @@ sync:
 ruuvitag_b:
 	@echo build FW
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=\"${VERSION}\""
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_default
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG
+	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=\"${VERSION}\""
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_longlife
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=\"${VERSION}\""
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_test
 
 kaarle:

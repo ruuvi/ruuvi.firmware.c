@@ -28,6 +28,7 @@ OPT = -O3 -g3
 CFLAGS += $(MODE)
 CFLAGS += $(RUN_TESTS)
 CFLAGS += $(DEBUG)
+CFLAGS += $(FW_VERSION)
 # C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
