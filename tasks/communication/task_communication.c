@@ -258,7 +258,7 @@ static void select_next_backend()
                                    "LIS2DH12",
                                    "SHTCX",
                                    "nRF5TMP"};
-  static uint8_t ids[] = {0x28, 0x12, 0x35, 0xF5};
+  static uint8_t ids[] = {0x28, 0x12, 0xC3, 0x52};
   uint8_t id;
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
   while(err_code == RUUVI_DRIVER_ERROR_NOT_FOUND)
