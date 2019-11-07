@@ -68,7 +68,7 @@
 // <15=> 2048 Hz 
 // <31=> 1024 Hz 
 // App timer requires at least 5 ticks before firing, and our resolution is 1ms. 
-// Pic 8 kHz. Faster timer results in smaller max values
+// Pick 8 kHz. Faster timer results in smaller max values
 #define APP_TIMER_CONFIG_RTC_FREQUENCY 3
 #define APP_SCHEDULER_ENABLED          APPLICATION_SCHEDULER_ENABLED
 

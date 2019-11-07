@@ -53,11 +53,14 @@ static void run_mcu_tests()
 {
   #if RUUVI_RUN_TESTS
   LOG("'mcu_tests':{\r\n");
+  // This is good only for internal MCU tests, it does not apply
+  // offset configured by user in application to timestamps.
   // Use task_rtc function to apply offset configured by user to sensor values.
   ruuvi_driver_sensor_timestamp_function_set(ruuvi_interface_rtc_millis);
   ruuvi_interface_rtc_init();
   test_adc_run();
   test_library_run();
+  // Delay one second to avoid locking RTC
   ruuvi_interface_delay_ms(1000);
   ruuvi_interface_rtc_uninit();
   LOG("}\r\n");

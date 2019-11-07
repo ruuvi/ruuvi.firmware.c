@@ -179,7 +179,7 @@ static void task_gatt_communication_disconnected_scheduler(void* p_context, uint
 static void task_gatt_communication_connected_scheduler(void* p_context, uint16_t data_len)
 {
   LOG("Connected\r\n");
-  task_communication_heartbeat_configure(APPLICATION_GATT_HEARTBERAT_INTERVAL_MS, 
+  task_communication_heartbeat_configure(APPLICATION_GATT_HEARTBEAT_INTERVAL_MS, 
                                          18, 
                                          task_gatt_send_asynchronous);
 }

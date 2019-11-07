@@ -1,6 +1,5 @@
 /**
  * Long-life mode for Ruuvi Firmware.
- * Broadcasts at 10 Hz interval and runs sensors at slower rate to conserve battery.
  *
  * License: BSD-3
  * Author: Otso Jousimaa <otso@ojousima.net>
@@ -100,9 +99,11 @@
 #define APPLICATION_ADVERTISING_INTERVAL_MS              9990
 #define APPLICATION_CONNECTION_ADVERTISEMENT_INTERVAL_MS 1010
 #define APPLICATION_ADVERTISING_POWER_DBM                RUUVI_BOARD_TX_POWER_MAX
-#define APPLICATION_DATA_FORMAT                          5
 #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS     9900
 #define APPLICATION_ADVERTISING_STARTUP_PERIOD_MS        0
 #define APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS      1010
+
+/* Logging configuration */
+#define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (12*60*60*1000)
 
 #endif
