@@ -26,7 +26,7 @@
 
 
 
-#if NRF52811
+#if NRF52811_XXAA
   #define APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE 1024
 #else
   #define APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE 16384
@@ -150,8 +150,14 @@
  * Queue must be long enough to handle extended GATT connection events
  * pushing tasks to queues.
  */
+
 #define APPLICATION_TASK_DATA_MAX_SIZE    32   
-#define APPLICATION_TASK_QUEUE_MAX_LENGTH 20
+#if NRF52811
+  // Shorter queue is safe if there's no long GATT events
+  #define APPLICATION_TASK_QUEUE_MAX_LENGTH 5
+#else
+  #define APPLICATION_TASK_QUEUE_MAX_LENGTH 20
+#endif
 
 /**
  * Flags which determine which c-modules are compiled in.
@@ -204,7 +210,11 @@
 /** @brief Bytes of RAM to conserve for printed log messages
  *  Pick a power of 2 for nRF5 backend. at least 128 is recommended.
  */
-#define APPLICATION_LOG_BUFFER_SIZE                 256
+#if NRF52811_XXAA
+  #define APPLICATION_LOG_BUFFER_SIZE                128
+#else
+  #define APPLICATION_LOG_BUFFER_SIZE                256
+#endif 
 
 // Choose one. RTT is recommended, but does not work on devices
 // with readback protection enabled
