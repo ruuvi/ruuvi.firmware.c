@@ -390,7 +390,7 @@ static ruuvi_driver_status_t initialize_lis2dh12(void)
 
 static void execute_log(void* event, uint16_t event_size)
 {
-  static uint8_t tick_count = 0;
+  static uint32_t tick_count = 0;
   if(!tick_count++)
   {
     task_environmental_log();
