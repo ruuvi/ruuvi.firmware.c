@@ -193,7 +193,7 @@
  * Timer intervals
  *************************************/
 /**
- * @brief interval at which environmental data is logged to tag. 
+ * @brief interval at which environmental data is logged.
  * As of 3.26.0 environmental data has 2^14 bytes of space which can fit
  * 1024 environmental samples. 6s interval -> 10 minutes.
  * 60 s interval -> 17 hours
@@ -202,6 +202,15 @@
 #ifndef APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS
 #define APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS (5*60*1000)
 #endif
+
+/**
+ * @brief interval at which the environmental data is updated to application for checking alerts etc.
+ */
+#ifndef APPLICATION_ENVIRONMENTAL_TICK_MS
+#define APPLICATION_ENVIRONMENTAL_TICK_MS (1000)
+#endif
+
+#define APPLICATION_ENVIRONMENTAL_TICKS_PER_LOG (APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS/APPLICATION_ENVIRONMENTAL_TICK_MS)
 
 #ifndef APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS
 #define APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS  APPLICATION_ADVERTISING_INTERVAL_MS

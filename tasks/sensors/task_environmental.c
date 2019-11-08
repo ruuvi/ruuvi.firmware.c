@@ -390,7 +390,12 @@ static ruuvi_driver_status_t initialize_lis2dh12(void)
 
 static void execute_log(void* event, uint16_t event_size)
 {
-  task_environmental_log();
+  static uint8_t tick_count = 0;
+  if(!tick_count++)
+  {
+    task_environmental_log();
+  }
+  tick_count = (APPLICATION_ENVIRONMENTAL_TICKS_PER_LOG <= tick_count) ? 0 : tick_count;
 }
 
 static void schedule_log(void* p_context)
@@ -423,7 +428,9 @@ ruuvi_driver_status_t task_environmental_init(void)
     ruuvi_interface_timer_create(&m_log_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED, schedule_log);
   }
 
-  ruuvi_interface_timer_start(m_log_timer, APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS);
+  ruuvi_interface_timer_start(m_log_timer, APPLICATION_ENVIRONMENTAL_TICK_MS);
+  // Log environmental conditions at start
+  ruuvi_interface_scheduler_event_put(NULL, 0, execute_log);
   return (NULL == m_active_sensor) ? RUUVI_DRIVER_ERROR_NOT_FOUND : RUUVI_DRIVER_SUCCESS;
 }
 
