@@ -147,8 +147,6 @@
     <folder Name="nRF_BLE_Services">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_nus/ble_nus.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dis/ble_dis.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dfu/ble_dfu.c" />
     </folder>
     <folder Name="nRF_NFC">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
@@ -386,8 +384,6 @@
     <folder Name="nRF_BLE_Services">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_nus/ble_nus.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dis/ble_dis.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dfu/ble_dfu.c" />
     </folder>
     <folder Name="nRF_NFC">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
@@ -624,8 +620,6 @@
     <folder Name="nRF_BLE_Services">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_nus/ble_nus.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dis/ble_dis.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dfu/ble_dfu_unbonded.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dfu/ble_dfu.c" />
     </folder>
     <folder Name="nRF_NFC">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
