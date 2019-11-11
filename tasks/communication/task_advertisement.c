@@ -27,6 +27,7 @@
 
 static ruuvi_interface_timer_id_t advertisement_timer;
 static ruuvi_interface_communication_t channel;
+static uint64_t m_advertisement_startup;
 
 // Populate advertisement buffer with initial data
 static ruuvi_driver_status_t advertisement_data_init(void)
@@ -71,8 +72,11 @@ void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   // Slow down advertisement after startup
+  if(task_rtc_millis() > (APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS + m_advertisement_startup))
+  {
   err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(
               APPLICATION_ADVERTISING_INTERVAL_MS);
+  }
   if(ruuvi_interface_communication_ble4_advertising_ongoing())
   {
     err_code |= ruuvi_interface_communication_ble4_advertising_stop();
@@ -101,8 +105,6 @@ ruuvi_driver_status_t task_advertisement_init(void)
   err_code |= ruuvi_interface_communication_ble4_advertising_tx_power_set(&target_power);
   err_code |= ruuvi_interface_communication_ble4_advertising_manufacturer_id_set(
                 RUUVI_BOARD_BLE_MANUFACTURER_ID);
-  err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(
-                APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS);
   err_code |= ruuvi_interface_timer_create(&advertisement_timer,
               RUUVI_INTERFACE_TIMER_MODE_SINGLE_SHOT, task_advertisement_timer_cb);
   err_code |= advertisement_data_init();
@@ -118,6 +120,10 @@ ruuvi_driver_status_t task_advertisement_uninit(void)
 ruuvi_driver_status_t task_advertisement_start(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  m_advertisement_startup = task_rtc_millis();
+  err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(
+                APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS);
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |= ruuvi_interface_communication_ble4_advertising_start();
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |=  ruuvi_interface_timer_start(advertisement_timer, APPLICATION_ADVERTISING_STARTUP_PERIOD_MS);
