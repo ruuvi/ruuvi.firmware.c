@@ -241,7 +241,7 @@
  * and longer than advertisement update interval.
  */
 #ifndef APPLICATION_WATCHDOG_INTERVAL_MS
-#define APPLICATION_WATCHDOG_INTERVAL_MS (12*1000)
+#define APPLICATION_WATCHDOG_INTERVAL_MS (12*APPLICATION_GATT_HEARTBEAT_INTERVAL_MS)
 #endif
 
 #endif

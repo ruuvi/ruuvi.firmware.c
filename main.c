@@ -192,6 +192,8 @@ int main(void)
   init_logging();   // Initializes logging to user console
   run_mcu_tests();  // Runs tests which do not rely on MCU peripherals being initialized
   init_mcu();       // Initialize MCU peripherals, except for communication with users. 
+  // Delay one second to make sure timestamps are > 1 s after initialization
+  ruuvi_interface_delay_ms(1000);
 
   task_led_write(RUUVI_BOARD_LED_ACTIVITY, TASK_LED_ON); // Turn activity led on
   run_sensor_tests(); // Run tests which rely on MCU peripherals, for example sensor drivers
