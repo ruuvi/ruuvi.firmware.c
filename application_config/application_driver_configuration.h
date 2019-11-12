@@ -24,4 +24,7 @@
 /** @brief Enable compiling MCU built-in environmental functions */
 #define RUUVI_INTERFACE_ENVIRONMENTAL_MCU_ENABLED        APPLICATION_ENVIRONMENTAL_MCU_ENABLED
 
+/** @brief Enable compiling MCU built-in environmental functions */
+#define RUUVI_INTERFACE_ENVIRONMENTAL_TMP117_ENABLED     APPLICATION_ENVIRONMENTAL_TMP117_ENABLED
+
 #endif

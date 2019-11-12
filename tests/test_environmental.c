@@ -5,6 +5,7 @@
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_environmental_mcu.h"
+#include "ruuvi_interface_tmp117.h"
 #include "ruuvi_interface_log.h"
 #include "test_sensor.h"
 
@@ -68,6 +69,13 @@ ruuvi_driver_status_t test_environmental_run(void)
     err_code = test_run(ruuvi_interface_environmental_mcu_init, bus, handle);
     RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
   #endif
-  // Return error if usable environmental sensor was not found.
+
+  #if RUUVI_BOARD_ENVIRONMENTAL_TMP117_PRESENT
+    bus = RUUVI_DRIVER_BUS_I2C;
+    handle = RUUVI_BOARD_TMP117_I2C_ADDRESS;
+    err_code = test_run(ruuvi_interface_tmp117_init, bus, handle);
+    RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_SELFTEST);
+  #endif
+
   return err_code;
 }
