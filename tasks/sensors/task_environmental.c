@@ -7,11 +7,12 @@
 #include "ruuvi_interface_atomic.h"
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_lis2dh12.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_timer.h"
-#include "ruuvi_interface_environmental_mcu.h"
+#include "ruuvi_interface_tmp117.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_yield.h"
 #include "task_communication.h"
@@ -39,6 +40,9 @@ static ruuvi_interface_timer_id_t m_log_timer;               //!< Timer for logg
 // Define enum in order of default preference of sensor being used.
 // Default sensor can be overridden by calling a backend_set function.
 enum{
+#if APPLICATION_ENVIRONMENTAL_TMP117_ENABLED
+  ENV_TMP117_INDEX,
+#endif
 #if APPLICATION_ENVIRONMENTAL_SHTCX_ENABLED
   ENV_SHTCX_INDEX,
 #endif
@@ -388,6 +392,62 @@ static ruuvi_driver_status_t initialize_lis2dh12(void)
   #endif
 }
 
+/** @brief Try to initialize TMP117 as environmental sensor 
+ *
+ * Looks up appropriate pin definitions from ruuvi_boards.h
+ * Tries to load driver configuration from flash. If flash configuration is not available,
+ * uses application defaults from application_config.h.
+ *
+ * @return RUUVI_DRIVER_SUCCESS if TMP117 environmental is not enabled at compile time or if sensor is initialized.
+ * @return RUUVI_DRIVER_ERROR_NOT_FOUND if TMP117 environmental does not reply on bus but it's expected to be available
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if some other user has already initialized the driver.
+ */
+static ruuvi_driver_status_t initialize_tmp117(void)
+{
+  #if APPLICATION_ENVIRONMENTAL_TMP117_ENABLED
+  // Assume "Not found", gets set to "Success" if a usable sensor is present
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+  ruuvi_driver_bus_t bus = RUUVI_DRIVER_BUS_I2C;
+  uint8_t handle = RUUVI_BOARD_TMP117_I2C_ADDRESS;
+    // Initialize sensor.
+  err_code = ruuvi_interface_tmp117_init(&(m_environmental_sensors[ENV_TMP117_INDEX]),
+                                            bus, handle);
+  // return if failed.
+  if(RUUVI_DRIVER_SUCCESS != err_code) { return err_code; }
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  ruuvi_driver_sensor_configuration_t config;
+  err_code = task_flash_load(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                             APPLICATION_FLASH_ENVIRONMENTAL_TMP117_RECORD,
+                             &config,
+                             sizeof(config));
+  // If there is no stored configuration, use defaults.
+  if(RUUVI_DRIVER_SUCCESS != err_code)
+  {
+    LOG("LIS2DH12 temp config not found on flash, using defaults\r\n");
+    config.dsp_function  = APPLICATION_ENVIRONMENTAL_TMP117_DSP_FUNC;
+    config.dsp_parameter = APPLICATION_ENVIRONMENTAL_TMP117_DSP_PARAM;
+    config.mode          = APPLICATION_ENVIRONMENTAL_TMP117_MODE;
+    config.resolution    = APPLICATION_ENVIRONMENTAL_TMP117_RESOLUTION;
+    config.samplerate    = APPLICATION_ENVIRONMENTAL_TMP117_SAMPLERATE;
+    config.scale         = APPLICATION_ENVIRONMENTAL_TMP117_SCALE;
+    // Store defaults to flash
+    err_code = task_flash_store(APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                APPLICATION_FLASH_ENVIRONMENTAL_TMP117_RECORD,
+                                &config,
+                                sizeof(config));
+  }
+  // Check flash operation status, allow not supported in case we're on 811
+  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_ERROR_NOT_SUPPORTED);
+  // Wait for flash operation to finish
+  while(task_flash_busy());
+  // Configure sensor
+  return task_sensor_configure(&(m_environmental_sensors[ENV_TMP117_INDEX]), &config, "");
+  #else
+  return RUUVI_DRIVER_SUCCESS;
+  #endif
+}
+
 static void execute_log(void* event, uint16_t event_size)
 {
   static uint32_t tick_count = 0;
@@ -407,6 +467,7 @@ ruuvi_driver_status_t task_environmental_init(void)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   // Attempt to initialize all possible temperature backends.
+  err_code |= initialize_tmp117();
   err_code |= initialize_shtcx();
   err_code |= initialize_bme280();
   err_code |= initialize_ntc();
