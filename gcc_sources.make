@@ -109,6 +109,7 @@ COMMON_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration/ruuvi_interface_lis2dh12.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_shtcx.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental/ruuvi_interface_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio/ruuvi_interface_gpio_interrupt_test.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio/ruuvi_interface_gpio_test.c \
   $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c/ruuvi_interface_i2c_bme280.c \
