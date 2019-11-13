@@ -50,7 +50,7 @@ enum{
   ENV_BME280_INDEX,
 #endif
 #if APPLICATION_ENVIRONMENTAL_NTC_ENABLED
-  ENV_LIS2DH12_INDEX,
+  ENV_NTC_INDEX,
 #endif
 #if APPLICATION_ENVIRONMENTAL_MCU_ENABLED
   ENV_MCU_INDEX,
@@ -424,7 +424,7 @@ static ruuvi_driver_status_t initialize_tmp117(void)
   // If there is no stored configuration, use defaults.
   if(RUUVI_DRIVER_SUCCESS != err_code)
   {
-    LOG("LIS2DH12 temp config not found on flash, using defaults\r\n");
+    LOG("TMP117 config not found on flash, using defaults\r\n");
     config.dsp_function  = APPLICATION_ENVIRONMENTAL_TMP117_DSP_FUNC;
     config.dsp_parameter = APPLICATION_ENVIRONMENTAL_TMP117_DSP_PARAM;
     config.mode          = APPLICATION_ENVIRONMENTAL_TMP117_MODE;
@@ -442,7 +442,8 @@ static ruuvi_driver_status_t initialize_tmp117(void)
   // Wait for flash operation to finish
   while(task_flash_busy());
   // Configure sensor
-  return task_sensor_configure(&(m_environmental_sensors[ENV_TMP117_INDEX]), &config, "");
+  err_code |= task_sensor_configure(&(m_environmental_sensors[ENV_TMP117_INDEX]), &config, "");
+  return err_code;
   #else
   return RUUVI_DRIVER_SUCCESS;
   #endif
