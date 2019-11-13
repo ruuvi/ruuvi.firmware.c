@@ -35,6 +35,15 @@ ruuvi_driver_status_t task_advertisement_init(void);
 ruuvi_driver_status_t task_advertisement_uninit(void);
 
 /**
+ * Populate advertisement buffer with initial data.
+ *
+ * returns RUUVI_DRIVER_SUCCESS on success
+ * returns error code from stack on error
+ *
+ */
+ruuvi_driver_status_t advertisement_data_init(void);
+
+/**
  * Starts advertising. Reads sensors for latest data, but does not initialize sensors themselves
  *
  * returns RUUVI_DRIVER_SUCCESS on success
