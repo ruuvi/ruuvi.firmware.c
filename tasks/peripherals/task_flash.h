@@ -20,8 +20,8 @@
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2019-10-11
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- * 
- * Store and load data to/from persistent storage. 
+ *
+ * Store and load data to/from persistent storage.
  * Typical usage:
  *
  * @code{.c}
@@ -56,7 +56,7 @@
  *
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return error code from stack on error
- * @warning Erases entire flash storage and reboots on failure. 
+ * @warning Erases entire flash storage and reboots on failure.
  */
 ruuvi_driver_status_t task_flash_init(void);
 
@@ -70,8 +70,8 @@ ruuvi_driver_status_t task_flash_init(void);
  *
  * @param[in] file_id ID of a file to store. Valid range 1 ... 0xBFFF
  * @param[in] record_id ID of a record to store. Valid range 1 ... 0x
- * @param[in] message Data to store. Must be aligned to a 4-byte boundary. 
- * @param[in] message_length Length of stored data. Maximum 4000 bytes per record on nRF52. 
+ * @param[in] message Data to store. Must be aligned to a 4-byte boundary.
+ * @param[in] message_length Length of stored data. Maximum 4000 bytes per record on nRF52.
  *
  * @return RUUVI_DRIVER_SUCCESS on success.
  * @return RUUVI_DRIVER_ERROR_NULL if data pointer is NULL.
@@ -80,7 +80,7 @@ ruuvi_driver_status_t task_flash_init(void);
  * @return RUUVI_DRIVER_ERROR_NO_MEM if there was no space for the record in flash.
  * @return RUUVI_DRIVER_ERROR_DATA_SIZE if record exceeds maximum size.
  *
- * @warning triggers garbage collection if there is no space available, which leads to long processing time. 
+ * @warning triggers garbage collection if there is no space available, which leads to long processing time.
  */
 ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t record_id,
                                        const void* const message, const size_t message_length);
@@ -93,8 +93,8 @@ ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t re
  *
  * @param[in] file_id ID of a file to load. Valid range 1 ... 0xBFFF
  * @param[in] record_id ID of a record to load. Valid range 1 ... 0x
- * @param[in] message Data to load. Must be aligned to a 4-byte boundary. 
- * @param[in] message_length Length of loaded data. Maximum 4000 bytes per record on nRF52. 
+ * @param[in] message Data to load. Must be aligned to a 4-byte boundary.
+ * @param[in] message_length Length of loaded data. Maximum 4000 bytes per record on nRF52.
  *
  * @return RUUVI_DRIVER_SUCCESS on success.
  * @return RUUVI_DRIVER_ERROR_NULL if data pointer is NULL.
@@ -103,7 +103,7 @@ ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t re
  * @return RUUVI_DRIVER_ERROR_NOT_FOUND if given record was not found.
  * @return RUUVI_DRIVER_ERROR_DATA_SIZE if record exceeds maximum size.
  *
- * @warning triggers garbage collection if there is no space available, which leads to long processing time. 
+ * @warning triggers garbage collection if there is no space available, which leads to long processing time.
  */
 ruuvi_driver_status_t task_flash_load(const uint16_t file_id, const uint16_t record_id,
                                       void* const message, const size_t message_length);
@@ -124,7 +124,7 @@ ruuvi_driver_status_t task_flash_load(const uint16_t file_id, const uint16_t rec
  * @return RUUVI_DRIVER_ERROR_BUSY if another operation was ongoing.
  * @return RUUVI_DRIVER_ERROR_NOT_FOUND if given record was not found.
  *
- * @warning triggers garbage collection if there is no space available, which leads to long processing time. 
+ * @warning triggers garbage collection if there is no space available, which leads to long processing time.
  */
 ruuvi_driver_status_t task_flash_free(const uint16_t file_id, const uint16_t record_id);
 
@@ -132,8 +132,8 @@ ruuvi_driver_status_t task_flash_free(const uint16_t file_id, const uint16_t rec
  * @brief Trigger garbage collection
  *
  * Free up space in flash by erasing old records. It's generally a good idea to check remaining
- * space on flash after a write and trigger GC if the space remaining is smaller than expected record sizes. 
- * This function physically erases the records which are garbage collected. 
+ * space on flash after a write and trigger GC if the space remaining is smaller than expected record sizes.
+ * This function physically erases the records which are garbage collected.
  * Waits until GC can be triggered, and returns when GC operation has been queued.
  *
  *

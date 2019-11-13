@@ -40,7 +40,8 @@ ruuvi_driver_status_t task_led_write(const uint16_t led, const task_led_state_t 
 
 void task_led_activity_indicate(const bool active)
 {
-  const task_led_state_t state = (active) ? RUUVI_BOARD_LEDS_ACTIVE_STATE : !RUUVI_BOARD_LEDS_ACTIVE_STATE;
+  const task_led_state_t state = (active) ? RUUVI_BOARD_LEDS_ACTIVE_STATE :
+                                 !RUUVI_BOARD_LEDS_ACTIVE_STATE;
   task_led_write(m_activity_led, state);
 }
 
@@ -51,6 +52,7 @@ void task_led_activity_led_set(uint16_t led)
   ruuvi_interface_gpio_id_t const leds[] = RUUVI_BOARD_LEDS_LIST;
 #pragma GCC diagnostic pop
   m_activity_led = RUUVI_INTERFACE_GPIO_ID_UNUSED;
+
   for(size_t ii = 0; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
   {
     if(leds[ii].pin == led)

@@ -19,10 +19,10 @@
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2019-10-11
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- * 
+ *
  * I2C control.
- * 
- * The Ruuvi drivers will take care of the I2C traffic, but the bus has to be initialized. 
+ *
+ * The Ruuvi drivers will take care of the I2C traffic, but the bus has to be initialized.
  * Typical usage:
  *
  * @code{.c}

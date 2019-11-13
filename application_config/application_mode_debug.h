@@ -1,6 +1,6 @@
 /**
  * Debug and test mode for Ruuvi Firmawre
- * Broadcasts at 5 Hz interval and logs at 6 s interval. 
+ * Broadcasts at 5 Hz interval and logs at 6 s interval.
  *
  * License: BSD-3
  * Author: Otso Jousimaa <otso@ojousima.net>

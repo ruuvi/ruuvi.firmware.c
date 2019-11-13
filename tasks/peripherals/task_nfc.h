@@ -19,9 +19,9 @@
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2019-10-11
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- * 
+ *
  * @brief NFC control.
- * 
+ *
  * Typical usage:
  *
  * @code{.c}

@@ -9,7 +9,7 @@
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2019-10-11
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- * 
+ *
  * Helper functions common to all sensors
  *
  */
@@ -26,9 +26,9 @@
  * @return RUUVI_DRIVER_ERROR_NULL if sensor or config is NULL.
  * @return error code from sensor on other error.
  */
-ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor, 
-                                            ruuvi_driver_sensor_configuration_t* const config, 
-                                            const char* const unit);
+ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
+    ruuvi_driver_sensor_configuration_t* const config,
+    const char* const unit);
 
 /**
  * @brief Read sensors and encode to given buffer in Ruuvi DF5.
@@ -39,14 +39,15 @@ ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
 ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer);
 
 /**
- * @brief Search for requested sensor backend in given list of sensors. 
+ * @brief Search for requested sensor backend in given list of sensors.
  *
  * @param[in] sensor_list array of sensor to search the backend from.
  * @param[in] name NULL-terminated, max 9-byte (including trailing NULL) string representation of sensor.
  * @return pointer to requested sensor if found
  * @return NULL if requested sensor was not found
  */
-ruuvi_driver_sensor_t* task_sensor_find_backend(ruuvi_driver_sensor_t* const sensor_list, const size_t count, const char* const name);
+ruuvi_driver_sensor_t* task_sensor_find_backend(ruuvi_driver_sensor_t* const sensor_list,
+    const size_t count, const char* const name);
 
 /*@}*/
 #endif

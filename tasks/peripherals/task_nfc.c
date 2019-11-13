@@ -95,6 +95,7 @@ void task_acceleration_scheduler_task(void* p_event_data, uint16_t event_size)
     snprintf(str, sizeof(str), "%s\r\n", (char*)message.data);
     ruuvi_interface_log(RUUVI_INTERFACE_LOG_INFO, str);
   } while(RUUVI_DRIVER_SUCCESS == err_code
+
           || RUUVI_DRIVER_STATUS_MORE_AVAILABLE == err_code);
 }
 

@@ -23,16 +23,21 @@
 typedef void (*task_api_data_fp_t)(uint8_t* const bytes);
 
 /** @brief Function pointer to send data to once available, for example send to RAM buffer */
-typedef ruuvi_driver_status_t (*task_api_data_target_t)(const ruuvi_driver_sensor_data_t* const data, const uint8_t source);
+typedef ruuvi_driver_status_t (*task_api_data_target_t)(const ruuvi_driver_sensor_data_t*
+    const data, const uint8_t source);
 
 /** @brief Function to configure logging. */
-typedef ruuvi_driver_status_t (*task_api_log_cfg_t)(const task_api_data_target_t target, const uint8_t interval);
+typedef ruuvi_driver_status_t (*task_api_log_cfg_t)(const task_api_data_target_t target,
+    const uint8_t interval);
 
 /** @brief Function to read logs. */
-typedef ruuvi_driver_status_t (*task_api_log_read_t)(const ruuvi_interface_communication_xfer_fp_t reply_fp, const ruuvi_interface_communication_message_t* const query);
+typedef ruuvi_driver_status_t (*task_api_log_read_t)(const
+    ruuvi_interface_communication_xfer_fp_t reply_fp,
+    const ruuvi_interface_communication_message_t* const query);
 
 /** @brief API to control sensors. */
-typedef struct task_communication_api_t {
+typedef struct task_communication_api_t
+{
   ruuvi_driver_sensor_t** sensor;      //!< Sensor control functions, NULL if not applicable
   task_api_data_fp_t      offset_set;  //!< Function to setup offset
   task_api_data_fp_t      offset_get;  //!< Function to read offset
@@ -40,19 +45,20 @@ typedef struct task_communication_api_t {
   task_api_data_target_t  data_target; //!< Function to send data to.
   task_api_log_cfg_t      log_cfg;     //!< Function to configure logging
   task_api_log_read_t     log_read;    //!< Function to read logs
-}task_communication_api_t;
+} task_communication_api_t;
 
-/** @brief handle incoming data and prepare a reply 
- * 
- *  This function passes incoming data to relevant listener(s) and provides a function through which 
+/** @brief handle incoming data and prepare a reply
+ *
+ *  This function passes incoming data to relevant listener(s) and provides a function through which
  *  acknowledgment can be sent back.
  *
  * @param[in] incoming received data
  * @param[in] reply_fp function pointer to which acknowledgment should be sent, reply_fp(acknowledge)
  * @return RUUVI_DRIVER_SUCCESS on success
  */
-ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communication_message_t* const incoming, 
-                                                 ruuvi_interface_communication_xfer_fp_t reply_fp);
+ruuvi_driver_status_t task_communication_on_data(const
+    ruuvi_interface_communication_message_t* const incoming,
+    ruuvi_interface_communication_xfer_fp_t reply_fp);
 
 /** @brief convert uint8_t array into ruuvi_driver_sensor_data_t
  *  Offsets are encoded as a timestamp offset uint16_t in ms
@@ -65,7 +71,8 @@ ruuvi_driver_status_t task_communication_on_data(const ruuvi_interface_communica
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return RUUVI_DRIVER_ERROR_NULL if given a NULL parameter
  */
-ruuvi_driver_status_t task_communication_offsets_u8_to_float(const uint8_t* const offsets, ruuvi_driver_sensor_data_t* const converted);
+ruuvi_driver_status_t task_communication_offsets_u8_to_float(const uint8_t* const offsets,
+    ruuvi_driver_sensor_data_t* const converted);
 
 /** @brief convert ruuvi_driver_sensor_data_t array into  uint8_t
  *  Offsets are encoded as a timestamp offset uint16_t in ms
@@ -79,7 +86,8 @@ ruuvi_driver_status_t task_communication_offsets_u8_to_float(const uint8_t* cons
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return RUUVI_DRIVER_ERROR_NULL if given a NULL parameter
  */
-ruuvi_driver_status_t task_communication_offsets_float_to_u8(const ruuvi_driver_sensor_data_t* const offsets, uint8_t* const converted);
+ruuvi_driver_status_t task_communication_offsets_float_to_u8(const
+    ruuvi_driver_sensor_data_t* const offsets, uint8_t* const converted);
 
 /** @brief convert fixed point 32.32 into a float
  *  0xFFFFFFFFFFFFFFFF is considered as INVALID/NAN
@@ -91,10 +99,11 @@ ruuvi_driver_status_t task_communication_offsets_float_to_u8(const ruuvi_driver_
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return RUUVI_DRIVER_ERROR_NULL if given a NULL parameter
  */
-ruuvi_driver_status_t task_communication_offsets_i32f32_to_float(const uint8_t* const offset, float* const converted);
+ruuvi_driver_status_t task_communication_offsets_i32f32_to_float(
+  const uint8_t* const offset, float* const converted);
 
 /** @brief convert a float into fixed a point 32.32.
- *  INVALID/NAN is considered as 0xFFFFFFFFFFFFFFFF 
+ *  INVALID/NAN is considered as 0xFFFFFFFFFFFFFFFF
  *  I32 is interpreted as -2147483648 ... 2147483648 (MSB) + 1/2147483648 * (LSB),
  *  e.g. -1.5 = -1 - 0.5 = 0xFF FF FF FF C0 00 00 00.
  *  Value is clipped to max/min if the float is larger than presentable with I32.32
@@ -104,7 +113,8 @@ ruuvi_driver_status_t task_communication_offsets_i32f32_to_float(const uint8_t* 
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return RUUVI_DRIVER_ERROR_NULL if given a NULL parameter
  */
-ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(const float* const offset, uint8_t* const converted);
+ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(
+  const float* const offset, uint8_t* const converted);
 
 /**
  * @brief Apply offsets to the data by summing the offset.
@@ -113,24 +123,26 @@ ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(const float* co
  * @param[in,out] data sensor readings
  * @param[in]     offsets offsets to data. 0, NAN will be ignored.
  */
-void task_communication_offsets_apply(ruuvi_driver_sensor_data_t* const data, const ruuvi_driver_sensor_data_t* const offsets);
+void task_communication_offsets_apply(ruuvi_driver_sensor_data_t* const data,
+                                      const ruuvi_driver_sensor_data_t* const offsets);
 
-/** 
- * @brief Start sending a "hearbeat" signal over given channel to a connected device. 
- * 
+/**
+ * @brief Start sending a "hearbeat" signal over given channel to a connected device.
+ *
  * Heartbeat is data format 5 encoded status. If the data format 5 payload doesn't fit into given max length,
  * data is cropped to maximum transmittable size. New heartbeat can be configured over old one without stopping.
  *
  * @param[in] interval_ms interval to send the data, in milliseconds. Set to 0 to stop the heartbeat
- * @param[in] max_len Maximum length of data to send. 
- * @param[in] send function pointer to send the data through. May be NULL if interval is 0. 
+ * @param[in] max_len Maximum length of data to send.
+ * @param[in] send function pointer to send the data through. May be NULL if interval is 0.
  *
  * @return RUUVI_DRIVER_SUCCESS if heartbeat was initialized (or stopped)
- * @return RUUVI_DRIVER_ERROR_INVALID_STATE if timer cannot be initialized. 
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if timer cannot be initialized.
  * @return RUUVI_DRIVER_ERROR_NULL if interval wasn't 0 and send is NULL
  * @return error code from stack on other error.
  *
  */
-ruuvi_driver_status_t task_communication_heartbeat_configure(const uint32_t interval_ms, const size_t max_len, const ruuvi_interface_communication_xfer_fp_t send);
+ruuvi_driver_status_t task_communication_heartbeat_configure(const uint32_t interval_ms,
+    const size_t max_len, const ruuvi_interface_communication_xfer_fp_t send);
 
 #endif

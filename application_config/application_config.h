@@ -10,7 +10,7 @@
 #include "application_modes.h" // Includes different modes, such as long-life with low sampling rate and tx rate.
 #include "ruuvi_boards.h"      // Includes information such as number of buttons and leds onboard
 
-/** 
+/**
  * @brief Version string, displayed in NFC read and GATT data on DIS.
  * The actual version shall be based on Git tag / commit and passed from makefile while compiling packages for distribution.
 **/
@@ -151,7 +151,7 @@
  * pushing tasks to queues.
  */
 
-#define APPLICATION_TASK_DATA_MAX_SIZE    32   
+#define APPLICATION_TASK_DATA_MAX_SIZE    32
 #if NRF52811
   // Shorter queue is safe if there's no long GATT events
   #define APPLICATION_TASK_QUEUE_MAX_LENGTH 5
@@ -172,9 +172,9 @@
 #define APPLICATION_COMMUNICATION_ENABLED             1 // Common functions for communication
 #define APPLICATION_COMMUNICATION_ADVERTISING_ENABLED 1 // BLE Advertising
 #if NRF52811_XXAA
-#define APPLICATION_COMMUNICATION_GATT_ENABLED        0 // BLE GATT, requiresh Flash and advertising
+  #define APPLICATION_COMMUNICATION_GATT_ENABLED        0 // BLE GATT, requiresh Flash and advertising
 #else
-#define APPLICATION_COMMUNICATION_GATT_ENABLED        1 // BLE GATT, requiresh Flash and advertising
+  #define APPLICATION_COMMUNICATION_GATT_ENABLED        1 // BLE GATT, requiresh Flash and advertising
 #endif
 #define APPLICATION_COMMUNICATION_NFC_ENABLED         RUUVI_BOARD_NFC_INTERNAL_INSTALLED
 #define APPLICATION_GPIO_ENABLED                      1
@@ -202,9 +202,9 @@
 
 
 #if DEBUG
-#define APPLICATION_LOG_ENABLED                     1
-#else 
-#define APPLICATION_LOG_ENABLED                     0
+  #define APPLICATION_LOG_ENABLED                     1
+#else
+  #define APPLICATION_LOG_ENABLED                     0
 #endif
 // RUUVI_INTERFACE_LOG_ ERROR, WARNING, INFO, DEBUG
 #define APPLICATION_LOG_LEVEL                       RUUVI_INTERFACE_LOG_INFO
@@ -215,7 +215,7 @@
   #define APPLICATION_LOG_BUFFER_SIZE                128
 #else
   #define APPLICATION_LOG_BUFFER_SIZE                256
-#endif 
+#endif
 
 // Choose one. RTT is recommended, but does not work on devices
 // with readback protection enabled
@@ -223,9 +223,9 @@
 //#define APPLICATION_LOG_BACKEND_UART_ENABLED      0 // UART not implemented
 
 #if NRF52811_XXAA
-#define APPLICATION_FLASH_ENABLED                       0
+  #define APPLICATION_FLASH_ENABLED                       0
 #else
-#define APPLICATION_FLASH_ENABLED                       1
+  #define APPLICATION_FLASH_ENABLED                       1
 #endif
 #define APPLICATION_FLASH_DATA_PAGES_NUMBER             RUUVI_BOARD_APP_PAGES
 #define APPLICATION_FLASH_ENVIRONMENTAL_FILE            0xFE

@@ -38,7 +38,8 @@ ruuvi_driver_status_t advertisement_data_init(void)
   err_code |= task_sensor_encode_to_5((uint8_t*)&msg.data);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
   msg.data_length = sizeof(msg.data);
-  err_code |= ruuvi_interface_communication_ble4_advertising_data_set(msg.data, msg.data_length);
+  err_code |= ruuvi_interface_communication_ble4_advertising_data_set(msg.data,
+              msg.data_length);
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
   return err_code;
 }
@@ -47,12 +48,15 @@ ruuvi_driver_status_t advertisement_data_init(void)
 void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
   // Slow down advertisement after startup
-  if(task_rtc_millis() > (APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS + m_advertisement_startup))
+  if(task_rtc_millis() > (APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS +
+                          m_advertisement_startup))
   {
-  err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(
-              APPLICATION_ADVERTISING_INTERVAL_MS);
+    err_code |= ruuvi_interface_communication_ble4_advertising_tx_interval_set(
+                  APPLICATION_ADVERTISING_INTERVAL_MS);
   }
+
   if(ruuvi_interface_communication_ble4_advertising_ongoing())
   {
     err_code |= ruuvi_interface_communication_ble4_advertising_stop();
@@ -60,8 +64,9 @@ void task_advertisement_scheduler_task(void* p_event_data, uint16_t event_size)
   }
 
   if(RUUVI_DRIVER_SUCCESS != err_code)
-  { 
-    err_code |=  ruuvi_interface_timer_start(advertisement_timer, APPLICATION_ADVERTISING_STARTUP_PERIOD_MS);
+  {
+    err_code |=  ruuvi_interface_timer_start(advertisement_timer,
+                 APPLICATION_ADVERTISING_STARTUP_PERIOD_MS);
   }
 
   RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
@@ -105,11 +110,13 @@ ruuvi_driver_status_t task_advertisement_start(void)
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
   err_code |= ruuvi_interface_communication_ble4_advertising_start();
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
-  err_code |=  ruuvi_interface_timer_start(advertisement_timer, APPLICATION_ADVERTISING_STARTUP_PERIOD_MS);
+  err_code |=  ruuvi_interface_timer_start(advertisement_timer,
+               APPLICATION_ADVERTISING_STARTUP_PERIOD_MS);
   RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS);
-  err_code |=  task_communication_heartbeat_configure(APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS, 
-                                                      RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH, 
-                                                      channel.send);
+  err_code |=  task_communication_heartbeat_configure(
+                 APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
+                 RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
+                 channel.send);
   return err_code;
 }
 
@@ -122,9 +129,12 @@ ruuvi_driver_status_t task_advertisement_stop(void)
   return RUUVI_DRIVER_SUCCESS;
 }
 
-ruuvi_driver_status_t task_advertisement_send_data(ruuvi_interface_communication_message_t* const msg)
+ruuvi_driver_status_t task_advertisement_send_data(
+  ruuvi_interface_communication_message_t* const msg)
 {
   if(NULL == msg) { return RUUVI_DRIVER_ERROR_NULL; }
+
   if(NULL == channel.send) { return RUUVI_DRIVER_ERROR_INVALID_STATE; }
+
   return channel.send(msg);
 }

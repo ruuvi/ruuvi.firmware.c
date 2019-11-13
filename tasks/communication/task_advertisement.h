@@ -61,20 +61,21 @@ ruuvi_driver_status_t task_advertisement_start(void);
  */
 ruuvi_driver_status_t task_advertisement_stop(void);
 
-/** @brief Send given message as a BLE advertisement. 
+/** @brief Send given message as a BLE advertisement.
  *
  *  This function configures the primary advertisement packet with the flags and manufacturer specific data.
- *  Payload of the msg will be sent as the manufacturer specific data payload. 
- *  Manufacturer ID is defined by RUUVI_BOARD_BLE_MANUFACTURER_ID in ruuvi_board.h. 
+ *  Payload of the msg will be sent as the manufacturer specific data payload.
+ *  Manufacturer ID is defined by RUUVI_BOARD_BLE_MANUFACTURER_ID in ruuvi_board.h.
  *
- *  If the device is connectable, call @ref task_gatt_init to setup the scan response and flags to advertise 
- *  connectability. 
+ *  If the device is connectable, call @ref task_gatt_init to setup the scan response and flags to advertise
+ *  connectability.
  *
  *  @param[in] msg message to be sent as manufacturer specific data payload
  *  @return    RUUVI_DRIVER_ERROR_NULL if msg is NULL
- *  @return    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started. 
+ *  @return    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started.
  *  @return    error code from stack on other error.
- */ 
-ruuvi_driver_status_t task_advertisement_send_data(ruuvi_interface_communication_message_t* const msg);
+ */
+ruuvi_driver_status_t task_advertisement_send_data(
+  ruuvi_interface_communication_message_t* const msg);
 
 #endif

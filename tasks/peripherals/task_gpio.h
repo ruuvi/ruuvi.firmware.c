@@ -20,13 +20,13 @@
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2019-10-11
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- * 
+ *
  * GPIO control.
  */
 #include "ruuvi_driver_error.h"
 
-/** 
- * @brief initialise GPIO. Pins are in high-Z state by default. 
+/**
+ * @brief initialise GPIO. Pins are in high-Z state by default.
  *
  * @return RUUVI_DRIVER_SUCCESS
  */

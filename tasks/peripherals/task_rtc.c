@@ -9,7 +9,8 @@
 #include <stdio.h>
 #include <inttypes.h>
 
-static task_communication_api_t rtc_api = {
+static task_communication_api_t rtc_api =
+{
   .sensor      = NULL,
   .offset_set  = task_rtc_comapi_offset_get,
   .offset_get  = task_rtc_comapi_offset_get,
@@ -32,7 +33,8 @@ ruuvi_driver_status_t task_rtc_init(void)
   return ruuvi_interface_rtc_init();
 }
 
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target, const uint8_t interval)
+ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target,
+    const uint8_t interval)
 {
   return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
 }
@@ -40,6 +42,7 @@ ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t ta
 ruuvi_driver_status_t task_rtc_millis_offset_set(const int64_t _offset)
 {
   uint64_t time = ruuvi_interface_rtc_millis();
+
   if(0 > time + offset) { return RUUVI_DRIVER_ERROR_INVALID_PARAM; }
 
   offset = _offset;
@@ -54,6 +57,7 @@ int64_t task_rtc_millis_offset_get()
 void task_rtc_comapi_offset_get(uint8_t* const bytes)
 {
   if(NULL == bytes) { return; }
+
   bytes[0]  = offset >> 56;
   bytes[1]  = offset >> 48;
   bytes[2]  = offset >> 40;
@@ -67,6 +71,7 @@ void task_rtc_comapi_offset_get(uint8_t* const bytes)
 void task_rtc_comapi_offset_set(uint8_t* const bytes)
 {
   if(NULL == bytes) { return; }
+
   offset = ((uint64_t) bytes[0]  << 56) +
            ((uint64_t) bytes[1]  << 48) +
            ((uint64_t) bytes[2]  << 40) +
@@ -80,6 +85,7 @@ void task_rtc_comapi_offset_set(uint8_t* const bytes)
 void task_rtc_comapi_data_get(uint8_t* const bytes)
 {
   if(NULL == bytes) { return; }
+
   uint64_t millis = task_rtc_millis();
   bytes[0]  = millis >> 56;
   bytes[1]  = millis >> 48;
@@ -94,6 +100,7 @@ void task_rtc_comapi_data_get(uint8_t* const bytes)
 ruuvi_driver_status_t task_rtc_api_get(task_communication_api_t** api)
 {
   if(NULL == api) { return RUUVI_DRIVER_ERROR_NULL;}
+
   *api = &rtc_api;
   return RUUVI_DRIVER_SUCCESS;
 }

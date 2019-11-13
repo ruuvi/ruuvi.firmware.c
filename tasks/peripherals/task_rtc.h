@@ -24,14 +24,15 @@ ruuvi_driver_status_t task_rtc_init(void);
  * @brief Configure logging of sensor data
  *
  * This function configures how sensor data should be logged. The logging target can be
- * real-time, such as GATT or B LE advertisement or something more persistent, such as 
+ * real-time, such as GATT or B LE advertisement or something more persistent, such as
  * RAM or FLASH buffer.
  *
- * @param[in] target Target logging backend(s) 
+ * @param[in] target Target logging backend(s)
  * @param[in] interval Logging interval, format TBD
  * @return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED
  */
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target, const uint8_t interval);
+ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target,
+    const uint8_t interval);
 
 /**
  * @brief set offset to system clock
@@ -42,7 +43,7 @@ ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t ta
  *
  * This function is useful for synchronizing the clock with EPOCH, for example.
  *
- * @param[in] offset number of offset 
+ * @param[in] offset number of offset
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return RUUVI_DRIVER_ERROR_INVALID_PARAM if offset is larger negative value than current system time
  */
@@ -52,7 +53,7 @@ ruuvi_driver_status_t task_rtc_millis_offset_set(const int64_t offset);
  * @brief get offset to system clock
  *
  * Values returned by @ref ruuvi_interface_rtc_millis are offset by this amount, which
- * can be positive or negative. 
+ * can be positive or negative.
  *
  * This function is useful for synchronizing the clock with EPOCH, for example.
  *
@@ -86,21 +87,22 @@ void task_rtc_comapi_offset_get(uint8_t* const bytes);
 /**
  * @brief wrapper to write current RTC value to given pointer.
  *
- * @param[in] bytes 8 bytes representing milliseconds since rtc_init. 
+ * @param[in] bytes 8 bytes representing milliseconds since rtc_init.
  */
 void task_rtc_comapi_data_get(uint8_t* const bytes);
 
 /**
- * @brief Get API function pointers from sensor. 
+ * @brief Get API function pointers from sensor.
  *
- * @param[out] api pointer to a pointer to a struct of sensor api functions. 
+ * @param[out] api pointer to a pointer to a struct of sensor api functions.
  * @return @c RUUVI_DRIVER_SUCCESS if sensor API functions could be set up
  * @return @c RUUVI_DRIVER_ERROR_NULL if given pointer to api was null
  * @return @c RUUVI_DRIVER_ERROR_INVALID_STATE if sensor was not initialized
  */
 ruuvi_driver_status_t task_rtc_api_get(task_communication_api_t** api);
 
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target, const uint8_t interval);
+ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target,
+    const uint8_t interval);
 
 
 #endif

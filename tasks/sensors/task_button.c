@@ -29,12 +29,10 @@ ruuvi_driver_status_t task_button_init(ruuvi_interface_gpio_slope_t slope,
                                        task_button_fp_t action)
 {
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-
   button_callback = action;
   ruuvi_interface_gpio_id_t pin = {.pin = RUUVI_BOARD_BUTTON_1};
   err_code |= ruuvi_interface_gpio_interrupt_enable(pin, slope,
               RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP, on_button);
-
   return err_code;
 }
 

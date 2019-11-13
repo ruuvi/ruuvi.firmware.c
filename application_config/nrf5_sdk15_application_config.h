@@ -26,9 +26,9 @@
 // <i> - 1 TRIM  - Do not block, output as much as fits.
 // <i> - 2 BLOCK - Wait until there is space in the buffer.
 #if DEBUG
-#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+  #define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 #else
-#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+  #define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 #endif
 
 // Select one backend
@@ -49,7 +49,7 @@
 // Auto retry requires initialized timer/scheduler module
 #define NRF_PWR_MGMT_CONFIG_AUTO_SHUTDOWN_RETRY 0
 
-// Enable Hardware RTCs used by the application. 
+// Enable Hardware RTCs used by the application.
 // 0 Is reserved for the softdevice.
 // 1 is reserved for the application timer / scheduler
 #define RTC_ENABLED       APPLICATION_RTC_MCU_ENABLED
@@ -61,13 +61,13 @@
 #define APP_TIMER_ENABLED              APPLICATION_TIMER_ENABLED
 #define NRF_CLOCK_ENABLED              APP_TIMER_ENABLED
 #define APP_TIMER_CONFIG_USE_SCHEDULER 0 //!< Do not use scheduler, allow timer to interrupt.
-// <0=> 32768 Hz 
-// <1=> 16384 Hz 
-// <3=> 8192 Hz 
-// <7=> 4096 Hz 
-// <15=> 2048 Hz 
-// <31=> 1024 Hz 
-// App timer requires at least 5 ticks before firing, and our resolution is 1ms. 
+// <0=> 32768 Hz
+// <1=> 16384 Hz
+// <3=> 8192 Hz
+// <7=> 4096 Hz
+// <15=> 2048 Hz
+// <31=> 1024 Hz
+// App timer requires at least 5 ticks before firing, and our resolution is 1ms.
 // Pick 8 kHz. Faster timer results in smaller max values
 #define APP_TIMER_CONFIG_RTC_FREQUENCY 3
 #define APP_SCHEDULER_ENABLED          APPLICATION_SCHEDULER_ENABLED
@@ -79,54 +79,54 @@
 #define SAADC_ENABLED 1
 
 #if NRF52811_XXAA
-#define I2C_ENABLED                        APPLICATION_I2C_ENABLED
-/** nRF52811 supports I2C only on a instance shared with SPI1, known as I2C instance 0 */
-#define I2C_INSTANCE                       0
-#define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
-#define TWI_ENABLED                        I2C_ENABLED
-#define TWI0_ENABLED                       I2C_ENABLED
-#define TWI0_USE_EASY_DMA                  I2C_ENABLED
-#define NRFX_TWI_ENABLED                   I2C_ENABLED
-#define NRFX_TWIM_ENABLED                  I2C_ENABLED
-#define NRFX_TWIM_ENABLED                  I2C_ENABLED
-#define NRFX_TWIM1_ENABLED                 I2C_ENABLED
-#define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
+  #define I2C_ENABLED                        APPLICATION_I2C_ENABLED
+  /** nRF52811 supports I2C only on a instance shared with SPI1, known as I2C instance 0 */
+  #define I2C_INSTANCE                       0
+  #define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
+  #define TWI_ENABLED                        I2C_ENABLED
+  #define TWI0_ENABLED                       I2C_ENABLED
+  #define TWI0_USE_EASY_DMA                  I2C_ENABLED
+  #define NRFX_TWI_ENABLED                   I2C_ENABLED
+  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
+  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
+  #define NRFX_TWIM1_ENABLED                 I2C_ENABLED
+  #define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
 
-#define SPI_ENABLED                        APPLICATION_SPI_ENABLED
-#define SPI_INSTANCE                       0 //<! TWI0 shares SPI 1 instance on nRF52811. SPI Instance 0 is free.
-#define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
-#define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
-// <0=> NRF_GPIO_PIN_NOPULL
-// <1=> NRF_GPIO_PIN_PULLDOWN
-// <3=> NRF_GPIO_PIN_PULLUP
-#define NRF_SPI_DRV_MISO_PULLUP_CFG        0
-#define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
-#define SPI0_USE_EASY_DMA                  0
-#define NRFX_SPI0_ENABLED                  SPI_ENABLED
+  #define SPI_ENABLED                        APPLICATION_SPI_ENABLED
+  #define SPI_INSTANCE                       0 //<! TWI0 shares SPI 1 instance on nRF52811. SPI Instance 0 is free.
+  #define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
+  #define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
+  // <0=> NRF_GPIO_PIN_NOPULL
+  // <1=> NRF_GPIO_PIN_PULLDOWN
+  // <3=> NRF_GPIO_PIN_PULLUP
+  #define NRF_SPI_DRV_MISO_PULLUP_CFG        0
+  #define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
+  #define SPI0_USE_EASY_DMA                  0
+  #define NRFX_SPI0_ENABLED                  SPI_ENABLED
 #else
-#define I2C_ENABLED                        APPLICATION_I2C_ENABLED
-#define I2C_INSTANCE                       0
-#define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
-#define TWI_ENABLED                        I2C_ENABLED
-#define TWI0_ENABLED                       I2C_ENABLED
-#define TWI0_USE_EASY_DMA                  I2C_ENABLED
-#define NRFX_TWI_ENABLED                   I2C_ENABLED
-#define NRFX_TWIM_ENABLED                  I2C_ENABLED
-#define NRFX_TWIM_ENABLED                  I2C_ENABLED
-#define NRFX_TWIM1_ENABLED                 I2C_ENABLED
-#define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
+  #define I2C_ENABLED                        APPLICATION_I2C_ENABLED
+  #define I2C_INSTANCE                       0
+  #define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
+  #define TWI_ENABLED                        I2C_ENABLED
+  #define TWI0_ENABLED                       I2C_ENABLED
+  #define TWI0_USE_EASY_DMA                  I2C_ENABLED
+  #define NRFX_TWI_ENABLED                   I2C_ENABLED
+  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
+  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
+  #define NRFX_TWIM1_ENABLED                 I2C_ENABLED
+  #define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
 
-#define SPI_ENABLED                        APPLICATION_SPI_ENABLED
-#define SPI_INSTANCE                       1 //!< Do not share I2C/SPI instance on 52832. 
-#define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed. 
-#define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
-// <0=> NRF_GPIO_PIN_NOPULL
-// <1=> NRF_GPIO_PIN_PULLDOWN
-// <3=> NRF_GPIO_PIN_PULLUP
-#define NRF_SPI_DRV_MISO_PULLUP_CFG        0
-#define SPI1_ENABLED                       APPLICATION_SPI_ENABLED
-#define SPI1_USE_EASY_DMA                  0
-#define NRFX_SPI0_ENABLED                  SPI_ENABLED
+  #define SPI_ENABLED                        APPLICATION_SPI_ENABLED
+  #define SPI_INSTANCE                       1 //!< Do not share I2C/SPI instance on 52832.
+  #define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
+  #define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
+  // <0=> NRF_GPIO_PIN_NOPULL
+  // <1=> NRF_GPIO_PIN_PULLDOWN
+  // <3=> NRF_GPIO_PIN_PULLUP
+  #define NRF_SPI_DRV_MISO_PULLUP_CFG        0
+  #define SPI1_ENABLED                       APPLICATION_SPI_ENABLED
+  #define SPI1_USE_EASY_DMA                  0
+  #define NRFX_SPI0_ENABLED                  SPI_ENABLED
 #endif
 
 // 0 is used by the softdevice, 1 is used by scheduler / timer
@@ -151,12 +151,12 @@
 #define NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION       499   //!< Magic number from Nordic example 
 #define NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION 65535 //!< Magic number from Nordic example 
 /**< Minimum acceptable connection interval. At least 7.5 ms.  */
-#define MIN_CONN_INTERVAL                MSEC_TO_UNITS(APPLICATION_GATT_CONN_INTERVAL_MIN_MS, UNIT_1_25_MS)     
- /**< Maximum acceptable connection interval.  */
+#define MIN_CONN_INTERVAL                MSEC_TO_UNITS(APPLICATION_GATT_CONN_INTERVAL_MIN_MS, UNIT_1_25_MS)
+/**< Maximum acceptable connection interval.  */
 #define MAX_CONN_INTERVAL                MSEC_TO_UNITS((APPLICATION_GATT_CONN_INTERVAL_MAX_MS), (UNIT_1_25_MS))
 /**< How many intervals slave is allowed to skip */
 #define SLAVE_LATENCY                    APPLICATION_GATT_CONN_SLAVE_SKIP_INTERVALS
-/**< Timeout if no connection event in this duration. At least a few expected connection events at max interval * slave latency */                             
+/**< Timeout if no connection event in this duration. At least a few expected connection events at max interval * slave latency */
 #define CONN_SUP_TIMEOUT                 MSEC_TO_UNITS((APPLICATION_GATT_CONN_TIMEOUT_MS), (UNIT_10_MS))
 
 #define NRF_BLE_SCAN_BUFFER                  APPLICATION_BLE_SCAN_BUFFER_SIZE

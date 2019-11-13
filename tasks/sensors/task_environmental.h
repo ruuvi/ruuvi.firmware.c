@@ -18,12 +18,13 @@
 #include "ruuvi_interface_log.h"
 #include "task_communication.h"
 
-typedef struct {
+typedef struct
+{
   uint32_t timestamp_s;   //seconds since device boot
-  float temperature_c;    //celcius   
+  float temperature_c;    //celcius
   float humidity_rh;      //RH-%
   float pressure_pa;      //Pascals
-}environmental_log_t;
+} environmental_log_t;
 
 /**
  * Auto-detects and initializes environmental sensor in low-power state
@@ -51,8 +52,9 @@ ruuvi_driver_status_t task_environmental_log(void);
 /*
  * @brief send logged data
  */
-ruuvi_driver_status_t task_environmental_log_read(const ruuvi_interface_communication_xfer_fp_t reply_fp,
-                                                  const ruuvi_interface_communication_message_t* const query);
+ruuvi_driver_status_t task_environmental_log_read(const
+    ruuvi_interface_communication_xfer_fp_t reply_fp,
+    const ruuvi_interface_communication_message_t* const query);
 
 ruuvi_driver_status_t task_environmental_api_get(task_communication_api_t** api);
 
