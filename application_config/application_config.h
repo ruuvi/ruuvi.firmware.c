@@ -27,7 +27,7 @@
 
 
 #if NRF52811_XXAA
-  #define APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE 1024
+  #define APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE 512
 #else
   #define APPLICATION_ENVIRONMENTAL_RAMBUFFER_SIZE 16384
 #endif
@@ -193,7 +193,11 @@
 #define APPLICATION_SCHEDULER_ENABLED                 1
 #define APPLICATION_SPI_ENABLED                       1
 #define APPLICATION_TIMER_ENABLED                     1
-#define APPLICATION_TIMER_MAX_INSTANCES               10 ///< Timers are allocated statically on RAM
+#if NRF52811_XXAA
+  #define APPLICATION_TIMER_MAX_INSTANCES               5 ///< Timers are allocated statically on RAM
+#else
+  #define APPLICATION_TIMER_MAX_INSTANCES               10 ///< Timers are allocated statically on RAM
+#endif
 #define APPLICATION_WATCHDOG_ENABLED                  1
 
 #define APPLICATION_YIELD_ENABLED                   1
