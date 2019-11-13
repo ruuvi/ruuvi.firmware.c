@@ -254,14 +254,16 @@ ruuvi_driver_status_t task_communication_offsets_float_to_i32f32(
 static void select_next_backend()
 {
   static uint8_t index = 0;
-  static const char list[5][9] = { "BME280", 
+  static const char list[5][9] = { "BME280",
                                    "LIS2DH12",
                                    "SHTCX",
                                    "nRF5TMP",
-                                   "TMP117"};
+                                   "TMP117"
+                                 };
   static uint8_t ids[] = {0x80, 0x12, 0xC3, 0x52, 0x17};
   uint8_t id;
   ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_NOT_FOUND;
+
   while(err_code == RUUVI_DRIVER_ERROR_NOT_FOUND)
   {
     err_code = task_environmental_backend_set(list[index]);
@@ -282,7 +284,6 @@ static void select_next_backend()
 static void heartbeat_send(void* p_event_data, uint16_t event_size)
 {
   select_next_backend();
-
   ruuvi_interface_communication_message_t msg = {0};
   task_sensor_encode_to_5((uint8_t*)&msg.data);
   msg.data_length = m_heartbeat_data_max_len;
