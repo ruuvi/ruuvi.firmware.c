@@ -44,13 +44,13 @@ keijo:
 	$(MAKE) -C targets/keijo/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/keijo/armgcc/package.sh -n ruuvifw_default
 	$(MAKE) -C targets/keijo/armgcc clean
-	$(MAKE) -C targets/keijo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3" 
+	$(MAKE) -C targets/keijo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/keijo/armgcc/package.sh -n ruuvifw_longlife
 
 analysis:
 	@echo build FW ${VERSION}
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3" VERBOSE=1 ABSOLUTE_PATHS=1 GCOV="-fprofile-arcs -ftest-coverage"
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3" VERBOSE=1 ABSOLUTE_PATHS=1
 
 clean:
 	@echo cleaning build files…
