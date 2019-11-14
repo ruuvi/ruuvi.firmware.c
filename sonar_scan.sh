@@ -1,4 +1,5 @@
 #!/bin/bash
+build-wrapper-macosx-x86 --out-dir bw-output make clean all
 source sonar_password.sh
 sonar-scanner \
   -Dsonar.projectKey=ojousima_ruuvi.firmware.c \

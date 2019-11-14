@@ -1,5 +1,6 @@
 # ruuvi.firmware.c
 [![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ojousima_ruuvi.firmware.c)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in alpha stage,
@@ -19,6 +20,41 @@ Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](htt
 and following Getting Started plugin instructions.
 
 Start SES and open `ruuvi.firmware.c.emProject` at root level, each of the target boards is in their own project.
+
+## Code style
+Code is formatted with [Artistic Style](http://astyle.sourceforge.net). 
+Run `astyle --project=.astylerc ./target_file`. To format the entire project,
+```
+astyle --project=.astylerc "./main.c"
+astyle --project=.astylerc --recursive "./application_config/*.h"
+astyle --project=.astylerc --recursive "./tasks/*.c"
+astyle --project=.astylerc --recursive "./tasks/*.h"
+astyle --project=.astylerc --recursive "./tests/*.c"
+astyle --project=.astylerc --recursive "./tests/*.h"
+```
+
+## Static analysis
+The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. 
+
+### PVS
+Obtain license and software from [Viva64](https://www.viva64.com/en/pvs-studio/).
+
+First the compilation commands must be captured by running `make analysis > log.txt`.
+Then the compilation commands must be modified to preprocess only to produce files for PVS studio to analyse. Add `-E` as an argument, and make sure that the directory to build in exists.
+_preprocess.sh_ is a ready preprocessor script, it must be updated if CFLAGS or files to compile change. 
+Then each file must be anayzed by PVS, pvs.sh has an example on running analysis.
+Finally the PVS output must be formatted into human-readable format via plog.
+```
+plog-converter -a 'GA:1,2;64:1;OP:1,2,3;CS:1;MISRA:1,2' -d V677 -t fullhtml -o issues _build/nrf52832_xxaa/*.PVS-Studio.log
+plog-converter -a 'GA:1,2;64:1;OP:1,2,3;CS:1;MISRA:1,2' -d V677 -t tasklist -o issues _build/nrf52832_xxaa/*.PVS-Studio.log
+```
+
+This results into thousands of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related
+to 64-bit systems. 
+
+### Sonar scan
+Put your user token into _sonar_password.sh_, for example
+`export SONAR_PASSWORD=REALLYCOOLTOKEN`. Then run `./sonar_scan.sh`.
 
 # Usage
 Compile and flash the project to your board using SES. Instructions on how to use a bootloader will be added later on.
