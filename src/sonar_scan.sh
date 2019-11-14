@@ -6,5 +6,6 @@ sonar-scanner \
   -Dsonar.organization=ojousima \
   -Dsonar.sources=. \
   -Dsonar.cfamily.build-wrapper-output=bw-output \
+  -Dsonar.cfamily.gcov.reportsPath=../build/gcov/out \
   -Dsonar.host.url=https://sonarcloud.io \
   -Dsonar.login=$SONAR_PASSWORD
