@@ -34,6 +34,9 @@
     - -:test/support
   :source:
     - src/**
+    - nRF5_SDK_15.3.0_59ac345/components/**
+    - nRF5_SDK_15.3.0_59ac345/integration/**
+    - nRF5_SDK_15.3.0_59ac345/modules/**
   :support:
     - test/support
 
@@ -41,7 +44,10 @@
   # in order to add common defines:
   #  1) remove the trailing [] from the :common: section
   #  2) add entries to the :common: section (e.g. :test: has TEST defined)
-  :common: &common_defines []
+  :common: &common_defines
+    - BOARD_RUUVITAG_B
+    - BOARD_CUSTOM
+    - NRF52832_XXAA
   :test:
     - *common_defines
     - TEST

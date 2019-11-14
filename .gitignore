@@ -88,5 +88,8 @@ log.txt
 sizes.txt
 issues/
 
+# Ceedling machine generated output
+build
+
 # SDKs
 nRF5_SDK_15.3.0_59ac345
