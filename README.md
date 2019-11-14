@@ -1,6 +1,6 @@
 # ruuvi.firmware.c
 [![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
-[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=ojousima_ruuvi.firmware.c)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in alpha stage,
