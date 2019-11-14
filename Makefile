@@ -4,7 +4,7 @@ TAG := $(shell git describe --tags --exact-match)
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
 
-.PHONY: all sync ruuvitag_b kaarle keijo clean
+.PHONY: all sync ruuvitag_b kaarle keijo analysis clean 
 
 all: sync clean ruuvitag_b kaarle keijo
 
@@ -25,7 +25,7 @@ ruuvitag_b:
 	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_longlife
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3"
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_test
 
 kaarle:
@@ -36,7 +36,7 @@ kaarle:
 	$(MAKE) -C targets/kaarle/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/kaarle/armgcc/package.sh -n ruuvifw_longlife
 	$(MAKE) -C targets/kaarle/armgcc clean
-	$(MAKE) -C targets/kaarle/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -C targets/kaarle/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3"
 	targets/kaarle/armgcc/package.sh -n ruuvifw_test
 
 keijo: 
@@ -44,9 +44,13 @@ keijo:
 	$(MAKE) -C targets/keijo/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/keijo/armgcc/package.sh -n ruuvifw_default
 	$(MAKE) -C targets/keijo/armgcc clean
-	$(MAKE) -C targets/keijo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	$(MAKE) -C targets/keijo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3" 
 	targets/keijo/armgcc/package.sh -n ruuvifw_longlife
 
+analysis:
+	@echo build FW ${VERSION}
+	$(MAKE) -C targets/ruuvitag_b/armgcc clean
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3" VERBOSE=1 ABSOLUTE_PATHS=1 GCOV="-fprofile-arcs -ftest-coverage"
 
 clean:
 	@echo cleaning build files…

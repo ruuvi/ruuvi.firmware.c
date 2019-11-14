@@ -21,7 +21,7 @@ INC_FOLDERS += ${COMMON_INCLUDES}
 LIB_FILES += 
 
 # Optimization flags
-OPT = -Os
+OPT ?= -Os
 # Uncomment the line below to enable link time optimization
 #OPT += -flto
 

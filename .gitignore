@@ -72,3 +72,19 @@ _build/
 
 # Backup files
 *.orig
+
+# Code analysis tools
+memory_profile.sh
+piechart.py
+build-wrapper-macosx-x86
+sonar_password.sh
+
+# Code analysis tool outputs
+.scannerwork/
+OUTFILE
+bw-output/
+infer-out/
+log.txt
+sizes.txt
+issues/
+

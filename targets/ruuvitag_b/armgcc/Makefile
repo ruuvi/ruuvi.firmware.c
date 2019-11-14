@@ -21,7 +21,7 @@ LIB_FILES += \
  $(SDK_ROOT)/external/nrf_oberon/lib/cortex-m4/hard-float/liboberon_2.0.7.a
 
 # Optimization flags
-OPT = -O3 -g3
+OPT ?= -O3 -g3
 # Uncomment the line below to enable link time optimization
 #OPT += -flto
 
@@ -29,7 +29,6 @@ CFLAGS += $(MODE)
 CFLAGS += $(RUN_TESTS)
 CFLAGS += $(DEBUG)
 CFLAGS += $(FW_VERSION)
-# C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 CFLAGS += -DBOARD_RUUVITAG_B
@@ -120,9 +119,6 @@ default: nrf52832_xxaa
 help:
 	@echo following targets are available:
 	@echo		nrf52832_xxaa
-	@echo		flash_softdevice
-	@echo		sdk_config - starting external tool for editing sdk_config.h
-	@echo		flash      - flashing binary
 
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 
