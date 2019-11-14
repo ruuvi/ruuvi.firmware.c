@@ -1,12 +1,12 @@
 [submodule "ruuvi.drivers.c"]
-	path = ruuvi.drivers.c
+	path = src/ruuvi.drivers.c
 	url = https://github.com/ruuvi/ruuvi.drivers.c.git
 [submodule "ruuvi.boards.c"]
-	path = ruuvi.boards.c
+	path = src/ruuvi.boards.c
 	url = https://github.com/ruuvi/ruuvi.boards.c.git
 [submodule "ruuvi.endpoints.c"]
-	path = ruuvi.endpoints.c
+	path = src/ruuvi.endpoints.c
 	url = https://github.com/ruuvi/ruuvi.endpoints.c
 [submodule "ruuvi.libraries.c"]
-	path = ruuvi.libraries.c
+	path = src/ruuvi.libraries.c
 	url = https://github.com/ruuvi/ruuvi.libraries.c
