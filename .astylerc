@@ -76,5 +76,8 @@
 #    // Bar baz
 #    bar(baz);  
 #  }
+
+# Indend switch-cases and comments
+--indent-switches
 --indent-col1-comments
 

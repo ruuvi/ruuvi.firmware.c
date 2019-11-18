@@ -211,42 +211,42 @@ ruuvi_driver_status_t task_gatt_on_nus (ruuvi_interface_communication_evt_t evt,
 
     switch (evt)
     {
-    // Note: This gets called only after the NUS notifications have been registered.
-    case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
-        err_code |= ruuvi_interface_scheduler_event_put (NULL, 0,
-                    task_gatt_communication_connected_scheduler);
-        break;
-
-    case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
-        err_code |= ruuvi_interface_scheduler_event_put (NULL, 0,
-                    task_gatt_communication_disconnected_scheduler);
-        break;
-
-    case RUUVI_INTERFACE_COMMUNICATION_SENT:
-        task_gatt_queue_process_interrupt();
-
-        // Schedule only one data sent event to avoid filling scheduler queue.
-        if (ruuvi_interface_atomic_flag (&m_tx_scheduler_lock, true))
-        {
+        // Note: This gets called only after the NUS notifications have been registered.
+        case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
             err_code |= ruuvi_interface_scheduler_event_put (NULL, 0,
-                        task_gatt_communication_sent_scheduler);
-        }
+                        task_gatt_communication_connected_scheduler);
+            break;
 
-        break;
+        case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
+            err_code |= ruuvi_interface_scheduler_event_put (NULL, 0,
+                        task_gatt_communication_disconnected_scheduler);
+            break;
 
-    case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
-        err_code |= ruuvi_interface_scheduler_event_put (p_data, data_len,
-                    task_gatt_communication_received_scheduler);
+        case RUUVI_INTERFACE_COMMUNICATION_SENT:
+            task_gatt_queue_process_interrupt();
 
-        if (RUUVI_DRIVER_SUCCESS != err_code)
-        {
-            LOGE ("No memory in op queue remaining, incoming data discarded\r\n");
-        }
+            // Schedule only one data sent event to avoid filling scheduler queue.
+            if (ruuvi_interface_atomic_flag (&m_tx_scheduler_lock, true))
+            {
+                err_code |= ruuvi_interface_scheduler_event_put (NULL, 0,
+                            task_gatt_communication_sent_scheduler);
+            }
 
-        break;
+            break;
 
-    default:
-        break;
+        case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
+            err_code |= ruuvi_interface_scheduler_event_put (p_data, data_len,
+                        task_gatt_communication_received_scheduler);
+
+            if (RUUVI_DRIVER_SUCCESS != err_code)
+            {
+                LOGE ("No memory in op queue remaining, incoming data discarded\r\n");
+            }
+
+            break;
+
+        default:
+            break;
     }
 
     ruuvi_interface_watchdog_feed();
@@ -270,7 +270,8 @@ ruuvi_driver_status_t task_gatt_on_nus (ruuvi_interface_communication_evt_t evt,
  * @return RUUVI_DRIVER_ERROR_INVALID_STATE of GATT is not initialized
  * @return RUUVI_DRIVER_ERROR_NO_MEM if message cannot be queued due to buffers being full.
  */
-ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t *
+ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t
+        *
         const msg)
 {
     // State, input check

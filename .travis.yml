@@ -26,6 +26,7 @@ script:
       unzip -nq nRF5_SDK_15.3.0_59ac345.zip
     fi
   - |
+    export ARTISTIC_STYLE_OPTIONS=".astylerc" \
     astyle --recursive \
            "src/application_config/*.h" \
            "src/tasks/*.c" \

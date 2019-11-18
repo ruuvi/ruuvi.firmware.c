@@ -46,33 +46,33 @@ static ruuvi_driver_status_t task_communication_target_api_get (
 
     switch (target)
     {
-    // All environmental values are controlled through the same API
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL:
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_TEMPERATURE:
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_HUMIDITY:
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE:
-        task_environmental_api_get (api);
-        break;
+        // All environmental values are controlled through the same API
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ENVIRONMENTAL:
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_TEMPERATURE:
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_HUMIDITY:
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE:
+            task_environmental_api_get (api);
+            break;
+#       if 0
 
-    /*
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION:
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_X:
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Y:
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Z:
-      task_acceleration_api_get(api);
-      break;
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION:
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_X:
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Y:
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Z:
+            task_acceleration_api_get (api);
+            break;
 
-    case RUUVI_ENDPOINT_STANDARD_DESTINATION_RTC:
-      task_rtc_api_get(api);
-      break;
+        case RUUVI_ENDPOINT_STANDARD_DESTINATION_RTC:
+            task_rtc_api_get (api);
+            break;
 
-    case RUUVI_ENDPOINT_STANDARD_ADC:
-      task_adc_api_get(api);
-      break;
-    */
+        case RUUVI_ENDPOINT_STANDARD_ADC:
+            task_adc_api_get (api);
+            break;
+#       endif
 
-    default:
-        err_code = RUUVI_DRIVER_ERROR_INVALID_PARAM;
+        default:
+            err_code = RUUVI_DRIVER_ERROR_INVALID_PARAM;
     }
 
     return err_code;
@@ -100,102 +100,100 @@ ruuvi_driver_status_t task_communication_on_data (const
     {
         switch (incoming->data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX])
         {
-        case RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_WRITE:
-            if (NULL == api->sensor)
-            {
-                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+            case RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_WRITE:
+                if (NULL == api->sensor)
+                {
+                    reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                    break;
+                }
+
+                memcpy (&config, & (incoming->data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]),
+                        RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
+                (* (api->sensor))->configuration_set (* (api->sensor), &config);
+
+            // Intentional fallthrough to configuration read
+
+            case RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_READ:
+                if (NULL == api->sensor)
+                {
+                    reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                    break;
+                }
+
+                (* (api->sensor))->configuration_get (* (api->sensor), &config);
+                memcpy (& (reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), &config,
+                        RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
+                // Write state of sensor back to application
+                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] =
+                    RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_WRITE;
                 break;
-            }
 
-            memcpy (&config, & (incoming->data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]),
-                    RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-            (* (api->sensor))->configuration_set (* (api->sensor), &config);
+            case RUUVI_ENDPOINT_STANDARD_SENSOR_OFFSET_WRITE:
+                if (NULL == api->offset_set)
+                {
+                    reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                    break;
+                }
 
-        // Intentional fallthrough to configuration read
+                memcpy (payload, & (incoming->data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]),
+                        RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
+                api->offset_set (payload);
 
-        case RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_READ:
-            if (NULL == api->sensor)
-            {
-                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+            // Intentional fallthrough to offset read
+
+            case RUUVI_ENDPOINT_STANDARD_SENSOR_OFFSET_READ:
+                if (NULL == api->offset_get)
+                {
+                    reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                    break;
+                }
+
+                api->offset_get (payload);
+                memcpy (& (reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), payload,
+                        RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
+                // Write state of sensor back to application
+                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] =
+                    RUUVI_ENDPOINT_STANDARD_SENSOR_OFFSET_WRITE;
                 break;
-            }
 
-            (* (api->sensor))->configuration_get (* (api->sensor), &config);
-            memcpy (& (reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), &config,
-                    RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-            // Write state of sensor back to application
-            reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] =
-                RUUVI_ENDPOINT_STANDARD_SENSOR_CONFIGURATION_WRITE;
-            break;
+            case RUUVI_ENDPOINT_STANDARD_VALUE_READ:
+                if (NULL == api->data_get)
+                {
+                    reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                    break;
+                }
 
-        case RUUVI_ENDPOINT_STANDARD_SENSOR_OFFSET_WRITE:
-            if (NULL == api->offset_set)
-            {
-                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                api->data_get (payload);
+                memcpy (& (reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), payload,
+                        RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
+                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_VALUE_WRITE;
                 break;
-            }
 
-            memcpy (payload, & (incoming->data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]),
-                    RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-            api->offset_set (payload);
+            case RUUVI_ENDPOINT_STANDARD_LOG_VALUE_READ:
+                if (NULL == api->log_read)
+                {
+                    reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                    break;
+                }
 
-        // Intentional fallthrough to offset read
-
-        case RUUVI_ENDPOINT_STANDARD_SENSOR_OFFSET_READ:
-            if (NULL == api->offset_get)
-            {
-                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                // This call blocks until error occurs or all the requested data has been sent.
+                api->log_read (reply_fp, incoming);
+                // Send end of data element
+                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_LOG_VALUE_WRITE;
+                memset (& (reply.data[3]), 0xFF, RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
                 break;
-            }
+#           if 0
 
-            api->offset_get (payload);
-            memcpy (& (reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), payload,
-                    RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-            // Write state of sensor back to application
-            reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] =
-                RUUVI_ENDPOINT_STANDARD_SENSOR_OFFSET_WRITE;
-            break;
-
-        case RUUVI_ENDPOINT_STANDARD_VALUE_READ:
-            if (NULL == api->data_get)
-            {
-                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+            case RUUVI_ENDPOINT_STANDARD_LOG_CONFIGURATION_WRITE:
                 break;
-            }
 
-            api->data_get (payload);
-            memcpy (& (reply.data[RUUVI_ENDPOINT_STANDARD_PAYLOAD_START_INDEX]), payload,
-                    RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-            reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_VALUE_WRITE;
-            break;
-
-        case RUUVI_ENDPOINT_STANDARD_LOG_VALUE_READ:
-            if (NULL == api->log_read)
-            {
-                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+            case RUUVI_ENDPOINT_STANDARD_LOG_CONFIGURATION_READ:
                 break;
-            }
+#           endif
 
-            // This call blocks until error occurs or all the requested data has been sent.
-            api->log_read (reply_fp, incoming);
-            // Send end of data element
-            reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_LOG_VALUE_WRITE;
-            memset (& (reply.data[3]), 0xFF, RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
-            break;
-
-        /*
-        case RUUVI_ENDPOINT_STANDARD_LOG_CONFIGURATION_WRITE:
-
-          break;
-
-        case RUUVI_ENDPOINT_STANDARD_LOG_CONFIGURATION_READ:
-
-          break;
-        */
-
-        default:
-            reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
-            err_code |= RUUVI_DRIVER_ERROR_NOT_SUPPORTED;
+            default:
+                reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
+                err_code |= RUUVI_DRIVER_ERROR_NOT_SUPPORTED;
         }
     }
 
