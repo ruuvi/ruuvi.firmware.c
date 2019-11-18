@@ -25,7 +25,7 @@ install:
     cd as-gcc-exe
     cmake  ../
     make
-    make install
+    sudo make install
 
 script:
   - |
