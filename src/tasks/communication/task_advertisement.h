@@ -76,6 +76,6 @@ ruuvi_driver_status_t task_advertisement_stop(void);
  *  @return    error code from stack on other error.
  */
 ruuvi_driver_status_t task_advertisement_send_data(
-  ruuvi_interface_communication_message_t* const msg);
+    ruuvi_interface_communication_message_t* const msg);
 
 #endif

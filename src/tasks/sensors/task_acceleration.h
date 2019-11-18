@@ -44,7 +44,7 @@ ruuvi_driver_status_t task_acceleration_init(void);
  * @return RUUVI_DRIVER_ERROR_NOT_FOUND if flash is not initialized, and populate config with application defaults.
  */
 ruuvi_driver_status_t task_acceleration_configuration_load(
-  ruuvi_driver_sensor_configuration_t* const config);
+    ruuvi_driver_sensor_configuration_t* const config);
 
 /**
  * @brief stores current configuration of sensor into non-volatile storage.
@@ -56,7 +56,7 @@ ruuvi_driver_status_t task_acceleration_configuration_load(
  * @return RUUVI_DRIVER_ERROR_INVALID_STATE if flash is not initialized.
  */
 ruuvi_driver_status_t task_acceleration_configuration_store(const
-    ruuvi_driver_sensor_configuration_t* const config);
+        ruuvi_driver_sensor_configuration_t* const config);
 
 /**
  * @brief Get latest sample from the sensor.
@@ -70,7 +70,7 @@ ruuvi_driver_status_t task_acceleration_configuration_store(const
  * @return @c RUUVI_DRIVER_ERROR_INVALID_STATE if accelerometer is not initialize.
  */
 ruuvi_driver_status_t task_acceleration_data_get(ruuvi_driver_sensor_data_t*
-    const data);
+        const data);
 
 /**
  * @brief Get API function pointers from sensor.

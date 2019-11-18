@@ -20,10 +20,10 @@
 
 typedef struct
 {
-  uint32_t timestamp_s;   //seconds since device boot
-  float temperature_c;    //celcius
-  float humidity_rh;      //RH-%
-  float pressure_pa;      //Pascals
+    uint32_t timestamp_s;   //seconds since device boot
+    float temperature_c;    //celcius
+    float humidity_rh;      //RH-%
+    float pressure_pa;      //Pascals
 } environmental_log_t;
 
 /**
@@ -37,7 +37,7 @@ ruuvi_driver_status_t task_environmental_init(void);
  * Get latest sample from the sensor. Remember to trigger sampling in case you're in single-shot mode
  */
 ruuvi_driver_status_t task_environmental_data_get(ruuvi_driver_sensor_data_t*
-    const data);
+        const data);
 
 /**
  *  Command environmental sensor to take a single sample. Leaves sensor in sleep
@@ -53,8 +53,8 @@ ruuvi_driver_status_t task_environmental_log(void);
  * @brief send logged data
  */
 ruuvi_driver_status_t task_environmental_log_read(const
-    ruuvi_interface_communication_xfer_fp_t reply_fp,
-    const ruuvi_interface_communication_message_t* const query);
+        ruuvi_interface_communication_xfer_fp_t reply_fp,
+        const ruuvi_interface_communication_message_t* const query);
 
 ruuvi_driver_status_t task_environmental_api_get(task_communication_api_t** api);
 

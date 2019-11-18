@@ -15,10 +15,10 @@
 #define NRF_LOG_ENABLED APPLICATION_LOG_ENABLED
 #define NRF_LOG_DEFERRED 0
 #if ((APPLICATION_LOG_BUFFER_SIZE & (APPLICATION_LOG_BUFFER_SIZE - 1)) || (APPLICATION_LOG_BUFFER_SIZE<128))
-  #error "APPLICATION_LOG_BUFFER_SIZE must be a power of 2 and at least 128"
+#error "APPLICATION_LOG_BUFFER_SIZE must be a power of 2 and at least 128"
 #else
-  #define NRF_LOG_BUFSIZE              APPLICATION_LOG_BUFFER_SIZE
-  #define NRF_LOG_STR_PUSH_BUFFER_SIZE APPLICATION_LOG_BUFFER_SIZE
+#define NRF_LOG_BUFSIZE              APPLICATION_LOG_BUFFER_SIZE
+#define NRF_LOG_STR_PUSH_BUFFER_SIZE APPLICATION_LOG_BUFFER_SIZE
 #endif
 #define NRF_LOG_ALLOW_OVERFLOW 0
 // <i> The following modes are supported:
@@ -26,9 +26,9 @@
 // <i> - 1 TRIM  - Do not block, output as much as fits.
 // <i> - 2 BLOCK - Wait until there is space in the buffer.
 #if DEBUG
-  #define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 #else
-  #define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
 #endif
 
 // Select one backend
@@ -79,54 +79,54 @@
 #define SAADC_ENABLED 1
 
 #if NRF52811_XXAA
-  #define I2C_ENABLED                        APPLICATION_I2C_ENABLED
-  /** nRF52811 supports I2C only on a instance shared with SPI1, known as I2C instance 0 */
-  #define I2C_INSTANCE                       0
-  #define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
-  #define TWI_ENABLED                        I2C_ENABLED
-  #define TWI0_ENABLED                       I2C_ENABLED
-  #define TWI0_USE_EASY_DMA                  I2C_ENABLED
-  #define NRFX_TWI_ENABLED                   I2C_ENABLED
-  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
-  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
-  #define NRFX_TWIM1_ENABLED                 I2C_ENABLED
-  #define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
+#define I2C_ENABLED                        APPLICATION_I2C_ENABLED
+/** nRF52811 supports I2C only on a instance shared with SPI1, known as I2C instance 0 */
+#define I2C_INSTANCE                       0
+#define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
+#define TWI_ENABLED                        I2C_ENABLED
+#define TWI0_ENABLED                       I2C_ENABLED
+#define TWI0_USE_EASY_DMA                  I2C_ENABLED
+#define NRFX_TWI_ENABLED                   I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM1_ENABLED                 I2C_ENABLED
+#define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
 
-  #define SPI_ENABLED                        APPLICATION_SPI_ENABLED
-  #define SPI_INSTANCE                       0 //<! TWI0 shares SPI 1 instance on nRF52811. SPI Instance 0 is free.
-  #define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
-  #define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
-  // <0=> NRF_GPIO_PIN_NOPULL
-  // <1=> NRF_GPIO_PIN_PULLDOWN
-  // <3=> NRF_GPIO_PIN_PULLUP
-  #define NRF_SPI_DRV_MISO_PULLUP_CFG        0
-  #define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
-  #define SPI0_USE_EASY_DMA                  0
-  #define NRFX_SPI0_ENABLED                  SPI_ENABLED
+#define SPI_ENABLED                        APPLICATION_SPI_ENABLED
+#define SPI_INSTANCE                       0 //<! TWI0 shares SPI 1 instance on nRF52811. SPI Instance 0 is free.
+#define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
+#define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
+// <0=> NRF_GPIO_PIN_NOPULL
+// <1=> NRF_GPIO_PIN_PULLDOWN
+// <3=> NRF_GPIO_PIN_PULLUP
+#define NRF_SPI_DRV_MISO_PULLUP_CFG        0
+#define SPI0_ENABLED                       APPLICATION_SPI_ENABLED
+#define SPI0_USE_EASY_DMA                  0
+#define NRFX_SPI0_ENABLED                  SPI_ENABLED
 #else
-  #define I2C_ENABLED                        APPLICATION_I2C_ENABLED
-  #define I2C_INSTANCE                       0
-  #define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
-  #define TWI_ENABLED                        I2C_ENABLED
-  #define TWI0_ENABLED                       I2C_ENABLED
-  #define TWI0_USE_EASY_DMA                  I2C_ENABLED
-  #define NRFX_TWI_ENABLED                   I2C_ENABLED
-  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
-  #define NRFX_TWIM_ENABLED                  I2C_ENABLED
-  #define NRFX_TWIM1_ENABLED                 I2C_ENABLED
-  #define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
+#define I2C_ENABLED                        APPLICATION_I2C_ENABLED
+#define I2C_INSTANCE                       0
+#define I2C0_ENABLED                       APPLICATION_I2C_ENABLED
+#define TWI_ENABLED                        I2C_ENABLED
+#define TWI0_ENABLED                       I2C_ENABLED
+#define TWI0_USE_EASY_DMA                  I2C_ENABLED
+#define NRFX_TWI_ENABLED                   I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM_ENABLED                  I2C_ENABLED
+#define NRFX_TWIM1_ENABLED                 I2C_ENABLED
+#define I2C_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
 
-  #define SPI_ENABLED                        APPLICATION_SPI_ENABLED
-  #define SPI_INSTANCE                       1 //!< Do not share I2C/SPI instance on 52832.
-  #define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
-  #define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
-  // <0=> NRF_GPIO_PIN_NOPULL
-  // <1=> NRF_GPIO_PIN_PULLDOWN
-  // <3=> NRF_GPIO_PIN_PULLUP
-  #define NRF_SPI_DRV_MISO_PULLUP_CFG        0
-  #define SPI1_ENABLED                       APPLICATION_SPI_ENABLED
-  #define SPI1_USE_EASY_DMA                  0
-  #define NRFX_SPI0_ENABLED                  SPI_ENABLED
+#define SPI_ENABLED                        APPLICATION_SPI_ENABLED
+#define SPI_INSTANCE                       1 //!< Do not share I2C/SPI instance on 52832.
+#define SPI_IRQ_PRIORITY                   7 //<! 2,3,6,7 are allowed.
+#define SPI_DEFAULT_CONFIG_IRQ_PRIORITY    SPI_IRQ_PRIORITY
+// <0=> NRF_GPIO_PIN_NOPULL
+// <1=> NRF_GPIO_PIN_PULLDOWN
+// <3=> NRF_GPIO_PIN_PULLUP
+#define NRF_SPI_DRV_MISO_PULLUP_CFG        0
+#define SPI1_ENABLED                       APPLICATION_SPI_ENABLED
+#define SPI1_USE_EASY_DMA                  0
+#define NRFX_SPI0_ENABLED                  SPI_ENABLED
 #endif
 
 // 0 is used by the softdevice, 1 is used by scheduler / timer
@@ -178,8 +178,8 @@
 #define NFC_PLATFORM_ENABLED           APPLICATION_COMMUNICATION_NFC_ENABLED
 // NFC requires Timer 4
 #if     !(TIMER_ENABLED)
-  #undef  TIMER_ENABLED
-  #define TIMER_ENABLED APPLICATION_COMMUNICATION_NFC_ENABLED
+#undef  TIMER_ENABLED
+#define TIMER_ENABLED APPLICATION_COMMUNICATION_NFC_ENABLED
 #endif
 #define TIMER4_ENABLED  APPLICATION_COMMUNICATION_NFC_ENABLED
 #define NFC_NDEF_MSG_TAG_TYPE 4

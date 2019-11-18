@@ -64,7 +64,7 @@ ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
  *
  */
 ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_message_t*
-    const msg);
+        const msg);
 
 
 #endif

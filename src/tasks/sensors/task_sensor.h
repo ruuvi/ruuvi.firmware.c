@@ -27,8 +27,8 @@
  * @return error code from sensor on other error.
  */
 ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
-    ruuvi_driver_sensor_configuration_t* const config,
-    const char* const unit);
+        ruuvi_driver_sensor_configuration_t* const config,
+        const char* const unit);
 
 /**
  * @brief Read sensors and encode to given buffer in Ruuvi DF5.
@@ -47,7 +47,7 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer);
  * @return NULL if requested sensor was not found
  */
 ruuvi_driver_sensor_t* task_sensor_find_backend(ruuvi_driver_sensor_t* const sensor_list,
-    const size_t count, const char* const name);
+        const size_t count, const char* const name);
 
 /*@}*/
 #endif

@@ -9,9 +9,9 @@
 #ifndef APPLICATION_MODES_H
 #define APPLICATION_MODES_H
 #ifdef APPLICATION_MODE_LONGLIFE
-  #include "application_mode_longlife.h"
+#include "application_mode_longlife.h"
 #elif DEBUG
-  #include "application_mode_debug.h"
+#include "application_mode_debug.h"
 #endif
 #include "application_mode_default.h"
 #endif
