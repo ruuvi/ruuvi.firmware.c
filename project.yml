@@ -110,4 +110,10 @@
         - -Wall
         - -Wno-tautological-pointer-compare # Cmock may create these, so ignore
         - -std=c99
+  :gcov:
+    :compile:
+      :*:
+        - -Wall
+        - -Wno-tautological-pointer-compare # Cmock may create these, so ignore
+        - -std=c99
 ...
