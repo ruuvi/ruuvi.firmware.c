@@ -24,7 +24,6 @@ script:
       wget -nc https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip \
       unzip -n nRF5_SDK_15.3.0_59ac345.zip \
     fi
-  - unzip -n nRF5_SDK_15.3.0_59ac345.zip
   - astyle --recursive "src/main.c" \
                        "src/application_config/*.h" \
                        "src/tasks/*.c" \
