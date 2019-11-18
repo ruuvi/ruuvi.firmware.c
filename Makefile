@@ -215,7 +215,7 @@ SDK_ROOT := nRF5_SDK_15.3.0_59ac345
 PROJ_DIR := src
 include ${PROJ_DIR}/gcc_sources.make
 
-CFLAGS=-c -E -Wall -pedantic -Wno-variadic-macros -Wno-long-long -Wno-shadow -std=c99
+CFLAGS=-c  -Wall -pedantic -Wno-variadic-macros -Wno-long-long -Wno-shadow -std=c99
 CFLAGS += -DBOARD_KAARLE
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52
@@ -230,7 +230,7 @@ SOURCES=${RUUVI_PRJ_SOURCES}
 OBJECTS=$(SOURCES:.c=.o)
 IOBJECTS=$(SOURCES:.c=.o.PVS-Studio.i)
 POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
-EXECUTABLE=dps
+EXECUTABLE=ruuvifw
 
 # Tag on this commit
 TAG := $(shell git describe --tags --exact-match)
