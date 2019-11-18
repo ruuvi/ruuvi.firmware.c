@@ -1,6 +1,14 @@
 # ruuvi.firmware.c
 [![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=coverage)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=ncloc)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in alpha stage,
@@ -35,26 +43,19 @@ astyle --project=.astylerc --recursive "src/tests/*.h"
 ```
 
 ## Static analysis
-The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. 
+The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. (Here)[https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html] is a link to generated report which gets pushed to GitHub.
+
 
 ### PVS
 Obtain license and software from [Viva64](https://www.viva64.com/en/pvs-studio/).
 
-First the compilation commands must be captured by running `make analysis > log.txt`.
-Then the compilation commands must be modified to preprocess only to produce files for PVS studio to analyse. Add `-E` as an argument, and make sure that the directory to build in exists.
-_preprocess.sh_ is a ready preprocessor script, it must be updated if CFLAGS or files to compile change. 
-Then each file must be anayzed by PVS, pvs.sh has an example on running analysis.
-Finally the PVS output must be formatted into human-readable format via plog.
-```
-plog-converter -a 'GA:1,2;64:1;OP:1,2,3;CS:1;MISRA:1,2' -t fullhtml -o issues _build/nrf52832_xxaa/*.PVS-Studio.log
-```
+Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml. 
 
-This results into thousands of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related
-to 64-bit systems. 
+This results into hundreds of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
 
 ### Sonar scan
-Put your user token into _sonar_password.sh_, for example
-`export SONAR_PASSWORD=REALLYCOOLTOKEN`. Then run `./sonar_scan.sh`.
+SonarScan pushes the results to SonarCloud.IO, you'll need to fork the project to get
+access to scanner under your own organization. 
 
 # Running unit tests
 ## Ceedling
@@ -73,7 +74,15 @@ Note: You should erase your board entirely in case there is a bootloader from a 
 
 # How to contribute
 Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code on RuuviTag?
-Is the structure of the project sensible to you? Pull requests and GitHub issues are welcome, but new features will not be accepted at this time. 
+Is the structure of the project sensible to you? 
+
+If you want to assist in the project maintenance by fixing some issues _doxygen.error_ is
+a good place to look for code which needs better commenting. Project badges at the top of the
+readme point to issues which range from trivial to complex refactoring. 
+
+If you want to add new features, please discuss the feature first, and then create ceedling
+unit tests for the functionality. Once the functionality is agreed and testable in can be integrated
+into project.
 
 # Licensing
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
