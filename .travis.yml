@@ -22,17 +22,17 @@ install:
 script:
   - |
     if [ ! -d "nRF5_SDK_15.3.0_59ac345/modules" ]; then
-      wget -nc https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
-      unzip -n nRF5_SDK_15.3.0_59ac345.zip
+      wget -ncq https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+      unzip -nq nRF5_SDK_15.3.0_59ac345.zip
     fi
   - |
-    astyle --recursive \
+    astyle --project=.astylerc --recursive \
            "src/application_config/*.h" \
            "src/tasks/*.c" \
            "src/tasks/*.h" \
            "src/tests/*.c" \
            "src/tests/*.h"
-  - astyle "src/main.c"
+  - astyle --project=.astylerc "src/main.c"
   - git diff --exit-code --diff-filter=d --color
   - build-wrapper-linux-x86-64 --out-dir bw-output make all
   - ceedling test:all

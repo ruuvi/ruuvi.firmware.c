@@ -109,6 +109,5 @@
       :*:
         - -Wall
         - -Wno-tautological-pointer-compare # Cmock may create these, so ignore
-        - -Werror
         - -std=c99
 ...
