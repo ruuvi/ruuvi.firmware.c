@@ -108,7 +108,9 @@
 /**
  * Bluetooth configuration
  */
-#define APPLICATION_ADVERTISING_POWER_DBM             RUUVI_BOARD_TX_POWER_MAX
+#ifndef APPLICATION_ADVERTISING_POWER_DBM
+#  define APPLICATION_ADVERTISING_POWER_DBM             RUUVI_BOARD_TX_POWER_MAX
+#endif
 #define APPLICATION_DATA_FORMAT                       0x05
 
 

@@ -506,13 +506,16 @@ static ruuvi_driver_status_t initialize_tmp117(void)
 static void execute_log(void* event, uint16_t event_size)
 {
   static uint32_t tick_count = 0;
+  uint32_t interval_ms = APPLICATION_ENVIRONMENTAL_LOG_INTERVAL_MS;
+  uint32_t tick_interval = APPLICATION_ENVIRONMENTAL_TICK_MS;
+  const uint32_t ticks_per_log = interval_ms/tick_interval;
 
-  if(!tick_count++)
+  if(0 == tick_count)
   {
     task_environmental_log();
   }
 
-  tick_count = (APPLICATION_ENVIRONMENTAL_TICKS_PER_LOG <= tick_count) ? 0 : tick_count;
+  tick_count = (ticks_per_log <= tick_count) ? 0 : (tick_count + 1);
 }
 
 static void schedule_log(void* p_context)
