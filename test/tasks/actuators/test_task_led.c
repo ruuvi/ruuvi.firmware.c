@@ -152,7 +152,42 @@ void test_task_led_write_valid()
   ruuvi_interface_gpio_write_ExpectAndReturn(id, 
                                              RUUVI_BOARD_LEDS_ACTIVE_STATE,
                                              RUUVI_DRIVER_SUCCESS);
-  err_code |= task_led_write(RUUVI_BOARD_LED_1, 
-                             RUUVI_BOARD_LEDS_ACTIVE_STATE);
+  err_code |= task_led_write(RUUVI_BOARD_LED_1, true);
   TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+/**
+ * @brief Set LED which is used to indicate activity.
+ *
+ * This function can be called before GPIO or LEDs are initialized.
+ * Call with RUUVI_INTERFACE_GPIO_ID_UNUSED to disable activity indication.
+ *
+ * @param[in] led LED to indicate activity with.
+ *
+ * @retval RUUVI_DRIVER_SUCCESS if valid led was set.
+ * @retval RUUVI_DRIVER_ERROR_INVALID_PARAM if there is no pin in LED.
+ */
+void test_task_led_activity_led_set_valid ()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    const ruuvi_interface_gpio_id_t id = {.pin = RUUVI_BOARD_LED_1};
+    ruuvi_interface_gpio_write_ExpectAndReturn(id, 
+                                             RUUVI_BOARD_LEDS_ACTIVE_STATE,
+                                             RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_gpio_write_ExpectAndReturn(id, 
+                                             !RUUVI_BOARD_LEDS_ACTIVE_STATE,
+                                             RUUVI_DRIVER_SUCCESS);
+    err_code |= task_led_activity_led_set(RUUVI_BOARD_LED_1);
+    task_led_activity_indicate(true);
+    task_led_activity_indicate(false);
+    uint16_t led = task_led_activity_led_get();
+    TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
+    TEST_ASSERT(RUUVI_BOARD_LED_1 == led);
+}
+
+void test_task_led_activity_led_set_invalid ()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    err_code |= task_led_activity_led_set(2312);
+    TEST_ASSERT(RUUVI_DRIVER_ERROR_INVALID_PARAM == err_code);
 }
