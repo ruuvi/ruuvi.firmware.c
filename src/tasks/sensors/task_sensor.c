@@ -19,29 +19,31 @@
 #define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_SENSOR_LOG_LEVEL, msg, len)
 
-ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
-        ruuvi_driver_sensor_configuration_t* const config,
-        const char* const unit)
+ruuvi_driver_status_t task_sensor_configure (ruuvi_driver_sensor_t * const sensor,
+        ruuvi_driver_sensor_configuration_t * const config,
+        const char * const unit)
 {
-    if(NULL == sensor || NULL == config) {
+    if (NULL == sensor || NULL == config)
+    {
         return RUUVI_DRIVER_ERROR_NULL;
     }
 
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    LOGD("\r\nAttempting to configure ");
-    LOGD(sensor->name);
-    LOGD(" with:\r\n");
-    ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_DEBUG, config, unit);
-    err_code |= sensor->configuration_set(sensor, config);
-    RUUVI_DRIVER_ERROR_CHECK(err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-    LOGD("Actual configuration:\r\n");
-    ruuvi_interface_log_sensor_configuration(RUUVI_INTERFACE_LOG_DEBUG, config, unit);
+    LOGD ("\r\nAttempting to configure ");
+    LOGD (sensor->name);
+    LOGD (" with:\r\n");
+    ruuvi_interface_log_sensor_configuration (RUUVI_INTERFACE_LOG_DEBUG, config, unit);
+    err_code |= sensor->configuration_set (sensor, config);
+    RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+    LOGD ("Actual configuration:\r\n");
+    ruuvi_interface_log_sensor_configuration (RUUVI_INTERFACE_LOG_DEBUG, config, unit);
     return err_code;
 }
 
-ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer)
+ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer)
 {
-    if(NULL == buffer) {
+    if (NULL == buffer)
+    {
         return RUUVI_ENDPOINT_ERROR_NULL;
     }
 
@@ -65,65 +67,74 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer)
     environmental.fields.datas.humidity_rh = 1;
     environmental.fields.datas.temperature_c = 1;
     environmental.fields.datas.pressure_pa = 1;
-    driver_code |= task_acceleration_data_get(&acceleration);
-    driver_code |= task_acceleration_movement_count_get(&movement_counter);
-    driver_code |= task_environmental_data_get(&environmental);
-    driver_code |= task_adc_battery_get(&battery);
+    driver_code |= task_acceleration_data_get (&acceleration);
+    driver_code |= task_acceleration_movement_count_get (&movement_counter);
+    driver_code |= task_environmental_data_get (&environmental);
+    driver_code |= task_adc_battery_get (&battery);
     ruuvi_endpoint_5_data_t ep5_data = {0};
-    ep5_data.accelerationx_g = ruuvi_driver_sensor_data_parse(&acceleration,
-    (ruuvi_driver_sensor_data_fields_t) {
+    ep5_data.accelerationx_g = ruuvi_driver_sensor_data_parse (&acceleration,
+                               (ruuvi_driver_sensor_data_fields_t)
+    {
         .datas.acceleration_x_g = 1
     });
-    ep5_data.accelerationy_g = ruuvi_driver_sensor_data_parse(&acceleration,
-    (ruuvi_driver_sensor_data_fields_t) {
+    ep5_data.accelerationy_g = ruuvi_driver_sensor_data_parse (&acceleration,
+                               (ruuvi_driver_sensor_data_fields_t)
+    {
         .datas.acceleration_y_g = 1
     });
-    ep5_data.accelerationz_g = ruuvi_driver_sensor_data_parse(&acceleration,
-    (ruuvi_driver_sensor_data_fields_t) {
+    ep5_data.accelerationz_g = ruuvi_driver_sensor_data_parse (&acceleration,
+                               (ruuvi_driver_sensor_data_fields_t)
+    {
         .datas.acceleration_z_g = 1
     });
-    ep5_data.battery_v       = ruuvi_driver_sensor_data_parse(&battery,
-    (ruuvi_driver_sensor_data_fields_t) {
+    ep5_data.battery_v       = ruuvi_driver_sensor_data_parse (&battery,
+                               (ruuvi_driver_sensor_data_fields_t)
+    {
         .datas.voltage_v = 1
     });
-    ep5_data.humidity_rh     = ruuvi_driver_sensor_data_parse(&environmental,
-    (ruuvi_driver_sensor_data_fields_t) {
+    ep5_data.humidity_rh     = ruuvi_driver_sensor_data_parse (&environmental,
+                               (ruuvi_driver_sensor_data_fields_t)
+    {
         .datas.humidity_rh = 1
     });
-    ep5_data.temperature_c   = ruuvi_driver_sensor_data_parse(&environmental,
-    (ruuvi_driver_sensor_data_fields_t) {
+    ep5_data.temperature_c   = ruuvi_driver_sensor_data_parse (&environmental,
+                               (ruuvi_driver_sensor_data_fields_t)
+    {
         .datas.temperature_c = 1
     });
-    ep5_data.pressure_pa     = ruuvi_driver_sensor_data_parse(&environmental,
-    (ruuvi_driver_sensor_data_fields_t) {
+    ep5_data.pressure_pa     = ruuvi_driver_sensor_data_parse (&environmental,
+                               (ruuvi_driver_sensor_data_fields_t)
+    {
         .datas.pressure_pa = 1
     });
     ep5_data.movement_count  = movement_counter;
-    driver_code |= ruuvi_interface_communication_radio_address_get(&(ep5_data.address));
-    driver_code |= ruuvi_interface_communication_ble4_advertising_tx_power_get(
+    driver_code |= ruuvi_interface_communication_radio_address_get (& (ep5_data.address));
+    driver_code |= ruuvi_interface_communication_ble4_advertising_tx_power_get (
                        &ep5_data.tx_power);
     ep5_data.measurement_count = measurement_counter++;
 
     // Wrap measurement counter off the invalid.
-    if(measurement_counter == UINT16_MAX) {
+    if (measurement_counter == UINT16_MAX)
+    {
         measurement_counter = 0;
     }
 
-    err_code = ruuvi_endpoint_5_encode(buffer, &ep5_data);
-    return ((RUUVI_DRIVER_SUCCESS | RUUVI_ENDPOINT_SUCCESS) == (err_code | driver_code)) ?
+    err_code = ruuvi_endpoint_5_encode (buffer, &ep5_data);
+    return ( (RUUVI_DRIVER_SUCCESS | RUUVI_ENDPOINT_SUCCESS) == (err_code | driver_code)) ?
            RUUVI_ENDPOINT_SUCCESS : RUUVI_ENDPOINT_ERROR_ENCODING;
 }
 
-ruuvi_driver_sensor_t* task_sensor_find_backend(ruuvi_driver_sensor_t* const sensor_list,
-        const size_t count, const char* const name)
+ruuvi_driver_sensor_t * task_sensor_find_backend (ruuvi_driver_sensor_t * const
+        sensor_list,
+        const size_t count, const char * const name)
 {
-    ruuvi_driver_sensor_t* p_sensor = NULL;
+    ruuvi_driver_sensor_t * p_sensor = NULL;
 
-    for(size_t ii = 0; ii < count; ii++)
+    for (size_t ii = 0; ii < count; ii++)
     {
-        if(0 == strcmp(sensor_list[ii].name, name))
+        if (0 == strcmp (sensor_list[ii].name, name))
         {
-            p_sensor = &(sensor_list[ii]);
+            p_sensor = & (sensor_list[ii]);
             break;
         }
     }

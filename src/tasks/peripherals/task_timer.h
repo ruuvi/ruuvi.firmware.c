@@ -16,7 +16,7 @@
  *
  * Returns RUUVI_DRIVER_SUCCESS on success, error code on error
  */
-ruuvi_driver_status_t task_timer_init(void);
+ruuvi_driver_status_t task_timer_init (void);
 
 
 #endif

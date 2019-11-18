@@ -31,7 +31,7 @@
  * @return @c RUUVI_DRIVER_ERROR_NOT_FOUND if not suitable accelerometer is found.
  * @return error code from driver if configuration fails
  */
-ruuvi_driver_status_t task_acceleration_init(void);
+ruuvi_driver_status_t task_acceleration_init (void);
 
 /**
  * @brief loads current configuration of sensor from non-volatile storage.
@@ -43,8 +43,8 @@ ruuvi_driver_status_t task_acceleration_init(void);
  * @return RUUVI_DRIVER_ERROR_INVALID_STATE if flash is not initialized, and populate config with application defaults.
  * @return RUUVI_DRIVER_ERROR_NOT_FOUND if flash is not initialized, and populate config with application defaults.
  */
-ruuvi_driver_status_t task_acceleration_configuration_load(
-    ruuvi_driver_sensor_configuration_t* const config);
+ruuvi_driver_status_t task_acceleration_configuration_load (
+    ruuvi_driver_sensor_configuration_t * const config);
 
 /**
  * @brief stores current configuration of sensor into non-volatile storage.
@@ -55,8 +55,8 @@ ruuvi_driver_status_t task_acceleration_configuration_load(
  * @return RUUVI_DRIVER_ERROR_NULL if config is NULL
  * @return RUUVI_DRIVER_ERROR_INVALID_STATE if flash is not initialized.
  */
-ruuvi_driver_status_t task_acceleration_configuration_store(const
-        ruuvi_driver_sensor_configuration_t* const config);
+ruuvi_driver_status_t task_acceleration_configuration_store (const
+        ruuvi_driver_sensor_configuration_t * const config);
 
 /**
  * @brief Get latest sample from the sensor.
@@ -69,7 +69,7 @@ ruuvi_driver_status_t task_acceleration_configuration_store(const
  * @return @c RUUVI_DRIVER_ERROR_NULL if @c data is @c NULL
  * @return @c RUUVI_DRIVER_ERROR_INVALID_STATE if accelerometer is not initialize.
  */
-ruuvi_driver_status_t task_acceleration_data_get(ruuvi_driver_sensor_data_t*
+ruuvi_driver_status_t task_acceleration_data_get (ruuvi_driver_sensor_data_t *
         const data);
 
 /**
@@ -80,13 +80,13 @@ ruuvi_driver_status_t task_acceleration_data_get(ruuvi_driver_sensor_data_t*
  * @return @c RUUVI_DRIVER_ERROR_NULL if given pointer to api was null
  * @return @c RUUVI_DRIVER_ERROR_INVALID_STATE if sensor was not initialized
  */
-ruuvi_driver_status_t task_acceleration_api_get(task_communication_api_t** api);
+ruuvi_driver_status_t task_acceleration_api_get (task_communication_api_t ** api);
 
 /**
  * @brief return number of movement counts
  *
  * @param count[out]
  */
-ruuvi_driver_status_t task_acceleration_movement_count_get(uint8_t* const count);
+ruuvi_driver_status_t task_acceleration_movement_count_get (uint8_t * const count);
 
 #endif

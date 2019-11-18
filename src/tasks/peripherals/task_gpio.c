@@ -10,10 +10,11 @@ ruuvi_driver_status_t task_gpio_init()
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if(!task_gpio_is_init())
+    if (!task_gpio_is_init())
     {
         err_code |= ruuvi_interface_gpio_init();
-        err_code |= ruuvi_interface_gpio_interrupt_init(interrupt_table, sizeof(interrupt_table));
+        err_code |= ruuvi_interface_gpio_interrupt_init (interrupt_table,
+                    sizeof (interrupt_table));
     }
 
     return err_code;

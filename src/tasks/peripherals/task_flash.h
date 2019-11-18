@@ -58,7 +58,7 @@
  * @return error code from stack on error
  * @warning Erases entire flash storage and reboots on failure.
  */
-ruuvi_driver_status_t task_flash_init(void);
+ruuvi_driver_status_t task_flash_init (void);
 
 /**
  * @brief Store data to flash.
@@ -82,8 +82,8 @@ ruuvi_driver_status_t task_flash_init(void);
  *
  * @warning triggers garbage collection if there is no space available, which leads to long processing time.
  */
-ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t record_id,
-                                       const void* const message, const size_t message_length);
+ruuvi_driver_status_t task_flash_store (const uint16_t file_id, const uint16_t record_id,
+                                        const void * const message, const size_t message_length);
 
 /**
  * @brief Load data from flash.
@@ -105,8 +105,8 @@ ruuvi_driver_status_t task_flash_store(const uint16_t file_id, const uint16_t re
  *
  * @warning triggers garbage collection if there is no space available, which leads to long processing time.
  */
-ruuvi_driver_status_t task_flash_load(const uint16_t file_id, const uint16_t record_id,
-                                      void* const message, const size_t message_length);
+ruuvi_driver_status_t task_flash_load (const uint16_t file_id, const uint16_t record_id,
+                                       void * const message, const size_t message_length);
 
 /**
  * @brief Free data from flash.
@@ -126,7 +126,7 @@ ruuvi_driver_status_t task_flash_load(const uint16_t file_id, const uint16_t rec
  *
  * @warning triggers garbage collection if there is no space available, which leads to long processing time.
  */
-ruuvi_driver_status_t task_flash_free(const uint16_t file_id, const uint16_t record_id);
+ruuvi_driver_status_t task_flash_free (const uint16_t file_id, const uint16_t record_id);
 
 /**
  * @brief Trigger garbage collection
@@ -141,7 +141,7 @@ ruuvi_driver_status_t task_flash_free(const uint16_t file_id, const uint16_t rec
  * @return RUUVI_DRIVER_ERROR_INVALID_STATE if flash is not initialized.
  *
  */
-ruuvi_driver_status_t task_flash_gc_run(void);
+ruuvi_driver_status_t task_flash_gc_run (void);
 
 /**
  * @brief Check if flash is running an operation.
@@ -150,6 +150,6 @@ ruuvi_driver_status_t task_flash_gc_run(void);
  * @return False otherwise.
  *
  */
-bool task_flash_busy(void);
+bool task_flash_busy (void);
 /*@}*/
 #endif

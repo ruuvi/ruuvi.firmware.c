@@ -31,37 +31,37 @@ typedef struct
  * Reads supported sensors from board.h and tries to initialize them.
  * Configures the sensor according to defaults in application_config.h
  */
-ruuvi_driver_status_t task_environmental_init(void);
+ruuvi_driver_status_t task_environmental_init (void);
 
 /**
  * Get latest sample from the sensor. Remember to trigger sampling in case you're in single-shot mode
  */
-ruuvi_driver_status_t task_environmental_data_get(ruuvi_driver_sensor_data_t*
+ruuvi_driver_status_t task_environmental_data_get (ruuvi_driver_sensor_data_t *
         const data);
 
 /**
  *  Command environmental sensor to take a single sample. Leaves sensor in sleep
  **/
-ruuvi_driver_status_t task_environmental_sample(void);
+ruuvi_driver_status_t task_environmental_sample (void);
 
 /*
  * @brief log data - dummy, todo
  */
-ruuvi_driver_status_t task_environmental_log(void);
+ruuvi_driver_status_t task_environmental_log (void);
 
 /*
  * @brief send logged data
  */
-ruuvi_driver_status_t task_environmental_log_read(const
+ruuvi_driver_status_t task_environmental_log_read (const
         ruuvi_interface_communication_xfer_fp_t reply_fp,
-        const ruuvi_interface_communication_message_t* const query);
+        const ruuvi_interface_communication_message_t * const query);
 
-ruuvi_driver_status_t task_environmental_api_get(task_communication_api_t** api);
+ruuvi_driver_status_t task_environmental_api_get (task_communication_api_t ** api);
 
 /*
  * @brief pick backend
  */
-ruuvi_driver_status_t task_environmental_backend_set(const char* const name);
+ruuvi_driver_status_t task_environmental_backend_set (const char * const name);
 
 
 #endif

@@ -11,6 +11,6 @@
 #include "ruuvi_library_test.h"
 #include "ruuvi_interface_log.h"
 
-void test_library_run(void);
+void test_library_run (void);
 
 #endif

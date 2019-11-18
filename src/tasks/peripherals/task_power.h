@@ -20,7 +20,7 @@
  *
  * return RUUVI_DRIVER_SUCCESS
  */
-ruuvi_driver_status_t task_power_dcdc_init(void);
+ruuvi_driver_status_t task_power_dcdc_init (void);
 
 
 #endif

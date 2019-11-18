@@ -24,7 +24,7 @@
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if leds were already initialized.
  * @retval error code from stack on other error.
  **/
-ruuvi_driver_status_t task_led_init(void);
+ruuvi_driver_status_t task_led_init (void);
 
 /**
  * @brief LED uninitialization function.
@@ -35,7 +35,7 @@ ruuvi_driver_status_t task_led_init(void);
  * @retval RUUVI_DRIVER_SUCCESS if no errors occured.
  * @retval error code from stack on other error.
  **/
-ruuvi_driver_status_t task_led_uninit(void);
+ruuvi_driver_status_t task_led_uninit (void);
 
 /**
  * @brief LED write function. Set given LED ON or OFF.
@@ -45,29 +45,29 @@ ruuvi_driver_status_t task_led_uninit(void);
  *
  * @return Status code from the stack. @c RUUVI_DRIVER_SUCCESS if no errors occured.
  **/
-ruuvi_driver_status_t task_led_write(const uint16_t led, const bool state);
+ruuvi_driver_status_t task_led_write (const uint16_t led, const bool state);
 
 /**
  * @brief Task demonstrator, cycles LEDs ON and OFF in sequence.
  *
  * @return Status code from the stack. @c RUUVI_DRIVER_SUCCESS if no errors occured.
  */
-ruuvi_driver_status_t task_led_cycle(void);
+ruuvi_driver_status_t task_led_cycle (void);
 
 /**
  * These functions indicate activity and sleep by turning led on while active
  * and turning led off while in sleep. Configure ruuvi_interface_yield() to call these.
  */
-void task_led_activity_indicate(const bool state);
+void task_led_activity_indicate (const bool state);
 
 /**
  * Set LED which is used to indicate activity.
  */
-void task_led_activity_led_set(const uint16_t led);
+void task_led_activity_led_set (const uint16_t led);
 
 /**
  * get LED which is used to indicate activity.
  */
-uint16_t task_led_activity_led_get(void);
+uint16_t task_led_activity_led_get (void);
 
 #endif

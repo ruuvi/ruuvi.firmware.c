@@ -16,6 +16,6 @@
  *
  *  Returns RUUVI_DRIVER_SUCCESS if no errors occured, RUUVI_DRIVER_ERROR_SELFTEST if there was an error.
  */
-ruuvi_driver_status_t test_adc_run(void);
+ruuvi_driver_status_t test_adc_run (void);
 
 #endif

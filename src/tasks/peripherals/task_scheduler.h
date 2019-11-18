@@ -19,6 +19,6 @@
  *
  * returns RUUVI_DRIVER_SUCCESS on success, error code from stack on error
  */
-ruuvi_driver_status_t task_scheduler_init(void);
+ruuvi_driver_status_t task_scheduler_init (void);
 
 #endif

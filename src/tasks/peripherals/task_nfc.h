@@ -43,7 +43,7 @@
  * @return RUUVI_DRIVER_SUCCESS on success
  * 2return error code from stack on error
  */
-ruuvi_driver_status_t task_nfc_init(void);
+ruuvi_driver_status_t task_nfc_init (void);
 
 /**
  * @brief Sets given message to NFC RAM buffer. Clears previous message.
@@ -51,7 +51,7 @@ ruuvi_driver_status_t task_nfc_init(void);
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return error code from stack on error
  */
-ruuvi_driver_status_t task_nfc_send(ruuvi_interface_communication_message_t* message);
+ruuvi_driver_status_t task_nfc_send (ruuvi_interface_communication_message_t * message);
 
 /**
  * @brief Handle Ruuvi communication events from NFC driver
@@ -63,8 +63,8 @@ ruuvi_driver_status_t task_nfc_send(ruuvi_interface_communication_message_t* mes
  * @return RUUVI_DRIVER_SUCCESS if no error occurred
  * @return error code from stack on error.
  */
-ruuvi_driver_status_t task_nfc_on_nfc(ruuvi_interface_communication_evt_t evt,
-                                      void* p_data, size_t data_len);
+ruuvi_driver_status_t task_nfc_on_nfc (ruuvi_interface_communication_evt_t evt,
+                                       void * p_data, size_t data_len);
 
 
 #endif

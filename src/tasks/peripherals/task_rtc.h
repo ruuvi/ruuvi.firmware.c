@@ -18,7 +18,7 @@
  *
  * @return RUUVI_DRIVER_SUCCESS on success
  */
-ruuvi_driver_status_t task_rtc_init(void);
+ruuvi_driver_status_t task_rtc_init (void);
 
 /**
  * @brief Configure logging of sensor data
@@ -31,7 +31,7 @@ ruuvi_driver_status_t task_rtc_init(void);
  * @param[in] interval Logging interval, format TBD
  * @return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED
  */
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target,
+ruuvi_driver_status_t task_rtc_logging_configure (const task_api_data_target_t target,
         const uint8_t interval);
 
 /**
@@ -47,7 +47,7 @@ ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t ta
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return RUUVI_DRIVER_ERROR_INVALID_PARAM if offset is larger negative value than current system time
  */
-ruuvi_driver_status_t task_rtc_millis_offset_set(const int64_t offset);
+ruuvi_driver_status_t task_rtc_millis_offset_set (const int64_t offset);
 
 /**
  * @brief get offset to system clock
@@ -59,7 +59,7 @@ ruuvi_driver_status_t task_rtc_millis_offset_set(const int64_t offset);
  *
  * @return offset to system RTC.
  */
-int64_t task_rtc_millis_offset_get(void);
+int64_t task_rtc_millis_offset_get (void);
 
 /**
  * @brief Get milliseconds since init with summed offset.
@@ -67,7 +67,7 @@ int64_t task_rtc_millis_offset_get(void);
  * @return number of milliseconds since RTC init.
  * @return @c RUUVI_DRIVER_UINT64_INVALID if RTC is not running
   **/
-uint64_t task_rtc_millis(void);
+uint64_t task_rtc_millis (void);
 
 /**
  * @brief wrapper to take incoming big-endian 8-byte offset value and
@@ -75,21 +75,21 @@ uint64_t task_rtc_millis(void);
  *
  * @param[in] bytes 8 bytes representing int64_t offset
  */
-void task_rtc_comapi_offset_set(uint8_t* const bytes);
+void task_rtc_comapi_offset_set (uint8_t * const bytes);
 
 /**
  * @brief wrapper to take int64_t offset and set it to bytes as big-endian.
  *
  * @param[out] bytes 8 bytes representing int64_t offset
  */
-void task_rtc_comapi_offset_get(uint8_t* const bytes);
+void task_rtc_comapi_offset_get (uint8_t * const bytes);
 
 /**
  * @brief wrapper to write current RTC value to given pointer.
  *
  * @param[in] bytes 8 bytes representing milliseconds since rtc_init.
  */
-void task_rtc_comapi_data_get(uint8_t* const bytes);
+void task_rtc_comapi_data_get (uint8_t * const bytes);
 
 /**
  * @brief Get API function pointers from sensor.
@@ -99,9 +99,9 @@ void task_rtc_comapi_data_get(uint8_t* const bytes);
  * @return @c RUUVI_DRIVER_ERROR_NULL if given pointer to api was null
  * @return @c RUUVI_DRIVER_ERROR_INVALID_STATE if sensor was not initialized
  */
-ruuvi_driver_status_t task_rtc_api_get(task_communication_api_t** api);
+ruuvi_driver_status_t task_rtc_api_get (task_communication_api_t ** api);
 
-ruuvi_driver_status_t task_rtc_logging_configure(const task_api_data_target_t target,
+ruuvi_driver_status_t task_rtc_logging_configure (const task_api_data_target_t target,
         const uint8_t interval);
 
 

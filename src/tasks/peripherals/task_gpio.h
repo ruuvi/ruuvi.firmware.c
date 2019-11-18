@@ -30,14 +30,14 @@
  *
  * @return RUUVI_DRIVER_SUCCESS
  */
-ruuvi_driver_status_t task_gpio_init(void);
+ruuvi_driver_status_t task_gpio_init (void);
 
 /**
  * @brief check that GPIO is initialized.
  *
  * @return True if GPIO is initialized, false otherwise.
  */
-bool task_gpio_is_init(void);
+bool task_gpio_is_init (void);
 /*@}*/
 
 #endif

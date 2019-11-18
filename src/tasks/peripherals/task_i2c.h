@@ -48,7 +48,7 @@
  *
  * @warning asserts (reboot / break on debugger) if SCL pin equals SDA pin
  */
-ruuvi_driver_status_t task_i2c_init(void);
+ruuvi_driver_status_t task_i2c_init (void);
 
 
 #endif

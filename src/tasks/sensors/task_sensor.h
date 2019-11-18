@@ -26,9 +26,9 @@
  * @return RUUVI_DRIVER_ERROR_NULL if sensor or config is NULL.
  * @return error code from sensor on other error.
  */
-ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
-        ruuvi_driver_sensor_configuration_t* const config,
-        const char* const unit);
+ruuvi_driver_status_t task_sensor_configure (ruuvi_driver_sensor_t * const sensor,
+        ruuvi_driver_sensor_configuration_t * const config,
+        const char * const unit);
 
 /**
  * @brief Read sensors and encode to given buffer in Ruuvi DF5.
@@ -36,7 +36,7 @@ ruuvi_driver_status_t task_sensor_configure(ruuvi_driver_sensor_t* const sensor,
  * @param[in] buffer uint8_t array with length of 24 bytes.
  * @return RUUVI_DRIVER_SUCCESS if data was encoded
  */
-ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer);
+ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer);
 
 /**
  * @brief Search for requested sensor backend in given list of sensors.
@@ -46,8 +46,9 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5(uint8_t* const buffer);
  * @return pointer to requested sensor if found
  * @return NULL if requested sensor was not found
  */
-ruuvi_driver_sensor_t* task_sensor_find_backend(ruuvi_driver_sensor_t* const sensor_list,
-        const size_t count, const char* const name);
+ruuvi_driver_sensor_t * task_sensor_find_backend (ruuvi_driver_sensor_t * const
+        sensor_list,
+        const size_t count, const char * const name);
 
 /*@}*/
 #endif

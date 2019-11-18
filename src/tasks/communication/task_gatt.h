@@ -29,7 +29,7 @@
  * @return RUUVI_DRIVER_SUCCESS on success
  * @return error code from stack on error
  */
-ruuvi_driver_status_t task_gatt_init(void);
+ruuvi_driver_status_t task_gatt_init (void);
 
 /**
  * @brief Event handler for NUS events
@@ -48,8 +48,8 @@ ruuvi_driver_status_t task_gatt_init(void);
  * @param data_len number of bytes in received data, 0 if p_data is NULL.
  *
  */
-ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
-                                       void* p_data, size_t data_len);
+ruuvi_driver_status_t task_gatt_on_nus (ruuvi_interface_communication_evt_t evt,
+                                        void * p_data, size_t data_len);
 
 /**
  * @brief Send given message via NUS
@@ -63,7 +63,7 @@ ruuvi_driver_status_t task_gatt_on_nus(ruuvi_interface_communication_evt_t evt,
  * @return error code from stack on error
  *
  */
-ruuvi_driver_status_t task_gatt_send_asynchronous(ruuvi_interface_communication_message_t*
+ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t *
         const msg);
 
 

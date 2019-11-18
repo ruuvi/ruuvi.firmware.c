@@ -21,7 +21,7 @@
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
  */
-ruuvi_driver_status_t task_advertisement_init(void);
+ruuvi_driver_status_t task_advertisement_init (void);
 
 /**
  * Uninitializes data advertising.
@@ -32,7 +32,7 @@ ruuvi_driver_status_t task_advertisement_init(void);
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
  */
-ruuvi_driver_status_t task_advertisement_uninit(void);
+ruuvi_driver_status_t task_advertisement_uninit (void);
 
 /**
  * Populate advertisement buffer with initial data.
@@ -41,7 +41,7 @@ ruuvi_driver_status_t task_advertisement_uninit(void);
  * returns error code from stack on error
  *
  */
-ruuvi_driver_status_t advertisement_data_init(void);
+ruuvi_driver_status_t advertisement_data_init (void);
 
 /**
  * Starts advertising. Reads sensors for latest data, but does not initialize sensors themselves
@@ -51,7 +51,7 @@ ruuvi_driver_status_t advertisement_data_init(void);
  * returns error code from stack on error
  *
  */
-ruuvi_driver_status_t task_advertisement_start(void);
+ruuvi_driver_status_t task_advertisement_start (void);
 
 /**
  * Stops advertising.
@@ -59,7 +59,7 @@ ruuvi_driver_status_t task_advertisement_start(void);
  * returns RUUVI_DRIVER_SUCCESS on success
  * returns error code from stack on error
  */
-ruuvi_driver_status_t task_advertisement_stop(void);
+ruuvi_driver_status_t task_advertisement_stop (void);
 
 /** @brief Send given message as a BLE advertisement.
  *
@@ -75,7 +75,7 @@ ruuvi_driver_status_t task_advertisement_stop(void);
  *  @return    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started.
  *  @return    error code from stack on other error.
  */
-ruuvi_driver_status_t task_advertisement_send_data(
-    ruuvi_interface_communication_message_t* const msg);
+ruuvi_driver_status_t task_advertisement_send_data (
+    ruuvi_interface_communication_message_t * const msg);
 
 #endif
