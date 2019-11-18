@@ -7,7 +7,7 @@
 static uint16_t m_activity_led;
 static bool     m_initialized;
 
-static bool is_led(const uint16_t led)
+static bool is_led (const uint16_t led)
 {
     bool led_valid = false;
 #   pragma GCC diagnostic push
@@ -17,12 +17,14 @@ static bool is_led(const uint16_t led)
 
     for (size_t ii = 0u; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
     {
-        if(led == leds[ii].pin)
+        if (led == leds[ii].pin)
         {
             led_valid = true;
         }
+
         break;
     }
+
     return led_valid;
 }
 
@@ -38,10 +40,11 @@ ruuvi_driver_status_t task_led_init (void)
     {
         if (!ruuvi_interface_gpio_is_init())
         {
-          err_code |= ruuvi_interface_gpio_init();
-        }  
+            err_code |= ruuvi_interface_gpio_init();
+        }
     }
-    if(RUUVI_DRIVER_SUCCESS == err_code)
+
+    if (RUUVI_DRIVER_SUCCESS == err_code)
     {
 #       pragma GCC diagnostic push
 #       pragma GCC diagnostic ignored "-Wmissing-braces"
@@ -51,14 +54,15 @@ ruuvi_driver_status_t task_led_init (void)
         for (size_t ii = 0u; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
         {
             err_code |= ruuvi_interface_gpio_configure (leds[ii],
-                          RUUVI_INTERFACE_GPIO_MODE_OUTPUT_HIGHDRIVE);
-            err_code |= ruuvi_interface_gpio_write (leds[ii], 
+                        RUUVI_INTERFACE_GPIO_MODE_OUTPUT_HIGHDRIVE);
+            err_code |= ruuvi_interface_gpio_write (leds[ii],
                                                     !RUUVI_BOARD_LEDS_ACTIVE_STATE);
         }
 
         m_activity_led = RUUVI_INTERFACE_GPIO_ID_UNUSED;
         m_initialized = true;
     }
+
     return err_code;
 }
 
@@ -83,22 +87,23 @@ ruuvi_driver_status_t task_led_uninit (void)
 ruuvi_driver_status_t task_led_write (const uint16_t led, const bool active)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    if(!is_led(led))
+
+    if (!is_led (led))
     {
         err_code |= RUUVI_DRIVER_ERROR_INVALID_PARAM;
     }
-    else if(!m_initialized)
+    else if (!m_initialized)
     {
         err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
     }
     else
     {
-    
         ruuvi_interface_gpio_id_t pin = {.pin = led };
         const ruuvi_interface_gpio_state_t state = active ? RUUVI_INTERFACE_GPIO_HIGH :
                 RUUVI_INTERFACE_GPIO_LOW;
-        err_code |= ruuvi_interface_gpio_write (pin, state); 
+        err_code |= ruuvi_interface_gpio_write (pin, state);
     }
+
     return err_code;
 }
 

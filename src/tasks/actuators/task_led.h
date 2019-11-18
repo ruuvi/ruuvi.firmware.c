@@ -50,12 +50,12 @@ ruuvi_driver_status_t task_led_uninit (void);
 ruuvi_driver_status_t task_led_write (const uint16_t led, const bool state);
 
 /**
- * @brief Function to indicate activity in program. 
- * Led is turned on while program is active 
- * and off while in sleep. 
+ * @brief Function to indicate activity in program.
+ * Led is turned on while program is active
+ * and off while in sleep.
  * Call ruuvi_interface_yield_indication_set to setup this function to be called
- * when entering / leaving sleep for example. 
- * 
+ * when entering / leaving sleep for example.
+ *
  * @param[in] state True to indicate activity, false to indicate sleep.
  */
 void task_led_activity_indicate (const bool state);
@@ -63,7 +63,7 @@ void task_led_activity_indicate (const bool state);
 /**
  * @brief Set LED which is used to indicate activity.
  *
- * This function can be called before GPIO or LEDs are initialized. 
+ * This function can be called before GPIO or LEDs are initialized.
  * Call with RUUVI_INTERFACE_GPIO_ID_UNUSED to disable activity indication.
  *
  * @param[in] led LED to indicate activity with.
