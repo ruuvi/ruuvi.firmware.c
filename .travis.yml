@@ -1,0 +1,52 @@
+language: c
+
+os: linux
+dist: trusty
+# Use full depth for SonarCLoud
+git:
+  depth: false 
+
+before_install:
+  - wget -q -O - https://files.viva64.com/etc/pubkey.txt | sudo apt-key add -
+  - sudo wget https://files.viva64.com/etc/viva64.list -O /etc/apt/sources.list.d/viva64.list
+
+install:
+  - sudo pip install gcovr
+  - sudo apt-get update -qq && sudo apt-get install --assume-yes --quiet gcc-multilib && sudo apt-get install -qq
+  - sudo apt-get -q -y install astyle
+  - sudo apt-get install -qq pvs-studio 
+  - sudo apt-get install -qq doxygen 
+  - gem install ceedling
+  - pvs-studio-analyzer credentials $PVS_USERNAME $PVS_KEY
+
+script:
+  - astyle --recursive "src/main.c" \
+                       "src/application_config/*.h" \
+                       "src/tasks/*.c" \
+                       "src/tasks/*.h" \
+                       "src/tests/*.c" \
+                       "src/tests/*.h"
+  - git diff --exit-code --diff-filter=d --color
+  - build-wrapper-linux-x86-64 --out-dir bw-output make all
+  - ceedling test:all
+  - ceedling gcov:all utils:gcov
+  - gcov /build/gcov/out/*.gcno
+  - sonar-scanner -Dsonar.projectVersion=$TRAVIS_TAG
+
+addons:
+  sonarcloud:
+    organization: "ojousima" # the key of the org you chose at step #3
+    projectKey: "ojousima_ruuvi.firmware.c"
+
+before_deploy:
+  - sed -i '/doxygen/d' .gitignore
+  
+deploy:
+  provider: pages
+  cleanup: false
+  github_token: $GITHUB_TOKEN  # Set in the settings page of your repository, as a secure variable
+  keep_history: false
+  local_dir: doxygen/html
+  edge: true
+  on:
+    branch: master

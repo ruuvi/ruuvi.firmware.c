@@ -1,5 +1,5 @@
 # Source files and includes common for all targets
-COMMON_SOURCES= \
+NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/ble/common/ble_advdata.c \
   $(SDK_ROOT)/components/ble/ble_advertising/ble_advertising.c \
   $(SDK_ROOT)/components/ble/ble_link_ctx_manager/ble_link_ctx_manager.c \
@@ -99,9 +99,9 @@ COMMON_SOURCES= \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twi.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_twim.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
-  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
-  $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
-  $(PROJ_DIR)/main.c \
+  $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
+
+RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
@@ -158,7 +158,10 @@ COMMON_SOURCES= \
   $(PROJ_DIR)/ruuvi.libraries.c/analysis/ruuvi_library_variance.c \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer.c \
   $(PROJ_DIR)/ruuvi.libraries.c/data_structures/ruuvi_library_ringbuffer_test.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/ruuvi_library_test.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/ruuvi_library_test.c
+  
+RUUVI_PRJ_SOURCES= \
+  $(PROJ_DIR)/main.c \
   $(PROJ_DIR)/tasks/actuators/task_led.c \
   $(PROJ_DIR)/tasks/communication/task_advertisement.c \
   $(PROJ_DIR)/tasks/communication/task_communication.c \
@@ -181,6 +184,11 @@ COMMON_SOURCES= \
   $(PROJ_DIR)/tests/test_adc.c \
   $(PROJ_DIR)/tests/test_environmental.c \
   $(PROJ_DIR)/tests/test_library.c
+
+COMMON_SOURCES= \
+  $(RUUVI_LIB_SOURCES) \
+  $(RUUVI_PRJ_SOURCES) \
+  $(NRF_LIB_SOURCES) \
 
 COMMON_INCLUDES= \
   $(SDK_ROOT)/components \
@@ -298,3 +306,5 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/tasks/peripherals \
   $(PROJ_DIR)/tasks/sensors \
   $(PROJ_DIR)/tests/
+
+  STARTUP= $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S

@@ -11,7 +11,7 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 include ${PROJ_DIR}/gcc_sources.make
 
 # Source files common to all targets
-SRC_FILES += ${COMMON_SOURCES}
+SRC_FILES += ${COMMON_SOURCES} $(STARTUP)
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
 

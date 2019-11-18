@@ -25,12 +25,12 @@ Start SES and open `ruuvi.firmware.c.emProject` at root level, each of the targe
 Code is formatted with [Artistic Style](http://astyle.sourceforge.net). 
 Run `astyle --project=.astylerc ./target_file`. To format the entire project,
 ```
-astyle --project=.astylerc "./main.c"
-astyle --project=.astylerc --recursive "./application_config/*.h"
-astyle --project=.astylerc --recursive "./tasks/*.c"
-astyle --project=.astylerc --recursive "./tasks/*.h"
-astyle --project=.astylerc --recursive "./tests/*.c"
-astyle --project=.astylerc --recursive "./tests/*.h"
+astyle --project=.astylerc "src/main.c"
+astyle --project=.astylerc --recursive "src/application_config/*.h"
+astyle --project=.astylerc --recursive "src/tasks/*.c"
+astyle --project=.astylerc --recursive "src/tasks/*.h"
+astyle --project=.astylerc --recursive "src/tests/*.c"
+astyle --project=.astylerc --recursive "src/tests/*.h"
 ```
 
 ## Static analysis
@@ -45,8 +45,7 @@ _preprocess.sh_ is a ready preprocessor script, it must be updated if CFLAGS or 
 Then each file must be anayzed by PVS, pvs.sh has an example on running analysis.
 Finally the PVS output must be formatted into human-readable format via plog.
 ```
-plog-converter -a 'GA:1,2;64:1;OP:1,2,3;CS:1;MISRA:1,2' -d V677 -t fullhtml -o issues _build/nrf52832_xxaa/*.PVS-Studio.log
-plog-converter -a 'GA:1,2;64:1;OP:1,2,3;CS:1;MISRA:1,2' -d V677 -t tasklist -o issues _build/nrf52832_xxaa/*.PVS-Studio.log
+plog-converter -a 'GA:1,2;64:1;OP:1,2,3;CS:1;MISRA:1,2' -t fullhtml -o issues _build/nrf52832_xxaa/*.PVS-Studio.log
 ```
 
 This results into thousands of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related
@@ -55,6 +54,15 @@ to 64-bit systems.
 ### Sonar scan
 Put your user token into _sonar_password.sh_, for example
 `export SONAR_PASSWORD=REALLYCOOLTOKEN`. Then run `./sonar_scan.sh`.
+
+# Running unit tests
+## Ceedling
+Unit tests are implemented with Ceedling. Run the tests with
+`ceedling test:all`
+
+### Gcov
+Ceedling can also generate Gcov reports with `ceedling gcov:all utils:gcov`.
+The report can be foun under _build/artifacts/gcov_.
 
 # Usage
 Compile and flash the project to your board using SES. Instructions on how to use a bootloader will be added later on.
@@ -70,6 +78,16 @@ Is the structure of the project sensible to you? Pull requests and GitHub issues
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.28.6
+  - Add Travis CI and SonarCloud support
+
+## 3.28.5
+  - Convert project to use Ceedling for unit tests.
+
+## 3.28.1 ... 3.28.4
+  - Bugfixes
+  - Add longlife-logging
+
 ## 3.28.0
   - Fix storing and loading sensor configurations
   - Store fatal error sources to flash before reboot.

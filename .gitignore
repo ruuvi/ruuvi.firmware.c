@@ -78,6 +78,8 @@ memory_profile.sh
 piechart.py
 build-wrapper-macosx-x86
 sonar_password.sh
+*.i
+*.log
 
 # Code analysis tool outputs
 .scannerwork/
@@ -94,3 +96,7 @@ build
 
 # SDKs
 nRF5_SDK_15.3.0_59ac345
+
+# Doxygen output
+doxygen/
+doxygen.error

@@ -1,85 +1,80 @@
-# braces 
+# This astylerc tries to follow BARR-C:2018
+
+# Section 1.
+# 1.2 - Line Widths
+
+# 90 chars to fit github gist embedded in medium -- BARR-C:2018 recommends 80, deviation.
+--max-code-length=90
+
+# 1.3 - Braces
 #  foo
 #  {
 #     bar();
 #  }
 --style=break
 
-# extern "c" {
---attach-extern-c
-
+# Deviation - attach closing while -- BARR-C:2018 does not define exceptions.
 #  do
 #  {
 #    foo();
 #  } while(bar());
 --attach-closing-while
 
-#  switch(foo)
-#  {
-#     case bar:
-#  	    baz();
-#  }
---indent-switches
+# Deviation - attach extern "C" -- BARR-C:2018 does not define exceptions.
+# extern "C" {
+--attach-extern-c
 
-# Indent by 2 spaces
---indent=spaces=2
---convert-tabs
+# 3 - White Space Rules
+# 3.1 - Spaces
+# if (bar * baz == foo)
+--pad-oper
+--pad-paren-out
 
-# #ifndef FOO
-#   #define FOO BAR
-# #endif
---indent-preproc-block
+# char * foo
+--align-pointer=middle
 
-#  while(foo)
-#  {
-#    #if BAR
-#    baz();
-#    #else
-#    !baz();
-#    #endif
-#  }
---indent-preproc-cond
+# remove space not requested above, i.e. bar ( baz, foo ) => bar (baz, foo)
+--unpad-paren
 
-#  while(foo)
-#  {
-#    // Bar baz
-#    bar(baz);	
-#  }
---indent-col1-comments
+# 3.3 - Blank lines
+# Remove extra lines
+--delete-empty-lines
+
+#   if(foo)
+#   { 
+#     bar(); 
+#     baz(); 
+#    }
+--add-one-line-braces
 
 #  baz = 1;
 #
 #  if(foo)
 #  {
-#  	 bar = 2;
+#    bar = 2;
 #  }
 #  else
 #  {
-#  	 bar = 1;
+#    bar = 1;
 #  }
 #
 #  foo = bar + baz;
 --break-blocks
 
-# if(bar * baz == foo)
---pad-oper
-
-# remove space not requested above, i.e. bar ( baz, foo ) => bar(baz, foo)
---unpad-paren
-
-# Remove extra lines
---delete-empty-lines
-
-# char* foo
---align-pointer=type
-
-#   if(foo)
-#     { bar(); baz(); }
---add-one-line-braces
---keep-one-line-blocks
-
-# 90 chars to fit github gist embedded in medium
---max-code-length=90
-
 # End lines with LF
 --lineend=linux 
+
+
+# Indent by 4 spaces
+--indent=spaces=4
+--convert-tabs
+
+# Desired indentation for preprocessor cannot be implemented with AStyle as of 2019Q4
+
+#  while(foo)
+#  {
+#    // Bar baz
+#    bar(baz);  
+#  }
+--indent-col1-comments
+
