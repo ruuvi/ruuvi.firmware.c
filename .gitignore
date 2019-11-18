@@ -87,6 +87,7 @@ infer-out/
 log.txt
 sizes.txt
 issues/
+*.gcov
 
 # Ceedling machine generated output
 build
