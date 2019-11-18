@@ -13,11 +13,18 @@ before_install:
 install:
   - sudo pip install gcovr
   - sudo apt-get update -qq && sudo apt-get install --assume-yes --quiet gcc-multilib && sudo apt-get install -qq
-  - sudo apt-get -q -y install astyle
   - sudo apt-get install -qq pvs-studio 
   - sudo apt-get install -qq doxygen 
   - gem install ceedling
   - pvs-studio-analyzer credentials $PVS_USERNAME $PVS_KEY
+  - |
+    wget -q https://sourceforge.net/projects/astyle/files/astyle/astyle%203.1/astyle_3.1_linux.tar.gz/download -O astyle.tar.gz
+    tar -xvf astyle.tar.gz
+    cd astyle
+    mkdir as-gcc-exe
+    cd as-gcc-exe
+    cmake  ../
+    make
 
 script:
   - |
