@@ -26,6 +26,7 @@ install:
     cmake  ../
     make
     sudo make install
+    cd ../../
 
 script:
   - |
@@ -34,14 +35,13 @@ script:
       unzip -q nRF5_SDK_15.3.0_59ac345.zip
     fi
   - |
-    export ARTISTIC_STYLE_OPTIONS=".astylerc"
-    astyle --recursive \
+    astyle --project=".astylerc" --recursive \
            "src/application_config/*.h" \
            "src/tasks/*.c" \
            "src/tasks/*.h" \
            "src/tests/*.c" \
            "src/tests/*.h"
-  - astyle "src/main.c"
+  - astyle --project=".astylerc" "src/main.c"
   - git diff --exit-code --diff-filter=d --color
   - build-wrapper-linux-x86-64 --out-dir bw-output make all
   - ceedling test:all
