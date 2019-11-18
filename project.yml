@@ -102,4 +102,13 @@
     - stdout_pretty_tests_report
     - module_generator
     - gcov 
+
+:flags:
+  :test:
+    :compile:
+      :*:
+        - -Wall
+        - -Wno-tautological-pointer-compare # Cmock may create these, so ignore
+        - -Werror
+        - -std=c99
 ...
