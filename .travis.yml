@@ -20,9 +20,10 @@ install:
   - pvs-studio-analyzer credentials $PVS_USERNAME $PVS_KEY
 
 script:
-  - if [ ! -d "nRF5_SDK_15.3.0_59ac345" ]; then \
-      wget -nc https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip \
-      unzip -n nRF5_SDK_15.3.0_59ac345.zip \
+  - |
+    if [ ! -d "nRF5_SDK_15.3.0_59ac345" ]; then
+      wget -nc https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip;
+      unzip -n nRF5_SDK_15.3.0_59ac345.zip;
     fi
   - astyle --recursive "src/main.c" \
                        "src/application_config/*.h" \
