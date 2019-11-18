@@ -15,7 +15,7 @@ static bool is_led (const uint16_t led)
     const ruuvi_interface_gpio_id_t leds[RUUVI_BOARD_LEDS_NUMBER] = RUUVI_BOARD_LEDS_LIST;
 #   pragma GCC diagnostic pop
 
-    for (size_t ii = 0u; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
+    for (size_t ii = 0U; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
     {
         if (led == leds[ii].pin)
         {
@@ -74,7 +74,7 @@ ruuvi_driver_status_t task_led_uninit (void)
     ruuvi_interface_gpio_id_t leds[RUUVI_BOARD_LEDS_NUMBER] = RUUVI_BOARD_LEDS_LIST;
 #pragma GCC diagnostic pop
 
-    for (size_t ii = 0u; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
+    for (size_t ii = 0U; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
     {
         err_code |= ruuvi_interface_gpio_configure (leds[ii], RUUVI_INTERFACE_GPIO_MODE_HIGH_Z);
     }
@@ -120,7 +120,7 @@ ruuvi_driver_status_t task_led_activity_led_set (uint16_t led)
 #pragma GCC diagnostic pop
     m_activity_led = RUUVI_INTERFACE_GPIO_ID_UNUSED;
 
-    for (size_t ii = 0u; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
+    for (size_t ii = 0U; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
     {
         if (leds[ii].pin == led)
         {

@@ -216,7 +216,7 @@ PROJ_DIR := src
 include ${PROJ_DIR}/gcc_sources.make
 
 CFLAGS=-c  -Wall -pedantic -Wno-variadic-macros -Wno-long-long -Wno-shadow -std=c99
-CFLAGS += -DBOARD_KAARLE
+CFLAGS += -DBOARD_RUUVITAG
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52
 CFLAGS += -DNRF52832_XXAA
