@@ -46,7 +46,7 @@ script:
   - build-wrapper-linux-x86-64 --out-dir bw-output make all
   - ceedling test:all
   - ceedling gcov:all utils:gcov
-  - gcov /build/gcov/out/*.gcno
+  - gcov build/gcov/out/*.gcno
   - sonar-scanner -Dsonar.projectVersion=$TRAVIS_TAG
 
 cache:
