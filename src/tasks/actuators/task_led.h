@@ -1,46 +1,6 @@
 #ifndef  TASK_LED_H
 #define  TASK_LED_H
 
-/**
- * @defgroup actuator_tasks  Interacting with outside world
- */
-/*@{*/
-/**
- * @defgroup led_tasks LED tasks
- * @brief LED functions
- *
- */
-/*@}*/
-/**
- * @addtogroup led_tasks
- */
-/*@{*/
-/**
- * @file task_led.h
- * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2019-11-18
- * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- *
- * LED control.
- *
- * Typical usage:
- *
- * @code{.c}
- *  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
- *  err_code = task_gpio_init();
- *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
- *  err_code = task_led_init();
- *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
- *  err_code = task_led_write (RUUVI_BOARD_LED_GREEN, RUUVI_BOARD_LEDS_ACTIVE_STATE);
- *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
- *  err_code = task_led_activity_led_set (RUUVI_BOARD_LED_GREEN);
- *  ruuvi_interface_yield_indication_set (task_led_activity_indicate);
- *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
- *  _do_stuff_();
- *  err_code = task_led_uninit();
- *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
- * @endcode
- */
 
 
 #include "ruuvi_boards.h"

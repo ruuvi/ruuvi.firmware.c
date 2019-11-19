@@ -1,36 +1,67 @@
-/**
- * Ruuvi Firmware 3.x advertisement tasks.
- *
- * License: BSD-3
- * Author: Otso Jousimaa <otso@ojousima.net>
- **/
-
 #ifndef  TASK_ADVERTISEMENT_H
 #define  TASK_ADVERTISEMENT_H
+
+/**
+ * @defgroup communication_tasks Sending and receiveing data. 
+ */
+/*@{*/
+/**
+ * @defgroup advertisement_tasks Advertisement tasks
+ * @brief Bluetooth Low Energy advertising
+ *
+ */
+/*@}*/
+/**
+ * @addtogroup advertisement_tasks
+ */
+/*@{*/
+/**
+ * @file task_advertisement.h
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2019-11-19
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ *
+ * Advertising data and GATT connection if available
+ *
+ * @warning In middle of refactoring, doesn't do what you'd expect and does what you don't expect.
+ *
+ * Typical usage:
+ *
+ * @code{.c}
+ *  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+ *  err_code = task_advertisement_init();
+ *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
+ *  err_code = advertisement_data_init();
+ *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
+ *  err_code = task_advertisement_start();
+ *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
+ * @endcode
+ */
 
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_communication_ble4_advertising.h"
 
 /**
- * Initializes data advertising.
+ * @brief Initializes data advertising.
  *
- * After calling this function radio module has been reserved to ble4 advertisements.
- * Parameters such as advertisement intercal and power are defined in application_config.h
- * Requires that timers have been initialized.
+ * Parameters such as advertisement interval and power are defined in application_config.h
+ * Initializes timers if timers haven't been initialized.
+ * After calling this function advertisement data can be queued 
  *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns error code from stack on error
+ * @retval @c RUUVI_DRIVER_SUCCESS on success
+ * @retval @c RUUVI_DRIVER_ERROR_INVALID_STATE
  */
 ruuvi_driver_status_t task_advertisement_init (void);
 
 /**
- * Uninitializes data advertising.
+ * @brief Uninitializes data advertising.
  *
- * After calling this function radio module has been released if it was reserved to ble4 advertisements.
  * Can be called even if advertising was not initialized.
+ * Does not uninitialize timers even if they were initialized for advertisement module.
+ * Clears previous advertisement data if there was any.
  *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns error code from stack on error
+ * @retval @c RUUVI_DRIVER_SUCCESS on success
+ * @retval error code from stack on error
  */
 ruuvi_driver_status_t task_advertisement_uninit (void);
 
