@@ -43,7 +43,7 @@ astyle --project=.astylerc --recursive "src/tests/*.h"
 ```
 
 ## Static analysis
-The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. (Here)[https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html] is a link to generated report which gets pushed to GitHub.
+The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html) is a link to generated report which gets pushed to GitHub.
 
 
 ### PVS
@@ -54,8 +54,9 @@ Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml.
 This results into hundreds of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
 
 ### Sonar scan
-SonarScan pushes the results to SonarCloud.IO, you'll need to fork the project to get
-access to scanner under your own organization. 
+Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c).
+SonarCloud uses access token which is private to Ruuvi, you'll need to fork the project and setup
+the SonarCloud under your own account if you wish to run Sonar Scan on your own code.
 
 # Running unit tests
 ## Ceedling
@@ -64,7 +65,10 @@ Unit tests are implemented with Ceedling. Run the tests with
 
 ### Gcov
 Ceedling can also generate Gcov reports with `ceedling gcov:all utils:gcov`.
-The report can be foun under _build/artifacts/gcov_.
+The report can be found under _build/artifacts/gcov_.
+
+## Unit test continuous integration
+Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
 
 # Usage
 Compile and flash the project to your board using SES. Instructions on how to use a bootloader will be added later on.
@@ -78,7 +82,7 @@ Is the structure of the project sensible to you?
 
 If you want to assist in the project maintenance by fixing some issues _doxygen.error_ is
 a good place to look for code which needs better commenting. Project badges at the top of the
-readme point to issues which range from trivial to complex refactoring. 
+readme point to issues which range from trivial clarifications to complex refactoring. 
 
 If you want to add new features, please discuss the feature first, and then create ceedling
 unit tests for the functionality. Once the functionality is agreed and testable in can be integrated
