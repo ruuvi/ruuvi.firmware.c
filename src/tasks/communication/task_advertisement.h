@@ -2,7 +2,7 @@
 #define  TASK_ADVERTISEMENT_H
 
 /**
- * @defgroup communication_tasks Sending and receiveing data. 
+ * @defgroup communication_tasks Sending and receiveing data.
  */
 /*@{*/
 /**
@@ -46,7 +46,7 @@
  *
  * Parameters such as advertisement interval and power are defined in application_config.h
  * Initializes timers if timers haven't been initialized.
- * After calling this function advertisement data can be queued 
+ * After calling this function advertisement data can be queued
  *
  * @retval @c RUUVI_DRIVER_SUCCESS on success
  * @retval @c RUUVI_DRIVER_ERROR_INVALID_STATE
