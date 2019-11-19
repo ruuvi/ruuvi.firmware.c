@@ -62,7 +62,6 @@ ruuvi_driver_status_t task_acceleration_configuration_store (const
  * @brief Get latest sample from the sensor.
  * Call to this function fetches data from sensor, however it does not trigger sampling.
  * Remember to trigger sampling in case you're in single-shot mode.
- * The data will be offset with values given in @ref task_acceleration_offset_apply.
  *
  * @param [in] data structure which will be filled with acceleration data.
  * @return @c RUUVI_DRIVER_SUCCESS on success

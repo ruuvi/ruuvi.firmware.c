@@ -31,7 +31,7 @@
  *  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
  *  err_code = task_advertisement_init();
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
- *  err_code = advertisement_data_init();
+ *  err_code = task_advertisement_send_data();
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
  *  err_code = task_advertisement_start();
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
@@ -44,12 +44,17 @@
 /**
  * @brief Initializes data advertising.
  *
- * Parameters such as advertisement interval and power are defined in application_config.h
- * Initializes timers if timers haven't been initialized.
- * After calling this function advertisement data can be queued
+ * The function setups advertisement interval, advertisement power, advertisement type,
+ * manufacturer ID for manufacturer specific data according to constants in
+ * application_config.h and ruuvi_boards.h.
  *
- * @retval @c RUUVI_DRIVER_SUCCESS on success
- * @retval @c RUUVI_DRIVER_ERROR_INVALID_STATE
+ * It also configures a callback to be executed after advertisement for internal use.
+ * After calling this function advertisement data can be queued into advertisement buffer.
+ * You should queue at least one message into buffer before starting advertising.
+ *
+ * @retval @c RUUVI_DRIVER_SUCCESS on success.
+ * @retval @c RUUVI_DRIVER_ERROR_INVALID_STATE if advertising is already initialized.
+ * @®etval @c RUUVI_DRIVER_ERROR_INVALID_PARAM if configuration constant is invalid.
  */
 ruuvi_driver_status_t task_advertisement_init (void);
 
@@ -57,7 +62,6 @@ ruuvi_driver_status_t task_advertisement_init (void);
  * @brief Uninitializes data advertising.
  *
  * Can be called even if advertising was not initialized.
- * Does not uninitialize timers even if they were initialized for advertisement module.
  * Clears previous advertisement data if there was any.
  *
  * @retval @c RUUVI_DRIVER_SUCCESS on success
@@ -66,29 +70,25 @@ ruuvi_driver_status_t task_advertisement_init (void);
 ruuvi_driver_status_t task_advertisement_uninit (void);
 
 /**
- * Populate advertisement buffer with initial data.
+ * @brief Starts advertising.
  *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns error code from stack on error
+ * Before this function is called, you must initialize advertising and should
+ * set some data into advertisement buffer. Otherwise empty advertisement packets are sent.
+ * It might be desirable to send empty advertisement payloads as GATT connection
+ * advertisements piggyback on data advertisements.
  *
- */
-ruuvi_driver_status_t advertisement_data_init (void);
-
-/**
- * Starts advertising. Reads sensors for latest data, but does not initialize sensors themselves
- *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns RUUVI_DRIVER_ERROR_INVALID_STATE if advertising is not initialized.
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if advertising is not initialized.
  * returns error code from stack on error
  *
  */
 ruuvi_driver_status_t task_advertisement_start (void);
 
 /**
- * Stops advertising.
+ * @brief Stops advertising.
  *
- * returns RUUVI_DRIVER_SUCCESS on success
- * returns error code from stack on error
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval error code from stack on error
  */
 ruuvi_driver_status_t task_advertisement_stop (void);
 
@@ -96,17 +96,44 @@ ruuvi_driver_status_t task_advertisement_stop (void);
  *
  *  This function configures the primary advertisement packet with the flags and manufacturer specific data.
  *  Payload of the msg will be sent as the manufacturer specific data payload.
- *  Manufacturer ID is defined by RUUVI_BOARD_BLE_MANUFACTURER_ID in ruuvi_board.h.
+ *  Manufacturer ID is defined by RUUVI_BOARD_BLE_MANUFACTURER_ID in ruuvi_boards.h.
  *
- *  If the device is connectable, call @ref task_gatt_init to setup the scan response and flags to advertise
- *  connectability.
+ *  If the device is connectable, call @ref task_advertisement_connectability to setup the
+ *  scan response and flags to advertise connectability.
  *
  *  @param[in] msg message to be sent as manufacturer specific data payload
- *  @return    RUUVI_DRIVER_ERROR_NULL if msg is NULL
- *  @return    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started.
- *  @return    error code from stack on other error.
+ *  @retval    RUUVI_DRIVER_ERROR_NULL if msg is NULL
+ *  @retval    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started.
+ *  @retval    RUUVI_DRIVER_ERROR_DATA_SIZE if payload size is larger than 24 bytes
+ *  @retval    error code from stack on other error.
  */
 ruuvi_driver_status_t task_advertisement_send_data (
     ruuvi_interface_communication_message_t * const msg);
+
+/** @brief Start advertising BLE GATT connection
+ *
+ *  This function configures the primary advertisement to be SCANNABLE_CONNECTABLE and
+ *  sets up a scan response which has given device name (max 10 characters + NULL)
+ *  and UUID of Nordic UART Service.
+ *
+ *  Be sure to configure the GATT before calling this function, as behaviour is undefined
+ *  if someone tries to connect to tag while GATT is not configured.
+ *
+ *  @param[in] enable true to enable connectability, false to disable.
+ *  @param[in] name NULL-terminated string representing device name, max 10 Chars + NULL.
+ *  @retval    RUUVI_DRIVER_SUCCESS if operation was finished as expected.
+ *  @retval    RUUVI_DRIVER_ERROR_NULL if name is NULL and trying to enable the scan response
+ *  @retval    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started.
+ *  @retval    RUUVI_DRIVER_ERROR_INVALID_LENGTH if name size exceeds 10 bytes + NULL
+ *  @retval    error code from stack on other error.
+ */
+ruuvi_driver_status_t task_advertisement_connectability_set (const bool enable,
+        const char * const device_name);
+
+/** @brief check if advertisement is initialized
+ *  @return true if advertisement is initialized, false otherwise.
+ */
+bool task_advertisement_is_init (void);
+/*@}*/
 
 #endif
