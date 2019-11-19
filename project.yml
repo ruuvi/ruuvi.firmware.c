@@ -62,6 +62,9 @@
   :plugins:
     - :ignore
     - :callback
+    - :return_thru_ptr
+    - :array
+    - :expect_any_args
   :treat_as:
     uint8:    HEX8
     uint16:   HEX16
@@ -108,12 +111,10 @@
     :compile:
       :*:
         - -Wall
-        - -Wno-tautological-pointer-compare # Cmock may create these, so ignore
         - -std=c99
   :gcov:
     :compile:
       :*:
         - -Wall
-        - -Wno-tautological-pointer-compare # Cmock may create these, so ignore
         - -std=c99
 ...
