@@ -22,6 +22,6 @@ ruuvi_driver_status_t task_gpio_init()
 
 bool task_gpio_is_init()
 {
-    return ruuvi_interface_gpio_interrupt_is_init()
+    return ruuvi_interface_gpio_is_init()
            && ruuvi_interface_gpio_interrupt_is_init();
 }
