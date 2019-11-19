@@ -185,6 +185,17 @@ void test_task_led_activity_led_set_valid ()
     TEST_ASSERT(RUUVI_BOARD_LED_1 == led);
 }
 
+void test_task_led_activity_led_set_unused ()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    err_code |= task_led_activity_led_set(RUUVI_INTERFACE_GPIO_ID_UNUSED);
+    task_led_activity_indicate(true);
+    task_led_activity_indicate(false);
+    uint16_t led = task_led_activity_led_get();
+    TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
+    TEST_ASSERT(RUUVI_INTERFACE_GPIO_ID_UNUSED == led);
+}
+
 void test_task_led_activity_led_set_invalid ()
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
