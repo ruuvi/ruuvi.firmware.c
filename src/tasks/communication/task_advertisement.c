@@ -26,7 +26,18 @@
 #include "task_communication.h"
 #include "task_environmental.h"
 
-#include <string.h>
+// https://github.com/arm-embedded/gcc-arm-none-eabi.debian/blob/master/src/libiberty/strnlen.c
+// Not included when compiled with std=c99.
+static size_t safe_strlen (const char * s, size_t maxlen)
+{
+    size_t i;
+
+    for (i = 0; i < maxlen; ++i)
+        if (s[i] == '\0')
+        { break; }
+
+    return i;
+}
 
 static ruuvi_interface_communication_t m_channel;
 static bool m_is_init;
@@ -156,7 +167,7 @@ ruuvi_driver_status_t task_advertisement_connectability_set (const bool enable,
     {
         err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-    else if (10 < strnlen (device_name, 11))
+    else if (10 < safe_strlen (device_name, 11))
     {
         // TODO - #define 10
         err_code |= RUUVI_DRIVER_ERROR_INVALID_LENGTH;
