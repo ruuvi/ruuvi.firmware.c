@@ -1,3 +1,14 @@
+/**
+  * @addtogroup led_tasks
+  */
+/*@{*/
+/**
+ * @file task_led.c
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2019-11-19
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ */
+
 #include "task_led.h"
 #include "task_environmental.h"
 #include "ruuvi_driver_error.h"
@@ -164,3 +175,4 @@ uint16_t task_led_activity_led_get (void)
 {
     return m_activity_led;
 }
+/*@}*/

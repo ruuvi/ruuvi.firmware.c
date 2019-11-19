@@ -270,4 +270,5 @@ astyle:
            "src/tasks/*.c" \
            "src/tasks/*.h" \
            "src/tests/*.c" \
-           "src/tests/*.h"
+           "src/tests/*.h" \
+           "test/*.c"
