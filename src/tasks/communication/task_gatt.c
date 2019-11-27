@@ -271,8 +271,7 @@ ruuvi_driver_status_t task_gatt_on_nus (ruuvi_interface_communication_evt_t evt,
  * @return RUUVI_DRIVER_ERROR_NO_MEM if message cannot be queued due to buffers being full.
  */
 ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t
-        *
-        const msg)
+        * const msg)
 {
     // State, input check
     if (NULL == msg)

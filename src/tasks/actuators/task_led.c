@@ -10,7 +10,6 @@
  */
 
 #include "task_led.h"
-#include "task_environmental.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_gpio.h"
 #include <stddef.h>

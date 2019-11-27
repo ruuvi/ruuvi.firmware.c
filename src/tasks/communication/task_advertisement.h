@@ -21,9 +21,8 @@
  * @date 2019-11-19
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  *
- * Advertising data and GATT connection if available
+ * Advertise data and GATT connection if available.
  *
- * @warning In middle of refactoring, doesn't do what you'd expect and does what you don't expect.
  *
  * Typical usage:
  *

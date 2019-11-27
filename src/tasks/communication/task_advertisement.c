@@ -8,11 +8,7 @@
  * @date 2019-11-19
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  *
- * Advertising data and GATT connection if available
- *
- * @warning In middle of refactoring, doesn't do what you'd expect and does what you don't expect.
- *
- * Typical usage:
+ * Advertise data and GATT connection if available.
  */
 
 #include "application_config.h"
@@ -20,11 +16,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_communication_ble4_advertising.h"
 #include "ruuvi_interface_communication_radio.h"
-#include "ruuvi_interface_scheduler.h"
-#include "ruuvi_interface_timer.h"
 #include "task_advertisement.h"
-#include "task_communication.h"
-#include "task_environmental.h"
 
 // https://github.com/arm-embedded/gcc-arm-none-eabi.debian/blob/master/src/libiberty/strnlen.c
 // Not included when compiled with std=c99.
