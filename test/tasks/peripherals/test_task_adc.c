@@ -17,7 +17,8 @@ static volatile ruuvi_interface_atomic_t m_false = false;
 static ruuvi_driver_sensor_t m_sensor_init =
 {
     .mode_set = ruuvi_interface_adc_mcu_mode_set,
-    .configuration_set = ruuvi_driver_sensor_configuration_set
+    .configuration_set = ruuvi_driver_sensor_configuration_set,
+    .data_get = ruuvi_interface_adc_mcu_data_get
 };
 
 static ruuvi_driver_sensor_t m_sensor_uninit;
@@ -194,11 +195,10 @@ void test_task_adc_voltage_get_ok(void)
   adc_data.data = data;
   adc_data.fields.datas.voltage_v = 1;
 
-  test_task_adc_configure_se_ok();
   test_task_adc_sample_ok();
   ruuvi_interface_adc_mcu_data_get_ExpectAnyArgsAndReturn(RUUVI_DRIVER_SUCCESS);
   ruuvi_interface_adc_mcu_data_get_ReturnArrayThruPtr_data(&m_adc_data, 1);
-  err_code = task_adc_voltage_get (&adc_data);
+  err_code = task_adc_voltage_get(&adc_data);
 
   TEST_ASSERT(true == adc_data.valid.datas.voltage_v);
   TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);

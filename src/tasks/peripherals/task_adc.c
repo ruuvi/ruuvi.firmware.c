@@ -45,6 +45,7 @@ ruuvi_driver_status_t task_adc_uninit (void)
   }
   else
   {
+    m_is_configured = false;
     err_code = ruuvi_interface_adc_mcu_uninit(&m_adc, RUUVI_DRIVER_BUS_NONE, 0);
   }
   return err_code;
@@ -56,7 +57,7 @@ ruuvi_driver_status_t task_adc_uninit (void)
  * @retval true if ADC is initialized.
  * @retval false if ADC is not initialized.
  */
-bool task_adc_is_init (void)
+inline bool task_adc_is_init (void)
 {
   return (0 != m_is_init);
 }
@@ -80,7 +81,29 @@ bool task_adc_is_init (void)
  */
 ruuvi_driver_status_t task_adc_configure_se(ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode_t mode)
 {
-  return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  if(!task_adc_is_init() || m_is_configured)
+  {
+    err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
+  }
+  else
+  { 
+    // TODO: Support ratiometric
+    if(ABSOLUTE == mode)
+    {
+      err_code |= ruuvi_interface_adc_mcu_init(&m_adc, RUUVI_DRIVER_BUS_NONE, handle);
+      err_code |= m_adc.configuration_set(&m_adc, config);
+    }
+    else
+    {
+      err_code |= RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
+    }
+  }
+  if(RUUVI_DRIVER_SUCCESS == err_code)
+  {
+    m_is_configured = true;
+  }
+  return err_code;
 }
 
 /**
@@ -94,7 +117,16 @@ ruuvi_driver_status_t task_adc_configure_se(ruuvi_driver_sensor_configuration_t*
  */
 ruuvi_driver_status_t task_adc_sample(void)
 {
-  return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  if(!task_adc_is_init || !m_is_configured)
+  {
+    err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
+  }
+  else
+  {
+    err_code |= m_adc.mode_set(RUUVI_DRIVER_SENSOR_CFG_SINGLE);
+  }
+  return err_code;
 }
 
 /**
@@ -109,7 +141,16 @@ ruuvi_driver_status_t task_adc_sample(void)
  */
 ruuvi_driver_status_t task_adc_voltage_get (ruuvi_driver_sensor_data_t * const data)
 {
-  return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  if(!task_adc_is_init() || !m_is_configured)
+  {
+    err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
+  }
+  else
+  {
+    err_code |= m_adc.data_get(data);
+  }
+  return err_code;
 }
 
 /**
