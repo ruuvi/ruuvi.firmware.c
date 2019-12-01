@@ -20,9 +20,9 @@
  * Read ADC. Important: The ADC peripheral is shared by many different functions
  * onboard, so always uninitialize the ADC after use to let others use the peripheral.
  * Likewise important: The ADC might be in use while you need it, so <b>always</b> check
- * the return code from init and <b>do no block</b> if you can't get ADC lock. 
- * 
- * ADC lock must be atomic, and it requires the ruuvi_interface_atomic implementation. 
+ * the return code from init and <b>do no block</b> if you can't get ADC lock.
+ *
+ * ADC lock must be atomic, and it requires the ruuvi_interface_atomic implementation.
  *
  * Typical usage:
  *
@@ -47,11 +47,11 @@
 #include "ruuvi_interface_adc.h"
 #include "ruuvi_interface_log.h"
 
-typedef enum 
+typedef enum
 {
-  RATIOMETRIC,    //!< ADC compares value to VDD
-  ABSOLUTE        //!< ADC measures absolute voltage in volts
-}task_adc_mode_t; //!< ADC against absolute reference or ratio to VDD
+    RATIOMETRIC,    //!< ADC compares value to VDD
+    ABSOLUTE        //!< ADC measures absolute voltage in volts
+} task_adc_mode_t; //!< ADC against absolute reference or ratio to VDD
 
 /**
  * @brief Reserve ADC
@@ -80,9 +80,9 @@ bool task_adc_is_init (void);
 /**
  * @brief Configure ADC before sampling
  *
- * This function readies the ADC for sampling. 
+ * This function readies the ADC for sampling.
  * Configuring the ADC may take some time (< 1 ms) while actual sample must be as fast.
- * as possible to catch transients. 
+ * as possible to catch transients.
  *
  * <b>Note:</b> ADC should be configured to sleep or continuous mode. To take a single sample,
  * call @ref task_adc_sample_se after configuration. Configuring ADC into single sample mode is
@@ -94,7 +94,8 @@ bool task_adc_is_init (void);
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or if it is already configured.
  */
-ruuvi_driver_status_t task_adc_configure_se(ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode_t mode);
+ruuvi_driver_status_t task_adc_configure_se (ruuvi_driver_sensor_configuration_t * const
+        config, const uint8_t handle, const task_adc_mode_t mode);
 
 /**
  * @brief Take a new sample on ADC configured in single-shot/sleep mode
@@ -105,12 +106,12 @@ ruuvi_driver_status_t task_adc_configure_se(ruuvi_driver_sensor_configuration_t*
  * @retval RUUVI_DRIVER_SUCCESS Sampling was successful
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE ADC is not initialized or configured
  */
-ruuvi_driver_status_t task_adc_sample(void);
+ruuvi_driver_status_t task_adc_sample (void);
 
 /**
- * @brief Populate data with latest sample. 
+ * @brief Populate data with latest sample.
  *
- * The data is absolute voltage relative to device ground. 
+ * The data is absolute voltage relative to device ground.
  *
  * @param[in] data Data which has a field for absolute ADC value
  * @retval RUUVI_DRIVER_SUCCESS on success
@@ -120,10 +121,10 @@ ruuvi_driver_status_t task_adc_sample(void);
 ruuvi_driver_status_t task_adc_voltage_get (ruuvi_driver_sensor_data_t * const data);
 
 /**
- * @brief Populate data with latest ratiometric value. 
+ * @brief Populate data with latest ratiometric value.
  *
- * The data is ratio between 0.0 (gnd) and 1.0 (VDD). However the implementation is 
- * allowed to return negative values and values higher than 1.0 if the real voltage is 
+ * The data is ratio between 0.0 (gnd) and 1.0 (VDD). However the implementation is
+ * allowed to return negative values and values higher than 1.0 if the real voltage is
  * beyond the supply rails or if differential sample is negative.
  *
  * @param[in] data Data which has a field for ratiometric ADC value

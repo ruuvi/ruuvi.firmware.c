@@ -24,15 +24,15 @@
 #include "mock_ruuvi_library_ringbuffer.h"
 #include "mock_task_environmental.h"
 
-void setUp(void)
+void setUp (void)
 {
 }
 
-void tearDown(void)
+void tearDown (void)
 {
 }
 
-void test_task_gatt_NeedToImplement(void)
+void test_task_gatt_NeedToImplement (void)
 {
-    TEST_IGNORE_MESSAGE("Need to Implement task_gatt");
+    TEST_IGNORE_MESSAGE ("Need to Implement task_gatt");
 }

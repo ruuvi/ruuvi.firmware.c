@@ -63,7 +63,7 @@ ruuvi_driver_status_t task_gatt_init (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     ruuvi_interface_communication_ble4_gatt_dis_init_t dis;
-    memset(&dis, 0, sizeof(dis));
+    memset (&dis, 0, sizeof (dis));
     uint64_t mac;
     err_code |= ruuvi_interface_communication_radio_address_get (&mac);
     uint8_t mac_buffer[6] = {0};
