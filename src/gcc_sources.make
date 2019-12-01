@@ -167,10 +167,10 @@ RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/tasks/communication/task_communication.c \
   $(PROJ_DIR)/tasks/communication/task_gatt.c \
   $(PROJ_DIR)/tasks/sensors/task_acceleration.c \
-  $(PROJ_DIR)/tasks/sensors/task_adc.c \
   $(PROJ_DIR)/tasks/sensors/task_button.c \
   $(PROJ_DIR)/tasks/sensors/task_environmental.c \
   $(PROJ_DIR)/tasks/sensors/task_sensor.c \
+  $(PROJ_DIR)/tasks/peripherals/task_adc.c \
   $(PROJ_DIR)/tasks/peripherals/task_flash.c \
   $(PROJ_DIR)/tasks/peripherals/task_gpio.c \
   $(PROJ_DIR)/tasks/peripherals/task_i2c.c \
