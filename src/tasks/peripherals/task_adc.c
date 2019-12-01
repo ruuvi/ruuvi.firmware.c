@@ -134,7 +134,7 @@ ruuvi_driver_status_t task_adc_sample (void)
     else
     {
         uint8_t mode = RUUVI_DRIVER_SENSOR_CFG_SINGLE;
-        err_code |= m_adc.mode_set(&mode);
+        err_code |= m_adc.mode_set (&mode);
     }
 
     return err_code;
