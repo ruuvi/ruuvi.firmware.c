@@ -134,4 +134,5 @@ ruuvi_driver_status_t task_adc_voltage_get (ruuvi_driver_sensor_data_t * const d
  */
 ruuvi_driver_status_t task_adc_ratio_get (ruuvi_driver_sensor_data_t * const data);
 
+/*@}*/
 #endif // TASK_ADC_H
