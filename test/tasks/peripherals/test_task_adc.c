@@ -157,7 +157,8 @@ void test_task_adc_sample_ok (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     test_task_adc_configure_se_ok();
-    ruuvi_interface_adc_mcu_mode_set_ExpectAndReturn (RUUVI_DRIVER_SENSOR_CFG_SINGLE,
+    uint8_t mode = RUUVI_DRIVER_SENSOR_CFG_SINGLE;
+    ruuvi_interface_adc_mcu_mode_set_ExpectAndReturn (&mode,
             RUUVI_DRIVER_SUCCESS);
     err_code = task_adc_sample();
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);

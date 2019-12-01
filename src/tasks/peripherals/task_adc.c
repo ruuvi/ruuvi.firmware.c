@@ -127,7 +127,7 @@ ruuvi_driver_status_t task_adc_sample (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if (!task_adc_is_init() || !m_is_configured)
+    if (!task_adc_is_init() || !m_is_configured || (NULL == m_adc.mode_set))
     {
         err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
     }
