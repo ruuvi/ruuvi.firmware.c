@@ -2,7 +2,6 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_endpoints.h"
-#include "ruuvi_endpoint_5.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
@@ -259,7 +258,7 @@ ruuvi_driver_status_t task_communication_offsets_float_to_i32f32 (
 static void heartbeat_send (void * p_event_data, uint16_t event_size)
 {
     ruuvi_interface_communication_message_t msg = {0};
-    task_sensor_encode_to_5 ( (uint8_t *) &msg.data);
+    //task_sensor_encode_to_5 ( (uint8_t *) &msg.data);
     msg.data_length = m_heartbeat_data_max_len;
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_INTERNAL;
 
@@ -270,6 +269,7 @@ static void heartbeat_send (void * p_event_data, uint16_t event_size)
 
     if (RUUVI_DRIVER_SUCCESS == err_code)
     {
+        // TODO: Check status in main and feed watchdog there
         ruuvi_interface_watchdog_feed();
     }
 

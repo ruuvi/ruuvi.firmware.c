@@ -19,8 +19,8 @@
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_library.h"
 #include "ruuvi_library_ringbuffer.h"
-#include "task_acceleration.h"
 #include "task_advertisement.h"
+#include "task_communication.h"
 #include "task_gatt.h"
 
 #include <stdlib.h>
@@ -62,7 +62,8 @@ static ruuvi_interface_communication_t channel;   //!< API for sending data.
 ruuvi_driver_status_t task_gatt_init (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    ruuvi_interface_communication_ble4_gatt_dis_init_t dis = {0};
+    ruuvi_interface_communication_ble4_gatt_dis_init_t dis;
+    memset (&dis, 0, sizeof (dis));
     uint64_t mac;
     err_code |= ruuvi_interface_communication_radio_address_get (&mac);
     uint8_t mac_buffer[6] = {0};
@@ -138,7 +139,7 @@ static void task_gatt_queue_process_interrupt()
 {
     ruuvi_library_status_t status = RUUVI_LIBRARY_SUCCESS;
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    ruuvi_interface_communication_message_t * p_msg;
+    ruuvi_interface_communication_message_t * p_msg = NULL;
     status = ruuvi_library_ringbuffer_dequeue (&ringbuf, &p_msg);
     LOGD ("I");
 

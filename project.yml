@@ -48,6 +48,7 @@
     - BOARD_RUUVITAG_B
     - BOARD_CUSTOM
     - NRF52832_XXAA
+    - CMOCK
   :test:
     - *common_defines
     - TEST
@@ -116,5 +117,5 @@
     :compile:
       :*:
         - -Wall
-        - -std=c99
+        - -std=c11
 ...
