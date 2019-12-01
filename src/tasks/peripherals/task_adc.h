@@ -54,7 +54,7 @@ typedef enum
 }task_adc_mode_t; //!< ADC against absolute reference or ratio to VDD
 
 /**
- * @brief Initialize ADC in low-power state.
+ * @brief Reserve ADC
  *
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is already initialized.
@@ -72,7 +72,8 @@ ruuvi_driver_status_t task_adc_uninit (void);
 /**
  * @brief Check if ADC is initialized.
  *
- * @return true if ADC is initialized.
+ * @retval true if ADC is initialized.
+ * @retval false if ADC is not initialized.
  */
 bool task_adc_is_init (void);
 
@@ -93,7 +94,7 @@ bool task_adc_is_init (void);
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or if it is already configured.
  */
-ruuvi_driver_status_t task_adc_configure_se(const ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode mode)
+ruuvi_driver_status_t task_adc_configure_se(const ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode_t mode);
 
 /**
  * @brief Take a new sample on ADC configured in single-shot/sleep mode
@@ -130,5 +131,10 @@ ruuvi_driver_status_t task_adc_voltage_get (ruuvi_interface_adc_data_t * const d
  * @retval error code from stack on error.
  */
 ruuvi_driver_status_t task_adc_ratio_get (ruuvi_driver_sensor_data_t * const data);
+
+// Workaround for CMOCK limitations
+#ifdef CMOCK
+void task_adc_set_init(const bool set);
+#endif
 
 #endif // TASK_ADC_H

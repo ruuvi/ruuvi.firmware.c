@@ -1,16 +1,20 @@
 #include "unity.h"
 
+#include "application_config.h"
+
 #include "task_adc.h"
 
 #include "ruuvi_driver_error.h"
 
 #include "mock_ruuvi_interface_adc_mcu.h"
 #include "mock_ruuvi_interface_atomic.h"
+#include "mock_ruuvi_interface_log.h"
 
 void setUp(void)
 {
   ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
   ruuvi_interface_adc_mcu_init_IgnoreAndReturn(RUUVI_DRIVER_SUCCESS);
+  task_adc_set_init(true);
   TEST_ASSERT(task_adc_is_init());
 }
 
@@ -18,12 +22,8 @@ void tearDown(void)
 {
   ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
   ruuvi_interface_adc_mcu_uninit_IgnoreAndReturn(RUUVI_DRIVER_SUCCESS);
+  task_adc_set_init(false);
   TEST_ASSERT(!task_adc_is_init());
-}
-
-void test_task_adc_NeedToImplement(void)
-{
-    TEST_IGNORE_MESSAGE("Need to Implement task_adc");
 }
 
 /**
@@ -40,8 +40,20 @@ void test_task_adc_init_ok(void)
   TEST_ASSERT(task_adc_is_init());
 }
 
-void test_task_adc_init_busy(void);
-void test_task_adc_init_error(void);
+void test_task_adc_init_busy(void)
+{
+  tearDown();
+  ruuvi_interface_atomic_flag_IgnoreAndReturn(false);
+  TEST_ASSERT(!task_adc_is_init());
+}
+
+void test_task_adc_init_error(void)
+{
+  tearDown();
+  ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
+  ruuvi_interface_adc_mcu_init_IgnoreAndReturn(RUUVI_DRIVER_ERROR_INTERNAL);
+  TEST_ASSERT(!task_adc_is_init());
+}
 
 /**
  * @brief Uninitialize ADC to release it for other users.
@@ -75,7 +87,7 @@ void test_task_adc_uninit_ok(void)
  */
 void test_task_adc_configure_se(void)
 {
-
+  TEST_IGNORE_MESSAGE("Implement");
 }
 
 /**
@@ -87,7 +99,10 @@ void test_task_adc_configure_se(void)
  * @retval RUUVI_DRIVER_SUCCESS Sampling was successful
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE ADC is not initialized or configured
  */
-ruuvi_driver_status_t task_adc_sample(void);
+void test_task_adc_sample(void)
+{
+  TEST_IGNORE_MESSAGE("Implement");
+}
 
 /**
  * @brief Populate data with latest sample. 
@@ -99,7 +114,10 @@ ruuvi_driver_status_t task_adc_sample(void);
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or configured.
  * @retval error code from stack on error.
  */
-ruuvi_driver_status_t task_adc_voltage_get (ruuvi_interface_adc_data_t * const data);
+void test_task_adc_voltage_get (void)
+{
+  TEST_IGNORE_MESSAGE("Implement");
+}
 
 /**
  * @brief Populate data with latest ratiometric value. 
@@ -112,4 +130,7 @@ ruuvi_driver_status_t task_adc_voltage_get (ruuvi_interface_adc_data_t * const d
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or configured.
  * @retval error code from stack on error.
  */
-ruuvi_driver_status_t task_adc_ratio_get (ruuvi_driver_sensor_data_t * const data);
+void test_task_adc_ratio_get (void)
+{
+  TEST_IGNORE_MESSAGE("Implement");
+}
