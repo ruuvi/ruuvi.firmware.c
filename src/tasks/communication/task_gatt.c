@@ -20,6 +20,7 @@
 #include "ruuvi_library.h"
 #include "ruuvi_library_ringbuffer.h"
 #include "task_advertisement.h"
+#include "task_communication.h"
 #include "task_gatt.h"
 
 #include <stdlib.h>
