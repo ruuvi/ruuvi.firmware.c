@@ -233,28 +233,6 @@ ruuvi_driver_status_t task_communication_offsets_i32f32_to_float (
     return RUUVI_DRIVER_SUCCESS;
 }
 
-ruuvi_driver_status_t task_communication_offsets_float_to_i32f32 (
-    const float * const offset, uint8_t * const converted)
-{
-    if (NULL == offset || NULL == converted)
-    {
-        return RUUVI_DRIVER_ERROR_NULL;
-    }
-
-    int32_t integer = (int32_t)  * offset;
-    int32_t fraction = (int32_t) ( (*offset - floor (*offset)) * INT32_MAX);
-    // uint8 array is big-endian, our CPU is little-endian. Convert.
-    converted[0] = (integer >> 0) & 0xFF;
-    converted[1] = (integer >> 8) & 0xFF;
-    converted[2] = (integer >> 16) & 0xFF;
-    converted[3] = (integer >> 12) & 0xFF;
-    converted[4] = (fraction >> 0) & 0xFF;
-    converted[5] = (fraction >> 5) & 0xFF;
-    converted[6] = (fraction >> 6) & 0xFF;
-    converted[7] = (fraction >> 7) & 0xFF;
-    return RUUVI_DRIVER_SUCCESS;
-}
-
 static void heartbeat_send (void * p_event_data, uint16_t event_size)
 {
     ruuvi_interface_communication_message_t msg = {0};
