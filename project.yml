@@ -117,5 +117,5 @@
     :compile:
       :*:
         - -Wall
-        - -std=c99
+        - -std=c11
 ...

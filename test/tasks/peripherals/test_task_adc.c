@@ -9,20 +9,47 @@
 #include "mock_ruuvi_interface_adc_mcu.h"
 #include "mock_ruuvi_interface_atomic.h"
 #include "mock_ruuvi_interface_log.h"
+#include "mock_ruuvi_driver_sensor.h"
+
+static volatile ruuvi_interface_atomic_t m_true = true;
+static volatile ruuvi_interface_atomic_t m_false = false;
+
+static ruuvi_driver_sensor_t m_sensor_init =
+{
+    .mode_set = ruuvi_interface_adc_mcu_mode_set,
+    .configuration_set = ruuvi_driver_sensor_configuration_set
+};
+
+static ruuvi_driver_sensor_t m_sensor_uninit;
+
+static float m_valid_data[2] = {2.8F, 0.6F};
+static ruuvi_driver_sensor_data_t m_adc_data =
+{
+  .data                       = m_valid_data,
+  .fields.datas.voltage_v     = 1,
+  .fields.datas.voltage_ratio = 1,
+  .valid.datas.voltage_v      = 1,
+  .valid.datas.voltage_ratio  = 1
+};
 
 void setUp(void)
 {
-  ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
-  ruuvi_interface_adc_mcu_init_IgnoreAndReturn(RUUVI_DRIVER_SUCCESS);
-  task_adc_set_init(true);
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn(true);
+  ruuvi_interface_atomic_flag_ReturnThruPtr_flag(&m_true);
+  err_code = task_adc_init();
+  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
   TEST_ASSERT(task_adc_is_init());
 }
 
 void tearDown(void)
 {
-  ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
-  ruuvi_interface_adc_mcu_uninit_IgnoreAndReturn(RUUVI_DRIVER_SUCCESS);
-  task_adc_set_init(false);
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn(true);
+  ruuvi_interface_atomic_flag_ReturnThruPtr_flag(&m_false);
+  ruuvi_interface_adc_mcu_uninit_ExpectAnyArgsAndReturn(RUUVI_DRIVER_SUCCESS);
+  err_code = task_adc_uninit();
+  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
   TEST_ASSERT(!task_adc_is_init());
 }
 
@@ -34,24 +61,22 @@ void tearDown(void)
  */
 void test_task_adc_init_ok(void)
 {
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   tearDown();
-  ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
-  ruuvi_interface_adc_mcu_init_IgnoreAndReturn(RUUVI_DRIVER_SUCCESS);
+  ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn(true);
+  ruuvi_interface_atomic_flag_ReturnThruPtr_flag(&m_true);
+  err_code = task_adc_init();
+  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
   TEST_ASSERT(task_adc_is_init());
 }
 
 void test_task_adc_init_busy(void)
 {
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
   tearDown();
-  ruuvi_interface_atomic_flag_IgnoreAndReturn(false);
-  TEST_ASSERT(!task_adc_is_init());
-}
-
-void test_task_adc_init_error(void)
-{
-  tearDown();
-  ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
-  ruuvi_interface_adc_mcu_init_IgnoreAndReturn(RUUVI_DRIVER_ERROR_INTERNAL);
+  ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn(false);
+  err_code = task_adc_init();
+  TEST_ASSERT(RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
   TEST_ASSERT(!task_adc_is_init());
 }
 
@@ -63,8 +88,12 @@ void test_task_adc_init_error(void)
  */
 void test_task_adc_uninit_ok(void)
 {
-  ruuvi_interface_atomic_flag_IgnoreAndReturn(true);
-  ruuvi_interface_adc_mcu_uninit_IgnoreAndReturn(RUUVI_DRIVER_SUCCESS);
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn(true);
+  ruuvi_interface_atomic_flag_ReturnThruPtr_flag(&m_false);
+  ruuvi_interface_adc_mcu_uninit_ExpectAnyArgsAndReturn(RUUVI_DRIVER_SUCCESS);
+  err_code = task_adc_uninit();
+  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);  
   TEST_ASSERT(!task_adc_is_init());
 }
 
@@ -85,9 +114,33 @@ void test_task_adc_uninit_ok(void)
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or if it is already configured.
  */
-void test_task_adc_configure_se(void)
+void test_task_adc_configure_se_ok(void)
 {
-  TEST_IGNORE_MESSAGE("Implement");
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_driver_sensor_configuration_t config = {0};
+  ruuvi_interface_adc_mcu_init_ExpectAnyArgsAndReturn(RUUVI_DRIVER_SUCCESS);
+  ruuvi_interface_adc_mcu_init_ReturnArrayThruPtr_adc_sensor (&m_sensor_init, 1);
+  ruuvi_driver_sensor_configuration_set_ExpectAnyArgsAndReturn(RUUVI_DRIVER_SUCCESS);
+  err_code = task_adc_configure_se(&config, RUUVI_INTERFACE_ADC_AINVDD, ABSOLUTE);
+  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);    
+}
+
+void test_task_adc_configure_se_twice(void)
+{
+  test_task_adc_configure_se_ok();
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_driver_sensor_configuration_t config = {0};
+  err_code = task_adc_configure_se(&config, RUUVI_INTERFACE_ADC_AINVDD, ABSOLUTE);
+  TEST_ASSERT(RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);    
+}
+
+void test_task_adc_configure_se_not_init(void)
+{
+  tearDown();
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  ruuvi_driver_sensor_configuration_t config = {0};
+  err_code = task_adc_configure_se(&config, RUUVI_INTERFACE_ADC_AINVDD, ABSOLUTE);
+  TEST_ASSERT(RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);    
 }
 
 /**
@@ -99,9 +152,28 @@ void test_task_adc_configure_se(void)
  * @retval RUUVI_DRIVER_SUCCESS Sampling was successful
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE ADC is not initialized or configured
  */
-void test_task_adc_sample(void)
+void test_task_adc_sample_ok(void)
 {
-  TEST_IGNORE_MESSAGE("Implement");
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  test_task_adc_configure_se_ok();
+  ruuvi_interface_adc_mcu_mode_set_ExpectAndReturn(RUUVI_DRIVER_SENSOR_CFG_SINGLE, RUUVI_DRIVER_SUCCESS);
+  err_code = task_adc_sample();
+  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);    
+}
+
+void test_task_adc_sample_not_configured(void)
+{
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code = task_adc_sample();
+  TEST_ASSERT(RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);    
+}
+
+void test_task_adc_sample_not_initialized(void)
+{
+  tearDown();
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  err_code = task_adc_sample();
+  TEST_ASSERT(RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);    
 }
 
 /**
@@ -114,9 +186,22 @@ void test_task_adc_sample(void)
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or configured.
  * @retval error code from stack on error.
  */
-void test_task_adc_voltage_get (void)
+void test_task_adc_voltage_get_ok(void)
 {
-  TEST_IGNORE_MESSAGE("Implement");
+  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+  float data[2] = {0};
+  ruuvi_driver_sensor_data_t adc_data;
+  adc_data.data = data;
+  adc_data.fields.datas.voltage_v = 1;
+
+  test_task_adc_configure_se_ok();
+  test_task_adc_sample_ok();
+  ruuvi_interface_adc_mcu_data_get_ExpectAnyArgsAndReturn(RUUVI_DRIVER_SUCCESS);
+  ruuvi_interface_adc_mcu_data_get_ReturnArrayThruPtr_data(&m_adc_data, 1);
+  err_code = task_adc_voltage_get (&adc_data);
+
+  TEST_ASSERT(true == adc_data.valid.datas.voltage_v);
+  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
 }
 
 /**

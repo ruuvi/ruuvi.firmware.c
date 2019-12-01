@@ -94,7 +94,7 @@ bool task_adc_is_init (void);
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or if it is already configured.
  */
-ruuvi_driver_status_t task_adc_configure_se(const ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode_t mode);
+ruuvi_driver_status_t task_adc_configure_se(ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode_t mode);
 
 /**
  * @brief Take a new sample on ADC configured in single-shot/sleep mode
@@ -112,12 +112,12 @@ ruuvi_driver_status_t task_adc_sample(void);
  *
  * The data is absolute voltage relative to device ground. 
  *
- * @param[in] handle Handle for ADC peripheral, e.g. ADC number
+ * @param[in] data Data which has a field for absolute ADC value
  * @retval RUUVI_DRIVER_SUCCESS on success
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or configured.
  * @retval error code from stack on error.
  */
-ruuvi_driver_status_t task_adc_voltage_get (ruuvi_interface_adc_data_t * const data);
+ruuvi_driver_status_t task_adc_voltage_get (ruuvi_driver_sensor_data_t * const data);
 
 /**
  * @brief Populate data with latest ratiometric value. 
@@ -126,15 +126,11 @@ ruuvi_driver_status_t task_adc_voltage_get (ruuvi_interface_adc_data_t * const d
  * allowed to return negative values and values higher than 1.0 if the real voltage is 
  * beyond the supply rails or if differential sample is negative.
  *
+ * @param[in] data Data which has a field for ratiometric ADC value
  * @retval RUUVI_DRIVER_SUCCESS on success
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or configured.
  * @retval error code from stack on error.
  */
 ruuvi_driver_status_t task_adc_ratio_get (ruuvi_driver_sensor_data_t * const data);
-
-// Workaround for CMOCK limitations
-#ifdef CMOCK
-void task_adc_set_init(const bool set);
-#endif
 
 #endif // TASK_ADC_H

@@ -27,10 +27,6 @@ ruuvi_driver_status_t task_adc_init (void)
   {
     err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
   }
-  else
-  {
-      m_is_init = true;
-  }
   return err_code;
 }
 
@@ -82,7 +78,7 @@ bool task_adc_is_init (void)
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or if it is already configured.
  */
-ruuvi_driver_status_t task_adc_configure_se(const ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode_t mode)
+ruuvi_driver_status_t task_adc_configure_se(ruuvi_driver_sensor_configuration_t* const config, const uint8_t handle, const task_adc_mode_t mode)
 {
   return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
 }
@@ -111,7 +107,7 @@ ruuvi_driver_status_t task_adc_sample(void)
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or configured.
  * @retval error code from stack on error.
  */
-ruuvi_driver_status_t task_adc_voltage_get (ruuvi_interface_adc_data_t * const data)
+ruuvi_driver_status_t task_adc_voltage_get (ruuvi_driver_sensor_data_t * const data)
 {
   return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
 }
@@ -131,11 +127,3 @@ ruuvi_driver_status_t task_adc_ratio_get (ruuvi_driver_sensor_data_t * const dat
 {
   return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
 }
-
-// Workaround for CMOCK limitations
-#ifdef CMOCK
-void task_adc_set_init(const bool set)
-{
-  m_is_init = set;
-}
-#endif

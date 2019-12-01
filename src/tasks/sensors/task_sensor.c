@@ -70,7 +70,7 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer)
     driver_code |= task_acceleration_data_get (&acceleration);
     driver_code |= task_acceleration_movement_count_get (&movement_counter);
     driver_code |= task_environmental_data_get (&environmental);
-    driver_code |= task_adc_battery_get (&battery);
+    //driver_code |= task_adc_battery_get (&battery); XXX
     ruuvi_endpoint_5_data_t ep5_data = {0};
     ep5_data.accelerationx_g = ruuvi_driver_sensor_data_parse (&acceleration,
                                (ruuvi_driver_sensor_data_fields_t)
