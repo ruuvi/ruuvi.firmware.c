@@ -12,6 +12,7 @@
 #include "ruuvi_driver_error.h"
 
 #include "mock_ruuvi_interface_atomic.h"
+#include "mock_ruuvi_interface_adc_mcu.h"
 #include "mock_ruuvi_interface_communication_ble4_advertising.h"
 #include "mock_ruuvi_interface_communication_ble4_gatt.h"
 #include "mock_ruuvi_interface_communication_radio.h"
