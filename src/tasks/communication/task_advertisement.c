@@ -159,7 +159,7 @@ ruuvi_driver_status_t task_advertisement_connectability_set (const bool enable,
     {
         err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-    else if (10 < safe_strlen (device_name, 11))
+    else if (SCAN_RSP_NAME_MAX_LEN < safe_strlen (device_name, (SCAN_RSP_NAME_MAX_LEN + 1)))
     {
         // TODO - #define 10
         err_code |= RUUVI_DRIVER_ERROR_INVALID_LENGTH;
