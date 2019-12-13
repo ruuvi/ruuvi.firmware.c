@@ -1,14 +1,14 @@
-# ruuvi.firmware.c
-[![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=coverage)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=ncloc)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+# ruuvi_ruuvi.firmware.c
+[![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi_ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi_ruuvi.firmware.c)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=coverage)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=ncloc)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in alpha stage,
@@ -23,12 +23,12 @@ If you're working on multiple nRF projects, you can (and should) use softlinking
 Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project. If any of the submodules has a changed remote, you'll need to run `git submodule sync --recursive` and again `git submodule update --init --recursive` to update the modules from new remotes. 
 
 ## Toolchain
-ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use SES for developing. You can make the project and all variants by runnning "make" at top level of this repository. 
+ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi_ruuvi.firmware.c/), it's recommended to use SES for developing. You can make the project and all variants by runnning "make" at top level of this repository. 
  
 Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
 and following Getting Started plugin instructions.
 
-Start SES and open `ruuvi.firmware.c.emProject` at root level, each of the target boards is in their own project.
+Start SES and open `ruuvi_ruuvi.firmware.c.emProject` at root level, each of the target boards is in their own project.
 
 ## Code style
 Code is formatted with [Artistic Style](http://astyle.sourceforge.net). 
@@ -43,7 +43,7 @@ astyle --project=.astylerc --recursive "src/tests/*.h"
 ```
 
 ## Static analysis
-The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html) is a link to generated report which gets pushed to GitHub.
+The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi_ruuvi.firmware.c/fullhtml/index.html) is a link to generated report which gets pushed to GitHub.
 
 
 ### PVS
@@ -54,7 +54,7 @@ Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml.
 This results into hundreds of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
 
 ### Sonar scan
-Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c).
+Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c).
 SonarCloud uses access token which is private to Ruuvi, you'll need to fork the project and setup
 the SonarCloud under your own account if you wish to run Sonar Scan on your own code.
 
@@ -93,7 +93,7 @@ Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their ow
 
 # Documentation
 Document is generated with Doxygen. Run `make doxygen` to generate the docs locally, or
-browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
+browse to [Travis built docs](ruuvi.github.io/ruuvi_ruuvi.firmware.c)
 
 # Changelog
 ## 3.28.7
