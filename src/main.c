@@ -35,6 +35,7 @@
 #include "test_library.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #ifndef MAIN_LOG_LEVEL
 #define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
@@ -141,6 +142,78 @@ static void init_sensors (void)
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_ERROR_NOT_FOUND);
 }
 
+#if APPLICATION_COMMUNICATION_GATT_ENABLED
+static ruuvi_driver_status_t get_mac (uint8_t * const mac_buffer)
+{
+    ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+
+    if (NULL != mac_buffer)
+    {
+        uint64_t mac;
+        status |= ruuvi_interface_communication_radio_address_get (&mac);
+        mac_buffer[0U] = (mac >> 40U) & 0xFFU;
+        mac_buffer[1U] = (mac >> 32U) & 0xFFU;
+        mac_buffer[2U] = (mac >> 24U) & 0xFFU;
+        mac_buffer[3U] = (mac >> 16U) & 0xFFU;
+        mac_buffer[4U] = (mac >> 8U) & 0xFFU;
+        mac_buffer[5U] = (mac >> 0U) & 0xFFU;
+    }
+    else
+    {
+        status = RUUVI_DRIVER_ERROR_NULL;
+    }
+
+    return status;
+}
+
+static void init_dfu (void)
+{
+    ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+    status = task_gatt_dfu_init();
+    RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
+}
+
+/**
+ * @brief Initialize Device Information Service
+ *
+ * DIS lets user read basic device information over BLE in a standard format.
+ */
+static void init_dis (void)
+{
+    ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_ble4_gatt_dis_init_t dis;
+    memset (&dis, 0, sizeof (dis));
+    uint8_t mac_buffer[6] = {0};
+    get_mac (mac_buffer);
+    size_t index = 0U;
+
+    for (size_t ii = 0U; ii < 6U; ii ++)
+    {
+        index += snprintf (dis.deviceid + index, sizeof (dis.deviceid) - index, "%02X",
+                           mac_buffer[ii]);
+
+        if (ii < 5U)
+        {
+            index += snprintf (dis.deviceid + index, sizeof (dis.deviceid) - index, ":");
+        }
+    }
+
+    memcpy (dis.fw_version, APPLICATION_FW_VERSION, sizeof (APPLICATION_FW_VERSION));
+    memcpy (dis.model, RUUVI_BOARD_MODEL_STRING, sizeof (RUUVI_BOARD_MODEL_STRING));
+    memcpy (dis.manufacturer, RUUVI_BOARD_MANUFACTURER_STRING,
+            sizeof (RUUVI_BOARD_MANUFACTURER_STRING));
+    status |= task_gatt_dis_init (&dis);
+    RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
+}
+
+static void init_nus (void)
+{
+    ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+    status = task_gatt_nus_init();
+    RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
+}
+#endif
+
 static void init_comms (void)
 {
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
@@ -156,7 +229,10 @@ static void init_comms (void)
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
-    status = task_gatt_init();
+    status = task_gatt_init (RUUVI_BOARD_BLE_NAME_STRING);
+    init_dis();
+    init_nus();
+    init_dfu();
     status |= task_advertisement_stop();  // Reinitialize with scan response
     status |= task_advertisement_start();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);

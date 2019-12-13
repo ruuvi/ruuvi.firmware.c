@@ -40,6 +40,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_communication_ble4_advertising.h"
 
+#define SCAN_RSP_NAME_MAX_LEN 11 //!< Longer name gets truncated when advertised with UUID.
 /**
  * @brief Initializes data advertising.
  *
@@ -51,9 +52,9 @@
  * After calling this function advertisement data can be queued into advertisement buffer.
  * You should queue at least one message into buffer before starting advertising.
  *
- * @retval @c RUUVI_DRIVER_SUCCESS on success.
- * @retval @c RUUVI_DRIVER_ERROR_INVALID_STATE if advertising is already initialized.
- * @®etval @c RUUVI_DRIVER_ERROR_INVALID_PARAM if configuration constant is invalid.
+ * @retval RUUVI_DRIVER_SUCCESS on success.
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if advertising is already initialized.
+ * @®etval RUUVI_DRIVER_ERROR_INVALID_PARAM if configuration constant is invalid.
  */
 ruuvi_driver_status_t task_advertisement_init (void);
 
@@ -63,7 +64,7 @@ ruuvi_driver_status_t task_advertisement_init (void);
  * Can be called even if advertising was not initialized.
  * Clears previous advertisement data if there was any.
  *
- * @retval @c RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_SUCCESS on success
  * @retval error code from stack on error
  */
 ruuvi_driver_status_t task_advertisement_uninit (void);
@@ -97,7 +98,7 @@ ruuvi_driver_status_t task_advertisement_stop (void);
  *  Payload of the msg will be sent as the manufacturer specific data payload.
  *  Manufacturer ID is defined by RUUVI_BOARD_BLE_MANUFACTURER_ID in ruuvi_boards.h.
  *
- *  If the device is connectable, call @ref task_advertisement_connectability to setup the
+ *  If the device is connectable, call @code task_advertisement_connectability @endcode to setup the
  *  scan response and flags to advertise connectability.
  *
  *  @param[in] msg message to be sent as manufacturer specific data payload
@@ -119,7 +120,7 @@ ruuvi_driver_status_t task_advertisement_send_data (
  *  if someone tries to connect to tag while GATT is not configured.
  *
  *  @param[in] enable true to enable connectability, false to disable.
- *  @param[in] name NULL-terminated string representing device name, max 10 Chars + NULL.
+ *  @param[in] device_name NULL-terminated string representing device name, max 10 Chars + NULL.
  *  @retval    RUUVI_DRIVER_SUCCESS if operation was finished as expected.
  *  @retval    RUUVI_DRIVER_ERROR_NULL if name is NULL and trying to enable the scan response
  *  @retval    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started.

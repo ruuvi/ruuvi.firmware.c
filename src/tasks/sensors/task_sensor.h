@@ -42,6 +42,7 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer);
  * @brief Search for requested sensor backend in given list of sensors.
  *
  * @param[in] sensor_list array of sensor to search the backend from.
+ * @param[in] count number of sensor backends in the list
  * @param[in] name NULL-terminated, max 9-byte (including trailing NULL) string representation of sensor.
  * @return pointer to requested sensor if found
  * @return NULL if requested sensor was not found

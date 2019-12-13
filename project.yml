@@ -49,6 +49,7 @@
     - BOARD_CUSTOM
     - NRF52832_XXAA
     - CMOCK
+    - CEEDLING
   :test:
     - *common_defines
     - TEST

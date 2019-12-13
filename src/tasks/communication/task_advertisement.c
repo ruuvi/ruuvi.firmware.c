@@ -126,21 +126,6 @@ ruuvi_driver_status_t task_advertisement_send_data (
     return err_code;
 }
 
-/** @brief Start advertising BLE GATT connection
- *
- *  This function configures the primary advertisement to be SCANNABLE_CONNECTABLE and
- *  sets up a scan response which has given device name (max 10 characters + NULL)
- *  and UUID of Nordic UART Service.
- *
- *  Be sure to configure the GATT
- *
- *  @param[in] enable true to enable connectability, false to disable.
- *  @param[in] name NULL-terminated string representing device name, max 10 Chars + NULL.
- *  @retval    RUUVI_DRIVER_ERROR_INVALID_STATE if
- *  @retval    RUUVI_DRIVER_ERROR_NULL if name is NULL
- *  @retval    RUUVI_DRIVER_ERROR_INVALID_STATE if advertising isn't initialized or started.
- *  @retval    error code from stack on other error.
- */
 ruuvi_driver_status_t task_advertisement_connectability_set (const bool enable,
         const char * const device_name)
 {
@@ -159,7 +144,7 @@ ruuvi_driver_status_t task_advertisement_connectability_set (const bool enable,
     {
         err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-    else if (10 < safe_strlen (device_name, 11))
+    else if (SCAN_RSP_NAME_MAX_LEN < safe_strlen (device_name, (SCAN_RSP_NAME_MAX_LEN + 1)))
     {
         // TODO - #define 10
         err_code |= RUUVI_DRIVER_ERROR_INVALID_LENGTH;

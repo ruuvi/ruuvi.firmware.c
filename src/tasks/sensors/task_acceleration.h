@@ -84,7 +84,7 @@ ruuvi_driver_status_t task_acceleration_api_get (task_communication_api_t ** api
 /**
  * @brief return number of movement counts
  *
- * @param count[out]
+ * @param[out] count number of deteted movements
  */
 ruuvi_driver_status_t task_acceleration_movement_count_get (uint8_t * const count);
 
