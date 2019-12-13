@@ -1,4 +1,4 @@
-# ruuvi_ruuvi.firmware.c
+# ruuvi.firmware.c
 [![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi_ruuvi.firmware.c)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
