@@ -55,8 +55,8 @@ cache:
 
 addons:
   sonarcloud:
-    organization: "ojousima" # the key of the org you chose at step #3
-    projectKey: "ojousima_ruuvi.firmware.c"
+    organization: "ruuvi" # the key of the org you chose at step #3
+    projectKey: "ruuvi_ruuvi.firmware.c"
 
 before_deploy:
   - sed -i '/doxygen/d' .gitignore
