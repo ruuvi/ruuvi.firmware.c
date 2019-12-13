@@ -41,6 +41,9 @@
 
 static ruuvi_interface_communication_t m_channel;   //!< API for sending data.
 static bool m_is_init;
+static bool m_nus_is_init;
+static bool m_dis_is_init;
+static bool m_dfu_is_init;
 static bool m_nus_is_connected;
 static char m_name[SCAN_RSP_NAME_MAX_LEN + 1] = {0};
 
@@ -70,6 +73,9 @@ void task_gatt_mock_state_reset()
     m_on_received = NULL;
     m_on_sent = NULL;
     m_is_init = false;
+    m_nus_is_init = false;
+    m_dfu_is_init = false;
+    m_dis_is_init = false;
     m_nus_is_connected = false;
     memset (&m_channel, 0, sizeof (ruuvi_interface_communication_t));
     memset (m_name, 0, sizeof (m_name));
@@ -124,13 +130,13 @@ ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t 
 }
 
 ruuvi_driver_status_t task_gatt_dis_init (const
-        ruuvi_interface_communication_ble4_gatt_dis_init_t * const dis)
+        ruuvi_interface_communication_ble4_gatt_dis_init_t * const p_dis)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
     if (task_gatt_is_init())
     {
-        err_code |= ruuvi_interface_communication_ble4_gatt_dis_init (&dis);
+        err_code |= ruuvi_interface_communication_ble4_gatt_dis_init (p_dis);
     }
     else
     {
@@ -188,8 +194,6 @@ ruuvi_driver_status_t task_gatt_init (const char * const name)
         if (sizeof (m_name) >= name_length)
         {
             err_code |= ruuvi_interface_communication_ble4_gatt_init();
-            err_code |= ruuvi_interface_communication_ble4_advertising_scan_response_setup (name,
-                        false);
             memcpy (m_name, name, sizeof (m_name) - 1);
         }
         else

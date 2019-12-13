@@ -17,6 +17,7 @@
 
 static uint32_t send_count = 0;
 static uint32_t read_count = 0;
+static const char m_name[] = "Ceedling";
 
 ruuvi_driver_status_t mock_send (ruuvi_interface_communication_message_t * const p_msg)
 {
@@ -59,12 +60,9 @@ static ruuvi_interface_communication_t m_mock_gatt;
 void setUp (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    const char name[] = "Ceedling";
     task_advertisement_is_init_ExpectAndReturn (true);
     ruuvi_interface_communication_ble4_gatt_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
-    ruuvi_interface_communication_ble4_advertising_scan_response_setup_ExpectAndReturn (name,
-            false, RUUVI_DRIVER_SUCCESS);
-    err_code |= task_gatt_init (name);
+    err_code |= task_gatt_init (m_name);
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
     TEST_ASSERT (task_gatt_is_init());
 }
@@ -155,8 +153,42 @@ void test_task_gatt_dfu_init_twice (void)
  * @retval RUUVI_DRIVER_ERROR_NULL if given NULL as the information.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE DIS was already initialized or GATT is not initialized
  */
-ruuvi_driver_status_t task_gatt_dis_init (const
-        ruuvi_interface_communication_ble4_gatt_dis_init_t * const dis);
+void test_task_gatt_dis_init_ok (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_ble4_gatt_dis_init_t dis = {0};
+    ruuvi_interface_communication_ble4_gatt_dis_init_ExpectAndReturn (&dis,
+            RUUVI_DRIVER_SUCCESS);
+    err_code = task_gatt_dis_init (&dis);
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_gatt_dis_init_twice (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_ble4_gatt_dis_init_t dis = {0};
+    test_task_gatt_dis_init_ok();
+    err_code = task_gatt_dis_init (&dis);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
+}
+
+void test_task_gatt_dis_init_null (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    err_code = task_gatt_dis_init (NULL);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_NULL == err_code);
+}
+
+void test_task_gatt_dis_init_no_gatt (void)
+{
+    tearDown();
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_ble4_gatt_dis_init_t dis = {0};
+    ruuvi_interface_communication_ble4_gatt_dis_init_ExpectAndReturn (&dis,
+            RUUVI_DRIVER_SUCCESS);
+    err_code = task_gatt_dis_init (&dis);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
+}
 
 /**
  * @brief Initialize Nordic UART Service
@@ -177,6 +209,14 @@ ruuvi_driver_status_t task_gatt_dis_init (const
  */
 void task_gatt_nus_init_ok()
 {
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    mock_init (&m_mock_gatt);
+    ruuvi_interface_communication_ble4_gatt_nus_init_ExpectAnyArgsAndReturn (
+        RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_communication_ble4_gatt_nus_init_ReturnArrayThruPtr_channel (
+        &m_mock_gatt, 1);
+    err_code = task_gatt_nus_init ();
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
 }
 
 /**
@@ -200,7 +240,7 @@ void test_task_gatt_init_twice (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     task_advertisement_is_init_ExpectAndReturn (true);
-    err_code |= task_gatt_init ("Ceedling");
+    err_code |= task_gatt_init (m_name);
     TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
 }
 
@@ -221,11 +261,37 @@ void test_task_gatt_init_null (void)
  * @retval RUUVI_DRIVER_SUCCESS on success
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if GATT is not initialized.
  */
-void test_task_gatt_enable_ok()
+void test_task_gatt_enable_ok_no_nus()
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_ble4_advertising_scan_response_setup_ExpectAndReturn (
+        m_name,
+        false, RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_communication_ble4_advertising_type_set_ExpectAndReturn (
+        CONNECTABLE_SCANNABLE, RUUVI_DRIVER_SUCCESS);
     err_code |= task_gatt_enable ();
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_gatt_enable_ok_with_nus()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    task_gatt_nus_init_ok();
+    ruuvi_interface_communication_ble4_advertising_scan_response_setup_ExpectAndReturn (
+        m_name,
+        true, RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_communication_ble4_advertising_type_set_ExpectAndReturn (
+        CONNECTABLE_SCANNABLE, RUUVI_DRIVER_SUCCESS);
+    err_code |= task_gatt_enable ();
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_gatt_enable_gatt_not_init()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    tearDown();
+    err_code |= task_gatt_enable ();
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
 }
 
 /**
@@ -241,9 +307,12 @@ void test_task_gatt_enable_ok()
 void test_task_gatt_disable_ok (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_ble4_advertising_type_set_ExpectAndReturn (
+        NONCONNECTABLE_NONSCANNABLE, RUUVI_DRIVER_SUCCESS);
     err_code |= task_gatt_disable();
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
 }
+
 /** @brief Setup connection event handler
  *
  *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
