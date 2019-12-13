@@ -1,14 +1,14 @@
 # ruuvi.firmware.c
 [![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=coverage)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=ncloc)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ojousima_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=coverage)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Duplicated Lines (%)](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=duplicated_lines_density)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Lines of Code](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=ncloc)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in alpha stage,
@@ -54,7 +54,7 @@ Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml.
 This results into hundreds of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
 
 ### Sonar scan
-Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ojousima_ruuvi.firmware.c).
+Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ruuvi.firmware.c).
 SonarCloud uses access token which is private to Ruuvi, you'll need to fork the project and setup
 the SonarCloud under your own account if you wish to run Sonar Scan on your own code.
 
