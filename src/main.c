@@ -142,18 +142,18 @@ static void init_sensors (void)
 }
 
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
-static void get_mac(uint8_t* const mac_buffer)
+static void get_mac (uint8_t * const mac_buffer)
 {
-    if(NULL != mac_buffer)
+    if (NULL != mac_buffer)
     {
-    uint64_t mac;
-    err_code |= ruuvi_interface_communication_radio_address_get (&mac);
-    mac_buffer[0U] = (mac >> 40U) & 0xFFU;
-    mac_buffer[1U] = (mac >> 32U) & 0xFFU;
-    mac_buffer[2U] = (mac >> 24U) & 0xFFU;
-    mac_buffer[3U] = (mac >> 16U) & 0xFFU;
-    mac_buffer[4U] = (mac >> 8U) & 0xFFU;
-    mac_buffer[5U] = (mac >> 0U) & 0xFFU;
+        uint64_t mac;
+        err_code |= ruuvi_interface_communication_radio_address_get (&mac);
+        mac_buffer[0U] = (mac >> 40U) & 0xFFU;
+        mac_buffer[1U] = (mac >> 32U) & 0xFFU;
+        mac_buffer[2U] = (mac >> 24U) & 0xFFU;
+        mac_buffer[3U] = (mac >> 16U) & 0xFFU;
+        mac_buffer[4U] = (mac >> 8U) & 0xFFU;
+        mac_buffer[5U] = (mac >> 0U) & 0xFFU;
     }
 }
 
@@ -162,14 +162,13 @@ static void get_mac(uint8_t* const mac_buffer)
  *
  * DIS lets user read basic device information over BLE in a standard format.
  */
-static void init_dis(void)
+static void init_dis (void)
 {
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
     ruuvi_interface_communication_ble4_gatt_dis_init_t dis;
     memset (&dis, 0, sizeof (dis));
-    
     uint8_t mac_buffer[6] = {0};
-    get_mac(mac_buffer)
+    get_mac (mac_buffer)
     size_t index = 0U;
 
     for (size_t ii = 0U; ii < 6U; ii ++)
@@ -187,11 +186,11 @@ static void init_dis(void)
     memcpy (dis.model, RUUVI_BOARD_MODEL_STRING, sizeof (RUUVI_BOARD_MODEL_STRING));
     memcpy (dis.manufacturer, RUUVI_BOARD_MANUFACTURER_STRING,
             sizeof (RUUVI_BOARD_MANUFACTURER_STRING));
-    status |= task_gatt_init_dis(&dis);
-    RUUVI_DRIVER_ERROR_CHECK(status, RUUVI_DRIVER_SUCCESS);
+    status |= task_gatt_init_dis (&dis);
+    RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 }
 
-static void init_nus(void)
+static void init_nus (void)
 {
     // Scan response has 31 payload bytes. 18 of those bytes are reserved for 2-byte header + 128-bit UUID.
     // This leaves 13 bytes for name + 2-byte header. Since NULL isn't transmitted we cap string at 12 bytes.
@@ -199,7 +198,7 @@ static void init_nus(void)
     snprintf (name, sizeof (name), "%s %02X%02X", RUUVI_BOARD_BLE_NAME_STRING, mac_buffer[4U],
               mac_buffer[5U]);
 }
-#endif 
+#endif
 
 static void init_comms (void)
 {
