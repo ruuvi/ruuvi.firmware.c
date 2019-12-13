@@ -315,5 +315,5 @@ void test_task_gatt_send_asynchronous_ok()
     ruuvi_interface_log_Ignore();
     err_code = task_gatt_send_asynchronous (&msg);
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
-    TEST_ASSERT(1 == send_count);
+    TEST_ASSERT (1 == send_count);
 }

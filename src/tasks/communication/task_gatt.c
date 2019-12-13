@@ -60,8 +60,8 @@ static size_t safe_strlen (const char * s, size_t maxlen)
 
     for (i = 0; i < maxlen; ++i)
         if (s[i] == '\0')
-        { 
-            break; 
+        {
+            break;
         }
 
     return i;
@@ -135,7 +135,8 @@ ruuvi_driver_status_t task_gatt_dis_init (const
         ruuvi_interface_communication_ble4_gatt_dis_init_t * const p_dis)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    if(NULL == p_dis)
+
+    if (NULL == p_dis)
     {
         err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
@@ -159,12 +160,12 @@ ruuvi_driver_status_t task_gatt_nus_init (void)
     if (task_gatt_is_init() && !m_nus_is_init)
     {
         err_code |= ruuvi_interface_communication_ble4_gatt_nus_init (&m_channel);
-        if(RUUVI_DRIVER_SUCCESS == err_code)
-        {
-          m_channel.on_evt = task_gatt_on_nus_isr;
-          m_nus_is_init = true;
-        }
 
+        if (RUUVI_DRIVER_SUCCESS == err_code)
+        {
+            m_channel.on_evt = task_gatt_on_nus_isr;
+            m_nus_is_init = true;
+        }
     }
     else
     {
@@ -232,11 +233,10 @@ ruuvi_driver_status_t task_gatt_enable()
 
     if (task_gatt_is_init())
     {
-
         // Note that this doesn't update sofdevice buffer, you have to call
         // advertising functions to encode data and start the advertisements.
-        err_code |= ruuvi_interface_communication_ble4_advertising_scan_response_setup(
-        m_name, m_nus_is_init);
+        err_code |= ruuvi_interface_communication_ble4_advertising_scan_response_setup (
+                        m_name, m_nus_is_init);
         err_code |= ruuvi_interface_communication_ble4_advertising_type_set (
                         CONNECTABLE_SCANNABLE);
     }
