@@ -233,6 +233,7 @@ static void init_comms (void)
     init_dis();
     init_nus();
     init_dfu();
+    status |= task_gatt_enable();
     status |= task_advertisement_stop();  // Reinitialize with scan response
     status |= task_advertisement_start();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
