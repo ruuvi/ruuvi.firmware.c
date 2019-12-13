@@ -78,26 +78,7 @@ void tearDown (void)
 
 
 
-/**
- * @brief Send given message via NUS
- *
- * This function queues a message to be sent and returns immediately.
- * There is no guarantee on when the data is actually sent, and
- * there is no acknowledgement or callback after the data has been sent.
- *
- * @return RUUVI_DRIVER_SUCCESS if data was placed in send buffer
- * @return RUUVI_DRIVER_ERROR_INVALID_STATE if NUS is not connected
- * @return error code from stack on error
- *
- */
-void test_task_gatt_send_asynchronous_ok()
-{
-    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    ruuvi_interface_communication_message_t msg = { 0 };
-    msg.data_length = 11;
-    err_code = task_gatt_send_asynchronous (&msg);
-    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
-}
+
 
 /**
  * @brief Initialize Device Firmware Update service
@@ -132,7 +113,7 @@ void test_task_gatt_dfu_init_no_gatt (void)
 void test_task_gatt_dfu_init_twice (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    err_code = task_gatt_dfu_init();
+    test_task_gatt_dfu_init_ok();
     err_code = task_gatt_dfu_init();
     TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
 }
@@ -184,8 +165,6 @@ void test_task_gatt_dis_init_no_gatt (void)
     tearDown();
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     ruuvi_interface_communication_ble4_gatt_dis_init_t dis = {0};
-    ruuvi_interface_communication_ble4_gatt_dis_init_ExpectAndReturn (&dis,
-            RUUVI_DRIVER_SUCCESS);
     err_code = task_gatt_dis_init (&dis);
     TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
 }
@@ -207,7 +186,7 @@ void test_task_gatt_dis_init_no_gatt (void)
  *
  * @note To actually use the data in application, user must setup at least data received callback with @ref task_gatt_set_on_received_isr
  */
-void task_gatt_nus_init_ok()
+void test_task_gatt_nus_init_ok()
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     mock_init (&m_mock_gatt);
@@ -276,7 +255,7 @@ void test_task_gatt_enable_ok_no_nus()
 void test_task_gatt_enable_ok_with_nus()
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    task_gatt_nus_init_ok();
+    test_task_gatt_nus_init_ok();
     ruuvi_interface_communication_ble4_advertising_scan_response_setup_ExpectAndReturn (
         m_name,
         true, RUUVI_DRIVER_SUCCESS);
@@ -313,11 +292,28 @@ void test_task_gatt_disable_ok (void)
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
 }
 
-/** @brief Setup connection event handler
+/**
+ * @brief Send given message via NUS
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
- *  where event data is NULL and event_size is 0.
- *  The event handler is called in interrupt context.
+ * This function queues a message to be sent and returns immediately.
+ * There is no guarantee on when the data is actually sent, and
+ * there is no acknowledgement or callback after the data has been sent.
  *
- * @param[in] cb Callback which gets called on connection in interrupt context.
+ * @return RUUVI_DRIVER_SUCCESS if data was placed in send buffer
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if NUS is not connected
+ * @return error code from stack on error
+ *
  */
+void test_task_gatt_send_asynchronous_ok()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_message_t msg = { 0 };
+    msg.data_length = 11;
+    test_task_gatt_nus_init_ok();
+    ruuvi_interface_log_Ignore();
+    ruuvi_interface_log_hex_Ignore();
+    ruuvi_interface_log_Ignore();
+    err_code = task_gatt_send_asynchronous (&msg);
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+    TEST_ASSERT(1 == send_count);
+}

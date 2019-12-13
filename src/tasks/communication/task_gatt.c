@@ -45,7 +45,7 @@ static bool m_nus_is_init;
 static bool m_dis_is_init;
 static bool m_dfu_is_init;
 static bool m_nus_is_connected;
-static char m_name[SCAN_RSP_NAME_MAX_LEN + 1] = {0};
+static char m_name[SCAN_RSP_NAME_MAX_LEN + 1] = { 0 };
 
 static task_gatt_cb_t m_on_connected;    //!< Callback for connection established
 static task_gatt_cb_t m_on_disconnected; //!< Callback for connection lost
@@ -60,7 +60,9 @@ static size_t safe_strlen (const char * s, size_t maxlen)
 
     for (i = 0; i < maxlen; ++i)
         if (s[i] == '\0')
-        { break; }
+        { 
+            break; 
+        }
 
     return i;
 }
@@ -133,10 +135,14 @@ ruuvi_driver_status_t task_gatt_dis_init (const
         ruuvi_interface_communication_ble4_gatt_dis_init_t * const p_dis)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-
-    if (task_gatt_is_init())
+    if(NULL == p_dis)
+    {
+        err_code |= RUUVI_DRIVER_ERROR_NULL;
+    }
+    else if (task_gatt_is_init() && !m_dis_is_init)
     {
         err_code |= ruuvi_interface_communication_ble4_gatt_dis_init (p_dis);
+        m_dis_is_init = (RUUVI_DRIVER_SUCCESS == err_code);
     }
     else
     {
@@ -150,10 +156,15 @@ ruuvi_driver_status_t task_gatt_nus_init (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if (task_gatt_is_init())
+    if (task_gatt_is_init() && !m_nus_is_init)
     {
         err_code |= ruuvi_interface_communication_ble4_gatt_nus_init (&m_channel);
-        m_channel.on_evt = task_gatt_on_nus_isr;
+        if(RUUVI_DRIVER_SUCCESS == err_code)
+        {
+          m_channel.on_evt = task_gatt_on_nus_isr;
+          m_nus_is_init = true;
+        }
+
     }
     else
     {
@@ -167,9 +178,10 @@ ruuvi_driver_status_t task_gatt_dfu_init (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if (task_gatt_is_init())
+    if (task_gatt_is_init() && !m_dfu_is_init)
     {
         err_code |= ruuvi_interface_communication_ble4_gatt_dfu_init();
+        m_dfu_is_init = (RUUVI_DRIVER_SUCCESS == err_code);
     }
     else
     {
@@ -220,8 +232,11 @@ ruuvi_driver_status_t task_gatt_enable()
 
     if (task_gatt_is_init())
     {
+
         // Note that this doesn't update sofdevice buffer, you have to call
         // advertising functions to encode data and start the advertisements.
+        err_code |= ruuvi_interface_communication_ble4_advertising_scan_response_setup(
+        m_name, m_nus_is_init);
         err_code |= ruuvi_interface_communication_ble4_advertising_type_set (
                         CONNECTABLE_SCANNABLE);
     }
