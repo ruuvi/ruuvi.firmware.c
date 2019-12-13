@@ -37,7 +37,7 @@ ruuvi_driver_status_t task_rtc_logging_configure (const task_api_data_target_t t
 /**
  * @brief set offset to system clock
  *
- * Values returned by @ref ruuvi_interface_rtc_millis are offset by this amount, which
+ * Values returned by @code ruuvi_interface_rtc_millis @endcode are offset by this amount, which
  * can be positive or negative. Negative offset should be always smaller than current time,
  * otherwise error is returned.
  *
@@ -52,7 +52,7 @@ ruuvi_driver_status_t task_rtc_millis_offset_set (const int64_t offset);
 /**
  * @brief get offset to system clock
  *
- * Values returned by @ref ruuvi_interface_rtc_millis are offset by this amount, which
+ * Values returned by @code ruuvi_interface_rtc_millis @endcode  are offset by this amount, which
  * can be positive or negative.
  *
  * This function is useful for synchronizing the clock with EPOCH, for example.

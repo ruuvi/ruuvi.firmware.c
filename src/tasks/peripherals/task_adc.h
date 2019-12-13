@@ -85,12 +85,12 @@ bool task_adc_is_init (void);
  * as possible to catch transients.
  *
  * <b>Note:</b> ADC should be configured to sleep or continuous mode. To take a single sample,
- * call @ref task_adc_sample_se after configuration. Configuring ADC into single sample mode is
- * equivalent to configuring ADC into sleep and then calling @ref task_adc_sample_se immediately
+ * call @ref task_adc_sample after configuration. Configuring ADC into single sample mode is
+ * equivalent to configuring ADC into sleep and then calling @ref task_adc_sample immediately
  *
- * @param[in, out] config Configuration of ADC.
+ * @param[in,out] config Configuration of ADC.
  * @param[in] handle Handle to ADC, i.e. ADC pin.
- * @param[in] mode sampling mode, absolute or ratiometric
+ * @param[in] mode sampling mode, @ref task_adc_mode_t.
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if ADC is not initialized or if it is already configured.
  */

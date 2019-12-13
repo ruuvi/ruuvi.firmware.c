@@ -109,7 +109,7 @@ ruuvi_driver_status_t task_gatt_nus_init();
  *
  * After calling this function underlying software stack is ready to setup GATT services.
  *
- * @param[in] Full name of device to be advertised in scan responses. Maximum 11 chars + trailing NULL. Must not be NULL, 0-length string is valid.
+ * @param[in] name Full name of device to be advertised in scan responses. Maximum 11 chars + trailing NULL. Must not be NULL, 0-length string is valid.
  *
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_NULL if name is NULL (use 0-length string instead)
@@ -157,9 +157,9 @@ bool task_gatt_is_init();
  */
 bool task_gatt_nus_is_connected();
 
-/** @brief Setup connection event handler
+/** @brief Setup connection event handler.
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of @code void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size) @endcode
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *
@@ -167,9 +167,9 @@ bool task_gatt_nus_is_connected();
  */
 void task_gatt_set_on_connected_isr (const task_gatt_cb_t cb);
 
-/** @brief Setup disconnection event handler
+/** @brief Setup disconnection event handler.
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of @code void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size) @endcode
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *
@@ -177,9 +177,9 @@ void task_gatt_set_on_connected_isr (const task_gatt_cb_t cb);
  */
 void task_gatt_set_on_disconnected_isr (const task_gatt_cb_t cb);
 
-/** @brief Setup data received event handler
+/** @brief Setup data received event handler.
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of @code void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size) @endcode
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *
@@ -187,9 +187,9 @@ void task_gatt_set_on_disconnected_isr (const task_gatt_cb_t cb);
  */
 void task_gatt_set_on_received_isr (const task_gatt_cb_t cb);
 
-/** @brief Setup data sent event handler
+/** @brief Setup data sent event handler.
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of @code void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size) @endcode
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *

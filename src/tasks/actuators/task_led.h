@@ -77,9 +77,9 @@ ruuvi_driver_status_t task_led_uninit (void);
  * @param[in] led  LED to change, use constant from RUUVI_BOARDS
  * @param[in] state  true to turn led on, false to turn led off.
  *
- * @retval @c RUUVI_DRIVER_SUCCESS if value was written
- * @retval @c RUUVI_ERROR_INVALID_PARAM  if GPIO pin is not led.
- * @retval @c RUUVI_DRIVER_ERROR_INVALID_STATE if GPIO task is not initialized.
+ * @retval RUUVI_DRIVER_SUCCESS if value was written
+ * @retval RUUVI_ERROR_INVALID_PARAM  if GPIO pin is not led.
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if GPIO task is not initialized.
  **/
 ruuvi_driver_status_t task_led_write (const uint16_t led, const bool state);
 
