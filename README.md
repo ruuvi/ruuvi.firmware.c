@@ -91,6 +91,10 @@ into project.
 # Licensing
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
+# Documentation
+Document is generated with Doxygen. Run `make doxygen` to generate the docs locally, or
+browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
+
 # Changelog
 ## 3.28.7
   - Fix long-life sensors not sampling.
