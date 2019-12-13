@@ -92,6 +92,9 @@ into project.
 Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.
 
 # Changelog
+## 3.28.7
+  - Fix long-life sensors not sampling.
+
 ## 3.28.6
   - Add Travis CI and SonarCloud support
 
