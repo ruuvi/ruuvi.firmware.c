@@ -275,10 +275,10 @@ static void init_comms (void)
     init_dis();
     init_nus();
     init_dfu();
-    task_gatt_set_on_connected_isr (on_gatt_connected_isr);
-    task_gatt_set_on_disconnected_isr (on_gatt_disconnected_isr);
-    task_gatt_set_on_received_isr (on_gatt_received_isr);
-    task_gatt_set_on_sent_isr (on_gatt_sent_isr);
+    task_gatt_set_on_connected_isr (&on_gatt_connected_isr);
+    task_gatt_set_on_disconnected_isr (&on_gatt_disconnected_isr);
+    task_gatt_set_on_received_isr (&on_gatt_received_isr);
+    task_gatt_set_on_sent_isr (&on_gatt_sent_isr);
     status |= task_gatt_enable();
     status |= task_advertisement_stop();  // Reinitialize with scan response
     status |= task_advertisement_start();
