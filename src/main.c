@@ -65,36 +65,6 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
     ruuvi_interface_log_hex (MAIN_LOG_LEVEL, msg, len);
 }
 
-/* @brief Callback handler for GATT communication events */
-//typedef void (*task_gatt_cb_t) (void * p_data, size_t data_len);
-static void on_gatt_connected_isr (void * data, size_t data_len)
-{
-    LOG ("GATT Connected ISR\r\n");
-    task_communication_heartbeat_configure (APPLICATION_GATT_HEARTBEAT_INTERVAL_MS,
-                                            GATT_HEARTBEAT_SIZE,
-                                            task_sensor_encode_to_5, task_gatt_send_asynchronous);
-    task_advertisement_start();
-}
-
-static void on_gatt_disconnected_isr (void * data, size_t data_len)
-{
-    LOG ("GATT Disconnected ISR\r\n");
-    task_communication_heartbeat_configure (APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
-                                            RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
-                                            task_sensor_encode_to_5, task_advertisement_send_data);
-}
-
-static void on_gatt_received_isr (void * data, size_t data_len)
-{
-    LOG ("GATT RX ISR\r\n");
-}
-
-static void on_gatt_sent_isr (void * data, size_t data_len)
-{
-    LOG ("GATT TX ISR\r\n");
-}
-
-
 /** Run tests which rely only on MCU.
  *  These tests require relevant peripherals being uninitialized
  *  before tests and leave the peripherals uninitialized.
@@ -194,6 +164,33 @@ static void init_sensors (void)
 }
 
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
+static void on_gatt_connected_isr (void * data, size_t data_len)
+{
+    LOG ("GATT Connected ISR\r\n");
+    task_communication_heartbeat_configure (APPLICATION_GATT_HEARTBEAT_INTERVAL_MS,
+                                            GATT_HEARTBEAT_SIZE,
+                                            task_sensor_encode_to_5, task_gatt_send_asynchronous);
+    task_advertisement_start();
+}
+
+static void on_gatt_disconnected_isr (void * data, size_t data_len)
+{
+    LOG ("GATT Disconnected ISR\r\n");
+    task_communication_heartbeat_configure (APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
+                                            RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
+                                            task_sensor_encode_to_5, task_advertisement_send_data);
+}
+
+static void on_gatt_received_isr (void * data, size_t data_len)
+{
+    LOG ("GATT RX ISR\r\n");
+}
+
+static void on_gatt_sent_isr (void * data, size_t data_len)
+{
+    LOG ("GATT TX ISR\r\n");
+}
+
 static ruuvi_driver_status_t get_mac (uint8_t * const mac_buffer)
 {
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
