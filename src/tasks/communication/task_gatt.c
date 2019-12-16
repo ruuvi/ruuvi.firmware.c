@@ -123,9 +123,10 @@ void task_gatt_mock_state_reset()
 static
 #endif
 ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
-                           void * p_data, size_t data_len)
+        void * p_data, size_t data_len)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
     switch (evt)
     {
         // Note: This gets called only after the NUS notifications have been registered.
@@ -169,6 +170,7 @@ ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t 
             err_code = RUUVI_DRIVER_ERROR_INTERNAL;
             break;
     }
+
     return err_code;
 }
 
