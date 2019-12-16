@@ -33,12 +33,6 @@
 #define TASK_GATT_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
 
-#define LOG(msg) ruuvi_interface_log(TASK_GATT_LOG_LEVEL, msg)
-#define LOGD(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg)
-#define LOGE(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_ERROR, msg)
-#define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
-#define LOGDHEX(msg, len) ruuvi_interface_log_hex(RUUVI_INTERFACE_LOG_DEBUG, msg, len)
-
 static inline void LOG (const char * const msg)
 {
     ruuvi_interface_log (TASK_GATT_LOG_LEVEL, msg);
@@ -81,7 +75,7 @@ static task_gatt_cb_t m_on_sent;         //!< Callback for data sent
 // Not included when compiled with std=c99.
 static inline size_t safe_strlen (const char * s, size_t maxlen)
 {
-     size_t i;
+    size_t i;
 
     for (i = 0; (i < maxlen) && ('\0' != s[i]); ++i)
     {
@@ -120,7 +114,7 @@ void task_gatt_mock_state_reset()
  * the response with task_gatt_send.
  *
  * @param evt Event type
- * @param p_data pointer to event data, if event is 
+ * @param p_data pointer to event data, if event is
  *               @c RUUVI_INTERFACE_COMMUNICATION_RECEIVED received data, NULL otherwise.
  * @param data_len number of bytes in received data, 0 if p_data is NULL.
  *
@@ -129,9 +123,8 @@ void task_gatt_mock_state_reset()
 static
 #endif
 void task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
-        void * p_data, size_t data_len)
+                           void * p_data, size_t data_len)
 {
-
     switch (evt)
     {
         // Note: This gets called only after the NUS notifications have been registered.
@@ -268,7 +261,7 @@ ruuvi_driver_status_t task_gatt_init (const char * const name)
     return err_code;
 }
 
-ruuvi_driver_status_t task_gatt_enable(void)
+ruuvi_driver_status_t task_gatt_enable (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
@@ -289,7 +282,7 @@ ruuvi_driver_status_t task_gatt_enable(void)
     return err_code;
 }
 
-ruuvi_driver_status_t task_gatt_disable(void)
+ruuvi_driver_status_t task_gatt_disable (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
@@ -306,7 +299,7 @@ ruuvi_driver_status_t task_gatt_disable(void)
     return err_code;
 }
 
-bool task_gatt_is_init(void)
+bool task_gatt_is_init (void)
 {
     return m_is_init;
 }
@@ -316,7 +309,7 @@ bool task_gatt_is_init(void)
  *
  * @return true if NUS is connected is initialized, false otherwise.
  */
-bool task_gatt_nus_is_connected(void)
+bool task_gatt_nus_is_connected (void)
 {
     return m_nus_is_connected;
 }
@@ -324,38 +317,38 @@ bool task_gatt_nus_is_connected(void)
 ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t
         * const p_msg)
 {
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
     // State, input check
     if (NULL == p_msg)
     {
-        return RUUVI_DRIVER_ERROR_NULL;
+        err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-
-    if (NULL == m_channel.send)
+    else if (NULL == m_channel.send)
     {
-        return RUUVI_DRIVER_ERROR_INVALID_STATE;
+        err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-
-    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-    // Try to put data to SD
-    err_code |= m_channel.send (p_msg);
-
-    // If success, return. Else put data to ringbuffer
-    if (RUUVI_DRIVER_SUCCESS == err_code)
-    {
-        LOGD (">>>;");
-        LOGDHEX (p_msg->data, p_msg->data_length);
-        LOGD ("\r\n");
-        return err_code;
-    }
-    else if (RUUVI_DRIVER_ERROR_RESOURCES == err_code)
-    {
-        err_code = RUUVI_DRIVER_ERROR_NO_MEM;
-    }
-    // If the error code is something else than buffer full, return error.
     else
     {
-        RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
-        return err_code;
+        // Try to put data to SD
+        err_code |= m_channel.send (p_msg);
+
+        // If success, return. Else put data to ringbuffer
+        if (RUUVI_DRIVER_SUCCESS == err_code)
+        {
+            LOGD (">>>;");
+            LOGDHEX (p_msg->data, p_msg->data_length);
+            LOGD ("\r\n");
+        }
+        else if (RUUVI_DRIVER_ERROR_RESOURCES == err_code)
+        {
+            err_code = RUUVI_DRIVER_ERROR_NO_MEM;
+        }
+        // If the error code is something else than buffer full, return error.
+        else
+        {
+            RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+        }
     }
 
     return err_code;
@@ -363,7 +356,8 @@ ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication
 
 /** @brief Setup connection event handler
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of
+ *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *
@@ -376,7 +370,8 @@ void task_gatt_set_on_connected_isr (const task_gatt_cb_t cb)
 
 /** @brief Setup disconnection event handler
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of
+ *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *
@@ -389,7 +384,8 @@ void task_gatt_set_on_disconnected_isr (const task_gatt_cb_t cb)
 
 /** @brief Setup data received event handler
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of
+ *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *
@@ -402,7 +398,8 @@ void task_gatt_set_on_received_isr (const task_gatt_cb_t cb)
 
 /** @brief Setup data sent event handler
  *
- *  The event handler has signature of void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
+ *  The event handler has signature of
+ *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
  *  where event data is NULL and event_size is 0.
  *  The event handler is called in interrupt context.
  *
