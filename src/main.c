@@ -59,7 +59,7 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 
 /* @brief Callback handler for GATT communication events */
 //typedef void (*task_gatt_cb_t) (void * p_data, size_t data_len);
-static void on_gatt_connected_isr()
+static void on_gatt_connected_isr (void * data, size_t data_len)
 {
     LOG ("GATT Connected ISR\r\n");
     task_communication_heartbeat_configure (1000U, 18U,
@@ -67,19 +67,19 @@ static void on_gatt_connected_isr()
     task_advertisement_start();
 }
 
-static void on_gatt_disconnected_isr()
+static void on_gatt_disconnected_isr (void * data, size_t data_len)
 {
     LOG ("GATT Disconnected ISR\r\n");
     task_communication_heartbeat_configure (1000U, 24U,
                                             task_sensor_encode_to_5, task_advertisement_send_data);
 }
 
-static void on_gatt_received_isr()
+static void on_gatt_received_isr (void * data, size_t data_len)
 {
     LOG ("GATT RX ISR\r\n");
 }
 
-static void on_gatt_sent_isr()
+static void on_gatt_sent_isr (void * data, size_t data_len)
 {
     LOG ("GATT TX ISR\r\n");
 }
