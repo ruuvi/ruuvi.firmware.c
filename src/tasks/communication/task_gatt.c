@@ -48,12 +48,12 @@ static inline void LOGE (const char * const msg)
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_ERROR, msg);
 }
 
-static inline void LOGHEX (const char * const msg, const size_t len)
+static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 {
     ruuvi_interface_log_hex (TASK_GATT_LOG_LEVEL, msg, len);
 }
 
-static inline void LOGDHEX (const char * const msg, const size_t len)
+static inline void LOGDHEX (const uint8_t * const msg, const size_t len)
 {
     ruuvi_interface_log_hex (RUUVI_INTERFACE_LOG_DEBUG, msg, len);
 }
@@ -122,9 +122,10 @@ void task_gatt_mock_state_reset()
 #ifndef CEEDLING
 static
 #endif
-void task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
+ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
                            void * p_data, size_t data_len)
 {
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     switch (evt)
     {
         // Note: This gets called only after the NUS notifications have been registered.
@@ -165,8 +166,10 @@ void task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
             break;
 
         default:
+            err_code = RUUVI_DRIVER_ERROR_INTERNAL;
             break;
     }
+    return err_code;
 }
 
 ruuvi_driver_status_t task_gatt_dis_init (const

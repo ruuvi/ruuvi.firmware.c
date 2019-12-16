@@ -52,7 +52,7 @@ static inline void LOGD (const char * const msg)
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_DEBUG, msg);
 }
 
-static inline void LOGHEX (const char * const msg, const size_t len)
+static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 {
     ruuvi_interface_log_hex (MAIN_LOG_LEVEL, msg, len);
 }
