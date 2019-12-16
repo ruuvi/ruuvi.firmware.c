@@ -17,6 +17,10 @@
 
 static uint32_t send_count = 0;
 static uint32_t read_count = 0;
+static bool m_con_cb;
+static bool m_discon_cb;
+static bool m_tx_cb;
+static bool m_rx_cb;
 static const char m_name[] = "Ceedling";
 
 #define SEND_COUNT_MAX (10U)
@@ -58,6 +62,26 @@ ruuvi_driver_status_t mock_uninit (ruuvi_interface_communication_t * const p_cha
     return RUUVI_DRIVER_SUCCESS;
 }
 
+void on_con_isr (void * p_data, size_t data_len)
+{
+    m_con_cb = true;
+}
+
+void on_discon_isr (void * p_data, size_t data_len)
+{
+    m_discon_cb = true;
+}
+
+void on_rx_isr (void * p_data, size_t data_len)
+{
+    m_rx_cb = true;
+}
+
+void on_tx_isr (void * p_data, size_t data_len)
+{
+    m_tx_cb = true;
+}
+
 ruuvi_driver_status_t mock_init (ruuvi_interface_communication_t * const p_channel)
 {
     p_channel->send   = mock_send;
@@ -94,6 +118,10 @@ void tearDown (void)
     memset (&m_mock_gatt, 0, sizeof (ruuvi_interface_communication_t));
     send_count = 0;
     read_count = 0;
+    m_con_cb = false;
+    m_discon_cb = false;
+    m_tx_cb = false;
+    m_rx_cb = false;
     task_gatt_mock_state_reset();
     TEST_ASSERT (!task_gatt_is_init());
 }
@@ -409,4 +437,41 @@ void test_task_gatt_send_asynchronous_unknown_error()
     ruuvi_interface_error_to_string_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     err_code = task_gatt_send_asynchronous (&msg);
     TEST_ASSERT (RUUVI_DRIVER_ERROR_INTERNAL == err_code);
+}
+
+void test_task_gatt_callbacks_ok()
+{
+    test_task_gatt_nus_init_ok();
+    task_gatt_set_on_received_isr (on_rx_isr);
+    task_gatt_set_on_sent_isr (on_tx_isr);
+    task_gatt_set_on_connected_isr (on_con_isr);
+    task_gatt_set_on_disconnected_isr (on_discon_isr);
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_CONNECTED,
+                          NULL, 0);
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED,
+                          NULL, 0);
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_SENT,
+                          NULL, 0);
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_RECEIVED,
+                          NULL, 0);
+    TEST_ASSERT (m_rx_cb);
+    TEST_ASSERT (m_tx_cb);
+    TEST_ASSERT (m_con_cb);
+    TEST_ASSERT (m_discon_cb);
+}
+void test_task_gatt_callbacks_null()
+{
+    test_task_gatt_nus_init_ok();
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_CONNECTED,
+                          NULL, 0);
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED,
+                          NULL, 0);
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_SENT,
+                          NULL, 0);
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_RECEIVED,
+                          NULL, 0);
+    TEST_ASSERT_FALSE (m_rx_cb);
+    TEST_ASSERT_FALSE (m_tx_cb);
+    TEST_ASSERT_FALSE (m_con_cb);
+    TEST_ASSERT_FALSE (m_discon_cb);
 }
