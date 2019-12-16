@@ -70,7 +70,7 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
  *  before tests and leave the peripherals uninitialized.
  *  Production firmware should not run these tests.
  */
-static void run_mcu_tests()
+static void run_mcu_tests (void)
 {
 #if RUUVI_RUN_TESTS
     LOG ("'mcu_tests':{\r\n");
@@ -286,7 +286,7 @@ static void init_comms (void)
     init_nus();
     init_dfu();
     task_gatt_set_on_connected_isr (&on_gatt_connected_isr);
-    task_gatt_set_on_disconnected_isr (&on_gatt_disconnected_isr);
+    task_gatt_set_on_disconn_isr (&on_gatt_disconnected_isr);
     task_gatt_set_on_received_isr (&on_gatt_received_isr);
     task_gatt_set_on_sent_isr (&on_gatt_sent_isr);
     status |= task_gatt_enable();

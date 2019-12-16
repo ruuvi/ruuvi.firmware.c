@@ -257,6 +257,7 @@ void test_task_gatt_nus_init_ok()
  *
  * @retval RUUVI_DRIVER_SUCCESS on success.
  * @retval RUUVI_DRIVER_ERROR_NULL if name is NULL (use 0-length string instead)
+* @retval RUUVI_DRIVER_ERROR_INVALID_LENGTH if name is longer than @ref SCAN_RSP_NAME_MAX_LEN
  * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if GATT is already initialized or advertisements are not initialized.
  *
  */
@@ -278,6 +279,44 @@ void test_task_gatt_init_null (void)
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     err_code |= task_gatt_init (NULL);
     TEST_ASSERT (RUUVI_DRIVER_ERROR_NULL == err_code);
+}
+
+void test_task_gatt_init_too_long_name (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    tearDown();
+    // Scan response has space for extra null already, so add + 2
+    char toolong[SCAN_RSP_NAME_MAX_LEN + 2] = {0};
+
+    for (size_t ii = 0; ii < sizeof (toolong); ii++)
+    {
+        toolong[ii] = 'A';
+    }
+
+    task_advertisement_is_init_ExpectAndReturn (true);
+    err_code |= task_gatt_init (toolong);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_LENGTH == err_code);
+    TEST_ASSERT (!task_gatt_is_init());
+}
+
+void test_task_gatt_init_max_len_name (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    tearDown();
+    // Scan response has space for extra null already, so add + 2
+    char maxlen[SCAN_RSP_NAME_MAX_LEN + 1] = {0};
+
+    for (size_t ii = 0; ii < sizeof (maxlen); ii++)
+    {
+        maxlen[ii] = 'A';
+    }
+
+    maxlen[sizeof (maxlen) - 1] = '\0';
+    task_advertisement_is_init_ExpectAndReturn (true);
+    ruuvi_interface_communication_ble4_gatt_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    err_code |= task_gatt_init (maxlen);
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+    TEST_ASSERT (task_gatt_is_init());
 }
 
 /**
@@ -340,6 +379,14 @@ void test_task_gatt_disable_ok (void)
         NONCONNECTABLE_NONSCANNABLE, RUUVI_DRIVER_SUCCESS);
     err_code |= task_gatt_disable();
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_gatt_disable_not_init (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    tearDown();
+    err_code |= task_gatt_disable();
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
 }
 
 /**
@@ -445,7 +492,7 @@ void test_task_gatt_callbacks_ok()
     task_gatt_set_on_received_isr (on_rx_isr);
     task_gatt_set_on_sent_isr (on_tx_isr);
     task_gatt_set_on_connected_isr (on_con_isr);
-    task_gatt_set_on_disconnected_isr (on_discon_isr);
+    task_gatt_set_on_disconn_isr (on_discon_isr);
     task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_CONNECTED,
                           NULL, 0);
     task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED,

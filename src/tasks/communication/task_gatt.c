@@ -224,12 +224,13 @@ ruuvi_driver_status_t task_gatt_init (const char * const name)
     }
     else if (task_advertisement_is_init() && (!task_gatt_is_init()))
     {
-        size_t name_length = safe_strlen (name, sizeof (m_name));
+        const size_t name_length = safe_strlen (name, sizeof (m_name));
 
-        if (sizeof (m_name) >= name_length)
+        if (sizeof (m_name) > name_length)
         {
             err_code |= ruuvi_interface_communication_ble4_gatt_init();
-            memcpy (m_name, name, sizeof (m_name) - 1);
+            memcpy (m_name, name, name_length);
+            m_name[name_length] = '\0';
         }
         else
         {
@@ -348,7 +349,7 @@ void task_gatt_set_on_connected_isr (const task_gatt_cb_t cb)
 }
 
 
-void task_gatt_set_on_disconnected_isr (const task_gatt_cb_t cb)
+void task_gatt_set_on_disconn_isr (const task_gatt_cb_t cb)
 {
     m_on_disconnected = cb;
 }

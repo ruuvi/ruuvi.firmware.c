@@ -176,7 +176,7 @@ void task_gatt_set_on_connected_isr (const task_gatt_cb_t cb);
  *
  * @param[in] cb Callback which gets called on disconnection in interrupt context.
  */
-void task_gatt_set_on_disconnected_isr (const task_gatt_cb_t cb);
+void task_gatt_set_on_disconn_isr (const task_gatt_cb_t cb);
 
 /** @brief Setup data received event handler.
  *
