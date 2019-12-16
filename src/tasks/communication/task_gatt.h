@@ -26,7 +26,7 @@
 void task_gatt_mock_state_reset();
 
 // Expose callback to Ceedling
-void task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
+ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
                            void * p_data, size_t data_len);
 
 #endif
