@@ -33,14 +33,10 @@
 #define TASK_GATT_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
 
+#if 0
 static inline void LOG (const char * const msg)
 {
     ruuvi_interface_log (TASK_GATT_LOG_LEVEL, msg);
-}
-
-static inline void LOGD (const char * const msg)
-{
-    ruuvi_interface_log (RUUVI_INTERFACE_LOG_DEBUG, msg);
 }
 
 static inline void LOGE (const char * const msg)
@@ -51,6 +47,12 @@ static inline void LOGE (const char * const msg)
 static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 {
     ruuvi_interface_log_hex (TASK_GATT_LOG_LEVEL, msg, len);
+}
+#endif
+
+static inline void LOGD (const char * const msg)
+{
+    ruuvi_interface_log (RUUVI_INTERFACE_LOG_DEBUG, msg);
 }
 
 static inline void LOGDHEX (const uint8_t * const msg, const size_t len)
@@ -77,9 +79,7 @@ static inline size_t safe_strlen (const char * s, size_t maxlen)
 {
     size_t i;
 
-    for (i = 0; (i < maxlen) && ('\0' != s[i]); ++i)
-    {
-    }
+    for (i = 0; (i < maxlen) && ('\0' != s[i]); ++i);
 
     return i;
 }
@@ -125,53 +125,32 @@ static
 ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
         void * p_data, size_t data_len)
 {
-    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-
     switch (evt)
     {
         // Note: This gets called only after the NUS notifications have been registered.
         case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
             m_nus_is_connected = true;
-
-            if (NULL != m_on_connected)
-            {
-                m_on_connected (p_data, data_len);
-            }
-
+            (NULL != m_on_connected) ? m_on_connected (p_data, data_len) : false;
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
             m_nus_is_connected = false;
-
-            if (NULL != m_on_disconnected)
-            {
-                m_on_disconnected (p_data, data_len);
-            }
-
+            (NULL != m_on_disconnected) ? m_on_disconnected (p_data, data_len) : false;
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_SENT:
-            if (NULL != m_on_sent)
-            {
-                m_on_sent (p_data, data_len);
-            }
-
+            (NULL != m_on_sent) ? m_on_sent (p_data, data_len) : false;
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
-            if (NULL != m_on_received)
-            {
-                m_on_received (p_data, data_len);
-            }
-
+            (NULL != m_on_received) ? m_on_received (p_data, data_len) : false;
             break;
 
         default:
-            err_code = RUUVI_DRIVER_ERROR_INTERNAL;
             break;
     }
 
-    return err_code;
+    return RUUVI_DRIVER_SUCCESS;
 }
 
 ruuvi_driver_status_t task_gatt_dis_init (const
