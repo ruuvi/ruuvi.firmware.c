@@ -2,7 +2,7 @@
 #define  TASK_ADVERTISEMENT_H
 
 /**
- * @defgroup communication_tasks Sending and receiveing data.
+ * @defgroup communication_tasks Sending and receiving data.
  */
 /*@{*/
 /**

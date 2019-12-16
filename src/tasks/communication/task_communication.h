@@ -8,12 +8,6 @@
  *
  */
 /**
- * @defgroup communication_tasks Communication tasks
- * @brief Transport-layer independent communication.
- *
- */
-/*@}*/
-/**
  * @addtogroup communication_tasks
  */
 /*@{*/
@@ -96,5 +90,7 @@ ruuvi_driver_status_t task_communication_heartbeat_configure (const uint32_t int
         const size_t max_len,
         const heartbeat_data_fp_t data_src,
         const ruuvi_interface_communication_xfer_fp_t send);
+
+/*@}*/
 
 #endif
