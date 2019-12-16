@@ -44,6 +44,7 @@
  */
 #define BOOT_DELAY_MS (1000U)
 #define LOG_BUF_SIZE  (128U)
+#define GATT_HEARTBEAT_SIZE (18U) //!< 20 would be max, 18 cuts the data to while fields.
 
 #ifndef MAIN_LOG_LEVEL
 #define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
@@ -69,7 +70,8 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 static void on_gatt_connected_isr (void * data, size_t data_len)
 {
     LOG ("GATT Connected ISR\r\n");
-    task_communication_heartbeat_configure (1000U, 18U,
+    task_communication_heartbeat_configure (APPLICATION_GATT_HEARTBEAT_INTERVAL_MS, 
+                         GATT_HEARTBEAT_SIZE,
                                             task_sensor_encode_to_5, task_gatt_send_asynchronous);
     task_advertisement_start();
 }
@@ -77,7 +79,8 @@ static void on_gatt_connected_isr (void * data, size_t data_len)
 static void on_gatt_disconnected_isr (void * data, size_t data_len)
 {
     LOG ("GATT Disconnected ISR\r\n");
-    task_communication_heartbeat_configure (1000U, 24U,
+    task_communication_heartbeat_configure (APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS, 
+        RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
                                             task_sensor_encode_to_5, task_advertisement_send_data);
 }
 
@@ -274,7 +277,8 @@ static void init_comms (void)
     // Initialize BLE - and start advertising.
     status = task_advertisement_init();
     status |= task_advertisement_start();
-    status |= task_communication_heartbeat_configure (APPLICATION_HEARTBEAT_INTERVAL,
+    status |= task_communication_heartbeat_configure (
+              APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
               RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
               task_sensor_encode_to_5, task_advertisement_send_data);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);

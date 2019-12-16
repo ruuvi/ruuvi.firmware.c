@@ -25,6 +25,9 @@ ruuvitag_b:
 	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_longlife
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
+	$(MAKE) -C targets/ruuvitag_b/armgcc MODE=-DAPPLICATION_MODE_LONGMEM DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_longmem
+	$(MAKE) -C targets/ruuvitag_b/armgcc clean
 	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3"
 	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_test
 
