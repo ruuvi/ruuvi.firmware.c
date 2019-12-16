@@ -19,10 +19,31 @@ static uint32_t send_count = 0;
 static uint32_t read_count = 0;
 static const char m_name[] = "Ceedling";
 
+#define SEND_COUNT_MAX (10U)
+
 ruuvi_driver_status_t mock_send (ruuvi_interface_communication_message_t * const p_msg)
 {
-    send_count++;
-    return RUUVI_DRIVER_SUCCESS;
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    static bool extra_error = false;
+
+    if (send_count < SEND_COUNT_MAX)
+    {
+        send_count++;
+    }
+    else
+    {
+        if (!extra_error)
+        {
+            err_code |= RUUVI_DRIVER_ERROR_RESOURCES;
+            extra_error = true;
+        }
+        else
+        {
+            err_code |= RUUVI_DRIVER_ERROR_INTERNAL;
+        }
+    }
+
+    return err_code;
 }
 
 ruuvi_driver_status_t mock_read (ruuvi_interface_communication_message_t * const p_msg)
@@ -34,6 +55,7 @@ ruuvi_driver_status_t mock_read (ruuvi_interface_communication_message_t * const
 ruuvi_driver_status_t mock_uninit (ruuvi_interface_communication_t * const p_channel)
 {
     memset (p_channel, 0, sizeof (ruuvi_interface_communication_t));
+    return RUUVI_DRIVER_SUCCESS;
 }
 
 ruuvi_driver_status_t mock_init (ruuvi_interface_communication_t * const p_channel)
@@ -299,8 +321,10 @@ void test_task_gatt_disable_ok (void)
  * There is no guarantee on when the data is actually sent, and
  * there is no acknowledgement or callback after the data has been sent.
  *
- * @return RUUVI_DRIVER_SUCCESS if data was placed in send buffer
- * @return RUUVI_DRIVER_ERROR_INVALID_STATE if NUS is not connected
+ * @return RUUVI_DRIVER_SUCCESS if data was placed in send buffer.
+ * @retval RUUVI_DRIVER_ERROR_NULL if NULL was tried to send.
+ * @return RUUVI_DRIVER_ERROR_INVALID_STATE if NUS is not connected.
+ * @retval RUUVI_DRIVER_ERROR_NO_MEM if transmit buffer is full.
  * @return error code from stack on error
  *
  */
@@ -310,10 +334,79 @@ void test_task_gatt_send_asynchronous_ok()
     ruuvi_interface_communication_message_t msg = { 0 };
     msg.data_length = 11;
     test_task_gatt_nus_init_ok();
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_CONNECTED,
+                          NULL, 0);
     ruuvi_interface_log_Ignore();
     ruuvi_interface_log_hex_Ignore();
     ruuvi_interface_log_Ignore();
     err_code = task_gatt_send_asynchronous (&msg);
-    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
     TEST_ASSERT (1 == send_count);
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_gatt_send_asynchronous_null()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_message_t msg = { 0 };
+    msg.data_length = 11;
+    test_task_gatt_nus_init_ok();
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_CONNECTED,
+                          NULL, 0);
+    err_code = task_gatt_send_asynchronous (NULL);
+    TEST_ASSERT (0 == send_count);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_NULL == err_code);
+}
+
+void test_task_gatt_send_asynchronous_no_nus()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_message_t msg = { 0 };
+    msg.data_length = 11;
+    test_task_gatt_nus_init_ok();
+    err_code = task_gatt_send_asynchronous (&msg);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
+    TEST_ASSERT (0 == send_count);
+}
+
+void test_task_gatt_send_asynchronous_no_mem()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_message_t msg = { 0 };
+    msg.data_length = 11;
+    test_task_gatt_nus_init_ok();
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_CONNECTED,
+                          NULL, 0);
+
+    for (uint32_t ii = 0; ii <= SEND_COUNT_MAX; ii++)
+    {
+        ruuvi_interface_log_Ignore();
+        ruuvi_interface_log_hex_Ignore();
+        ruuvi_interface_log_Ignore();
+        err_code |= task_gatt_send_asynchronous (&msg);
+    }
+
+    TEST_ASSERT (SEND_COUNT_MAX == send_count);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_NO_MEM == err_code);
+}
+
+void test_task_gatt_send_asynchronous_unknown_error()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_communication_message_t msg = { 0 };
+    msg.data_length = 11;
+    test_task_gatt_nus_init_ok();
+    task_gatt_on_nus_isr (RUUVI_INTERFACE_COMMUNICATION_CONNECTED,
+                          NULL, 0);
+
+    for (uint32_t ii = 0; ii < SEND_COUNT_MAX; ii++)
+    {
+        ruuvi_interface_log_Ignore();
+        ruuvi_interface_log_hex_Ignore();
+        ruuvi_interface_log_Ignore();
+        err_code = task_gatt_send_asynchronous (&msg);
+    }
+
+    ruuvi_interface_error_to_string_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    err_code = task_gatt_send_asynchronous (&msg);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INTERNAL == err_code);
 }

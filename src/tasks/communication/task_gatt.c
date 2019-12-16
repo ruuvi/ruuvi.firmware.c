@@ -129,6 +129,8 @@ void task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
     {
         // Note: This gets called only after the NUS notifications have been registered.
         case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
+            m_nus_is_connected = true;
+
             if (NULL != m_on_connected)
             {
                 m_on_connected (p_data, data_len);
@@ -137,6 +139,8 @@ void task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
+            m_nus_is_connected = false;
+
             if (NULL != m_on_disconnected)
             {
                 m_on_disconnected (p_data, data_len);
@@ -311,7 +315,7 @@ bool task_gatt_is_init (void)
  */
 bool task_gatt_nus_is_connected (void)
 {
-    return m_nus_is_connected;
+    return m_nus_is_connected && (NULL != m_channel.send);
 }
 
 ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t
@@ -324,9 +328,9 @@ ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication
     {
         err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-    else if (NULL == m_channel.send)
+    else if (!task_gatt_nus_is_connected())
     {
-        err_code |= RUUVI_DRIVER_ERROR_NULL;
+        err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
     }
     else
     {
@@ -354,57 +358,22 @@ ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication
     return err_code;
 }
 
-/** @brief Setup connection event handler
- *
- *  The event handler has signature of
- *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
- *  where event data is NULL and event_size is 0.
- *  The event handler is called in interrupt context.
- *
- * @param[in] cb Callback which gets called on connection in interrupt context.
- */
 void task_gatt_set_on_connected_isr (const task_gatt_cb_t cb)
 {
     m_on_connected = cb;
 }
 
-/** @brief Setup disconnection event handler
- *
- *  The event handler has signature of
- *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
- *  where event data is NULL and event_size is 0.
- *  The event handler is called in interrupt context.
- *
- * @param[in] cb Callback which gets called on disconnection in interrupt context.
- */
+
 void task_gatt_set_on_disconnected_isr (const task_gatt_cb_t cb)
 {
     m_on_disconnected = cb;
 }
 
-/** @brief Setup data received event handler
- *
- *  The event handler has signature of
- *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
- *  where event data is NULL and event_size is 0.
- *  The event handler is called in interrupt context.
- *
- * @param[in] cb Callback which gets called on data received in interrupt context.
- */
 void task_gatt_set_on_received_isr (const task_gatt_cb_t cb)
 {
     m_on_received = cb;
 }
 
-/** @brief Setup data sent event handler
- *
- *  The event handler has signature of
- *  void(*task_gatt_cb_t)(void* p_event_data, uint16_t event_size)
- *  where event data is NULL and event_size is 0.
- *  The event handler is called in interrupt context.
- *
- * @param[in] cb Callback which gets called on data sent in interrupt context.
- */
 void task_gatt_set_on_sent_isr (const task_gatt_cb_t cb)
 {
     m_on_sent = cb;
