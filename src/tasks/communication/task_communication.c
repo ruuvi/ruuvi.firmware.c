@@ -22,9 +22,6 @@
 #include <string.h>
 #include <inttypes.h>
 
-#define RETURN_ON_NON_STD_MSG(incoming)  if(NULL == incoming || \
-                                            RUUVI_ENDPOINT_STANDARD_MESSAGE_LENGTH != incoming->data_length) \
-                                            return RUUVI_DRIVER_ERROR_INVALID_PARAM
 
 static ruuvi_interface_timer_id_t
 heartbeat_timer;   //!< Timer for heartbeat action
@@ -32,6 +29,7 @@ static size_t
 m_heartbeat_data_max_len;  //!< Maximum data length for heartbeat data
 static ruuvi_interface_communication_xfer_fp_t
 heartbeat_target; //!< Function to which send the hearbeat data
+static heartbeat_data_fp_t heartbeat_encoder;
 
 static ruuvi_driver_status_t task_communication_target_api_get (
     task_communication_api_t ** api, uint8_t target)
@@ -83,7 +81,7 @@ ruuvi_driver_status_t task_communication_on_data (const
         ruuvi_interface_communication_xfer_fp_t reply_fp)
 {
     // return error if data is not understood.
-    RETURN_ON_NON_STD_MSG (incoming);
+    
     ruuvi_interface_communication_message_t reply = {0};
     // Get target API
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
@@ -210,47 +208,23 @@ ruuvi_driver_status_t task_communication_on_data (const
     return err_code;
 }
 
-ruuvi_driver_status_t task_communication_offsets_i32f32_to_float (
-    const uint8_t * const offset, float * const converted)
-{
-    if (NULL == offset || NULL == converted)
-    {
-        return RUUVI_DRIVER_ERROR_NULL;
-    }
-
-    int32_t integer = 0;
-    int32_t fraction = 0;
-    // uint8 array is big-endian, our CPU is little-endian. Convert.
-    integer |= offset[0] << 0;
-    integer |= offset[1] << 8;
-    integer |= offset[2] << 16;
-    integer |= offset[3] << 24;
-    fraction |= offset[4] << 0;
-    fraction |= offset[5] << 8;
-    fraction |= offset[6] << 16;
-    fraction |= offset[7] << 24;
-    *converted =  integer + (float) fraction / INT32_MAX;
-    return RUUVI_DRIVER_SUCCESS;
-}
-
 static void heartbeat_send (void * p_event_data, uint16_t event_size)
 {
     ruuvi_interface_communication_message_t msg = {0};
-    task_sensor_encode_to_5 ( (uint8_t *) &msg.data);
+    
     msg.data_length = m_heartbeat_data_max_len;
-    ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_INTERNAL;
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if (NULL != heartbeat_target)
+    if (NULL != heartbeat_target && NULL != heartbeat_encoder)
     {
-        // get sensor data
-        // encode sensor data
+        // get message to send
+        err_code |= heartbeat_encoder(msg.data);
         // send sensor data
-        err_code = heartbeat_target (&msg);
+        err_code |= heartbeat_target (&msg);
     }
 
     if (RUUVI_DRIVER_SUCCESS == err_code)
     {
-        // TODO: Check status in main and feed watchdog there
         ruuvi_interface_watchdog_feed();
     }
 
@@ -263,7 +237,9 @@ static void heartbeat_schedule_isr (void * p_context)
 }
 
 ruuvi_driver_status_t task_communication_heartbeat_configure (const uint32_t interval_ms,
-        const size_t max_len, const ruuvi_interface_communication_xfer_fp_t send)
+        const size_t max_len, 
+        const heartbeat_data_fp_t data_src,
+        const ruuvi_interface_communication_xfer_fp_t send)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
@@ -280,13 +256,14 @@ ruuvi_driver_status_t task_communication_heartbeat_configure (const uint32_t int
 
     ruuvi_interface_timer_stop (heartbeat_timer);
 
-    if (NULL == send)
+    if (NULL == send || NULL == data_src)
     {
         return RUUVI_DRIVER_ERROR_NULL;
     }
 
     m_heartbeat_data_max_len = max_len;
     heartbeat_target = send;
+    heartbeat_encoder = data_src;
 
     if (0 != interval_ms)
     {
