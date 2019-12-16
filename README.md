@@ -1,5 +1,5 @@
 # ruuvi.firmware.c
-[![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi_ruuvi.firmware.c)
+[![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
@@ -23,7 +23,7 @@ If you're working on multiple nRF projects, you can (and should) use softlinking
 Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project. If any of the submodules has a changed remote, you'll need to run `git submodule sync --recursive` and again `git submodule update --init --recursive` to update the modules from new remotes. 
 
 ## Toolchain
-ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi_ruuvi.firmware.c/), it's recommended to use SES for developing. You can make the project and all variants by runnning "make" at top level of this repository. 
+ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use SES for developing. You can make the project and all variants by runnning "make" at top level of this repository. 
  
 Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
 and following Getting Started plugin instructions.
@@ -43,7 +43,7 @@ astyle --project=.astylerc --recursive "src/tests/*.h"
 ```
 
 ## Static analysis
-The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi_ruuvi.firmware.c/fullhtml/index.html) is a link to generated report which gets pushed to GitHub.
+The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html) is a link to generated report which gets pushed to GitHub.
 
 
 ### PVS
