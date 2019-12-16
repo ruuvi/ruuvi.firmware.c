@@ -38,6 +38,13 @@
 #include <stdio.h>
 #include <string.h>
 
+/**
+ * Delay to let user see actions on board, such as led sequence.
+ * Must be at least 1000 ms to avoid RTC hangup in test, shorter is generally better.
+ */
+#define BOOT_DELAY_MS (1000U)
+#define LOG_BUF_SIZE  (128U)
+
 #ifndef MAIN_LOG_LEVEL
 #define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
@@ -101,8 +108,8 @@ static void run_mcu_tests()
     ruuvi_interface_rtc_init();
     test_adc_run();
     test_library_run();
-    // Delay one second to avoid locking RTC
-    ruuvi_interface_delay_ms (1000);
+    // Delay to avoid locking RTC
+    ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     ruuvi_interface_rtc_uninit();
     LOG ("}\r\n");
 #endif
@@ -151,7 +158,8 @@ static void init_mcu (void)
 static void run_sensor_tests (void)
 {
 #if RUUVI_RUN_TESTS
-    // Tests will initialize and uninitialize the sensors, run this before using them in application
+    // Tests will initialize and uninitialize the sensors,
+    // run this before using them in application
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO,
                          "Running extended self-tests, this might take a while\r\n");
     ruuvi_interface_watchdog_feed();
@@ -162,7 +170,7 @@ static void run_sensor_tests (void)
     // Print unit test status, activate tests by building in DEBUG configuration under SES
     size_t tests_run, tests_passed;
     test_sensor_status (&tests_run, &tests_passed);
-    char message[128] = {0};
+    char message[LOG_BUF_SIZE] = {0};
     snprintf (message, sizeof (message), "Tests ran: %u, passed: %u\r\n", tests_run,
               tests_passed);
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, message);
@@ -266,7 +274,8 @@ static void init_comms (void)
     // Initialize BLE - and start advertising.
     status = task_advertisement_init();
     status |= task_advertisement_start();
-    status |= task_communication_heartbeat_configure (1000U, 24U,
+    status |= task_communication_heartbeat_configure (APPLICATION_HEARTBEAT_INTERVAL,
+              RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
               task_sensor_encode_to_5, task_advertisement_send_data);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
@@ -298,7 +307,7 @@ static void init_logging (void)
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
     status |= ruuvi_interface_log_init (APPLICATION_LOG_LEVEL);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
-    char version[128];
+    char version[LOG_BUF_SIZE];
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, "Program start\r\n");
     snprintf (version, sizeof (version), "Version: %s\r\n", APPLICATION_FW_VERSION);
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, version);
@@ -311,16 +320,16 @@ int main (void)
     run_mcu_tests();  // Runs tests which do not rely on MCU peripherals being initialized
     init_mcu();       // Initialize MCU peripherals, except for communication with users.
     // Delay one second to make sure timestamps are > 1 s after initialization
-    ruuvi_interface_delay_ms (1000);
+    ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     task_led_write (RUUVI_BOARD_LED_ACTIVITY,
                     RUUVI_BOARD_LEDS_ACTIVE_STATE); // Turn activity led on
-    run_sensor_tests(); // Run tests which rely on MCU peripherals, for example sensor drivers
+    run_sensor_tests(); // Run tests which rely on MCU peripherals, e.g. sensor drivers
     init_sensors();     // Initializes sensors with application-defined default mode.
     // Initialize communication with outside world - BLE, NFC, Buttons
     /* IMPORTANT! After this point pausing the program flow asserts,
      * since softdevice asserts on missed timer. This includes debugger.
      */
-    // run comms tests - TODO
+    // run comms tests - TODO @ojousima
     init_comms();
     // Turn activity led off. Turn status_ok led on if no errors occured
     task_led_write (RUUVI_BOARD_LED_ACTIVITY, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
@@ -330,7 +339,7 @@ int main (void)
     {
         task_led_write (RUUVI_BOARD_LED_STATUS_OK, RUUVI_BOARD_LEDS_ACTIVE_STATE);
         task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_OK);
-        ruuvi_interface_delay_ms (1000);
+        ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     }
 
     // Turn LEDs off
@@ -340,9 +349,9 @@ int main (void)
 
     while (1)
     {
-        // Sleep
-        ruuvi_interface_yield();
         // Execute scheduled tasks
         ruuvi_interface_scheduler_execute();
+        // Sleep - woken up on event
+        ruuvi_interface_yield();
     }
 }
