@@ -42,46 +42,46 @@
 #define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
 #endif
 
-static inline void LOG(const char* const msg)
+static inline void LOG (const char * const msg)
 {
-  ruuvi_interface_log(MAIN_LOG_LEVEL, msg);
+    ruuvi_interface_log (MAIN_LOG_LEVEL, msg);
 }
 
-static inline void LOGD(const char* const msg)
+static inline void LOGD (const char * const msg)
 {
-  ruuvi_interface_log(RUUVI_INTERFACE_LOG_DEBUG, msg);
+    ruuvi_interface_log (RUUVI_INTERFACE_LOG_DEBUG, msg);
 }
 
-static inline void LOGHEX(const char* const msg, const size_t len)
+static inline void LOGHEX (const char * const msg, const size_t len)
 {
-  ruuvi_interface_log_hex(MAIN_LOG_LEVEL, msg, len);
+    ruuvi_interface_log_hex (MAIN_LOG_LEVEL, msg, len);
 }
 
 /* @brief Callback handler for GATT communication events */
 //typedef void (*task_gatt_cb_t) (void * p_data, size_t data_len);
 static void on_gatt_connected_isr()
 {
-  LOG("GATT Connected ISR\r\n");
-  task_communication_heartbeat_configure (1000U, 18U,
-              task_sensor_encode_to_5, task_gatt_send_asynchronous);
-  task_advertisement_start();
+    LOG ("GATT Connected ISR\r\n");
+    task_communication_heartbeat_configure (1000U, 18U,
+                                            task_sensor_encode_to_5, task_gatt_send_asynchronous);
+    task_advertisement_start();
 }
 
 static void on_gatt_disconnected_isr()
 {
-  LOG("GATT Disconnected ISR\r\n");
-  task_communication_heartbeat_configure (1000U, 24U,
-              task_sensor_encode_to_5, task_advertisement_send_data);
+    LOG ("GATT Disconnected ISR\r\n");
+    task_communication_heartbeat_configure (1000U, 24U,
+                                            task_sensor_encode_to_5, task_advertisement_send_data);
 }
 
 static void on_gatt_received_isr()
 {
-  LOG("GATT RX ISR\r\n");
+    LOG ("GATT RX ISR\r\n");
 }
 
 static void on_gatt_sent_isr()
 {
-  LOG("GATT TX ISR\r\n");
+    LOG ("GATT TX ISR\r\n");
 }
 
 
@@ -275,10 +275,10 @@ static void init_comms (void)
     init_dis();
     init_nus();
     init_dfu();
-    task_gatt_set_on_connected_isr(on_gatt_connected_isr);
-    task_gatt_set_on_disconnected_isr(on_gatt_disconnected_isr);
-    task_gatt_set_on_received_isr(on_gatt_received_isr);
-    task_gatt_set_on_sent_isr(on_gatt_sent_isr);
+    task_gatt_set_on_connected_isr (on_gatt_connected_isr);
+    task_gatt_set_on_disconnected_isr (on_gatt_disconnected_isr);
+    task_gatt_set_on_received_isr (on_gatt_received_isr);
+    task_gatt_set_on_sent_isr (on_gatt_sent_isr);
     status |= task_gatt_enable();
     status |= task_advertisement_stop();  // Reinitialize with scan response
     status |= task_advertisement_start();

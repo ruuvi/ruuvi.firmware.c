@@ -47,8 +47,8 @@ typedef ruuvi_driver_status_t (*task_api_log_read_t) (const
 
 /** @brief Function to get heartbeat data */
 typedef ruuvi_driver_status_t
-        (*heartbeat_data_fp_t)
-        (uint8_t* const msg);
+(*heartbeat_data_fp_t)
+(uint8_t * const msg);
 
 /** @brief API to control sensors. */
 typedef struct task_communication_api_t
@@ -83,7 +83,7 @@ ruuvi_driver_status_t task_communication_on_data (const
  *
  * @param[in] interval_ms interval to send the data, in milliseconds. Set to 0 to stop the heartbeat
  * @param[in] max_len Maximum length of data to send.
- * @param[in] data_src function to generate the heartbeat message 
+ * @param[in] data_src function to generate the heartbeat message
  * @param[in] send function pointer to send the data through. May be NULL if interval is 0.
  *
  * @retval RUUVI_DRIVER_SUCCESS if heartbeat was initialized (or stopped)
@@ -93,7 +93,7 @@ ruuvi_driver_status_t task_communication_on_data (const
  *
  */
 ruuvi_driver_status_t task_communication_heartbeat_configure (const uint32_t interval_ms,
-        const size_t max_len, 
+        const size_t max_len,
         const heartbeat_data_fp_t data_src,
         const ruuvi_interface_communication_xfer_fp_t send);
 

@@ -113,27 +113,35 @@ ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t 
     {
         // Note: This gets called only after the NUS notifications have been registered.
         case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
-            if(NULL != m_on_connected) {
-                m_on_connected(p_data, data_len);
+            if (NULL != m_on_connected)
+            {
+                m_on_connected (p_data, data_len);
             }
+
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
-            if(NULL != m_on_disconnected) {
-                m_on_disconnected(p_data, data_len);
+            if (NULL != m_on_disconnected)
+            {
+                m_on_disconnected (p_data, data_len);
             }
+
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_SENT:
-            if(NULL != m_on_sent) {
-                m_on_sent(p_data, data_len);
+            if (NULL != m_on_sent)
+            {
+                m_on_sent (p_data, data_len);
             }
+
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_RECEIVED:
-            if(NULL != m_on_received) {
-                m_on_received(p_data, data_len);
+            if (NULL != m_on_received)
+            {
+                m_on_received (p_data, data_len);
             }
+
             break;
 
         default:

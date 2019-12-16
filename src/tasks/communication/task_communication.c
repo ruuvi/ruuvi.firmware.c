@@ -81,7 +81,6 @@ ruuvi_driver_status_t task_communication_on_data (const
         ruuvi_interface_communication_xfer_fp_t reply_fp)
 {
     // return error if data is not understood.
-    
     ruuvi_interface_communication_message_t reply = {0};
     // Get target API
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
@@ -211,14 +210,13 @@ ruuvi_driver_status_t task_communication_on_data (const
 static void heartbeat_send (void * p_event_data, uint16_t event_size)
 {
     ruuvi_interface_communication_message_t msg = {0};
-    
     msg.data_length = m_heartbeat_data_max_len;
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
     if (NULL != heartbeat_target && NULL != heartbeat_encoder)
     {
         // get message to send
-        err_code |= heartbeat_encoder(msg.data);
+        err_code |= heartbeat_encoder (msg.data);
         // send sensor data
         err_code |= heartbeat_target (&msg);
     }
@@ -237,7 +235,7 @@ static void heartbeat_schedule_isr (void * p_context)
 }
 
 ruuvi_driver_status_t task_communication_heartbeat_configure (const uint32_t interval_ms,
-        const size_t max_len, 
+        const size_t max_len,
         const heartbeat_data_fp_t data_src,
         const ruuvi_interface_communication_xfer_fp_t send)
 {
