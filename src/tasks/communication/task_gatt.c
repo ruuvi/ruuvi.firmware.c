@@ -39,6 +39,31 @@
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_GATT_LOG_LEVEL, msg, len)
 #define LOGDHEX(msg, len) ruuvi_interface_log_hex(RUUVI_INTERFACE_LOG_DEBUG, msg, len)
 
+static inline void LOG (const char * const msg)
+{
+    ruuvi_interface_log (TASK_GATT_LOG_LEVEL, msg);
+}
+
+static inline void LOGD (const char * const msg)
+{
+    ruuvi_interface_log (RUUVI_INTERFACE_LOG_DEBUG, msg);
+}
+
+static inline void LOGE (const char * const msg)
+{
+    ruuvi_interface_log (RUUVI_INTERFACE_LOG_ERROR, msg);
+}
+
+static inline void LOGHEX (const char * const msg, const size_t len)
+{
+    ruuvi_interface_log_hex (TASK_GATT_LOG_LEVEL, msg, len);
+}
+
+static inline void LOGDHEX (const char * const msg, const size_t len)
+{
+    ruuvi_interface_log_hex (RUUVI_INTERFACE_LOG_DEBUG, msg, len);
+}
+
 static ruuvi_interface_communication_t m_channel;   //!< API for sending data.
 static bool m_is_init;
 static bool m_nus_is_init;
@@ -54,15 +79,13 @@ static task_gatt_cb_t m_on_sent;         //!< Callback for data sent
 
 // https://github.com/arm-embedded/gcc-arm-none-eabi.debian/blob/master/src/libiberty/strnlen.c
 // Not included when compiled with std=c99.
-static size_t safe_strlen (const char * s, size_t maxlen)
+static inline size_t safe_strlen (const char * s, size_t maxlen)
 {
-    size_t i;
+     size_t i;
 
-    for (i = 0; i < maxlen; ++i)
-        if (s[i] == '\0')
-        {
-            break;
-        }
+    for (i = 0; (i < maxlen) && ('\0' != s[i]); ++i)
+    {
+    }
 
     return i;
 }
@@ -97,17 +120,17 @@ void task_gatt_mock_state_reset()
  * the response with task_gatt_send.
  *
  * @param evt Event type
- * @param p_data pointer to event data, if event is @c RUUVI_INTERFACE_COMMUNICATION_RECEIVED received data, NULL otherwise.
+ * @param p_data pointer to event data, if event is 
+ *               @c RUUVI_INTERFACE_COMMUNICATION_RECEIVED received data, NULL otherwise.
  * @param data_len number of bytes in received data, 0 if p_data is NULL.
  *
  */
 #ifndef CEEDLING
 static
 #endif
-ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
+void task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t evt,
         void * p_data, size_t data_len)
 {
-    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
     switch (evt)
     {
@@ -147,8 +170,6 @@ ruuvi_driver_status_t task_gatt_on_nus_isr (ruuvi_interface_communication_evt_t 
         default:
             break;
     }
-
-    return err_code;
 }
 
 ruuvi_driver_status_t task_gatt_dis_init (const
@@ -160,7 +181,7 @@ ruuvi_driver_status_t task_gatt_dis_init (const
     {
         err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-    else if (task_gatt_is_init() && !m_dis_is_init)
+    else if (task_gatt_is_init() && (!m_dis_is_init))
     {
         err_code |= ruuvi_interface_communication_ble4_gatt_dis_init (p_dis);
         m_dis_is_init = (RUUVI_DRIVER_SUCCESS == err_code);
@@ -177,7 +198,7 @@ ruuvi_driver_status_t task_gatt_nus_init (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if (task_gatt_is_init() && !m_nus_is_init)
+    if (task_gatt_is_init() && (!m_nus_is_init))
     {
         err_code |= ruuvi_interface_communication_ble4_gatt_nus_init (&m_channel);
 
@@ -199,7 +220,7 @@ ruuvi_driver_status_t task_gatt_dfu_init (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if (task_gatt_is_init() && !m_dfu_is_init)
+    if (task_gatt_is_init() && (!m_dfu_is_init))
     {
         err_code |= ruuvi_interface_communication_ble4_gatt_dfu_init();
         m_dfu_is_init = (RUUVI_DRIVER_SUCCESS == err_code);
@@ -220,7 +241,7 @@ ruuvi_driver_status_t task_gatt_init (const char * const name)
     {
         err_code |= RUUVI_DRIVER_ERROR_NULL;
     }
-    else if (task_advertisement_is_init() && !task_gatt_is_init())
+    else if (task_advertisement_is_init() && (!task_gatt_is_init()))
     {
         size_t name_length = safe_strlen (name, sizeof (m_name));
 
@@ -247,7 +268,7 @@ ruuvi_driver_status_t task_gatt_init (const char * const name)
     return err_code;
 }
 
-ruuvi_driver_status_t task_gatt_enable()
+ruuvi_driver_status_t task_gatt_enable(void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
@@ -268,7 +289,7 @@ ruuvi_driver_status_t task_gatt_enable()
     return err_code;
 }
 
-ruuvi_driver_status_t task_gatt_disable()
+ruuvi_driver_status_t task_gatt_disable(void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
@@ -285,7 +306,7 @@ ruuvi_driver_status_t task_gatt_disable()
     return err_code;
 }
 
-bool task_gatt_is_init()
+bool task_gatt_is_init(void)
 {
     return m_is_init;
 }
@@ -295,7 +316,7 @@ bool task_gatt_is_init()
  *
  * @return true if NUS is connected is initialized, false otherwise.
  */
-bool task_gatt_nus_is_connected()
+bool task_gatt_nus_is_connected(void)
 {
     return m_nus_is_connected;
 }
