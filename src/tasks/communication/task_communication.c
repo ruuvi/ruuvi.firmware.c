@@ -27,9 +27,9 @@
                                             return RUUVI_DRIVER_ERROR_INVALID_PARAM
 
 static ruuvi_interface_timer_id_t
-heartbeat_timer;               //!< Timer for heartbeat action
+heartbeat_timer;   //!< Timer for heartbeat action
 static size_t
-m_heartbeat_data_max_len;                          //!< Maximum data length for heartbeat data
+m_heartbeat_data_max_len;  //!< Maximum data length for heartbeat data
 static ruuvi_interface_communication_xfer_fp_t
 heartbeat_target; //!< Function to which send the hearbeat data
 
@@ -236,12 +236,15 @@ ruuvi_driver_status_t task_communication_offsets_i32f32_to_float (
 static void heartbeat_send (void * p_event_data, uint16_t event_size)
 {
     ruuvi_interface_communication_message_t msg = {0};
-    //task_sensor_encode_to_5 ( (uint8_t *) &msg.data);
+    task_sensor_encode_to_5 ( (uint8_t *) &msg.data);
     msg.data_length = m_heartbeat_data_max_len;
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_ERROR_INTERNAL;
 
     if (NULL != heartbeat_target)
     {
+        // get sensor data
+        // encode sensor data
+        // send sensor data
         err_code = heartbeat_target (&msg);
     }
 
@@ -254,7 +257,7 @@ static void heartbeat_send (void * p_event_data, uint16_t event_size)
     RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
-static void heartbeat_schedule (void * p_context)
+static void heartbeat_schedule_isr (void * p_context)
 {
     ruuvi_interface_scheduler_event_put (NULL, 0, heartbeat_send);
 }
@@ -267,7 +270,7 @@ ruuvi_driver_status_t task_communication_heartbeat_configure (const uint32_t int
     if (NULL == heartbeat_timer)
     {
         err_code |= ruuvi_interface_timer_create (&heartbeat_timer,
-                    RUUVI_INTERFACE_TIMER_MODE_REPEATED, heartbeat_schedule);
+                    RUUVI_INTERFACE_TIMER_MODE_REPEATED, heartbeat_schedule_isr);
 
         if (RUUVI_DRIVER_SUCCESS != err_code)
         {

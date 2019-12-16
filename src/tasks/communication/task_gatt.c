@@ -280,24 +280,6 @@ bool task_gatt_nus_is_connected()
     return m_nus_is_connected;
 }
 
-
-
-/**
- * @brief Function for sending data out via Nordic UART Service
- *
- * This function must not be called from interrupt context, as it may add data  to circular
- * buffer which gets consumed in interrupt context. The function will return immediately,
- * with not guarantee or acknowledgement that the message will be received.
- * In general if this function returns successfully the message will be sent and
- * delivery verified by link layer, but if connection is lost before data is sent
- * the data is lost.
- *
- * @param[in] msg Message to be sent out.
- * @return RUUVI_DRIVER_SUCCESS if message was queued to softdevice or application ringbuffer
- * @return RUUVI_DRIVER_ERROR_NULL if message is NULL
- * @return RUUVI_DRIVER_ERROR_INVALID_STATE of GATT is not initialized
- * @return RUUVI_DRIVER_ERROR_NO_MEM if message cannot be queued due to buffers being full.
- */
 ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t
         * const p_msg)
 {
@@ -324,8 +306,12 @@ ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication
         LOGD ("\r\n");
         return err_code;
     }
+    else if (RUUVI_DRIVER_ERROR_RESOURCES == err_code)
+    {
+        err_code = RUUVI_DRIVER_ERROR_NO_MEM;
+    }
     // If the error code is something else than buffer full, return error.
-    else if (err_code != RUUVI_DRIVER_ERROR_RESOURCES)
+    else
     {
         RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
         return err_code;

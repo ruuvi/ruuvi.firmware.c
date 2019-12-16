@@ -226,6 +226,8 @@ static void init_comms (void)
     // Initialize BLE - and start advertising.
     status = task_advertisement_init();
     status |= task_advertisement_start();
+    status |= task_communication_heartbeat_configure (1000U, 24U,
+        task_advertisement_send_data);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
 #if APPLICATION_COMMUNICATION_GATT_ENABLED

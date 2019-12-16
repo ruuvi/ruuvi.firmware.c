@@ -1,12 +1,22 @@
 /**
  * @file task_communication.h
  * @author Otso Jousimaa
- * @date 2019-06-20
+ * @date 2019-12-16
  * @brief Control application via 2-way communication
  * @copyright Copyright 2019 Ruuvi Innovations.
  *   This project is released under the BSD-3-Clause License.
  *
  */
+/**
+ * @defgroup communication_tasks Communication tasks
+ * @brief Transport-layer independent communication.
+ *
+ */
+/*@}*/
+/**
+ * @addtogroup communication_tasks
+ */
+/*@{*/
 
 #ifndef  TASK_COMMUNICATION_H
 #define  TASK_COMMUNICATION_H
@@ -41,7 +51,7 @@ typedef struct task_communication_api_t
     ruuvi_driver_sensor_t ** sensor;     //!< Sensor control functions, NULL if not applicable
     task_api_data_fp_t      offset_set;  //!< Function to setup offset
     task_api_data_fp_t      offset_get;  //!< Function to read offset
-    task_api_data_fp_t      data_get;    //!< Function to value from sensor
+    task_api_data_fp_t      data_get;    //!< Function to get value from sensor
     task_api_data_target_t  data_target; //!< Function to send data to.
     task_api_log_cfg_t      log_cfg;     //!< Function to configure logging
     task_api_log_read_t     log_read;    //!< Function to read logs
@@ -54,7 +64,7 @@ typedef struct task_communication_api_t
  *
  * @param[in] incoming received data
  * @param[in] reply_fp function pointer to which acknowledgment should be sent, reply_fp(acknowledge)
- * @return RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_SUCCESS on success
  */
 ruuvi_driver_status_t task_communication_on_data (const
         ruuvi_interface_communication_message_t * const incoming,
@@ -70,10 +80,10 @@ ruuvi_driver_status_t task_communication_on_data (const
  * @param[in] max_len Maximum length of data to send.
  * @param[in] send function pointer to send the data through. May be NULL if interval is 0.
  *
- * @return RUUVI_DRIVER_SUCCESS if heartbeat was initialized (or stopped)
- * @return RUUVI_DRIVER_ERROR_INVALID_STATE if timer cannot be initialized.
- * @return RUUVI_DRIVER_ERROR_NULL if interval wasn't 0 and send is NULL
- * @return error code from stack on other error.
+ * @retval RUUVI_DRIVER_SUCCESS if heartbeat was initialized (or stopped)
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if timer cannot be initialized.
+ * @retval RUUVI_DRIVER_ERROR_NULL if interval wasn't 0 and send is NULL
+ * @retval error code from stack on other error.
  *
  */
 ruuvi_driver_status_t task_communication_heartbeat_configure (const uint32_t interval_ms,

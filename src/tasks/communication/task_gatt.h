@@ -41,9 +41,10 @@ typedef void (*task_gatt_cb_t) (void * p_data, size_t data_len);
  * There is no guarantee on when the data is actually sent, and
  * there is no acknowledgement or callback after the data has been sent.
  *
- * @return RUUVI_DRIVER_SUCCESS if data was placed in send buffer
- * @return RUUVI_DRIVER_ERROR_INVALID_STATE if NUS is not connected
- * @return error code from stack on error
+ * @retval RUUVI_DRIVER_SUCCESS if data was placed in send buffer
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if NUS is not connected
+ * @retval RUUVI_DRIVER_ERROR_NO_MEM if tx buffer is full
+ * @retval error code from stack on other error
  *
  */
 ruuvi_driver_status_t task_gatt_send_asynchronous (ruuvi_interface_communication_message_t
