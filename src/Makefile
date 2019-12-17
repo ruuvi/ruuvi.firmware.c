@@ -42,6 +42,14 @@ kaarle:
 	$(MAKE) -C targets/kaarle/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3"
 	targets/kaarle/armgcc/package.sh -n ruuvifw_test
 
+kalervo: 
+	$(MAKE) -C targets/kalervo/armgcc clean
+	$(MAKE) -C targets/kalervo/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	targets/kalervo/armgcc/package.sh -n ruuvifw_default
+	$(MAKE) -C targets/kalervo/armgcc clean
+	$(MAKE) -C targets/kalervo/armgcc MODE=-DAPPLICATION_MODE_LONGLIFE DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
+	targets/kalervo/armgcc/package.sh -n ruuvifw_longlife
+
 keijo: 
 	$(MAKE) -C targets/keijo/armgcc clean
 	$(MAKE) -C targets/keijo/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION}
