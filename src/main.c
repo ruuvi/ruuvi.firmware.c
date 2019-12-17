@@ -1,9 +1,18 @@
 /**
- * Ruuvi Firmware 3.x code. Reads the sensors onboard RuuviTag and broadcasts the sensor data in a manufacturer specific format.
+ * @defgroup main Program main
  *
- * License: BSD-3
- * Author: Otso Jousimaa <otso@ojousima.net>
- **/
+ */
+/*@}*/
+/**
+ * @addtogroup main
+ */
+/*@{*/
+/**
+ * @file main.c
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2019-12-17
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ */
 
 #include "application_config.h"
 #include "ruuvi_interface_log.h"
@@ -69,6 +78,9 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
  *  These tests require relevant peripherals being uninitialized
  *  before tests and leave the peripherals uninitialized.
  *  Production firmware should not run these tests.
+ * 
+ *  @Note These are integration tests run on actual hardware, Ceedling
+ *  should not run this function.
  */
 static void run_mcu_tests (void)
 {
@@ -89,9 +101,12 @@ static void run_mcu_tests (void)
 }
 
 /*
- * Initialize MCU peripherals.
+ * @brief Initialize MCU peripherals.
  */
-static void init_mcu (void)
+#ifndef CEEDLING
+static 
+#endif
+void init_mcu (void)
 {
     // Init watchdog
     ruuvi_interface_watchdog_init (APPLICATION_WATCHDOG_INTERVAL_MS);
@@ -126,7 +141,9 @@ static void init_mcu (void)
 }
 
 /*
- * Run series of selftests which verify the underlying drivers, libraries etc.
+ * @brief Run series of selftests which verify the underlying drivers, libraries etc.
+ *
+ * @note  These are integration tests, Ceedling should not run these.
  */
 static void run_sensor_tests (void)
 {
@@ -390,3 +407,4 @@ int main (void)
         ruuvi_interface_yield();
     }
 }
+/*@}*/
