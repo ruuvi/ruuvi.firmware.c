@@ -4,9 +4,9 @@ TAG := $(shell git describe --tags --exact-match)
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
 
-.PHONY: all sync ruuvitag_b kaarle keijo analysis clean 
+.PHONY: all sync ruuvitag_b kaarle kalervo keijo analysis clean 
 
-all: sync clean ruuvitag_b kaarle keijo
+all: sync clean ruuvitag_b kaarle kalervo keijo
 
 sync:
 	@echo Synchronizing GIT...
