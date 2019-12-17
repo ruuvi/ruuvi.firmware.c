@@ -181,9 +181,43 @@ static void on_gatt_disconnected_isr (void * data, size_t data_len)
                                             task_sensor_encode_to_5, task_advertisement_send_data);
 }
 
+static void process_gatt_command (void * p_event_data,
+                                  uint16_t event_size)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
+    if ( (NULL != p_event_data)
+            && (RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH >= event_size))
+    {
+        // Pause heartbeats for processing
+        task_communication_heartbeat_configure (0,
+                                                GATT_HEARTBEAT_SIZE,
+                                                task_sensor_encode_to_5, task_gatt_send_asynchronous);
+        ruuvi_interface_communication_message_t msg = {0};
+        memcpy (msg.data, p_event_data, event_size);
+        msg.data_length = event_size;
+        err_code |= task_communication_on_data (&msg,
+                                                task_gatt_send_asynchronous);
+        // Restore heartbeats
+        task_communication_heartbeat_configure (APPLICATION_GATT_HEARTBEAT_INTERVAL_MS,
+                                                GATT_HEARTBEAT_SIZE,
+                                                task_sensor_encode_to_5, task_gatt_send_asynchronous);
+    }
+    else
+    {
+        err_code |= RUUVI_DRIVER_ERROR_DATA_SIZE;
+    }
+
+    RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+}
+
 static void on_gatt_received_isr (void * data, size_t data_len)
 {
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     LOG ("GATT RX ISR\r\n");
+    err_code |= ruuvi_interface_scheduler_event_put (data, data_len,
+                &process_gatt_command);
+    RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
 static void on_gatt_sent_isr (void * data, size_t data_len)

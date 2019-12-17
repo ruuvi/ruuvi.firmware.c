@@ -188,7 +188,7 @@ static void heartbeat_send (void * p_event_data, uint16_t event_size)
     msg.data_length = m_heartbeat_data_max_len;
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if ((NULL != heartbeat_target) && (NULL != heartbeat_encoder))
+    if ( (NULL != heartbeat_target) && (NULL != heartbeat_encoder))
     {
         // get message to send
         err_code |= heartbeat_encoder (msg.data);
