@@ -50,23 +50,6 @@ static ruuvi_driver_status_t task_communication_target_api_get (
         case RUUVI_ENDPOINT_STANDARD_DESTINATION_PRESSURE:
             task_environmental_api_get (api);
             break;
-#       if 0
-
-        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION:
-        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_X:
-        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Y:
-        case RUUVI_ENDPOINT_STANDARD_DESTINATION_ACCELERATION_Z:
-            task_acceleration_api_get (api);
-            break;
-
-        case RUUVI_ENDPOINT_STANDARD_DESTINATION_RTC:
-            task_rtc_api_get (api);
-            break;
-
-        case RUUVI_ENDPOINT_STANDARD_ADC:
-            task_adc_api_get (api);
-            break;
-#       endif
 
         default:
             err_code = RUUVI_DRIVER_ERROR_INVALID_PARAM;
@@ -178,14 +161,6 @@ ruuvi_driver_status_t task_communication_on_data (const
                 reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_LOG_VALUE_WRITE;
                 memset (& (reply.data[3]), 0xFF, RUUVI_ENDPOINT_STANDARD_PAYLOAD_LENGTH);
                 break;
-#           if 0
-
-            case RUUVI_ENDPOINT_STANDARD_LOG_CONFIGURATION_WRITE:
-                break;
-
-            case RUUVI_ENDPOINT_STANDARD_LOG_CONFIGURATION_READ:
-                break;
-#           endif
 
             default:
                 reply.data[RUUVI_ENDPOINT_STANDARD_TYPE_INDEX] = RUUVI_ENDPOINT_STANDARD_TYPE_ERROR;
@@ -213,7 +188,7 @@ static void heartbeat_send (void * p_event_data, uint16_t event_size)
     msg.data_length = m_heartbeat_data_max_len;
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if (NULL != heartbeat_target && NULL != heartbeat_encoder)
+    if ((NULL != heartbeat_target) && (NULL != heartbeat_encoder))
     {
         // get message to send
         err_code |= heartbeat_encoder (msg.data);
