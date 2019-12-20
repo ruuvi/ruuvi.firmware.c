@@ -1,3 +1,4 @@
+// When NFC reader is in range report" SW: version, MAC: and  ID:DEVICEID"
 #include "application_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
@@ -23,7 +24,7 @@ ruuvi_driver_status_t task_nfc_init (void)
     memcpy (version_string, fw_prefix, sizeof (fw_prefix));
     written = snprintf ( (char *) (version_string + sizeof (fw_prefix)),
                          APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE - sizeof (fw_prefix),
-                         "%s", APPLICATION_FW_VERSION);
+                         "%s", APPLICATION_FW_VERSION);  // Taken from compile flag. May be MM.nn.rr or git hash
 
     if (! (written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written))
     {
