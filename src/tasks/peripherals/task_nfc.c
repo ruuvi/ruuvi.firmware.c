@@ -14,7 +14,7 @@
 #include "ruuvi_interface_communication_nfc.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_scheduler.h"
-#include "ruuvi_interface_dog.h"
+#include "ruuvi_interface_watchdog.h"
 #include "task_nfc.h"
 #include <stdio.h>
 #include <string.h>
