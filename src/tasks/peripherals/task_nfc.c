@@ -1,4 +1,11 @@
-// When NFC reader is in range report" SW: version, MAC: and  ID:DEVICEID"
+/**
+ * @file task_nfc.c
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2019-11-18 remove watdchdog feed and interface_schedular_eventput of acceleration
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ 
+ * When NFC reader is in range report" SW: version, MAC: and  ID:DEVICEID"
+ */
 #include "application_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
@@ -7,7 +14,7 @@
 #include "ruuvi_interface_communication_nfc.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_scheduler.h"
-#include "ruuvi_interface_watchdog.h"
+#include "ruuvi_interface_dog.h"
 #include "task_nfc.h"
 #include <stdio.h>
 #include <string.h>
@@ -24,7 +31,7 @@ ruuvi_driver_status_t task_nfc_init (void)
     memcpy (version_string, fw_prefix, sizeof (fw_prefix));
     written = snprintf ( (char *) (version_string + sizeof (fw_prefix)),
                          APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE - sizeof (fw_prefix),
-                         "%s", APPLICATION_FW_VERSION);  // Taken from compile flag. May be MM.nn.rr or git hash
+                         "%s", APPLICATION_FW_VERSION);  // Taken from application_config.h
 
     if (! (written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written))
     {
