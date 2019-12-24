@@ -413,7 +413,7 @@ int app_main (void)
 }
 
 #ifndef CEEDLING
-int main(void)
+int main (void)
 {
     return app_main();
 }
