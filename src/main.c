@@ -374,7 +374,7 @@ int main (void)
     // Delay one second to make sure timestamps are > 1 s after initialization
     ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     task_led_write (RUUVI_BOARD_LED_ACTIVITY,
-                    RUUVI_BOARD_LEDS_ACTIVE_STATE); // Turn activity led on
+                    true); // Turn activity led on
     run_sensor_tests(); // Run tests which rely on MCU peripherals, e.g. sensor drivers
     init_sensors();     // Initializes sensors with application-defined default mode.
     // Initialize communication with outside world - BLE, NFC, Buttons
@@ -384,18 +384,18 @@ int main (void)
     // run comms tests - TODO @ojousima
     init_comms();
     // Turn activity led off. Turn status_ok led on if no errors occured
-    task_led_write (RUUVI_BOARD_LED_ACTIVITY, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
+    task_led_write (RUUVI_BOARD_LED_ACTIVITY, false);
     task_led_activity_led_set (RUUVI_BOARD_LED_ACTIVITY);
 
     if (RUUVI_DRIVER_SUCCESS == ruuvi_driver_errors_clear())
     {
-        task_led_write (RUUVI_BOARD_LED_STATUS_OK, RUUVI_BOARD_LEDS_ACTIVE_STATE);
+        task_led_write (RUUVI_BOARD_LED_STATUS_OK, true);
         task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_OK);
         ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     }
 
     // Turn LEDs off
-    task_led_write (RUUVI_BOARD_LED_STATUS_OK, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
+    task_led_write (RUUVI_BOARD_LED_STATUS_OK, false);
     // Configure activity indication
     ruuvi_interface_yield_indication_set (task_led_activity_indicate);
 
