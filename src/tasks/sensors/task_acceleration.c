@@ -64,9 +64,12 @@ ruuvi_driver_status_t task_acceleration_init (void)
     if (RUUVI_DRIVER_SUCCESS == err_code)
     {
         ruuvi_interface_gpio_id_t pin = {.pin = RUUVI_BOARD_INT_ACC2_PIN};
+        err_code |= task_sensor_configure (&acceleration_sensor, &config, "g");
+        float ths = APPLICATION_ACCELEROMETER_ACTIVITY_THRESHOLD;
+        err_code |= ruuvi_interface_lis2dh12_activity_interrupt_use(true, &ths);
         err_code |= ruuvi_interface_gpio_interrupt_enable (pin, RUUVI_INTERFACE_GPIO_SLOPE_LOTOHI,
                     RUUVI_INTERFACE_GPIO_MODE_INPUT_NOPULL, task_acceleration_on_activity);
-        err_code |= task_sensor_configure (&acceleration_sensor, &config, "g");
+        
         return err_code;
     }
 
