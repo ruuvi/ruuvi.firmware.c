@@ -1,5 +1,5 @@
 # ruuvi.firmware.c
-[![Build Status](http://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c)](http://jenkins.ruuvi.com/job/ruuvi.firmware.c)
+[![Build Status](https://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c+-+deploy)](https://jenkins.ruuvi.com/job/ruuvi.firmware.c%20-%20deploy/)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
@@ -96,6 +96,13 @@ Document is generated with Doxygen. Run `make doxygen` to generate the docs loca
 browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
 
 # Changelog
+## 3.28.10
+ - Fix issue in drivers preventing build 
+
+## 3.28.9 
+ - Fix 811 builds
+ - Fix movement interrupts / counter
+
 ## 3.28.8
  - Refactor communication
  - Do not send heartbeats while processing log.
