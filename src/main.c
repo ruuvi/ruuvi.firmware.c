@@ -78,7 +78,7 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
  *  These tests require relevant peripherals being uninitialized
  *  before tests and leave the peripherals uninitialized.
  *  Production firmware should not run these tests.
- * 
+ *
  *  @Note These are integration tests run on actual hardware, Ceedling
  *  should not run this function.
  */
@@ -104,7 +104,7 @@ static void run_mcu_tests (void)
  * @brief Initialize MCU peripherals.
  */
 #ifndef CEEDLING
-static 
+static
 #endif
 void init_mcu (void)
 {

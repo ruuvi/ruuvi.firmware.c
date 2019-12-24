@@ -172,11 +172,11 @@ static void on_error (const ruuvi_driver_status_t err,
                       const char * file,
                       const int line)
 {
-    if(fatal)
+    if (fatal)
     {
-    // Try to enter bootloader, if that fails reset.
-    ruuvi_interface_power_enter_bootloader();
-    ruuvi_interface_power_reset();
+        // Try to enter bootloader, if that fails reset.
+        ruuvi_interface_power_enter_bootloader();
+        ruuvi_interface_power_reset();
     }
 }
 

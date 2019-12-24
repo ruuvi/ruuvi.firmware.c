@@ -2,15 +2,15 @@
 
 #include "main.h"
 
-void setUp(void)
+void setUp (void)
 {
 }
 
-void tearDown(void)
+void tearDown (void)
 {
 }
 
-void test_main_NeedToImplement(void)
+void test_main_NeedToImplement (void)
 {
-    TEST_IGNORE_MESSAGE("Need to Implement main");
+    TEST_IGNORE_MESSAGE ("Need to Implement main");
 }
