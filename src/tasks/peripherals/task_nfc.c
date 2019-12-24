@@ -1,3 +1,21 @@
+/**
+ * @addtogroup nfc_tasks
+ */
+/*@{*/
+/**
+ * @file task_nfc.c
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2019-12-24
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+
+ * When NFC reader is in range return 4 UTF-textfields with content
+ * @code
+ * SW: version
+ * MAC: AA:BB:CC:DD:EE:FF
+ * ID: 00:11:22:33:44:55:66:77
+ * DATA:
+ * @endcode
+ */
 #include "application_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
@@ -23,7 +41,7 @@ ruuvi_driver_status_t task_nfc_init (void)
     memcpy (version_string, fw_prefix, sizeof (fw_prefix));
     written = snprintf ( (char *) (version_string + sizeof (fw_prefix)),
                          APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE - sizeof (fw_prefix),
-                         "%s", APPLICATION_FW_VERSION);
+                         "%s", APPLICATION_FW_VERSION);  // Taken from application_config.h
 
     if (! (written > 0 && APPLICATION_COMMUNICATION_NFC_TEXT_BUFFER_SIZE > written))
     {
@@ -78,6 +96,7 @@ ruuvi_driver_status_t task_nfc_init (void)
                 strlen ( (char *) id_string));
     err_code |= ruuvi_interface_communication_nfc_init (&channel);
     // Setup one NULL to DATA to match 1.x and 2.x NFC fields.
+    // TODO @ojousima add text "Data:"
     ruuvi_interface_communication_message_t msg;
     msg.data_length = 1;
     err_code |= channel.send (&msg);
@@ -144,3 +163,5 @@ ruuvi_driver_status_t task_nfc_init (void)
     return  RUUVI_DRIVER_SUCCESS;
 }
 #endif
+
+/*@}*/
