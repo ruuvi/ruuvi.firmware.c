@@ -139,7 +139,7 @@ static ruuvi_driver_status_t initialize_shtcx (void)
                                 &config,
                                 sizeof (config));
 
-    // If there is no stored configuration, use defaults.
+    // If there is no stored configuration, use defaults. Skip
     if (RUUVI_DRIVER_SUCCESS != err_code)
     {
         LOG ("SHTCX config not found on flash, using defaults\r\n");
@@ -150,10 +150,14 @@ static ruuvi_driver_status_t initialize_shtcx (void)
         config.samplerate    = APPLICATION_ENVIRONMENTAL_SHTCX_SAMPLERATE;
         config.scale         = APPLICATION_ENVIRONMENTAL_SHTCX_SCALE;
         // Store defaults to flash
-        err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
-                                     APPLICATION_FLASH_ENVIRONMENTAL_SHTCX_RECORD,
-                                     &config,
-                                     sizeof (config));
+
+        if (RUUVI_DRIVER_ERROR_NOT_SUPPORTED != err_code)
+        {
+            err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                         APPLICATION_FLASH_ENVIRONMENTAL_SHTCX_RECORD,
+                                         &config,
+                                         sizeof (config));
+        }
     }
 
     // Check flash operation status, allow not supported in case we're on 811
@@ -231,11 +235,15 @@ static ruuvi_driver_status_t initialize_bme280 (void)
         config.resolution    = APPLICATION_ENVIRONMENTAL_BME280_RESOLUTION;
         config.samplerate    = APPLICATION_ENVIRONMENTAL_BME280_SAMPLERATE;
         config.scale         = APPLICATION_ENVIRONMENTAL_BME280_SCALE;
+
         // Store defaults to flash
-        err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
-                                     APPLICATION_FLASH_ENVIRONMENTAL_BME280_RECORD,
-                                     &config,
-                                     sizeof (config));
+        if (RUUVI_DRIVER_ERROR_NOT_SUPPORTED != err_code)
+        {
+            err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                         APPLICATION_FLASH_ENVIRONMENTAL_BME280_RECORD,
+                                         &config,
+                                         sizeof (config));
+        }
     }
 
     // Check flash operation status, allow not supported in case we're on 811
@@ -298,11 +306,15 @@ static ruuvi_driver_status_t initialize_ntc (void)
         config.resolution    = APPLICATION_ENVIRONMENTAL_NTC_RESOLUTION;
         config.samplerate    = APPLICATION_ENVIRONMENTAL_NTC_SAMPLERATE;
         config.scale         = APPLICATION_ENVIRONMENTAL_NTC_SCALE;
+
         // Store defaults to flash
-        err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
-                                     APPLICATION_FLASH_ENVIRONMENTAL_NTC_RECORD,
-                                     &config,
-                                     sizeof (config));
+        if (RUUVI_DRIVER_ERROR_NOT_SUPPORTED != err_code)
+        {
+            err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                         APPLICATION_FLASH_ENVIRONMENTAL_NTC_RECORD,
+                                         &config,
+                                         sizeof (config));
+        }
     }
 
     // Check flash operation status, allow not supported in case we're on 811
@@ -365,11 +377,15 @@ static ruuvi_driver_status_t initialize_mcu (void)
         config.resolution    = APPLICATION_ENVIRONMENTAL_MCU_RESOLUTION;
         config.samplerate    = APPLICATION_ENVIRONMENTAL_MCU_SAMPLERATE;
         config.scale         = APPLICATION_ENVIRONMENTAL_MCU_SCALE;
+
         // Store defaults to flash
-        err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
-                                     APPLICATION_FLASH_ENVIRONMENTAL_MCU_RECORD,
-                                     &config,
-                                     sizeof (config));
+        if (RUUVI_DRIVER_ERROR_NOT_SUPPORTED != err_code)
+        {
+            err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                         APPLICATION_FLASH_ENVIRONMENTAL_MCU_RECORD,
+                                         &config,
+                                         sizeof (config));
+        }
     }
 
     // Check flash operation status, allow not supported in case we're on 811
@@ -442,11 +458,15 @@ static ruuvi_driver_status_t initialize_lis2dh12 (void)
         config.resolution    = APPLICATION_ENVIRONMENTAL_LIS2DH12_RESOLUTION;
         config.samplerate    = APPLICATION_ENVIRONMENTAL_LIS2DH12_SAMPLERATE;
         config.scale         = APPLICATION_ENVIRONMENTAL_LIS2DH12_SCALE;
+
         // Store defaults to flash
-        err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
-                                     APPLICATION_FLASH_ENVIRONMENTAL_LIS2DH12_RECORD,
-                                     &config,
-                                     sizeof (config));
+        if (RUUVI_DRIVER_ERROR_NOT_SUPPORTED != err_code)
+        {
+            err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                         APPLICATION_FLASH_ENVIRONMENTAL_LIS2DH12_RECORD,
+                                         &config,
+                                         sizeof (config));
+        }
     }
 
     // Check flash operation status, allow not supported in case we're on 811
@@ -509,11 +529,15 @@ static ruuvi_driver_status_t initialize_tmp117 (void)
         config.resolution    = APPLICATION_ENVIRONMENTAL_TMP117_RESOLUTION;
         config.samplerate    = APPLICATION_ENVIRONMENTAL_TMP117_SAMPLERATE;
         config.scale         = APPLICATION_ENVIRONMENTAL_TMP117_SCALE;
+
         // Store defaults to flash
-        err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
-                                     APPLICATION_FLASH_ENVIRONMENTAL_TMP117_RECORD,
-                                     &config,
-                                     sizeof (config));
+        if (RUUVI_DRIVER_ERROR_NOT_SUPPORTED != err_code)
+        {
+            err_code = task_flash_store (APPLICATION_FLASH_ENVIRONMENTAL_FILE,
+                                         APPLICATION_FLASH_ENVIRONMENTAL_TMP117_RECORD,
+                                         &config,
+                                         sizeof (config));
+        }
     }
 
     // Check flash operation status, allow not supported in case we're on 811

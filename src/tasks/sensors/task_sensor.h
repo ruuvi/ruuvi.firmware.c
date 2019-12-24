@@ -15,6 +15,7 @@
  */
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
+#include "ruuvi_endpoints.h"
 
 /** @brief Configure a sensor with given settings.
  *
