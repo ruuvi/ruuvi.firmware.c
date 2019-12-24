@@ -1,9 +1,18 @@
 /**
- * Ruuvi Firmware 3.x code. Reads the sensors onboard RuuviTag and broadcasts the sensor data in a manufacturer specific format.
+ * @defgroup main Program main
  *
- * License: BSD-3
- * Author: Otso Jousimaa <otso@ojousima.net>
- **/
+ */
+/*@}*/
+/**
+ * @addtogroup main
+ */
+/*@{*/
+/**
+ * @file main.c
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2019-12-17
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ */
 
 #include "application_config.h"
 #include "ruuvi_interface_log.h"
@@ -55,6 +64,7 @@ static inline void LOG (const char * const msg)
     ruuvi_interface_log (MAIN_LOG_LEVEL, msg);
 }
 
+#if 0
 static inline void LOGD (const char * const msg)
 {
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_DEBUG, msg);
@@ -64,11 +74,15 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 {
     ruuvi_interface_log_hex (MAIN_LOG_LEVEL, msg, len);
 }
+#endif
 
 /** Run tests which rely only on MCU.
  *  These tests require relevant peripherals being uninitialized
  *  before tests and leave the peripherals uninitialized.
  *  Production firmware should not run these tests.
+ *
+ *  @Note These are integration tests run on actual hardware, Ceedling
+ *  should not run this function.
  */
 static void run_mcu_tests (void)
 {
@@ -89,9 +103,12 @@ static void run_mcu_tests (void)
 }
 
 /*
- * Initialize MCU peripherals.
+ * @brief Initialize MCU peripherals.
  */
-static void init_mcu (void)
+#ifndef CEEDLING
+static
+#endif
+void init_mcu (void)
 {
     // Init watchdog
     ruuvi_interface_watchdog_init (APPLICATION_WATCHDOG_INTERVAL_MS);
@@ -126,7 +143,9 @@ static void init_mcu (void)
 }
 
 /*
- * Run series of selftests which verify the underlying drivers, libraries etc.
+ * @brief Run series of selftests which verify the underlying drivers, libraries etc.
+ *
+ * @note  These are integration tests, Ceedling should not run these.
  */
 static void run_sensor_tests (void)
 {
@@ -348,8 +367,8 @@ static void init_logging (void)
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, version);
 }
 
-
-int main (void)
+/** @brief actual main, redirected fot Ceedling */
+int app_main (void)
 {
     init_logging();   // Initializes logging to user console
     run_mcu_tests();  // Runs tests which do not rely on MCU peripherals being initialized
@@ -357,7 +376,7 @@ int main (void)
     // Delay one second to make sure timestamps are > 1 s after initialization
     ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     task_led_write (RUUVI_BOARD_LED_ACTIVITY,
-                    RUUVI_BOARD_LEDS_ACTIVE_STATE); // Turn activity led on
+                    true); // Turn activity led on
     run_sensor_tests(); // Run tests which rely on MCU peripherals, e.g. sensor drivers
     init_sensors();     // Initializes sensors with application-defined default mode.
     // Initialize communication with outside world - BLE, NFC, Buttons
@@ -367,18 +386,18 @@ int main (void)
     // run comms tests - TODO @ojousima
     init_comms();
     // Turn activity led off. Turn status_ok led on if no errors occured
-    task_led_write (RUUVI_BOARD_LED_ACTIVITY, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
+    task_led_write (RUUVI_BOARD_LED_ACTIVITY, false);
     task_led_activity_led_set (RUUVI_BOARD_LED_ACTIVITY);
 
     if (RUUVI_DRIVER_SUCCESS == ruuvi_driver_errors_clear())
     {
-        task_led_write (RUUVI_BOARD_LED_STATUS_OK, RUUVI_BOARD_LEDS_ACTIVE_STATE);
+        task_led_write (RUUVI_BOARD_LED_STATUS_OK, true);
         task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_OK);
         ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     }
 
     // Turn LEDs off
-    task_led_write (RUUVI_BOARD_LED_STATUS_OK, !RUUVI_BOARD_LEDS_ACTIVE_STATE);
+    task_led_write (RUUVI_BOARD_LED_STATUS_OK, false);
     // Configure activity indication
     ruuvi_interface_yield_indication_set (task_led_activity_indicate);
 
@@ -389,4 +408,15 @@ int main (void)
         // Sleep - woken up on event
         ruuvi_interface_yield();
     }
+
+    return -1;
 }
+
+#ifndef CEEDLING
+int main (void)
+{
+    return app_main();
+}
+#endif
+
+/*@}*/
