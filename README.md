@@ -96,6 +96,9 @@ Document is generated with Doxygen. Run `make doxygen` to generate the docs loca
 browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
 
 # Changelog
+## 3.28.10
+ - Fix issue in drivers preventing build 
+
 ## 3.28.9 
  - Fix 811 builds
  - Fix movement interrupts / counter
