@@ -5,15 +5,15 @@
 /**
  * @file task_nfc.c
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2019-12-24 
+ * @date 2019-12-24
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- 
+
  * When NFC reader is in range return 4 UTF-textfields with content
  * @code
- * SW: version 
- * MAC: AA:BB:CC:DD:EE:FF 
+ * SW: version
+ * MAC: AA:BB:CC:DD:EE:FF
  * ID: 00:11:22:33:44:55:66:77
- * DATA: 
+ * DATA:
  * @endcode
  */
 #include "application_config.h"
