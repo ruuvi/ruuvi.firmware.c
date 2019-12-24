@@ -64,6 +64,7 @@ static inline void LOG (const char * const msg)
     ruuvi_interface_log (MAIN_LOG_LEVEL, msg);
 }
 
+#if 0
 static inline void LOGD (const char * const msg)
 {
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_DEBUG, msg);
@@ -73,6 +74,7 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 {
     ruuvi_interface_log_hex (MAIN_LOG_LEVEL, msg, len);
 }
+#endif
 
 /** Run tests which rely only on MCU.
  *  These tests require relevant peripherals being uninitialized
@@ -365,8 +367,8 @@ static void init_logging (void)
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, version);
 }
 
-
-int main (void)
+/** @brief actual main, redirected fot Ceedling */
+int app_main (void)
 {
     init_logging();   // Initializes logging to user console
     run_mcu_tests();  // Runs tests which do not rely on MCU peripherals being initialized
@@ -406,5 +408,15 @@ int main (void)
         // Sleep - woken up on event
         ruuvi_interface_yield();
     }
+
+    return -1;
 }
+
+#ifndef CEEDLING
+int main(void)
+{
+    return app_main();
+}
+#endif
+
 /*@}*/
