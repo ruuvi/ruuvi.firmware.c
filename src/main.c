@@ -440,6 +440,7 @@ static void init_nus (void)
 }
 #endif
 
+#if APPLICATION_BUTTON_ENABLED
 /**
  * @brief Handler for button events
  *
@@ -452,6 +453,7 @@ void button_on_event_isr (const ruuvi_interface_gpio_evt_t event)
 {
     // No functionality right now
 }
+#endif
 
 /**
  * @brief initialize 2-way communication with outside world.
