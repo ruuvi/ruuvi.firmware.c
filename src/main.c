@@ -10,7 +10,7 @@
 /**
  * @file main.c
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2019-12-17
+ * @date 2019-12-26
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
 
@@ -89,9 +89,6 @@ static void run_mcu_tests (void)
 {
 #if RUUVI_RUN_TESTS
     LOG ("'mcu_tests':{\r\n");
-    // This is good only for internal MCU tests, it does not apply
-    // offset configured by user in application to timestamps.
-    // Use task_rtc function to apply offset configured by user to sensor values.
     ruuvi_driver_sensor_timestamp_function_set (ruuvi_interface_rtc_millis);
     ruuvi_interface_rtc_init();
     test_adc_run();
@@ -144,6 +141,27 @@ void on_radio (const ruuvi_interface_communication_radio_activity_evt_t evt)
 
 /*
  * @brief Initialize MCU peripherals.
+ *
+ * The watchdog is initialized first.
+ * After watchdog, GPIO, including interrupts, are initialized.
+ * Leds are initialized by activating led pins as high-drive outputs and inactive.
+ * SPI is initialized by reserving a peripheral and configuring I/O modes.
+ * I2C is initialized by reserving a peripheral and configuring I/O modes.
+ *
+ * Timer and RTC are initialized by reserving the peripherals.
+ * Scheduler is SW-only, initialization reserves buffer for task queue.
+ *
+ * Once timer is initialized, sleep is configured to go to deepest possible sleep mode
+ * and wake on timer on instead of busylooping. This causes imprecision to ms delays.
+ *
+ * If DC/DC converter is installed on board, it is initialized.
+ *
+ * Flash is initialized by checking if the filesystem can be allocated. In some cases
+ * such as changing allocated flash filesystem size the filesystem area is erased
+ * and program reboots.
+ *
+ * ADC is not reserved at this stage, but VDD is sampled.
+ *
  */
 #ifndef CEEDLING
 static
@@ -227,25 +245,65 @@ static void init_sensors (void)
 }
 
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
-static void on_gatt_connected_isr (void * data, size_t data_len)
+/** @brief Handle NUS connection event.
+ *
+ * Configures application to start sending the data via GATT instead of
+ * BLE advertisements.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+#ifndef CEEDLING
+static
+#endif
+void on_gatt_connected_isr (void * data, size_t data_len)
 {
     LOG ("GATT Connected ISR\r\n");
-    task_communication_heartbeat_configure (APPLICATION_GATT_HEARTBEAT_INTERVAL_MS,
-                                            GATT_HEARTBEAT_SIZE,
-                                            task_sensor_encode_to_5, task_gatt_send_asynchronous);
+    ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+    status |= task_advertisement_stop();
+    status |= task_communication_heartbeat_configure (
+                  APPLICATION_GATT_HEARTBEAT_INTERVAL_MS,
+                  GATT_HEARTBEAT_SIZE,
+                  &task_sensor_encode_to_5,
+                  &task_gatt_send_asynchronous);
+    RUUVI_DRIVER_ERROR_CHECK (status, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
-static void on_gatt_disconnected_isr (void * data, size_t data_len)
+/** @brief Handle NUS disconnection event.
+ *
+ * Configures application to start data in  BLE advertisements.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+#ifndef CEEDLING
+static
+#endif
+void on_gatt_disconnected_isr (void * data, size_t data_len)
 {
     LOG ("GATT Disconnected ISR\r\n");
-    task_communication_heartbeat_configure (APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
-                                            RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
-                                            task_sensor_encode_to_5, task_advertisement_send_data);
-    task_advertisement_start();
+    ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
+    status |= task_communication_heartbeat_configure (
+                  APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
+                  RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
+                  &task_sensor_encode_to_5,
+                  &task_advertisement_send_data);
+    status |= task_advertisement_start();
+    RUUVI_DRIVER_ERROR_CHECK (status, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
-static void process_gatt_command (void * p_event_data,
-                                  uint16_t event_size)
+/** @brief Handle incoming NUS data outside interrupt context.
+ *
+ * Pauses heartbeat transmissions and passes the data along with
+ * reply function pointer to task communication.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+#ifndef CEEDLING
+static
+#endif
+void process_gatt_command (void * p_event_data, uint16_t event_size)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
@@ -255,7 +313,8 @@ static void process_gatt_command (void * p_event_data,
         // Pause heartbeats for processing
         task_communication_heartbeat_configure (0,
                                                 GATT_HEARTBEAT_SIZE,
-                                                task_sensor_encode_to_5, task_gatt_send_asynchronous);
+                                                task_sensor_encode_to_5,
+                                                task_gatt_send_asynchronous);
         ruuvi_interface_communication_message_t msg = {0};
         memcpy (msg.data, p_event_data, event_size);
         msg.data_length = event_size;
@@ -274,7 +333,18 @@ static void process_gatt_command (void * p_event_data,
     RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
-static void on_gatt_received_isr (void * data, size_t data_len)
+
+/** @brief Handle incoming NUS data inside interrupt context.
+ *
+ * Schedules the processing of data to be executed outside of interrupt context.
+ *
+ * @param data Incoming bytes.
+ * @param data_len Length of incoming bytes.
+ */
+#ifndef CEEDLING
+static
+#endif
+void on_gatt_received_isr (void * data, size_t data_len)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     LOG ("GATT RX ISR\r\n");
@@ -283,7 +353,18 @@ static void on_gatt_received_isr (void * data, size_t data_len)
     RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
 }
 
-static void on_gatt_sent_isr (void * data, size_t data_len)
+
+/** @brief Handle outgoing NUS data event.
+ *
+ * This function gets called once data queued to NUS is actually sent.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+#ifndef CEEDLING
+static
+#endif
+void on_gatt_sent_isr (void * data, size_t data_len)
 {
     LOG ("GATT TX ISR\r\n");
 }
@@ -380,7 +461,12 @@ static void init_comms (void)
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
-    status = task_gatt_init (RUUVI_BOARD_BLE_NAME_STRING);
+    uint8_t mac_buffer[6] = {0};
+    get_mac (mac_buffer);
+    char name_buffer[SCAN_RSP_NAME_MAX_LEN];
+    snprintf (name_buffer, sizeof (name_buffer),
+              "%s %02X%02X"RUUVI_BOARD_BLE_NAME_STRING, mac_buffer[4], mac_buffer[5]);
+    status = task_gatt_init (name_buffer);
     init_dis();
     init_nus();
     init_dfu();
@@ -413,7 +499,7 @@ static void init_logging (void)
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, version);
 }
 
-/** @brief actual main, redirected fot Ceedling */
+/** @brief actual main, redirected for Ceedling */
 int app_main (void)
 {
     init_logging();   // Initializes logging to user console

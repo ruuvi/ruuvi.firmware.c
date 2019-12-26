@@ -39,6 +39,7 @@
 void setUp (void)
 {
     ruuvi_driver_error_check_Ignore();
+    ruuvi_interface_log_Ignore();
 }
 
 void tearDown (void)
@@ -81,4 +82,92 @@ void test_main_on_radio_do_update (void)
     task_adc_vdd_sample_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     ruuvi_interface_rtc_millis_ExpectAndReturn (APPLICATION_ADC_SAMPLE_INTERVAL_MS * 2U);
     on_radio (RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER);
+}
+
+/** @brief Handle NUS connection event.
+ *
+ * Configures application to start sending the data via GATT instead of
+ * BLE advertisements.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+void test_main_on_gatt_connected_isr (void)
+{
+    task_advertisement_stop_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    on_gatt_connected_isr (NULL, 0);
+}
+
+/** @brief Handle NUS disconnection event.
+ *
+ * Configures application to start data in  BLE advertisements.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+void test_main_on_gatt_disconnected_isr (void * data, size_t data_len)
+{
+    task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_advertisement_start_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    on_gatt_disconnected_isr (NULL, 0);
+}
+
+/** @brief Handle incoming NUS data outside interrupt context.
+ *
+ * Pauses heartbeat transmissions and passes the data along with
+ * reply function pointer to task communication.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+void test_main_process_gatt_command_ok (void)
+{
+    ruuvi_interface_communication_message_t msg = {0};
+    char data[] = "ABCDEFGHIJ";
+    snprintf (& (msg.data), sizeof (data), data);
+    msg.data_length = sizeof (data);
+    task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_communication_on_data_ExpectAndReturn (&msg, &task_gatt_send_asynchronous,
+            RUUVI_DRIVER_SUCCESS);
+    task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    process_gatt_command (data, sizeof (data));
+}
+
+void test_main_process_gatt_command_null (void)
+{
+    process_gatt_command (NULL, 0);
+}
+
+void test_main_process_gatt_command_toolong (void)
+{
+    char data[] = "ABCDEFGHIJ";
+    process_gatt_command (data, (RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH + 1));
+}
+
+/** @brief Handle incoming NUS data inside interrupt context.
+ *
+ * Schedules the processing of data to be executed outside of interrupt context.
+ *
+ * @param data Incoming bytes.
+ * @param data_len Length of incoming bytes.
+ */
+void test_main_on_gatt_received_isr (void)
+{
+    char data[] = "ABCDEFGHIJ";
+    ruuvi_interface_scheduler_event_put_ExpectAndReturn (data,  sizeof (data),
+            &process_gatt_command, RUUVI_DRIVER_SUCCESS);
+    on_gatt_received_isr (data, sizeof (data));
+}
+
+/** @brief Handle outgoing NUS data event.
+ *
+ * This function gets called once data queued to NUS is actually sent.
+ *
+ * @param data Unused, contains event data which is NULL.
+ * @param data_len Unused, always 0.
+ */
+void test_main_on_gatt_sent_isr (void * data, size_t data_len)
+{
+    // No implementation needed.
 }
