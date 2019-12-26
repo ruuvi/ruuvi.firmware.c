@@ -57,7 +57,6 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer)
     acceleration.fields.datas.acceleration_x_g = 1;
     acceleration.fields.datas.acceleration_y_g = 1;
     acceleration.fields.datas.acceleration_z_g = 1;
-    ruuvi_driver_sensor_data_t battery = {0};
     float vdd;
     ruuvi_driver_sensor_data_t environmental = {0};
     float environmental_values[3];
