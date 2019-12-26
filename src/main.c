@@ -231,7 +231,6 @@ static void on_gatt_connected_isr (void * data, size_t data_len)
     task_communication_heartbeat_configure (APPLICATION_GATT_HEARTBEAT_INTERVAL_MS,
                                             GATT_HEARTBEAT_SIZE,
                                             task_sensor_encode_to_5, task_gatt_send_asynchronous);
-    task_advertisement_start();
 }
 
 static void on_gatt_disconnected_isr (void * data, size_t data_len)
@@ -240,6 +239,7 @@ static void on_gatt_disconnected_isr (void * data, size_t data_len)
     task_communication_heartbeat_configure (APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
                                             RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
                                             task_sensor_encode_to_5, task_advertisement_send_data);
+    task_advertisement_start();
 }
 
 static void process_gatt_command (void * p_event_data,
