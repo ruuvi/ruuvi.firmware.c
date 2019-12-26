@@ -46,9 +46,9 @@ void setUp (void)
 void tearDown (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_adc_mcu_uninit_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn (true);
     ruuvi_interface_atomic_flag_ReturnThruPtr_flag (&m_false);
-    ruuvi_interface_adc_mcu_uninit_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     err_code = task_adc_uninit();
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
     TEST_ASSERT (!task_adc_is_init());
@@ -90,9 +90,9 @@ void test_task_adc_init_busy (void)
 void test_task_adc_uninit_ok (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_adc_mcu_uninit_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn (true);
     ruuvi_interface_atomic_flag_ReturnThruPtr_flag (&m_false);
-    ruuvi_interface_adc_mcu_uninit_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     err_code = task_adc_uninit();
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
     TEST_ASSERT (!task_adc_is_init());
@@ -202,6 +202,111 @@ void test_task_adc_voltage_get_ok (void)
     err_code = task_adc_voltage_get (&adc_data);
     TEST_ASSERT (true == adc_data.valid.datas.voltage_v);
     TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+/**
+ * @brief Prepare for sampling VDD
+ *
+ * This function should be called before entering energy intensive activity, such as using radio to transmit data.
+ * After calling this function ADC is primed for measuring the voltage droop of battery.
+ *
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_ERROR_BUSY if ADC cannot be reserved
+ */
+void test_task_adc_vdd_prepare_ok (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_driver_sensor_configuration_t config = {0};
+    tearDown();
+    ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn (true);
+    ruuvi_interface_atomic_flag_ReturnThruPtr_flag (&m_true);
+    ruuvi_interface_adc_mcu_init_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_adc_mcu_init_ReturnArrayThruPtr_adc_sensor (&m_sensor_init, 1);
+    ruuvi_driver_sensor_configuration_set_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    err_code = task_adc_vdd_prepare ();
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_adc_vdd_prepare_already_init (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_driver_sensor_configuration_t config = {0};
+    tearDown();
+    ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn (true);
+    ruuvi_interface_atomic_flag_ReturnThruPtr_flag (&m_false);
+    err_code = task_adc_vdd_prepare ();
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_BUSY == err_code);
+}
+
+/**
+ * @brief Sample VDD
+ *
+ * This function should be called as soon as possible after energy intensive activity.
+ * After a successful call value returned by @ref task_adc_vdd_get is updated and ADC is released.
+ *
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if task_adc_vdd_prepare wasn't called.
+ */
+void test_task_adc_vdd_sample_ok (void)
+{
+    test_task_adc_vdd_prepare_ok();
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    uint8_t mode = RUUVI_DRIVER_SENSOR_CFG_SINGLE;
+    ruuvi_interface_adc_mcu_mode_set_ExpectAndReturn (&mode,
+            RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_adc_mcu_data_get_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_adc_mcu_data_get_ReturnArrayThruPtr_data (&m_adc_data, 1);
+    ruuvi_driver_sensor_data_parse_ExpectAnyArgsAndReturn (m_valid_data[0]);
+    ruuvi_interface_adc_mcu_uninit_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_atomic_flag_ExpectAnyArgsAndReturn (true);
+    ruuvi_interface_atomic_flag_ReturnThruPtr_flag (&m_false);
+    err_code = task_adc_vdd_sample();
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_adc_vdd_sample_not_prepared (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    err_code = task_adc_vdd_sample();
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
+}
+
+/**
+ * @brief Get VDD
+ *
+ * This function should be called any time after @ref task_adc_vdd_prepare.
+ * The value returned will remain fixed until next call to @ref task_adc_vdd_prepare.
+ *
+ * @param[out] vdd VDD voltage in volts.
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if task_adc_vdd_sample wasn't called.
+ */
+void test_task_adc_vdd_get_ok (void)
+{
+    ruuvi_driver_sensor_data_t * const battery;
+    test_task_adc_vdd_prepare_ok();
+    test_task_adc_vdd_sample_ok();
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    float data[2] = {0};
+    ruuvi_driver_sensor_data_t adc_data;
+    adc_data.data = data;
+    adc_data.fields.datas.voltage_v = 1;
+    err_code = task_adc_vdd_get (&adc_data);
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+}
+
+void test_task_adc_vdd_get_not_sampled (void)
+{
+    ruuvi_driver_sensor_data_t * const battery;
+    test_task_adc_vdd_prepare_ok();
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    float data[2] = {0};
+    ruuvi_driver_sensor_data_t adc_data;
+    adc_data.data = data;
+    adc_data.fields.datas.voltage_v = 1;
+    err_code = task_adc_vdd_get (&adc_data);
+    TEST_ASSERT (false == adc_data.valid.datas.voltage_v);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_STATE == err_code);
 }
 
 /**

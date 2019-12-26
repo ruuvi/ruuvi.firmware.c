@@ -14,6 +14,7 @@
 #include "task_adc.h"
 
 #include <stdbool.h>
+#include <string.h>
 
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
@@ -23,6 +24,9 @@
 
 static ruuvi_interface_atomic_t m_is_init;
 static bool m_is_configured;
+static bool m_vdd_prepared;
+static bool m_vdd_sampled;
+static float m_vdd;
 static ruuvi_driver_sensor_t m_adc; //!< ADC control instance
 
 ruuvi_driver_status_t task_adc_init (void)
@@ -40,15 +44,14 @@ ruuvi_driver_status_t task_adc_init (void)
 ruuvi_driver_status_t task_adc_uninit (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    m_is_configured = false;
+    m_vdd_prepared = false;
+    m_vdd_sampled = false;
+    err_code |= ruuvi_interface_adc_mcu_uninit (&m_adc, RUUVI_DRIVER_BUS_NONE, 0);
 
     if (!ruuvi_interface_atomic_flag (&m_is_init, false))
     {
-        err_code = RUUVI_DRIVER_ERROR_FATAL;
-    }
-    else
-    {
-        m_is_configured = false;
-        err_code = ruuvi_interface_adc_mcu_uninit (&m_adc, RUUVI_DRIVER_BUS_NONE, 0);
+        err_code |= RUUVI_DRIVER_ERROR_FATAL;
     }
 
     return err_code;
@@ -76,7 +79,7 @@ ruuvi_driver_status_t task_adc_configure_se (ruuvi_driver_sensor_configuration_t
     }
     else
     {
-        // TODO: Support ratiometric
+        // TODO @ojousima: Support ratiometric
         if (ABSOLUTE == mode)
         {
             err_code |= ruuvi_interface_adc_mcu_init (&m_adc, RUUVI_DRIVER_BUS_NONE, handle);
@@ -132,6 +135,68 @@ ruuvi_driver_status_t task_adc_voltage_get (ruuvi_driver_sensor_data_t * const d
 ruuvi_driver_status_t task_adc_ratio_get (ruuvi_driver_sensor_data_t * const data)
 {
     return RUUVI_DRIVER_ERROR_NOT_IMPLEMENTED;
+}
+
+ruuvi_driver_status_t task_adc_vdd_prepare (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_driver_sensor_configuration_t vdd_adc_configuration =
+    {
+        .dsp_function  = APPLICATION_ADC_DSPFUNC,
+        .dsp_parameter = APPLICATION_ADC_DSPPARAM,
+        .mode          = APPLICATION_ADC_MODE,
+        .resolution    = APPLICATION_ADC_RESOLUTION,
+        .samplerate    = APPLICATION_ADC_SAMPLERATE,
+        .scale         = APPLICATION_ADC_SCALE
+    };
+    err_code |= task_adc_init();
+    err_code |= task_adc_configure_se (&vdd_adc_configuration, RUUVI_INTERFACE_ADC_AINVDD,
+                                       ABSOLUTE);
+    m_vdd_prepared = (RUUVI_DRIVER_SUCCESS == err_code);
+    return (RUUVI_DRIVER_SUCCESS == err_code) ? RUUVI_DRIVER_SUCCESS :
+           RUUVI_DRIVER_ERROR_BUSY;
+}
+
+ruuvi_driver_status_t task_adc_vdd_sample (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
+    if (!m_vdd_prepared)
+    {
+        err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
+    }
+    else
+    {
+        ruuvi_driver_sensor_data_t battery;
+        memset (&battery, 0, sizeof (ruuvi_driver_sensor_data_t));
+        float battery_values;
+        battery.data = &battery_values;
+        battery.fields.datas.voltage_v = 1;
+        err_code |= task_adc_sample();
+        err_code |= task_adc_voltage_get (&battery);
+        m_vdd = ruuvi_driver_sensor_data_parse (&battery, battery.fields);
+        err_code |= task_adc_uninit();
+        m_vdd_prepared = false;
+        m_vdd_sampled = true;
+    }
+
+    return err_code;
+}
+
+ruuvi_driver_status_t task_adc_vdd_get (float * const battery)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
+    if (true == m_vdd_sampled)
+    {
+        *battery = m_vdd;
+    }
+    else
+    {
+        err_code |= RUUVI_DRIVER_ERROR_INVALID_STATE;
+    }
+
+    return err_code;
 }
 
 /*@}*/
