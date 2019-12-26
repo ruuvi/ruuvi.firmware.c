@@ -58,9 +58,7 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer)
     acceleration.fields.datas.acceleration_y_g = 1;
     acceleration.fields.datas.acceleration_z_g = 1;
     ruuvi_driver_sensor_data_t battery = {0};
-    float battery_values;
-    battery.data = &battery_values;
-    battery.fields.datas.voltage_v = 1;
+    float vdd;
     ruuvi_driver_sensor_data_t environmental = {0};
     float environmental_values[3];
     environmental.data = environmental_values;
@@ -70,7 +68,7 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer)
     driver_code |= task_acceleration_data_get (&acceleration);
     driver_code |= task_acceleration_movement_count_get (&movement_counter);
     driver_code |= task_environmental_data_get (&environmental);
-    //driver_code |= task_adc_battery_get (&battery); XXX
+    driver_code |= task_adc_vdd_get (&vdd);
     ruuvi_endpoint_5_data_t ep5_data = {0};
     ep5_data.accelerationx_g = ruuvi_driver_sensor_data_parse (&acceleration,
                                (ruuvi_driver_sensor_data_fields_t)
@@ -87,11 +85,7 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer)
     {
         .datas.acceleration_z_g = 1
     });
-    ep5_data.battery_v       = ruuvi_driver_sensor_data_parse (&battery,
-                               (ruuvi_driver_sensor_data_fields_t)
-    {
-        .datas.voltage_v = 1
-    });
+    ep5_data.battery_v       = vdd;
     ep5_data.humidity_rh     = ruuvi_driver_sensor_data_parse (&environmental,
                                (ruuvi_driver_sensor_data_fields_t)
     {

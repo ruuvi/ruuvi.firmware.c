@@ -7,7 +7,7 @@
 /**
  * @file task_sensor.h
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2019-10-11
+ * @date 2019-12-25
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  *
  * Helper functions common to all sensors
@@ -51,6 +51,5 @@ ruuvi_endpoint_status_t task_sensor_encode_to_5 (uint8_t * const buffer);
 ruuvi_driver_sensor_t * task_sensor_find_backend (ruuvi_driver_sensor_t * const
         sensor_list,
         const size_t count, const char * const name);
-
 /*@}*/
 #endif
