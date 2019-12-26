@@ -12,19 +12,19 @@
 
 static bool pressed;
 
-static void ceedling_cb(const ruuvi_interface_gpio_evt_t evt)
+static void ceedling_cb (const ruuvi_interface_gpio_evt_t evt)
 {
-  pressed = true;
+    pressed = true;
 }
 
-void setUp(void)
+void setUp (void)
 {
-  ruuvi_interface_log_Ignore();
+    ruuvi_interface_log_Ignore();
 }
 
-void tearDown(void)
+void tearDown (void)
 {
-  pressed = false;
+    pressed = false;
 }
 
 /**
@@ -37,23 +37,25 @@ void tearDown(void)
  *
  * @return Status code from the stack. RUUVI_DRIVER_SUCCESS if no errors occured.
  **/
-void test_task_button_init(void)
+void test_task_button_init (void)
 {
-  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-  ruuvi_interface_gpio_id_t bpin = {.pin = RUUVI_BOARD_BUTTON_1};
-  ruuvi_interface_gpio_evt_t evt =
-  {
-    .pin = bpin,
-    .slope = RUUVI_INTERFACE_GPIO_SLOPE_HITOLO
-  };
-  ruuvi_interface_gpio_slope_t slope = RUUVI_INTERFACE_GPIO_SLOPE_TOGGLE;
-  ruuvi_interface_gpio_mode_t  mode  = (RUUVI_BOARD_BUTTONS_ACTIVE_STATE) ? RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLDOWN : RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP;
-  // Does nothing, callback not set up
-  on_button_isr(evt);
-  TEST_ASSERT(!pressed);
-  ruuvi_interface_gpio_interrupt_enable_ExpectAndReturn(bpin, slope, mode, &on_button_isr, RUUVI_DRIVER_SUCCESS);
-  err_code = task_button_init (&ceedling_cb);
-  TEST_ASSERT(RUUVI_DRIVER_SUCCESS == err_code);
-  on_button_isr(evt);
-  TEST_ASSERT(pressed);
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    ruuvi_interface_gpio_id_t bpin = {.pin = RUUVI_BOARD_BUTTON_1};
+    ruuvi_interface_gpio_evt_t evt =
+    {
+        .pin = bpin,
+        .slope = RUUVI_INTERFACE_GPIO_SLOPE_HITOLO
+    };
+    ruuvi_interface_gpio_slope_t slope = RUUVI_INTERFACE_GPIO_SLOPE_TOGGLE;
+    ruuvi_interface_gpio_mode_t  mode  = (RUUVI_BOARD_BUTTONS_ACTIVE_STATE) ?
+                                         RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLDOWN : RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP;
+    // Does nothing, callback not set up
+    on_button_isr (evt);
+    TEST_ASSERT (!pressed);
+    ruuvi_interface_gpio_interrupt_enable_ExpectAndReturn (bpin, slope, mode, &on_button_isr,
+            RUUVI_DRIVER_SUCCESS);
+    err_code = task_button_init (&ceedling_cb);
+    TEST_ASSERT (RUUVI_DRIVER_SUCCESS == err_code);
+    on_button_isr (evt);
+    TEST_ASSERT (pressed);
 }

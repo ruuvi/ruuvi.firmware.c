@@ -25,13 +25,13 @@ static task_button_fp_t button_callback = NULL;
 
 // Wrapper to gpio interrupt function
 #ifndef CEEDLING
-static 
+static
 #endif
 void on_button_isr (ruuvi_interface_gpio_evt_t event)
 {
     if (NULL != button_callback)
     {
-        button_callback(event);
+        button_callback (event);
     }
 
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, "Button\r\n");
@@ -44,10 +44,12 @@ ruuvi_driver_status_t task_button_init (task_button_fp_t action)
     ruuvi_interface_gpio_id_t pin = {.pin = RUUVI_BOARD_BUTTON_1};
     ruuvi_interface_gpio_slope_t slope = RUUVI_INTERFACE_GPIO_SLOPE_TOGGLE;
     ruuvi_interface_gpio_mode_t  mode  = RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLDOWN;
-    if(RUUVI_INTERFACE_GPIO_LOW == RUUVI_BOARD_BUTTONS_ACTIVE_STATE)
+
+    if (RUUVI_INTERFACE_GPIO_LOW == RUUVI_BOARD_BUTTONS_ACTIVE_STATE)
     {
-    mode  = RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP;        
+        mode  = RUUVI_INTERFACE_GPIO_MODE_INPUT_PULLUP;
     }
+
     err_code |= ruuvi_interface_gpio_interrupt_enable (pin, slope,
                 mode, &on_button_isr);
     return err_code;
