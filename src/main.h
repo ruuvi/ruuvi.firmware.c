@@ -2,6 +2,7 @@
 #define MAIN_H
 
 #include "ruuvi_interface_communication_radio.h"
+#include "ruuvi_interface_gpio_interrupt.h"
 
 /**
  * @addtogroup main
@@ -18,6 +19,7 @@
  */
 
 #ifdef CEEDLING
+void button_on_event_isr(const ruuvi_interface_gpio_evt_t event);
 void on_radio (const ruuvi_interface_communication_radio_activity_evt_t evt);
 void on_gatt_connected_isr (void * data, size_t data_len);
 void on_gatt_disconnected_isr (void * data, size_t data_len);

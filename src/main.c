@@ -117,8 +117,8 @@ void on_radio (const ruuvi_interface_communication_radio_activity_evt_t evt)
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
     if ( (RUUVI_INTERFACE_COMMUNICATION_RADIO_BEFORE == evt) &&
-            (ruuvi_interface_rtc_millis() - last_sample) >
-            APPLICATION_ADC_SAMPLE_INTERVAL_MS)
+            ( (ruuvi_interface_rtc_millis() - last_sample) >
+              APPLICATION_ADC_SAMPLE_INTERVAL_MS))
     {
         err_code |= task_adc_vdd_prepare();
         triggered = (RUUVI_DRIVER_SUCCESS == err_code);
@@ -408,8 +408,8 @@ static void init_dis (void)
 {
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
     ruuvi_interface_communication_ble4_gatt_dis_init_t dis;
-    memset (&dis, 0, sizeof (dis));
-    uint8_t mac_buffer[6] = {0};
+    memset (&dis, 0U, sizeof (ruuvi_interface_communication_ble4_gatt_dis_init_t));
+    uint8_t mac_buffer[6U] = {0};
     get_mac (mac_buffer);
     size_t index = 0U;
 
@@ -440,12 +440,35 @@ static void init_nus (void)
 }
 #endif
 
-static void init_comms (void)
+/**
+ * @brief Handler for button events
+ *
+ * @param[in] event Type of button event.
+ */
+#ifndef CEEDLING
+static
+#endif
+void button_on_event_isr (const ruuvi_interface_gpio_evt_t event)
+{
+    // No functionality right now
+}
+
+/**
+ * @brief initialize 2-way communication with outside world.
+ *
+ * The communication includes any way user can input data, such as button presses,
+ * GATT, BLE advertisements and NFC. It does not include inter-board communication
+ * such as I2C and SPI.
+ */
+#ifndef CEEDLING
+static
+#endif
+void init_comms (void)
 {
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
 #if APPLICATION_BUTTON_ENABLED
-    // Initialize button with on_button task
-    status = task_button_init (RUUVI_INTERFACE_GPIO_SLOPE_HITOLO, task_button_on_press);
+    // Initialize button with on_button task - TODO @ojousima: Use #defined slope
+    status = task_button_init (&button_on_event_isr);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
 #if APPLICATION_COMMUNICATION_ADVERTISING_ENABLED
@@ -461,11 +484,13 @@ static void init_comms (void)
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
-    uint8_t mac_buffer[6] = {0};
+    uint8_t mac_buffer[6U] = {0};
     get_mac (mac_buffer);
     char name_buffer[SCAN_RSP_NAME_MAX_LEN];
-    snprintf (name_buffer, sizeof (name_buffer),
-              "%s %02X%02X"RUUVI_BOARD_BLE_NAME_STRING, mac_buffer[4], mac_buffer[5]);
+    snprintf (name_buffer, sizeof (name_buffer), "%s %02X%02X",
+              RUUVI_BOARD_BLE_NAME_STRING,
+              mac_buffer[sizeof (mac_buffer) - 2],
+              mac_buffer[sizeof (mac_buffer) - 1]);
     status = task_gatt_init (name_buffer);
     init_dis();
     init_nus();

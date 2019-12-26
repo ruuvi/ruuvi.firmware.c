@@ -2,11 +2,13 @@
 
 #include "main.h"
 
-#include "application_config.h"
 #include "ruuvi_boards.h"
+#include "application_config.h"
 #include "ruuvi_endpoints.h"
+#include "ruuvi_interface_communication_ble4_gatt.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_communication_radio.h"
+#include "mock_ruuvi_interface_gpio_interrupt.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_rtc.h"
 #include "mock_ruuvi_interface_scheduler.h"
@@ -35,6 +37,9 @@
 #include "mock_test_adc.h"
 #include "mock_test_environmental.h"
 #include "mock_test_library.h"
+
+ruuvi_interface_communication_ble4_gatt_dis_init_t m_dis;
+uint64_t m_mac = 0xAABBCCDDEEFF;
 
 void setUp (void)
 {
@@ -125,7 +130,7 @@ void test_main_process_gatt_command_ok (void)
 {
     ruuvi_interface_communication_message_t msg = {0};
     char data[] = "ABCDEFGHIJ";
-    snprintf (& (msg.data), sizeof (data), data);
+    snprintf (& (msg.data), sizeof (data), "%s", data);
     msg.data_length = sizeof (data);
     task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     task_communication_on_data_ExpectAndReturn (&msg, &task_gatt_send_asynchronous,
@@ -167,7 +172,57 @@ void test_main_on_gatt_received_isr (void)
  * @param data Unused, contains event data which is NULL.
  * @param data_len Unused, always 0.
  */
-void test_main_on_gatt_sent_isr (void * data, size_t data_len)
+void test_main_on_gatt_sent_isr (void)
 {
-    // No implementation needed.
+    on_gatt_sent_isr (NULL, 0);
+}
+
+
+
+/**
+ * @brief initialize 2-way communication with outside world.
+ *
+ * The communication includes any way user can input data, such as button presses,
+ * GATT, BLE advertisements and NFC. It does not include inter-board communication
+ * such as I2C and SPI.
+ */
+
+void t_init_dis (void)
+{
+    memset (&m_dis, 0, sizeof (ruuvi_interface_communication_ble4_gatt_dis_init_t));
+    snprintf (m_dis.deviceid, 32, "%s", "AA:BB:CC:DD:EE:FF");
+    snprintf (m_dis.fw_version, 32, "%s", APPLICATION_FW_VERSION);
+    snprintf (m_dis.model, 32, "%s", RUUVI_BOARD_MODEL_STRING);
+    snprintf (m_dis.manufacturer, 32, "%s", RUUVI_BOARD_MANUFACTURER_STRING);
+    ruuvi_interface_communication_radio_address_get_ExpectAnyArgsAndReturn (
+        RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_communication_radio_address_get_ReturnArrayThruPtr_address (&m_mac, 1);
+    task_gatt_dis_init_ExpectWithArrayAndReturn (&m_dis, 1, RUUVI_DRIVER_SUCCESS);
+}
+
+
+void test_main_init_comms (void)
+{
+    task_button_init_ExpectAndReturn (&button_on_event_isr, RUUVI_DRIVER_SUCCESS);
+    task_advertisement_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_advertisement_start_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_communication_radio_activity_callback_set_Expect (on_radio);
+    uint8_t name[] = RUUVI_BOARD_BLE_NAME_STRING " EEFF";
+    ruuvi_interface_communication_radio_address_get_ExpectAnyArgsAndReturn (
+        RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_communication_radio_address_get_ReturnArrayThruPtr_address (&m_mac, 1);
+    task_gatt_init_ExpectAndReturn (name, RUUVI_DRIVER_SUCCESS);
+    t_init_dis();
+    task_gatt_nus_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_gatt_dfu_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_gatt_set_on_connected_isr_Expect (&on_gatt_connected_isr);
+    task_gatt_set_on_disconn_isr_Expect (&on_gatt_disconnected_isr);
+    task_gatt_set_on_received_isr_Expect (&on_gatt_received_isr);
+    task_gatt_set_on_sent_isr_Expect (&on_gatt_sent_isr);
+    task_gatt_enable_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_advertisement_stop_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_advertisement_start_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_nfc_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    init_comms();
 }
