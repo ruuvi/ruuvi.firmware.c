@@ -174,10 +174,13 @@ void init_mcu (void)
     // Initialize power perihperals,
     status |= task_power_dcdc_init();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
-    status |= task_adc_init();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
     // Initialize flash
     status = task_flash_init();
+    RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
+    // Sample VDD
+    status |= task_adc_vdd_prepare();
+    status |= task_adc_vdd_sample();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 }
 
