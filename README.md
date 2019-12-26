@@ -96,6 +96,10 @@ Document is generated with Doxygen. Run `make doxygen` to generate the docs loca
 browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
 
 # Changelog
+## 3.28.11
+ - Fix battery voltage monitoring
+ - Fix advertisements not restarting after GATT connection
+
 ## 3.28.10
  - Fix issue in drivers preventing build 
 

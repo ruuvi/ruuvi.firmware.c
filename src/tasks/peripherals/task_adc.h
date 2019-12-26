@@ -14,7 +14,7 @@
 /**
  * @file task_adc.h
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2019-11-28
+ * @date 2019-12-25
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  *
  * Read ADC. Important: The ADC peripheral is shared by many different functions
@@ -28,13 +28,25 @@
  *
  * @code{.c}
  *  ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+ *  ruuvi_driver_sensor_configuration_t vdd_adc_configuration =
+ *  {
+ *    .dsp_function  = APPLICATION_ADC_DSP_FUNC,
+ *    .dsp_parameter = APPLICATION_ADC_DSP_PARAM,
+ *    .mode          = APPLICATION_ADC_MODE,
+ *    .resolution    = APPLICATION_ADC_RESOLUTION,
+ *    .samplerate    = APPLICATION_ADC_SAMPLERATE,
+ *    .scale         = APPLICATION_ADC_SCALE
+ *  };
+ *  float battery_values; // Could be array, but we're measuring only one channel
+ *  battery.data = &battery_values;
+ *  battery.fields.datas.voltage_v = 1;
  *  err_code = task_adc_init();
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
-
+ *  err_code |= task_adc_configure_se(&vdd_adc_configuration, RUUVI_INTERFACE_ADC_AINVDD, ABSOLUTE);
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
-
+ *  err_code |= task_adc_sample();
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
-
+ *  err_code |= task_adc_voltage_get(&battery);
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
  *  err_code = task_adc_uninit();
  *  RUUVI_DRIVER_ERROR_CHECK(err_code, RUUVI_DRIVER_SUCCESS;
@@ -51,7 +63,7 @@ typedef enum
 {
     RATIOMETRIC,    //!< ADC compares value to VDD
     ABSOLUTE        //!< ADC measures absolute voltage in volts
-} task_adc_mode_t; //!< ADC against absolute reference or ratio to VDD
+} task_adc_mode_t;  //!< ADC against absolute reference or ratio to VDD
 
 /**
  * @brief Reserve ADC
@@ -133,6 +145,41 @@ ruuvi_driver_status_t task_adc_voltage_get (ruuvi_driver_sensor_data_t * const d
  * @retval error code from stack on error.
  */
 ruuvi_driver_status_t task_adc_ratio_get (ruuvi_driver_sensor_data_t * const data);
+
+
+/**
+ * @brief Prepare for sampling VDD
+ *
+ * This function should be called before entering energy intensive activity, such as using radio to transmit data.
+ * After calling this function ADC is primed for measuring the voltage droop of battery.
+ *
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_ERROR_BUSY if ADC cannot be reserved
+ */
+ruuvi_driver_status_t task_adc_vdd_prepare (void);
+
+/**
+ * @brief Sample VDD
+ *
+ * This function should be called as soon as possible after energy intensive activity.
+ * After a successful call value returned by @ref task_adc_vdd_get is updated and ADC is released.
+ *
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if task_adc_vdd_prepare wasn't called.
+ */
+ruuvi_driver_status_t task_adc_vdd_sample (void);
+
+/**
+ * @brief Get VDD
+ *
+ * This function should be called any time after @ref task_adc_vdd_prepare.
+ * The value returned will remain fixed until next call to @ref task_adc_vdd_prepare.
+ *
+ * @param[out] vdd VDD voltage in volts.
+ * @retval RUUVI_DRIVER_SUCCESS on success
+ * @retval RUUVI_DRIVER_ERROR_INVALID_STATE if task_adc_vdd_sample wasn't called.
+ */
+ruuvi_driver_status_t task_adc_vdd_get (float * const vdd);
 
 /*@}*/
 #endif // TASK_ADC_H

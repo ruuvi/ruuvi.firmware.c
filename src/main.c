@@ -15,6 +15,7 @@
  */
 
 #include "application_config.h"
+#include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
@@ -102,6 +103,47 @@ static void run_mcu_tests (void)
 #endif
 }
 
+/**
+ *  @brief Synchronize ADC measurement to radio.
+ *  This is common to all radio modules, i.e.
+ *  the callback gets called for every radio action.
+ *
+ *  @param[in] evt Type of radio event
+ */
+#ifndef CEEDLING
+static
+#endif
+void on_radio (const ruuvi_interface_communication_radio_activity_evt_t evt)
+{
+    static bool triggered = false;
+    static uint64_t last_sample = 0;
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+
+    if (RUUVI_INTERFACE_COMMUNICATION_RADIO_BEFORE == evt)
+    {
+        if ( (ruuvi_interface_rtc_millis() - last_sample) >
+                APPLICATION_ADC_SAMPLE_INTERVAL_MS)
+        {
+            err_code |= task_adc_vdd_prepare();
+            triggered = (RUUVI_DRIVER_SUCCESS == err_code);
+        }
+    }
+
+    if ( (RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER == evt) &&
+            triggered)
+    {
+        err_code |= task_adc_vdd_sample();
+        triggered = false;
+
+        if (RUUVI_DRIVER_SUCCESS == err_code)
+        {
+            last_sample = ruuvi_interface_rtc_millis();
+        }
+    }
+
+    RUUVI_DRIVER_ERROR_CHECK (err_code, ~RUUVI_DRIVER_ERROR_FATAL);
+}
+
 /*
  * @brief Initialize MCU peripherals.
  */
@@ -129,16 +171,20 @@ void init_mcu (void)
     status = task_timer_init();
     status |= task_rtc_init();
     status |= task_scheduler_init();
+    // Low power yield goes to deep sleep and wakes the CPU with a timer,
+    // hence timer is required.
     status |= ruuvi_interface_yield_low_power_enable (true);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
-    // Initialize power
+    // Initialize power perihperals,
     status |= task_power_dcdc_init();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
-    // Initialize ADC
-    status |= task_adc_init();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
     // Initialize flash
     status = task_flash_init();
+    RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
+    // Sample VDD
+    status |= task_adc_vdd_prepare();
+    status |= task_adc_vdd_sample();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 }
 
@@ -189,7 +235,6 @@ static void on_gatt_connected_isr (void * data, size_t data_len)
     task_communication_heartbeat_configure (APPLICATION_GATT_HEARTBEAT_INTERVAL_MS,
                                             GATT_HEARTBEAT_SIZE,
                                             task_sensor_encode_to_5, task_gatt_send_asynchronous);
-    task_advertisement_start();
 }
 
 static void on_gatt_disconnected_isr (void * data, size_t data_len)
@@ -198,6 +243,7 @@ static void on_gatt_disconnected_isr (void * data, size_t data_len)
     task_communication_heartbeat_configure (APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
                                             RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
                                             task_sensor_encode_to_5, task_advertisement_send_data);
+    task_advertisement_start();
 }
 
 static void process_gatt_command (void * p_event_data,
@@ -331,6 +377,8 @@ static void init_comms (void)
                   APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
                   RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
                   task_sensor_encode_to_5, task_advertisement_send_data);
+    // Synchronize ADC to radio activity
+    ruuvi_interface_communication_radio_activity_callback_set (on_radio);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
@@ -409,12 +457,14 @@ int app_main (void)
         ruuvi_interface_yield();
     }
 
+    // Intentionally non-reachable code.
     return -1;
 }
 
 #ifndef CEEDLING
 int main (void)
 {
+    // Will never return.
     return app_main();
 }
 #endif
