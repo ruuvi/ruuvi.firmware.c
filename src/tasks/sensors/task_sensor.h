@@ -5,6 +5,11 @@
  */
 /*@{*/
 /**
+ * @addtogroup sensor_tasks
+ */
+/*@}*/
+/*@{*/
+/**
  * @file task_sensor.h
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2019-12-25
