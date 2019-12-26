@@ -105,7 +105,8 @@ static void run_mcu_tests (void)
 
 /**
  *  @brief Synchronize ADC measurement to radio.
- *  This is common to all radio modules, i,e, the callback gets called for every radio action.
+ *  This is common to all radio modules, i.e.
+ *  the callback gets called for every radio action.
  *
  *  @param[in] evt Type of radio event
  */
@@ -118,11 +119,14 @@ void on_radio (const ruuvi_interface_communication_radio_activity_evt_t evt)
     static uint64_t last_sample = 0;
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
 
-    if ( (RUUVI_INTERFACE_COMMUNICATION_RADIO_BEFORE == evt) &&
-            ( (ruuvi_interface_rtc_millis() - last_sample) > APPLICATION_ADC_SAMPLE_INTERVAL_MS))
+    if (RUUVI_INTERFACE_COMMUNICATION_RADIO_BEFORE == evt)
     {
-        err_code |= task_adc_vdd_prepare();
-        triggered = (RUUVI_DRIVER_SUCCESS == err_code);
+        if ( (ruuvi_interface_rtc_millis() - last_sample) >
+                APPLICATION_ADC_SAMPLE_INTERVAL_MS)
+        {
+            err_code |= task_adc_vdd_prepare();
+            triggered = (RUUVI_DRIVER_SUCCESS == err_code);
+        }
     }
 
     if ( (RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER == evt) &&

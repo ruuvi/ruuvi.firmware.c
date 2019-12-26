@@ -4,8 +4,8 @@
 
 #include "application_config.h"
 #include "ruuvi_boards.h"
-#include "ruuvi_driver_error.h"
 #include "ruuvi_endpoints.h"
+#include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_communication_radio.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_rtc.h"
@@ -38,13 +38,47 @@
 
 void setUp (void)
 {
+    ruuvi_driver_error_check_Ignore();
 }
 
 void tearDown (void)
 {
+    task_adc_vdd_sample_IgnoreAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_rtc_millis_IgnoreAndReturn (0);
+    on_radio (RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER);
 }
 
 void test_main_NeedToImplement (void)
 {
     TEST_IGNORE_MESSAGE ("Need to Implement main");
+}
+
+/**
+ *  @brief Synchronize ADC measurement to radio.
+ *  This is common to all radio modules, i.e.
+ *  the callback gets called for every radio action.
+ *
+ *  @param[in] evt Type of radio event
+ */
+void test_main_on_radio_prepare_update (void)
+{
+    ruuvi_interface_rtc_millis_ExpectAndReturn (APPLICATION_ADC_SAMPLE_INTERVAL_MS * 2U);
+    task_adc_vdd_prepare_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    on_radio (RUUVI_INTERFACE_COMMUNICATION_RADIO_BEFORE);
+}
+
+void test_main_on_radio_no_need_to_update (void)
+{
+    ruuvi_interface_rtc_millis_ExpectAndReturn (APPLICATION_ADC_SAMPLE_INTERVAL_MS / 2U);
+    on_radio (RUUVI_INTERFACE_COMMUNICATION_RADIO_BEFORE);
+    ruuvi_interface_rtc_millis_ExpectAndReturn (APPLICATION_ADC_SAMPLE_INTERVAL_MS / 2U);
+    on_radio (RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER);
+}
+
+void test_main_on_radio_do_update (void)
+{
+    test_main_on_radio_prepare_update();
+    task_adc_vdd_sample_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_rtc_millis_ExpectAndReturn (APPLICATION_ADC_SAMPLE_INTERVAL_MS * 2U);
+    on_radio (RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER);
 }
