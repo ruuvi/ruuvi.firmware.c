@@ -146,11 +146,11 @@ ruuvi_driver_status_t task_advertisement_connectability_set (const bool enable,
     }
     else if (SCAN_RSP_NAME_MAX_LEN < safe_strlen (device_name, (SCAN_RSP_NAME_MAX_LEN + 1)))
     {
-        // TODO - #define 10
         err_code |= RUUVI_DRIVER_ERROR_INVALID_LENGTH;
     }
     else
     {
+        // TODO @ojousima: ensure that advertisement type is extended if necessary.
         err_code |= ruuvi_interface_communication_ble4_advertising_type_set (
                         CONNECTABLE_SCANNABLE);
         err_code |= ruuvi_interface_communication_ble4_advertising_scan_response_setup (
