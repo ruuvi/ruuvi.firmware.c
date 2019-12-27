@@ -1,8 +1,5 @@
 /**
- * @addtogroup TASKS
- * @brief Functions related to GATT connection
- *
- *
+ * @addtogroup communication_tasks
  */
 /*@{*/
 /**
