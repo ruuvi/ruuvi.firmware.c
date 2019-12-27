@@ -44,21 +44,12 @@
 #include "test_adc.h"
 #include "test_environmental.h"
 #include "test_library.h"
+#include "main.h"
 
 #include <stdio.h>
 #include <string.h>
 
-/**
- * Delay to let user see actions on board, such as led sequence.
- * Must be at least 1000 ms to avoid RTC hangup in test, shorter is generally better.
- */
-#define BOOT_DELAY_MS (1000U)
-#define LOG_BUF_SIZE  (128U)
-#define GATT_HEARTBEAT_SIZE (18U) //!< 20 would be max, 18 cuts the data to while fields.
-
-#ifndef MAIN_LOG_LEVEL
-#define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
-#endif
+// Constants #defined at main.h for Ceedling.ß
 
 static inline void LOG (const char * const msg)
 {
@@ -369,7 +360,10 @@ void on_gatt_sent_isr (void * data, size_t data_len)
     LOG ("GATT TX ISR\r\n");
 }
 
-static ruuvi_driver_status_t get_mac (uint8_t * const mac_buffer)
+#ifndef CEEDLING
+static
+#endif
+ruuvi_driver_status_t get_mac (uint8_t * const mac_buffer)
 {
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
 
@@ -526,7 +520,13 @@ static void init_logging (void)
     ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, version);
 }
 
-/** @brief actual main, redirected for Ceedling */
+/** @brief Actual main, redirected for Ceedling
+ *
+ * Initializes logging, MCU peripherals, sensors and communication.
+ * If all steps are complete without warnings, activity led is set to status_ok, else
+ * activity led is set to status_error.
+ *
+ */
 int app_main (void)
 {
     init_logging();   // Initializes logging to user console
@@ -546,7 +546,6 @@ int app_main (void)
     init_comms();
     // Turn activity led off. Turn status_ok led on if no errors occured
     task_led_write (RUUVI_BOARD_LED_ACTIVITY, false);
-    task_led_activity_led_set (RUUVI_BOARD_LED_ACTIVITY);
 
     if (RUUVI_DRIVER_SUCCESS == ruuvi_driver_errors_clear())
     {
@@ -554,19 +553,26 @@ int app_main (void)
         task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_OK);
         ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     }
+    else
+    {
+        task_led_write (RUUVI_BOARD_LED_STATUS_ERROR, true);
+        task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_ERROR);
+        ruuvi_interface_delay_ms (BOOT_DELAY_MS);
+    }
 
     // Turn LEDs off
     task_led_write (RUUVI_BOARD_LED_STATUS_OK, false);
+    task_led_write (RUUVI_BOARD_LED_STATUS_ERROR, false);
     // Configure activity indication
-    ruuvi_interface_yield_indication_set (task_led_activity_indicate);
+    ruuvi_interface_yield_indication_set (&task_led_activity_indicate);
 
-    while (1)
+    do
     {
         // Execute scheduled tasks
         ruuvi_interface_scheduler_execute();
         // Sleep - woken up on event
         ruuvi_interface_yield();
-    }
+    } while (LOOP_FOREVER);
 
     // Intentionally non-reachable code.
     return -1;

@@ -40,6 +40,7 @@
 
 ruuvi_interface_communication_ble4_gatt_dis_init_t m_dis;
 uint64_t m_mac = 0xAABBCCDDEEFF;
+uint8_t  m_name[] = RUUVI_BOARD_BLE_NAME_STRING " EEFF";
 
 void setUp (void)
 {
@@ -52,11 +53,6 @@ void tearDown (void)
     task_adc_vdd_sample_IgnoreAndReturn (RUUVI_DRIVER_SUCCESS);
     ruuvi_interface_rtc_millis_IgnoreAndReturn (0);
     on_radio (RUUVI_INTERFACE_COMMUNICATION_RADIO_AFTER);
-}
-
-void test_main_NeedToImplement (void)
-{
-    TEST_IGNORE_MESSAGE ("Need to Implement main");
 }
 
 /**
@@ -111,7 +107,7 @@ void test_main_on_gatt_connected_isr (void)
  * @param data Unused, contains event data which is NULL.
  * @param data_len Unused, always 0.
  */
-void test_main_on_gatt_disconnected_isr (void * data, size_t data_len)
+void test_main_on_gatt_disconnected_isr (void)
 {
     task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     task_advertisement_start_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
@@ -201,18 +197,17 @@ void t_init_dis (void)
 }
 
 
-void test_main_init_comms (void)
+void t_main_init_comms (void)
 {
     task_button_init_ExpectAndReturn (&button_on_event_isr, RUUVI_DRIVER_SUCCESS);
     task_advertisement_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     task_advertisement_start_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     ruuvi_interface_communication_radio_activity_callback_set_Expect (on_radio);
-    uint8_t name[] = RUUVI_BOARD_BLE_NAME_STRING " EEFF";
     ruuvi_interface_communication_radio_address_get_ExpectAnyArgsAndReturn (
         RUUVI_DRIVER_SUCCESS);
     ruuvi_interface_communication_radio_address_get_ReturnArrayThruPtr_address (&m_mac, 1);
-    task_gatt_init_ExpectAndReturn (name, RUUVI_DRIVER_SUCCESS);
+    task_gatt_init_ExpectAndReturn (m_name, RUUVI_DRIVER_SUCCESS);
     t_init_dis();
     task_gatt_nus_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     task_gatt_dfu_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
@@ -224,5 +219,107 @@ void test_main_init_comms (void)
     task_advertisement_stop_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     task_advertisement_start_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     task_nfc_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+}
+
+void test_main_init_comms (void)
+{
+    t_main_init_comms();
     init_comms();
+}
+
+void t_main_init_logging (void)
+{
+    ruuvi_interface_log_init_ExpectAndReturn (APPLICATION_LOG_LEVEL, RUUVI_DRIVER_SUCCESS);
+}
+
+void t_main_init_mcu (void)
+{
+    ruuvi_interface_watchdog_init_ExpectAndReturn (APPLICATION_WATCHDOG_INTERVAL_MS,
+            RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_yield_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_gpio_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_led_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_spi_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_i2c_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_timer_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_rtc_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_scheduler_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_yield_low_power_enable_ExpectAndReturn (true, RUUVI_DRIVER_SUCCESS);
+    task_power_dcdc_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_flash_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_adc_vdd_prepare_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_adc_vdd_sample_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+}
+
+void t_main_init_sensors (void)
+{
+    task_environmental_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_acceleration_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+}
+
+void test_app_main_ok (void)
+{
+    t_main_init_logging();
+    // Ceedling skips MCU tests
+    t_main_init_mcu();
+    ruuvi_interface_delay_ms_ExpectAndReturn (BOOT_DELAY_MS, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, true, RUUVI_DRIVER_SUCCESS);
+    // Ceedling skips sensor integration tests
+    t_main_init_sensors();
+    t_main_init_comms();
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, false, RUUVI_DRIVER_SUCCESS);
+    ruuvi_driver_errors_clear_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_OK, true, RUUVI_DRIVER_SUCCESS);
+    task_led_activity_led_set_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_OK,
+            RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_delay_ms_ExpectAndReturn (BOOT_DELAY_MS, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_OK, false, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_ERROR, false,
+                                    RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_yield_indication_set_Expect (&task_led_activity_indicate);
+    ruuvi_interface_scheduler_execute_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_yield_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    app_main();
+}
+
+void test_app_main_error (void)
+{
+    t_main_init_logging();
+    // Ceedling skips MCU tests
+    t_main_init_mcu();
+    ruuvi_interface_delay_ms_ExpectAndReturn (BOOT_DELAY_MS, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, true, RUUVI_DRIVER_SUCCESS);
+    // Ceedling skips sensor integration tests
+    t_main_init_sensors();
+    t_main_init_comms();
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, false, RUUVI_DRIVER_SUCCESS);
+    ruuvi_driver_errors_clear_ExpectAndReturn (RUUVI_DRIVER_ERROR_NOT_FOUND);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_ERROR, true, RUUVI_DRIVER_SUCCESS);
+    task_led_activity_led_set_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_ERROR,
+            RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_delay_ms_ExpectAndReturn (BOOT_DELAY_MS, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_OK, false, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_ERROR, false,
+                                    RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_yield_indication_set_Expect (&task_led_activity_indicate);
+    ruuvi_interface_scheduler_execute_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    ruuvi_interface_yield_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
+    app_main();
+}
+
+void test_main_button_isr (void)
+{
+    //Does nothing
+    ruuvi_interface_gpio_evt_t evt;
+    evt.pin = (ruuvi_interface_gpio_id_t) {.pin = 13};
+    evt.slope = RUUVI_INTERFACE_GPIO_SLOPE_TOGGLE;
+    button_on_event_isr (evt);
+}
+
+// get_mac is tested by DIS and GATT init tests.
+void test_get_mac_null (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    err_code = get_mac (NULL);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_NULL == err_code);
 }
