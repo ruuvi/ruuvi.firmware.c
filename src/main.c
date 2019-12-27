@@ -20,7 +20,7 @@
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_watchdog.h"
-#include "mock_ruuvi_interface_yield.h"
+#include "ruuvi_interface_yield.h"
 #include "ruuvi_boards.h"
 #include "task_acceleration.h"
 #include "task_adc.h"
