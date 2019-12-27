@@ -360,7 +360,10 @@ void on_gatt_sent_isr (void * data, size_t data_len)
     LOG ("GATT TX ISR\r\n");
 }
 
-static ruuvi_driver_status_t get_mac (uint8_t * const mac_buffer)
+#ifndef CEEDLING
+static
+#endif
+ruuvi_driver_status_t get_mac (uint8_t * const mac_buffer)
 {
     ruuvi_driver_status_t status = RUUVI_DRIVER_SUCCESS;
 

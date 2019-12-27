@@ -107,7 +107,7 @@ void test_main_on_gatt_connected_isr (void)
  * @param data Unused, contains event data which is NULL.
  * @param data_len Unused, always 0.
  */
-void test_main_on_gatt_disconnected_isr (void * data, size_t data_len)
+void test_main_on_gatt_disconnected_isr (void)
 {
     task_communication_heartbeat_configure_ExpectAnyArgsAndReturn (RUUVI_DRIVER_SUCCESS);
     task_advertisement_start_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
@@ -257,7 +257,7 @@ void t_main_init_sensors (void)
     task_acceleration_init_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
 }
 
-void test_app_main_ok()
+void test_app_main_ok (void)
 {
     t_main_init_logging();
     // Ceedling skips MCU tests
@@ -280,4 +280,21 @@ void test_app_main_ok()
     ruuvi_interface_scheduler_execute_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     ruuvi_interface_yield_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     app_main();
+}
+
+void test_main_button_isr (void)
+{
+    //Does nothing
+    ruuvi_interface_gpio_evt_t evt;
+    evt.pin = (ruuvi_interface_gpio_id_t) {.pin = 13};
+    evt.slope = RUUVI_INTERFACE_GPIO_SLOPE_TOGGLE;
+    button_on_event_isr (evt);
+}
+
+// get_mac is tested by DIS and GATT init tests.
+void test_get_mac_null (void)
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    err_code = get_mac (NULL);
+    TEST_ASSERT (RUUVI_DRIVER_ERROR_NULL == err_code);
 }

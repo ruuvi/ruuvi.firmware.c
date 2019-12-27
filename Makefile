@@ -272,4 +272,4 @@ astyle:
 			  "src/tests/*.c" \
 			  "src/tests/*.h" \
 			  "test/*.c"
-	astyle --project=".astylerc" "src/main.c"
+	astyle --project=".astylerc" "src/main.c" "src/main.h"
