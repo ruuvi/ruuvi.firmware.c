@@ -3,10 +3,12 @@ TAG := $(shell git describe --tags --exact-match)
 # Commit hash from git
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
+BOARDS = ruuvitag_b kaarle kalervo keijo
+VARIANTS = default longlife longmem test
 
-.PHONY: all sync ruuvitag_b kaarle kalervo keijo analysis clean 
+.PHONY: all sync ${BOARDS} analysis publish clean 
 
-all: sync clean ruuvitag_b kaarle kalervo keijo
+all: sync clean ${BOARDS}
 
 sync:
 	@echo Synchronizing GIT...
@@ -62,6 +64,14 @@ analysis:
 	@echo build FW ${VERSION}
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
 	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPPLICATION_FW_VERSION=${VERSION} OPT="-Og -g3" VERBOSE=1 ABSOLUTE_PATHS=1
+
+# https://medium.com/@systemglitch/continuous-integration-with-jenkins-and-github-release-814904e20776
+publish:
+	@echo Publishing $(TAG)
+ifndef TAG
+$(error TAG is not set, version $(VERSION))
+endif
+	./release.sh
 
 clean:
 	@echo cleaning build files…
