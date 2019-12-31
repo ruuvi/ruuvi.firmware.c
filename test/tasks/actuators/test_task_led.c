@@ -217,3 +217,16 @@ void test_task_led_activity_led_set_invalid ()
     err_code |= task_led_activity_led_set (2312);
     TEST_ASSERT (RUUVI_DRIVER_ERROR_INVALID_PARAM == err_code);
 }
+
+void test_task_led_is_led ()
+{
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
+    bool valid_led = false;
+
+    for (size_t ii = 0U; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
+    {
+        TEST_ASSERT (is_led (leds[ii].pin));
+    }
+
+    TEST_ASSERT (!is_led (RUUVI_BOARD_PIN_UNUSED));
+}

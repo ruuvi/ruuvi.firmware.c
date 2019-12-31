@@ -5,7 +5,7 @@
 /**
  * @file task_flash.c
  * @author Otso Jousimaa <otso@ojousima.net>
- * @Copyright 2019 Ruuvi Innovations Ltd, license BSD-3-Clause.
+ * @copyright 2019 Ruuvi Innovations Ltd, license BSD-3-Clause.
  * @date 2019-11-18 provide compile time choice incase no flash is available
  * This module has 2 sets of code:
  *  If flash is enabled:
@@ -224,3 +224,4 @@ bool task_flash_busy (void)
     return false;
 }
 #endif
+/*@}*/

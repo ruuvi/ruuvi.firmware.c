@@ -16,23 +16,23 @@
 
 static uint16_t m_activity_led;
 static bool     m_initialized;
+// TODO @ojousima - refactor the static variable out
+static ruuvi_interface_gpio_id_t leds[RUUVI_BOARD_LEDS_NUMBER];
 
-static bool is_led (const uint16_t led)
+#ifndef CEEDLING
+static
+#endif
+bool is_led (const uint16_t led)
 {
     bool led_valid = false;
-#   pragma GCC diagnostic push
-#   pragma GCC diagnostic ignored "-Wmissing-braces"
-    const ruuvi_interface_gpio_id_t leds[RUUVI_BOARD_LEDS_NUMBER] = RUUVI_BOARD_LEDS_LIST;
-#   pragma GCC diagnostic pop
 
     for (size_t ii = 0U; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
     {
         if (led == leds[ii].pin)
         {
             led_valid = true;
+            break;
         }
-
-        break;
     }
 
     return led_valid;
@@ -72,13 +72,14 @@ ruuvi_driver_status_t task_led_init (void)
 
     if (RUUVI_DRIVER_SUCCESS == err_code)
     {
-#       pragma GCC diagnostic push
-#       pragma GCC diagnostic ignored "-Wmissing-braces"
-        ruuvi_interface_gpio_id_t leds[RUUVI_BOARD_LEDS_NUMBER] = RUUVI_BOARD_LEDS_LIST;
-#       pragma GCC diagnostic pop
+        // TODO @ojousima: refactor this array out.
+        uint16_t pins[] = RUUVI_BOARD_LEDS_LIST;
 
         for (size_t ii = 0u; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
         {
+            ruuvi_interface_gpio_id_t led;
+            led.pin = pins[ii];
+            leds[ii] = led;
             err_code |= ruuvi_interface_gpio_configure (leds[ii],
                         RUUVI_INTERFACE_GPIO_MODE_OUTPUT_HIGHDRIVE);
             err_code |= ruuvi_interface_gpio_write (leds[ii],
@@ -95,10 +96,6 @@ ruuvi_driver_status_t task_led_init (void)
 ruuvi_driver_status_t task_led_uninit (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmissing-braces"
-    ruuvi_interface_gpio_id_t leds[RUUVI_BOARD_LEDS_NUMBER] = RUUVI_BOARD_LEDS_LIST;
-#pragma GCC diagnostic pop
 
     for (size_t ii = 0U; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
     {
@@ -152,19 +149,7 @@ ruuvi_driver_status_t task_led_activity_led_set (uint16_t led)
     }
     else
     {
-#        pragma GCC diagnostic push
-#        pragma GCC diagnostic ignored "-Wmissing-braces"
-        ruuvi_interface_gpio_id_t const leds[RUUVI_BOARD_LEDS_NUMBER] = RUUVI_BOARD_LEDS_LIST;
-#        pragma GCC diagnostic pop
-
-        for (size_t ii = 0U; ii < RUUVI_BOARD_LEDS_NUMBER; ii++)
-        {
-            if (leds[ii].pin == led)
-            {
-                m_activity_led = led;
-                break;
-            }
-        }
+        m_activity_led = led;
     }
 
     return err_code;

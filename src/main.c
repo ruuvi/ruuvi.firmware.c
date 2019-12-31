@@ -529,13 +529,14 @@ static void init_logging (void)
  */
 int app_main (void)
 {
+    ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     init_logging();   // Initializes logging to user console
     run_mcu_tests();  // Runs tests which do not rely on MCU peripherals being initialized
     init_mcu();       // Initialize MCU peripherals, except for communication with users.
     // Delay one second to make sure timestamps are > 1 s after initialization
     ruuvi_interface_delay_ms (BOOT_DELAY_MS);
-    task_led_write (RUUVI_BOARD_LED_ACTIVITY,
-                    true); // Turn activity led on
+    err_code |= task_led_write (RUUVI_BOARD_LED_RED,
+                                true); // Turn activity led on
     run_sensor_tests(); // Run tests which rely on MCU peripherals, e.g. sensor drivers
     init_sensors();     // Initializes sensors with application-defined default mode.
     // Initialize communication with outside world - BLE, NFC, Buttons
@@ -545,26 +546,27 @@ int app_main (void)
     // run comms tests - TODO @ojousima
     init_comms();
     // Turn activity led off. Turn status_ok led on if no errors occured
-    task_led_write (RUUVI_BOARD_LED_ACTIVITY, false);
+    err_code |= task_led_write (RUUVI_BOARD_LED_RED, false);
 
     if (RUUVI_DRIVER_SUCCESS == ruuvi_driver_errors_clear())
     {
-        task_led_write (RUUVI_BOARD_LED_STATUS_OK, true);
-        task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_OK);
+        err_code |= task_led_write (RUUVI_BOARD_LED_STATUS_OK, true);
+        err_code |= task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_OK);
         ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     }
     else
     {
-        task_led_write (RUUVI_BOARD_LED_STATUS_ERROR, true);
-        task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_ERROR);
+        err_code |= task_led_write (RUUVI_BOARD_LED_STATUS_ERROR, true);
+        err_code |= task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_ERROR);
         ruuvi_interface_delay_ms (BOOT_DELAY_MS);
     }
 
     // Turn LEDs off
-    task_led_write (RUUVI_BOARD_LED_STATUS_OK, false);
-    task_led_write (RUUVI_BOARD_LED_STATUS_ERROR, false);
+    err_code |= task_led_write (RUUVI_BOARD_LED_STATUS_OK, false);
+    err_code |= task_led_write (RUUVI_BOARD_LED_STATUS_ERROR, false);
     // Configure activity indication
     ruuvi_interface_yield_indication_set (&task_led_activity_indicate);
+    RUUVI_DRIVER_ERROR_CHECK (err_code, RUUVI_DRIVER_SUCCESS);
 
     do
     {
