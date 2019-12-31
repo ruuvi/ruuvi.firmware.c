@@ -263,11 +263,11 @@ void test_app_main_ok (void)
     // Ceedling skips MCU tests
     t_main_init_mcu();
     ruuvi_interface_delay_ms_ExpectAndReturn (BOOT_DELAY_MS, RUUVI_DRIVER_SUCCESS);
-    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, true, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_RED, true, RUUVI_DRIVER_SUCCESS);
     // Ceedling skips sensor integration tests
     t_main_init_sensors();
     t_main_init_comms();
-    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, false, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_RED, false, RUUVI_DRIVER_SUCCESS);
     ruuvi_driver_errors_clear_ExpectAndReturn (RUUVI_DRIVER_SUCCESS);
     task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_OK, true, RUUVI_DRIVER_SUCCESS);
     task_led_activity_led_set_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_OK,
@@ -288,11 +288,11 @@ void test_app_main_error (void)
     // Ceedling skips MCU tests
     t_main_init_mcu();
     ruuvi_interface_delay_ms_ExpectAndReturn (BOOT_DELAY_MS, RUUVI_DRIVER_SUCCESS);
-    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, true, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_RED, true, RUUVI_DRIVER_SUCCESS);
     // Ceedling skips sensor integration tests
     t_main_init_sensors();
     t_main_init_comms();
-    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_ACTIVITY, false, RUUVI_DRIVER_SUCCESS);
+    task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_RED, false, RUUVI_DRIVER_SUCCESS);
     ruuvi_driver_errors_clear_ExpectAndReturn (RUUVI_DRIVER_ERROR_NOT_FOUND);
     task_led_write_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_ERROR, true, RUUVI_DRIVER_SUCCESS);
     task_led_activity_led_set_ExpectAndReturn (RUUVI_BOARD_LED_STATUS_ERROR,
