@@ -113,5 +113,10 @@ ruuvi_driver_status_t task_led_activity_led_set (const uint16_t led);
  * @return Led which is activity indicator, RUUVI_INTERFACE_GPIO_ID_UNUSED if none.
  */
 uint16_t task_led_activity_led_get (void);
+
+#ifdef CEEDLING
+bool is_led (const uint16_t led);
+#endif
+
 /*@}*/
 #endif
