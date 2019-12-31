@@ -68,9 +68,6 @@ analysis:
 # https://medium.com/@systemglitch/continuous-integration-with-jenkins-and-github-release-814904e20776
 publish:
 	@echo Publishing $(TAG)
-ifndef TAG
-$(error TAG is not set, version $(VERSION))
-endif
 	./release.sh
 
 clean:

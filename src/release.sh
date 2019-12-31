@@ -6,6 +6,7 @@ GH_REPO="ruuvi.firmware.c"
 BOARDS=(ruuvitag_b kaarle kalervo keijo)
 VARIANTS=(default longlife longmem test)
 TAG=$(eval git describe --tags --exact-match)
+if [ -z "$TAG" ]; then echo "Tag is not set, exit"; exit; fi
 
 message=$(eval "git for-each-ref refs/tags/${TAG} --format='\%(contents)'")
 #echo ${message}
