@@ -259,6 +259,7 @@ clean:
 	rm -rf $(PVS_LOG)/fullhtml
 	rm -rf $(DOXYGEN_DIR)/html
 	rm -rf $(DOXYGEN_DIR)/latex
+	rm -f *.gcov
 
 doxygen:
 	export PROJECT_VERSION=$(VERSION) 
