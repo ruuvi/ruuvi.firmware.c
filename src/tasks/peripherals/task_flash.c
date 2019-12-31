@@ -1,3 +1,23 @@
+/**
+ * @addtogroup flash_tasks
+ */
+/*@{*/
+/**
+ * @file task_flash.c
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @Copyright 2019 Ruuvi Innovations Ltd, license BSD-3-Clause.
+ * @date 2019-11-18 provide compile time choice incase no flash is available
+ * This module has 2 sets of code:
+ *  If flash is enabled:
+ *    on_error: In the event of a fatal error, the error, source file and line number are stored in an error file in flash.
+ *              Then calls the bootloader, failing that reset.
+ *    task_flash_init: calls print_error_cause which retrieves error file from flash and logs it(requires nRF52 DK board).
+ *              Then sets up on_error as the call back error handler.
+ *  If no flash:
+ *    on_error: In the event of a fatal error calls the bootloader, failing that reset.
+ *    task_flash_init: sets up on_error as the call back error handler.
+ * These are in addition to flash utility functions of load, free, is busy and gc_run(which yields until not busy)
+ */
 #include "application_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
