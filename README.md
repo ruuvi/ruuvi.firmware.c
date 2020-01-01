@@ -11,8 +11,21 @@
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
-Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in alpha stage,
-build maybe broken in obvious ways and not build at all or in non-obvious ways and fail on some Ruuvi boards. 
+Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. 
+```
+Build produces variants for various 
+  boards: kaarle, kalervo, keijo and ruuvitag_b
+  configurations:
+             Advertising Advertising Advertising    Log
+              Startup      Startup
+              interval      period     interval     interval
+     default     1s            1s         1285ms          5m
+     longlife   12s           12s         1285ms         12h
+     longmem                                             12h
+     debug       1s            1s          211ms          6s
+  Upload formats: full.hex; app.hex; dfu.zip;
+  and Load symbol map
+```
 
 # Setting up
 ## SDK 15.3
