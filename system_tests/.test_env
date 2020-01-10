@@ -1,0 +1,6 @@
+export RUUVITAG_B_DEVKIT_SN=682971638
+export RUUVITAG_B_PPK_SN=682951642
+export RUUVITAG_B_DEVKIT_BLNAME="RuuviBoot"
+export RUUVITAG_B_DEVKIT_APPNAME="Ruuvi\ 3A7A"
+# On mobile phone
+export FIRMWARE_PATH=Android/data/no.nordicsemi.android.mcp/files/Test
