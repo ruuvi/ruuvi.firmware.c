@@ -90,6 +90,7 @@ log.txt
 sizes.txt
 issues/
 *.gcov
+*_result.txt
 
 # Ceedling machine generated output
 build
