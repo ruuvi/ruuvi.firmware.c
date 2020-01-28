@@ -18,12 +18,12 @@ description=$(eval echo ${message} | tail -n +3)
 #description=$(eval echo "${description}" | sed 's/\n/\\n/g') # Escape line breaks to prevent json parsing problems
 #echo ${description}  
 # Create a release
-release= curl -XPOST -H "Authorization:token ${GH_TOKEN}" --data "{\"tag_name\": \"${TAG}\", \"target_commitish\": \"master\", \"name\": \"$name\", \"body\": \"${description}\", \"draft\": false, \"prerelease\": true}" https://api.github.com/repos/${GH_USER}/${GH_REPO}/releases
+release=curl -XPOST -H "Authorization:token ${GH_TOKEN}" --data "{\"tag_name\": \"${TAG}\", \"target_commitish\": \"master\", \"name\": \"$name\", \"body\": \"${description}\", \"draft\": false, \"prerelease\": true}" https://api.github.com/repos/${GH_USER}/${GH_REPO}/releases
 #echo ${release}
 
 # Extract the id of the release from the creation response
 id=$(eval echo "${release}" |  awk -F'[, \t]*' '/"id":/{print $3}' | head -1)
-#echo ${id}
+echo ${id}
 
 for BOARD in "${BOARDS[@]}"
 do
