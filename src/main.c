@@ -49,7 +49,7 @@
 #include <stdio.h>
 #include <string.h>
 
-// Constants #defined at main.h for Ceedling.ß
+// Constants #defined at main.h for Ceedling.
 
 static inline void LOG (const char * const msg)
 {
@@ -480,6 +480,7 @@ void init_comms (void)
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
 #if APPLICATION_COMMUNICATION_GATT_ENABLED
+    status |= task_advertisement_stop();  // Reinitialize with scan response
     uint8_t mac_buffer[6U] = {0};
     get_mac (mac_buffer);
     char name_buffer[SCAN_RSP_NAME_MAX_LEN];
@@ -496,7 +497,6 @@ void init_comms (void)
     task_gatt_set_on_received_isr (&on_gatt_received_isr);
     task_gatt_set_on_sent_isr (&on_gatt_sent_isr);
     status |= task_gatt_enable();
-    status |= task_advertisement_stop();  // Reinitialize with scan response
     status |= task_advertisement_start();
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
 #endif
