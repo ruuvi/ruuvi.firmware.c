@@ -3,6 +3,8 @@
 
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_gpio_interrupt.h"
+#include "ruuvi_interface_log.h"
+#include <stdlib.h>
 
 /**
  * @addtogroup main
@@ -18,16 +20,8 @@
  *
  */
 
-/**
- * Delay to let user see actions on board, such as led sequence.
- * Must be at least 1000 ms to avoid RTC hangup in test, shorter is generally better.
- */
-#define BOOT_DELAY_MS (1000U)
-#define LOG_BUF_SIZE  (128U)      //!< Maximum line length to print. 
-#define GATT_HEARTBEAT_SIZE (18U) //!< 20 would be max, 18 cuts the data to while fields.
-
 #ifndef MAIN_LOG_LEVEL
-#define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
+#define MAIN_LOG_LEVEL RI_LOG_LEVEL_INFO
 #endif
 
 #ifdef CEEDLING
@@ -42,7 +36,6 @@ void on_gatt_sent_isr (void * data, size_t data_len);
 #else
 #define LOOP_FOREVER 1 //!< Normal run does not exit.
 #endif
+
 /*@}*/
-
-
 #endif // MAIN_H
