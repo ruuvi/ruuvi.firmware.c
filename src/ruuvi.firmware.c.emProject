@@ -111,6 +111,7 @@
         filter="*.h"
         path="application_config"
         recurse="Yes" />
+      <file file_name="main.h" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -218,12 +219,6 @@
       exclude=""
       filter="*.h"
       path="ruuvi.boards.c"
-      recurse="Yes" />
-    <folder
-      Name="Tests"
-      exclude=""
-      filter="*.c;*.h"
-      path="tests"
       recurse="Yes" />
     <folder
       Name="ruuvi.endpoints.c"
