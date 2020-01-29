@@ -20,6 +20,11 @@
  *
  */
 
+// Submodule requirements
+#define RUUVI_BOARDS_REQ "0.1.0"
+#define RUUVI_DRIVERS_REQ "0.1.4"
+
+
 #ifndef MAIN_LOG_LEVEL
 #define MAIN_LOG_LEVEL RI_LOG_LEVEL_INFO
 #endif
