@@ -49,11 +49,12 @@ void setup(void)
  */
 int app_main (void)
 {
-
     do
     {
         // Sleep - woken up on event
         ri_yield();
+        // Prevent loop being optimized away
+        __asm__("");
     } while (LOOP_FOREVER);
 
     // Intentionally non-reachable code.
