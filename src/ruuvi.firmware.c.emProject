@@ -235,6 +235,10 @@
     <folder Name="Docs">
       <file file_name="README.md" />
     </folder>
+    <folder Name="integration_test">
+      <file file_name="run_integration_tests.c" />
+      <file file_name="run_integration_tests.h" />
+    </folder>
   </project>
   <project Name="kaarle">
     <configuration

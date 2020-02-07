@@ -32,5 +32,14 @@
 /** @brief enable Ruuvi Watchdog interface */
 #define RI_WATCHDOG_ENABLED 1
 
+#ifdef DEBUG
+/** @brief Logs conserve lot of flash, enable only on debug builds */
+#define RI_LOG_ENABLED 1
+#define APP_LOG_LEVEL RI_LOG_LEVEL_INFO
+#else
+#define RI_LOG_ENABLED 0
+#define APP_LOG_LEVEL RI_LOG_LEVEL_WARNING
+#endif
+
 /*@}*/
 #endif

@@ -16,6 +16,8 @@
 
 #include "app_config.h"
 #include "main.h"
+#include "run_integration_tests.h"
+#include "ruuvi_interface_log.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
 
@@ -36,6 +38,7 @@ void setup(void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_watchdog_init(APP_WDT_INTERVAL_MS, &on_wdt);
+    err_code |= ri_log_init(APP_LOG_LEVEL);
     err_code |= ri_yield_init();
     RD_ERROR_CHECK(err_code, RD_SUCCESS);
 }
@@ -64,9 +67,16 @@ int app_main (void)
 #ifndef CEEDLING
 int main (void)
 {
+#   if RUUVI_RUN_TESTS
+    integration_test_start();
+    integration_test_flash();
+    integration_test_stop();
+    return 0;
+#   else
     setup();
     // Will never return.
     return app_main();
+#endif
 }
 #endif
 

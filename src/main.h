@@ -21,14 +21,9 @@
  */
 
 // Submodule requirements
-#define RUUVI_BOARDS_REQ "0.1.0"
+#define RUUVI_BOARDS_REQ "0.2.0"
 #define RUUVI_DRIVERS_REQ "0.1.5"
 #define RUUVI_LIBRARIES_REQ "0.1.3"
-
-
-#ifndef MAIN_LOG_LEVEL
-#define MAIN_LOG_LEVEL RI_LOG_LEVEL_INFO
-#endif
 
 #ifdef CEEDLING
 void on_button_isr (const ri_gpio_evt_t event);
