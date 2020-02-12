@@ -23,25 +23,25 @@
 #ifndef CEEDLING
 static
 #endif
-void on_wdt(void)
+void on_wdt (void)
 {
-  // Store cause of reset to flash
+    // Store cause of reset to flash
 }
 
-/** 
- * @brief setup MCU peripherals and board peripherals. 
+/**
+ * @brief setup MCU peripherals and board peripherals.
  *
  */
-void setup(void)
+void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= ri_watchdog_init(APP_WDT_INTERVAL_MS, &on_wdt);
-    err_code |= ri_log_init(APP_LOG_LEVEL);
+    err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
+    err_code |= ri_log_init (APP_LOG_LEVEL);
     err_code |= ri_yield_init();
-    RD_ERROR_CHECK(err_code, RD_SUCCESS);
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
-/** 
+/**
  * @brief Actual main, redirected for Ceedling
  */
 int app_main (void)
@@ -51,7 +51,7 @@ int app_main (void)
         // Sleep - woken up on event
         ri_yield();
         // Prevent loop being optimized away
-        __asm__("");
+        __asm__ ("");
     } while (LOOP_FOREVER);
 
     // Intentionally non-reachable code.
@@ -67,7 +67,6 @@ int main (void)
     setup();
     // Will never return.
     return app_main();
-
 }
 #endif
 

@@ -27,7 +27,7 @@
  */
 
 /** @brief Run integration tests. */
-void integration_tests_run(void);
+void integration_tests_run (void);
 
 /*@}*/
 #endif
