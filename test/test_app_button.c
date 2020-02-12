@@ -41,6 +41,7 @@ void test_app_button_ok (void)
 void test_app_button_activated (void)
 {
     // TODO: Change mode, start reboot timer
+    TEST_IGNORE_MESSAGE ("Implement");
     ri_gpio_state_t activation[] = RB_BUTTONS_ACTIVE_STATE;
     ri_gpio_slope_t e_slope = (RI_GPIO_HIGH == activation[0]) ? RI_GPIO_SLOPE_LOTOHI :
                               RI_GPIO_SLOPE_HITOLO;
@@ -55,6 +56,7 @@ void test_app_button_activated (void)
 void test_app_button_released (void)
 {
     // TODO: Stop reboot timer
+    TEST_IGNORE_MESSAGE ("Implement");
     ri_gpio_state_t activation[] = RB_BUTTONS_ACTIVE_STATE;
     ri_gpio_slope_t e_slope = (RI_GPIO_LOW == activation[0]) ? RI_GPIO_SLOPE_LOTOHI :
                               RI_GPIO_SLOPE_HITOLO;
