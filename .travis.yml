@@ -36,7 +36,6 @@ script:
     fi
   - make astyle
   - git diff --exit-code --diff-filter=d --color
-  - git submodule update --init --recursive
   - build-wrapper-linux-x86-64 --out-dir bw-output make all
   - ceedling test:all
   - ceedling gcov:all utils:gcov

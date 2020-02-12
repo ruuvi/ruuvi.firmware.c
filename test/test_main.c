@@ -9,6 +9,7 @@
 #include "semver.h"
 
 #include "mock_ruuvi_driver_error.h"
+#include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_interface_watchdog.h"
