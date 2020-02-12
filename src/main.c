@@ -19,6 +19,8 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
+#include "ruuvi_task_button.h"
+#include "ruuvi_task_gpio.h"
 
 #ifndef CEEDLING
 static
@@ -35,9 +37,12 @@ void on_wdt (void)
 void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+#   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL);
     err_code |= ri_yield_init();
+#   endif
+    err_code |= rt_gpio_init();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -63,7 +68,7 @@ int main (void)
 {
 #   if RUUVI_RUN_TESTS
     integration_tests_run();
-#endif
+#   endif
     setup();
     // Will never return.
     return app_main();
