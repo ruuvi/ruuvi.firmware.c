@@ -13,7 +13,6 @@
  * @date 2019-12-26
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
-
 #include "app_config.h"
 #include "main.h"
 #include "run_integration_tests.h"
@@ -29,9 +28,8 @@ void on_wdt(void)
   // Store cause of reset to flash
 }
 
-/** @brief setup MCU peripherals and board peripherals. 
- *
- * Runs integration tests on test builds. 
+/** 
+ * @brief setup MCU peripherals and board peripherals. 
  *
  */
 void setup(void)
@@ -43,12 +41,8 @@ void setup(void)
     RD_ERROR_CHECK(err_code, RD_SUCCESS);
 }
 
-/** @brief Actual main, redirected for Ceedling
- *
- * Initializes logging, MCU peripherals, sensors and communication.
- * If all steps are complete without warnings, activity led is set to status_ok, else
- * activity led is set to status_error.
- *
+/** 
+ * @brief Actual main, redirected for Ceedling
  */
 int app_main (void)
 {
@@ -68,15 +62,12 @@ int app_main (void)
 int main (void)
 {
 #   if RUUVI_RUN_TESTS
-    integration_test_start();
-    integration_test_flash();
-    integration_test_stop();
-    return 0;
-#   else
+    integration_tests_run();
+#endif
     setup();
     // Will never return.
     return app_main();
-#endif
+
 }
 #endif
 

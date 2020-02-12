@@ -1,5 +1,7 @@
 #ifndef APP_CONFIG_H
 #define APP_CONFIG_H
+#include "application_modes.h"
+#include "ruuvi_boards.h"
 /**
  * @defgroup Configuration Application configuration
  */
@@ -26,7 +28,14 @@
 
 /** @brief enable nRF15 SDK implementation of drivers */
 #define RUUVI_NRF5_SDK15_ENABLED 1
-
+/** @brief enable Ruuvi GPIO interface & tasks */
+#define RT_GPIO_ENABLED 1
+/** @brief enable Ruuvi GPIO interface & tasks */
+#define RI_GPIO_ENABLED 1
+/** @brief GPIOs are indexed by GPIO number starting from 1 */
+#define RT_GPIO_INT_TABLE_SIZE (RB_GPIO_NUMBER+1)
+/** @brief enable Ruuvi Flash interface on boards with enough RAM & Flash */
+#define RI_FLASH_ENABLED (RB_APP_PAGES > 0)
 /** @brief enable Ruuvi Yield interface */
 #define RI_YIELD_ENABLED 1
 /** @brief enable Ruuvi Watchdog interface */

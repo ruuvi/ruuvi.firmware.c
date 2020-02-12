@@ -9,6 +9,7 @@
 #include "semver.h"
 
 #include "mock_ruuvi_driver_error.h"
+#include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_interface_watchdog.h"
 
@@ -17,6 +18,8 @@ semver_t compare = {};
 
 void setUp (void)
 {
+  ri_log_init_IgnoreAndReturn(RD_SUCCESS);
+  ri_log_Ignore();
   rd_error_check_Ignore();
 }
 

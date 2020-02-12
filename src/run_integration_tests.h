@@ -26,14 +26,8 @@
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
 
-/** @brief Print test open JSON to console */
-void integration_test_start(void);
-
-/** @brief Run flash integration test. Tests watchdog too. */
-void integration_test_flash(void);
-
-/** @brief Print test close JSON to console */
-void integration_test_stop(void);
+/** @brief Run integration tests. */
+void integration_tests_run(void);
 
 /*@}*/
 #endif

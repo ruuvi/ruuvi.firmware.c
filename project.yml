@@ -8,7 +8,7 @@
 :project:
   :use_exceptions: FALSE
   :use_test_preprocessor: TRUE
-  :use_auxiliary_dependencies: TRUE
+  :use_auxiliary_dependencies: FALSE
   :build_root: build
 #  :release_build: TRUE
   :test_file_prefix: test_
