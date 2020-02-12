@@ -24,7 +24,7 @@
  */
 
 /** @brief If watchdog is not fed at this intercal or faster, reboot */
-#define APP_WDT_INTERVAL_MS (2U*60U*1000U) 
+#define APP_WDT_INTERVAL_MS (2U*60U*1000U)
 
 /** @brief enable nRF15 SDK implementation of drivers */
 #define RUUVI_NRF5_SDK15_ENABLED 1
