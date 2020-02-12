@@ -162,28 +162,8 @@ RUUVI_LIB_SOURCES= \
   
 RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/main.c \
-  $(PROJ_DIR)/tasks/actuators/task_led.c \
-  $(PROJ_DIR)/tasks/communication/task_advertisement.c \
-  $(PROJ_DIR)/tasks/communication/task_communication.c \
-  $(PROJ_DIR)/tasks/communication/task_gatt.c \
-  $(PROJ_DIR)/tasks/sensors/task_acceleration.c \
-  $(PROJ_DIR)/tasks/sensors/task_button.c \
-  $(PROJ_DIR)/tasks/sensors/task_environmental.c \
-  $(PROJ_DIR)/tasks/sensors/task_sensor.c \
-  $(PROJ_DIR)/tasks/peripherals/task_adc.c \
-  $(PROJ_DIR)/tasks/peripherals/task_flash.c \
-  $(PROJ_DIR)/tasks/peripherals/task_gpio.c \
-  $(PROJ_DIR)/tasks/peripherals/task_i2c.c \
-  $(PROJ_DIR)/tasks/peripherals/task_nfc.c \
-  $(PROJ_DIR)/tasks/peripherals/task_power.c \
-  $(PROJ_DIR)/tasks/peripherals/task_rtc.c \
-  $(PROJ_DIR)/tasks/peripherals/task_scheduler.c \
-  $(PROJ_DIR)/tasks/peripherals/task_spi.c \
-  $(PROJ_DIR)/tasks/peripherals/task_timer.c \
-  $(PROJ_DIR)/tests/test_acceleration.c \
-  $(PROJ_DIR)/tests/test_adc.c \
-  $(PROJ_DIR)/tests/test_environmental.c \
-  $(PROJ_DIR)/tests/test_library.c
+  $(PROJ_DIR)/run_integration_tests.c
+
 
 COMMON_SOURCES= \
   $(RUUVI_LIB_SOURCES) \
@@ -300,11 +280,6 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
   $(PROJ_DIR)/ruuvi.libraries.c \
   $(PROJ_DIR)/ruuvi.libraries.c/analysis \
-  $(PROJ_DIR)/ruuvi.libraries.c/data_structures \
-  $(PROJ_DIR)/tasks/actuators \
-  $(PROJ_DIR)/tasks/communication \
-  $(PROJ_DIR)/tasks/peripherals \
-  $(PROJ_DIR)/tasks/sensors \
-  $(PROJ_DIR)/tests/
+  $(PROJ_DIR)/ruuvi.libraries.c/data_structures 
 
   STARTUP= $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S
