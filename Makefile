@@ -270,4 +270,5 @@ astyle:
 			  "src/application_config/*.h" \
 			  "test/*.c"
 	astyle --project=".astylerc" "src/main.c" "src/main.h" \
-	      "src/run_integration_tests.c" "src/run_integration_tests.h"
+	                  "src/app_button.c" "src/app_button.h" \
+	                  "src/run_integration_tests.c" "src/run_integration_tests.h" 

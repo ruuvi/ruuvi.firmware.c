@@ -43,7 +43,6 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/log/src/nrf_log_str_formatter.c" />
     </folder>
     <folder Name="nRF_Libraries">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/button/app_button.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_handler_gcc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_weak.c" />
@@ -112,6 +111,8 @@
         path="application_config"
         recurse="Yes" />
       <file file_name="main.h" />
+      <file file_name="app_button.c" />
+      <file file_name="app_button.h" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />

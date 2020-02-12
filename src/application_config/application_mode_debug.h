@@ -1,4 +1,6 @@
 #ifndef APPLICATION_MODE_DEBUG_H
 #define APPLICATION_MODE_DEBUG_H
 #define APP_FW_NAME "Ruuvi FW-debug"
+#define RI_LOG_ENABLED 1
+#define APP_LOG_LEVEL RI_LOG_LEVEL_INFO
 #endif

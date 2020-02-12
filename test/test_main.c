@@ -8,11 +8,13 @@
 #include "main.h"
 #include "semver.h"
 
+#include "mock_app_button.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_interface_watchdog.h"
+#include "mock_ruuvi_task_gpio.h"
 
 semver_t current = {};
 semver_t compare = {};
@@ -35,6 +37,8 @@ void test_main_setup (void)
 {
     ri_watchdog_init_ExpectAndReturn (APP_WDT_INTERVAL_MS, &on_wdt, RD_SUCCESS);
     ri_yield_init_ExpectAndReturn (RD_SUCCESS);
+    rt_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    app_button_init_ExpectAndReturn (RD_SUCCESS);
     setup();
 }
 

@@ -250,32 +250,34 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/integration/nrfx \
   $(PROJ_DIR)/application_config \
   $(PROJ_DIR)/ruuvi.boards.c \
-  $(PROJ_DIR)/ruuvi.drivers.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/ \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/sht-common \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1 \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/acceleration \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/adc \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/atomic \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/communication \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/environmental \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/flash \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/gpio \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/i2c \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/log \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/power \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/rtc \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/scheduler \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/spi \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/timer \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/watchdog \
-  $(PROJ_DIR)/ruuvi.drivers.c/interfaces/yield \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/gpio/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/nrf5_sdk15_platform/timer/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/acceleration \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/adc \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/atomic \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/flash \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/gpio \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/power \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/rtc \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/scheduler \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/timer \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/watchdog \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/yield \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/tasks \
   $(PROJ_DIR)/ruuvi.endpoints.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
   $(PROJ_DIR)/ruuvi.libraries.c \

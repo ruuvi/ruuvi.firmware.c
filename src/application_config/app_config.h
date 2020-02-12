@@ -28,6 +28,8 @@
 
 /** @brief enable nRF15 SDK implementation of drivers */
 #define RUUVI_NRF5_SDK15_ENABLED 1
+/** @brief enable Ruuvi Button tasks */
+#define RT_BUTTON_ENABLED 1
 /** @brief enable Ruuvi GPIO interface & tasks */
 #define RT_GPIO_ENABLED 1
 /** @brief enable Ruuvi GPIO interface & tasks */
@@ -41,6 +43,11 @@
 /** @brief enable Ruuvi Watchdog interface */
 #define RI_WATCHDOG_ENABLED 1
 
+#ifndef APP_FW_NAME
+#define APP_FW_NAME "Ruuvi FW"
+#endif
+
+// TODO: move under debug
 #ifdef DEBUG
 /** @brief Logs conserve lot of flash, enable only on debug builds */
 #define RI_LOG_ENABLED 1
