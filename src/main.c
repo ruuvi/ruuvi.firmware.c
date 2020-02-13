@@ -16,6 +16,7 @@
 #include "app_config.h"
 #include "app_button.h"
 #include "app_power.h"
+#include "app_led.h"
 #include "main.h"
 #include "run_integration_tests.h"
 #include "ruuvi_interface_power.h"
@@ -24,6 +25,7 @@
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_button.h"
 #include "ruuvi_task_gpio.h"
+#include "ruuvi_task_led.h"
 
 #ifndef CEEDLING
 static
@@ -48,6 +50,7 @@ void setup (void)
     err_code |= rt_gpio_init();
     err_code |= app_button_init();
     err_code |= app_dc_dc_init();
+    err_code |= app_led_init();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
