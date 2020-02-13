@@ -94,7 +94,7 @@ rd_status_t app_button_init (void)
 #   if RB_BUTTON_PWR_PIN_NUMBER
     ri_gpio_id_t button_pwr_pins[RB_BUTTON_PWR_PIN_NUMBER] = RB_BUTTON_PWR_PINS;
 
-    for (size_t ii = 0; ii < RB_BUTTON_PWR_PINS; ii++)
+    for (size_t ii = 0; ii < RB_BUTTON_PWR_PIN_NUMBER; ii++)
     {
         err_code |= ri_gpio_configure (button_pwr_pins[ii],
                                        RI_GPIO_MODE_OUTPUT_HIGHDRIVE);

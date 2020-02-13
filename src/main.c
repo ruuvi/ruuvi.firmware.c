@@ -15,8 +15,9 @@
  */
 #include "app_config.h"
 #include "app_button.h"
-#include "app_power.h"
 #include "app_led.h"
+#include "app_melody.h"
+#include "app_power.h"
 #include "main.h"
 #include "run_integration_tests.h"
 #include "ruuvi_interface_power.h"
@@ -51,6 +52,8 @@ void setup (void)
     err_code |= app_button_init();
     err_code |= app_dc_dc_init();
     err_code |= app_led_init();
+    err_code |= app_melody_init();
+    app_melody_play();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
