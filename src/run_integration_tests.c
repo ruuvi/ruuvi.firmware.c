@@ -6,6 +6,7 @@
 #include "ruuvi_interface_gpio_interrupt_test.h"
 #include "ruuvi_interface_flash_test.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_power_test.h"
 #include "ruuvi_interface_watchdog.h"
 /**
  * @addtogroup integration_test
@@ -45,6 +46,18 @@ void integration_test_stop (void)
     LOG ("}");
 }
 
+static void integration_test_power (void)
+{
+    ri_power_regulators_t regs = {0};
+#   if (RB_DCDC_INTERNAL_INSTALLED)
+    regs.DCDC_INTERNAL = 1;
+#endif
+#   if (RB_DCDC_HV_INSTALLED)
+    regs.DCDC_HV = 1;
+#endif
+    ri_power_run_integration_test (&LOG, regs);
+}
+
 /** @brief Run integration tests*/
 void integration_tests_run (void)
 {
@@ -54,6 +67,7 @@ void integration_tests_run (void)
     ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
 #endif
+    integration_test_power();
     integration_test_stop();
 }
 

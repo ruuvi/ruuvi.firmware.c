@@ -14,10 +14,11 @@
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
 #include "app_config.h"
-
 #include "app_button.h"
+#include "app_power.h"
 #include "main.h"
 #include "run_integration_tests.h"
+#include "ruuvi_interface_power.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
@@ -46,6 +47,7 @@ void setup (void)
 #   endif
     err_code |= rt_gpio_init();
     err_code |= app_button_init();
+    err_code |= app_dc_dc_init();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
