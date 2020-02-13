@@ -26,11 +26,11 @@
 /**
  * @brief Initialize regulatore.
  *
- * After initialization the DC/DC regulators on boards are automatically used when 
- * needed. 
+ * After initialization the DC/DC regulators on boards are automatically used when
+ * needed.
  *
  * @retval RD_SUCCESS if regulators were initialized.
  */
-rd_status_t app_dc_dc_init(void);
+rd_status_t app_dc_dc_init (void);
 
 #endif // APP_POWER_H

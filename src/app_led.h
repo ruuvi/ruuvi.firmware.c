@@ -2,6 +2,9 @@
 #define APP_LED_H
 #include "ruuvi_driver_error.h"
 
-rd_status_t app_led_init(void);
+/** @brief time each led is on at boot */
+#define APP_LED_INIT_DELAY_MS (500U)
+
+rd_status_t app_led_init (void);
 
 #endif // APP_LED_H

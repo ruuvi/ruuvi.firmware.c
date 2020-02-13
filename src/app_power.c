@@ -3,7 +3,7 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_power.h"
 
-rd_status_t app_dc_dc_init(void)
+rd_status_t app_dc_dc_init (void)
 {
     ri_power_regulators_t reg = {0};
 #if RB_DCDC_INTERNAL_INSTALLED

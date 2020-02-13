@@ -9,6 +9,7 @@
 #include "semver.h"
 
 #include "mock_app_button.h"
+#include "mock_app_led.h"
 #include "mock_app_power.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_gpio.h"
@@ -41,6 +42,7 @@ void test_main_setup (void)
     rt_gpio_init_ExpectAndReturn (RD_SUCCESS);
     app_button_init_ExpectAndReturn (RD_SUCCESS);
     app_dc_dc_init_ExpectAndReturn (RD_SUCCESS);
+    app_led_init_ExpectAndReturn (RD_SUCCESS);
     setup();
 }
 
