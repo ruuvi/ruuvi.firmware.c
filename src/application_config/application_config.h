@@ -176,7 +176,7 @@
 #if NRF52811_XXAA
 #define APPLICATION_COMMUNICATION_GATT_ENABLED        0 // BLE GATT, requiresh Flash and advertising
 #else
-#define APPLICATION_COMMUNICATION_GATT_ENABLED        1 // BLE GATT, requiresh Flash and advertising
+#define APPLICATION_COMMUNICATION_GATT_ENABLED        0 // BLE GATT, requiresh Flash and advertising
 #endif
 #define APPLICATION_COMMUNICATION_NFC_ENABLED         RUUVI_BOARD_NFC_INTERNAL_INSTALLED
 #define APPLICATION_GPIO_ENABLED                      1

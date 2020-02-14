@@ -34,7 +34,7 @@
 #define LOGW(msg) ruuvi_interface_log(RUUVI_INTERFACE_LOG_WARNING, msg)
 #define LOGHEX(msg, len) ruuvi_interface_log_hex(TASK_ENVIRONMENTAL_LOG_LEVEL, msg, len)
 
-static ruuvi_interface_timer_id_t m_log_timer;               //!< Timer for logging data
+//static ruuvi_interface_timer_id_t m_log_timer;               //!< Timer for logging data
 
 // Do not compile space for unused sensor drivers.
 // Define enum in order of default preference of sensor being used.
@@ -554,7 +554,7 @@ static ruuvi_driver_status_t initialize_tmp117 (void)
     return RUUVI_DRIVER_SUCCESS;
 #endif
 }
-
+/*
 static void execute_log (void * event, uint16_t event_size)
 {
     static uint32_t tick_count = 0;
@@ -574,7 +574,7 @@ static void schedule_log (void * p_context)
 {
     ruuvi_interface_scheduler_event_put (NULL, 0, execute_log);
 }
-
+*/
 ruuvi_driver_status_t task_environmental_init (void)
 {
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
@@ -597,6 +597,7 @@ ruuvi_driver_status_t task_environmental_init (void)
     }
 
     // XXX - use generic logging
+    /*
     if (NULL == m_log_timer)
     {
         ruuvi_interface_timer_create (&m_log_timer, RUUVI_INTERFACE_TIMER_MODE_REPEATED,
@@ -606,6 +607,7 @@ ruuvi_driver_status_t task_environmental_init (void)
     ruuvi_interface_timer_start (m_log_timer, APPLICATION_ENVIRONMENTAL_TICK_MS);
     // Log environmental conditions at start
     ruuvi_interface_scheduler_event_put (NULL, 0, execute_log);
+    */
     return (NULL == m_active_sensor) ? RUUVI_DRIVER_ERROR_NOT_FOUND : RUUVI_DRIVER_SUCCESS;
 }
 
@@ -635,6 +637,22 @@ ruuvi_driver_status_t task_environmental_data_get (ruuvi_driver_sensor_data_t * 
 
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     err_code = m_active_sensor->data_get (p_data);
+    if(!p_data->valid.datas.pressure_pa)
+    {
+        ruuvi_driver_sensor_t * p_bme;
+        p_bme = task_sensor_find_backend (m_environmental_sensors,
+        ENV_SENSOR_COUNT, "BME280");
+        if(p_bme != NULL)
+        {
+            // Do not overwrite exisiting valid data
+           // p_data->fields.datas.humidity_rh = !p_data->valid.datas.humidity_rh;
+           // p_data->fields.datas.temperature_c = !p_data->valid.datas.temperature_c;
+            p_bme->data_get (p_data);
+            p_data->valid.datas.pressure_pa = 1;
+          //  p_data->fields.datas.humidity_rh = p_data->valid.datas.humidity_rh;
+          //  p_data->fields.datas.temperature_c = p_data->valid.datas.temperature_c;
+        }
+    }
     return err_code;
 }
 
