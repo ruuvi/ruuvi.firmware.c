@@ -7,6 +7,7 @@
 #include "ruuvi_interface_flash_test.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_power_test.h"
+#include "ruuvi_interface_scheduler_test.h"
 #include "ruuvi_interface_watchdog.h"
 /**
  * @addtogroup integration_test
@@ -68,6 +69,7 @@ void integration_tests_run (void)
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
 #endif
     integration_test_power();
+    ri_scheduler_run_integration_test(&LOG);
     integration_test_stop();
 }
 
