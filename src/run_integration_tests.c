@@ -8,6 +8,7 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_communication_nfc_test.h"
 #include "ruuvi_interface_power_test.h"
+#include "ruuvi_interface_scheduler_test.h"
 #include "ruuvi_interface_timer_test.h"
 #include "ruuvi_interface_watchdog.h"
 /**
@@ -71,7 +72,10 @@ void integration_tests_run (void)
 #endif
     integration_test_power();
     ri_timer_integration_test_run(&LOG);
+    ri_scheduler_run_integration_test(&LOG);
+#if defined(RB_NFC_INTERNAL_INSTALLED) && (RB_NFC_INTERNAL_INSTALLED)
     ri_communication_nfc_run_integration_test(&LOG);
+#endif
     integration_test_stop();
 }
 
