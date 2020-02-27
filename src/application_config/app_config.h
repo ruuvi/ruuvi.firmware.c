@@ -40,8 +40,12 @@
 /** @brief enable Ruuvi led tasks */
 #define RT_LED_ENABLED 1
 #define RT_MAX_LED_CFG RB_LEDS_NUMBER
+/** @brief enable Ruuvi NFC tasks */
+#define RT_NFC_ENABLED 1
 /** @brief enable Ruuvi Power interface */
 #define RI_POWER_ENABLED 1
+/** @brief enable Ruuvi Timer interface */
+#define RI_TIMER_ENABLED 1
 /** @brief enable Ruuvi Yield interface */
 #define RI_YIELD_ENABLED 1
 /** @brief enable Ruuvi Watchdog interface */
