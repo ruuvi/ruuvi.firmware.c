@@ -71,10 +71,10 @@ void integration_tests_run (void)
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
 #endif
     integration_test_power();
-    ri_timer_integration_test_run(&LOG);
-    ri_scheduler_run_integration_test(&LOG);
+    ri_timer_integration_test_run (&LOG);
+    ri_scheduler_run_integration_test (&LOG);
 #if defined(RB_NFC_INTERNAL_INSTALLED) && (RB_NFC_INTERNAL_INSTALLED)
-    ri_communication_nfc_run_integration_test(&LOG);
+    ri_communication_nfc_run_integration_test (&LOG);
 #endif
     integration_test_stop();
 }
