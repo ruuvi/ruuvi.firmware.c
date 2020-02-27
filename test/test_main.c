@@ -68,6 +68,7 @@ void test_semver_drivers (void)
     TEST_ASSERT (semver_satisfies (current, compare, operator));
 }
 
+/*
 void test_semver_libraries (void)
 {
     char operator[] = "^";
@@ -75,3 +76,4 @@ void test_semver_libraries (void)
     semver_parse (RUUVI_LIBRARIES_REQ, &compare);
     TEST_ASSERT (semver_satisfies (current, compare, operator));
 }
+*/
