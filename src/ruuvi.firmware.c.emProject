@@ -288,7 +288,6 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/log/src/nrf_log_str_formatter.c" />
     </folder>
     <folder Name="nRF_Libraries">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/button/app_button.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_handler_gcc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_weak.c" />
@@ -354,6 +353,12 @@
         filter="*.h"
         path="application_config"
         recurse="Yes" />
+      <folder
+        Name="app"
+        exclude=""
+        filter="app*.c;app*.h"
+        path="."
+        recurse="No" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -427,10 +432,6 @@
       <file file_name="ruuvi.drivers.c/README.md" />
       <file file_name="ruuvi.drivers.c/src/ruuvi_driver_enabled_modules.h" />
       <file file_name="ruuvi.drivers.c/src/ruuvi_driver_error.c" />
-      <file file_name="ruuvi.drivers.c/src/ruuvi_driver_test.c" />
-      <file file_name="ruuvi.drivers.c/src/ruuvi_driver_test.h" />
-      <file file_name="ruuvi.drivers.c/src/test_sensor.c" />
-      <file file_name="ruuvi.drivers.c/src/test_sensor.h" />
       <folder Name="SHTCx">
         <folder Name="embedded-common">
           <file file_name="ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_arch_config.h" />
@@ -446,6 +447,18 @@
           <file file_name="ruuvi.drivers.c/embedded-sht/shtc1/shtc1.h" />
         </folder>
       </folder>
+      <folder
+        Name="integration_tests"
+        exclude=""
+        filter="*.c;*.h"
+        path="ruuvi.drivers.c/src/integration_tests"
+        recurse="Yes" />
+      <folder
+        Name="tasks"
+        exclude=""
+        filter="*.c;*.h"
+        path="ruuvi.drivers.c/src/tasks"
+        recurse="Yes" />
     </folder>
     <folder
       Name="ruuvi.boards.c"
@@ -475,7 +488,7 @@
       <file file_name="README.md" />
     </folder>
   </project>
-  <project Name="Rauno">
+  <project Name="rauno">
     <configuration
       Name="Common"
       arm_architecture="v7EM"
@@ -518,7 +531,6 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/log/src/nrf_log_str_formatter.c" />
     </folder>
     <folder Name="nRF_Libraries">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/button/app_button.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_handler_gcc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_weak.c" />
@@ -584,6 +596,12 @@
         filter="*.h"
         path="application_config"
         recurse="Yes" />
+      <folder
+        Name="app"
+        exclude=""
+        filter="app*.c;app*.h"
+        path="."
+        recurse="No" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -672,6 +690,12 @@
           <file file_name="ruuvi.drivers.c/embedded-sht/shtc1/shtc1.h" />
         </folder>
       </folder>
+      <folder
+        Name="tasks"
+        exclude=""
+        filter="*.c;*.h"
+        path="ruuvi.drivers.c/src/tasks"
+        recurse="No" />
     </folder>
     <folder
       Name="ruuvi.boards.c"
@@ -738,7 +762,6 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/log/src/nrf_log_str_formatter.c" />
     </folder>
     <folder Name="nRF_Libraries">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/button/app_button.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_handler_gcc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_weak.c" />
@@ -804,6 +827,12 @@
         filter="*.h"
         path="application_config"
         recurse="Yes" />
+      <folder
+        Name="app"
+        exclude=""
+        filter="app*.c;app*.h"
+        path="."
+        recurse="No" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -834,14 +863,6 @@
     <folder Name="nRF_BLE_Services">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_nus/ble_nus.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dis/ble_dis.c" />
-    </folder>
-    <folder Name="nRF_NFC">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/record/nfc_ndef_record.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_msg.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_rec.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/text/nfc_text_rec.c" />
     </folder>
     <folder Name="nRF_SoftDevice">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/softdevice/common/nrf_sdh.c" />
@@ -877,10 +898,6 @@
       <file file_name="ruuvi.drivers.c/README.md" />
       <file file_name="ruuvi.drivers.c/src/ruuvi_driver_enabled_modules.h" />
       <file file_name="ruuvi.drivers.c/src/ruuvi_driver_error.c" />
-      <file file_name="ruuvi.drivers.c/src/ruuvi_driver_test.c" />
-      <file file_name="ruuvi.drivers.c/src/ruuvi_driver_test.h" />
-      <file file_name="ruuvi.drivers.c/src/test_sensor.c" />
-      <file file_name="ruuvi.drivers.c/src/test_sensor.h" />
       <folder Name="SHTCx">
         <folder Name="embedded-common">
           <file file_name="ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_arch_config.h" />
@@ -896,18 +913,18 @@
           <file file_name="ruuvi.drivers.c/embedded-sht/shtc1/shtc1.h" />
         </folder>
       </folder>
+      <folder
+        Name="tasks"
+        exclude=""
+        filter="*.c;*.h"
+        path="ruuvi.drivers.c/src/tasks"
+        recurse="No" />
     </folder>
     <folder
       Name="ruuvi.boards.c"
       exclude=""
       filter="*.h"
       path="ruuvi.boards.c"
-      recurse="Yes" />
-    <folder
-      Name="Tests"
-      exclude=""
-      filter="*.c;*.h"
-      path="tests"
       recurse="Yes" />
     <folder
       Name="ruuvi.endpoints.c"
@@ -968,7 +985,6 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/log/src/nrf_log_str_formatter.c" />
     </folder>
     <folder Name="nRF_Libraries">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/button/app_button.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_handler_gcc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/util/app_error_weak.c" />
@@ -1034,6 +1050,12 @@
         filter="*.h"
         path="application_config"
         recurse="Yes" />
+      <folder
+        Name="app"
+        exclude=""
+        filter="app*.c;app*.h"
+        path="."
+        recurse="No" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -1064,14 +1086,6 @@
     <folder Name="nRF_BLE_Services">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_nus/ble_nus.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/ble/ble_services/ble_dis/ble_dis.c" />
-    </folder>
-    <folder Name="nRF_NFC">
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/record/nfc_ndef_record.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_msg.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_rec.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/text/nfc_text_rec.c" />
     </folder>
     <folder Name="nRF_SoftDevice">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/softdevice/common/nrf_sdh.c" />
@@ -1107,10 +1121,6 @@
       <file file_name="ruuvi.drivers.c/README.md" />
       <file file_name="ruuvi.drivers.c/src/ruuvi_driver_enabled_modules.h" />
       <file file_name="ruuvi.drivers.c/src/ruuvi_driver_error.c" />
-      <file file_name="ruuvi.drivers.c/src/ruuvi_driver_test.c" />
-      <file file_name="ruuvi.drivers.c/src/ruuvi_driver_test.h" />
-      <file file_name="ruuvi.drivers.c/src/test_sensor.c" />
-      <file file_name="ruuvi.drivers.c/src/test_sensor.h" />
       <folder Name="SHTCx">
         <folder Name="embedded-common">
           <file file_name="ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_arch_config.h" />
@@ -1126,18 +1136,18 @@
           <file file_name="ruuvi.drivers.c/embedded-sht/shtc1/shtc1.h" />
         </folder>
       </folder>
+      <folder
+        Name="tasks"
+        exclude=""
+        filter="*.c;*.h"
+        path="ruuvi.drivers.c/src/tasks"
+        recurse="No" />
     </folder>
     <folder
       Name="ruuvi.boards.c"
       exclude=""
       filter="*.h"
       path="ruuvi.boards.c"
-      recurse="Yes" />
-    <folder
-      Name="Tests"
-      exclude=""
-      filter="*.c;*.h"
-      path="tests"
       recurse="Yes" />
     <folder
       Name="ruuvi.endpoints.c"

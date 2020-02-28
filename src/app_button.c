@@ -17,6 +17,8 @@
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
 
+#if RB_BUTTONS_NUMBER
+
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
@@ -69,7 +71,7 @@ void on_button_press (const ri_gpio_evt_t evt)
 static const ri_gpio_id_t button_pins[] = RB_BUTTONS_LIST;
 /** @brief GPIO states when button is considered active */
 static const ri_gpio_state_t button_active[] = RB_BUTTONS_ACTIVE_STATE;
-/** @brief Function callbacks on button presses. */
+/** @brief Function callbacks on button presses. - TODO: Generalise for multiple buttons */
 static const rt_button_fp_t app_button_handlers[RB_BUTTONS_NUMBER] = {&on_button_press};
 static rt_button_init_t m_init_data =
 {
@@ -94,7 +96,7 @@ rd_status_t app_button_init (void)
 #   if RB_BUTTON_PWR_PIN_NUMBER
     ri_gpio_id_t button_pwr_pins[RB_BUTTON_PWR_PIN_NUMBER] = RB_BUTTON_PWR_PINS;
 
-    for (size_t ii = 0; ii < RB_BUTTON_PWR_PINS; ii++)
+    for (size_t ii = 0; ii < RB_BUTTON_PWR_PIN_NUMBER; ii++)
     {
         err_code |= ri_gpio_configure (button_pwr_pins[ii],
                                        RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
@@ -105,5 +107,12 @@ rd_status_t app_button_init (void)
     err_code |= rt_button_init (&m_init_data);
     return err_code;
 }
+
+#else
+rd_status_t app_button_init (void)
+{
+    return RD_SUCCESS;
+}
+#endif
 
 /*@}*/
