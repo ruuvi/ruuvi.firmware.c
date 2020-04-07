@@ -68,6 +68,8 @@ static inline void LOGHEX (const uint8_t * const msg, const size_t len)
 }
 #endif
 
+static ruuvi_interface_timer_id_t adv_startup_timer;
+
 /** Run tests which rely only on MCU.
  *  These tests require relevant peripherals being uninitialized
  *  before tests and leave the peripherals uninitialized.
@@ -485,8 +487,9 @@ void init_comms (void)
                   task_sensor_encode_to_5, task_advertisement_send_data);
     // Start a timer to enter slow advertising
     status |= ruuvi_interface_timer_create (&adv_startup_timer,
-                                            RUUVI_INTERFACE_TIMER_MODE_SINGLE, adv_enter_normal_isr);
-    status |= ruuvi_interface_timer_start (adv_startup_timer, interval_ms);
+                                            RUUVI_INTERFACE_TIMER_MODE_SINGLE_SHOT, adv_enter_normal_isr);
+    status |= ruuvi_interface_timer_start (adv_startup_timer,
+                                           APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS);
     // Synchronize ADC to radio activity
     ruuvi_interface_communication_radio_activity_callback_set (on_radio);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
