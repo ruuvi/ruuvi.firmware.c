@@ -457,8 +457,10 @@ static void adv_enter_normal_isr (void * p_context)
         APPLICATION_ADVERTISING_INTERVAL_MS,
         RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
         task_sensor_encode_to_5, task_advertisement_send_data);
-     (void)ruuvi_interface_communication_ble4_advertising_tx_interval_set (
-                        APPLICATION_ADVERTISING_INTERVAL_MS);
+    (void) ruuvi_interface_communication_ble4_advertising_tx_interval_set (
+        APPLICATION_ADVERTISING_INTERVAL_MS);
+    (void) task_advertisement_stop(); // Reinitialize with scan response
+    (void) task_advertisement_start();
 }
 
 /**
@@ -488,12 +490,14 @@ void init_comms (void)
                   RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
                   task_sensor_encode_to_5, task_advertisement_send_data);
     status |= ruuvi_interface_communication_ble4_advertising_tx_interval_set (
-                        APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS);
+                  APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS);
     // Start a timer to enter slow advertising
     status |= ruuvi_interface_timer_create (&adv_startup_timer,
                                             RUUVI_INTERFACE_TIMER_MODE_SINGLE_SHOT, adv_enter_normal_isr);
     status |= ruuvi_interface_timer_start (adv_startup_timer,
-                                           APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS);
+                                           APPLICATION_ADVERTISING_STARTUP_PERIOD_MS);
+    status |= task_advertisement_stop();  // Reinitialize with new speed
+    status |= task_advertisement_start();
     // Synchronize ADC to radio activity
     ruuvi_interface_communication_radio_activity_callback_set (on_radio);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
