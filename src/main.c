@@ -457,6 +457,8 @@ static void adv_enter_normal_isr (void * p_context)
         APPLICATION_ADVERTISING_INTERVAL_MS,
         RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
         task_sensor_encode_to_5, task_advertisement_send_data);
+     (void)ruuvi_interface_communication_ble4_advertising_tx_interval_set (
+                        APPLICATION_ADVERTISING_INTERVAL_MS);
 }
 
 /**
@@ -485,6 +487,8 @@ void init_comms (void)
                   APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS,
                   RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
                   task_sensor_encode_to_5, task_advertisement_send_data);
+    status |= ruuvi_interface_communication_ble4_advertising_tx_interval_set (
+                        APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS);
     // Start a timer to enter slow advertising
     status |= ruuvi_interface_timer_create (&adv_startup_timer,
                                             RUUVI_INTERFACE_TIMER_MODE_SINGLE_SHOT, adv_enter_normal_isr);
