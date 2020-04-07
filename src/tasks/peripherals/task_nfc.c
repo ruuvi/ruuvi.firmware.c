@@ -23,7 +23,9 @@
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_nfc.h"
 #include "ruuvi_interface_communication_radio.h"
+#include "ruuvi_interface_power.h"
 #include "ruuvi_interface_scheduler.h"
+#include "ruuvi_interface_timer.h"
 #include "ruuvi_interface_watchdog.h"
 #include "task_nfc.h"
 #include <stdio.h>
@@ -31,6 +33,13 @@
 
 #if APPLICATION_COMMUNICATION_NFC_ENABLED
 static ruuvi_interface_communication_t channel;
+static ruuvi_interface_timer_id_t nfc_reboot_timer;
+
+static void nfc_reboot_timer_isr (void * p_context)
+{
+    (void) ruuvi_interface_power_reset();
+
+}
 
 ruuvi_driver_status_t task_nfc_init (void)
 {
@@ -101,6 +110,8 @@ ruuvi_driver_status_t task_nfc_init (void)
     msg.data_length = 1;
     err_code |= channel.send (&msg);
     channel.on_evt = task_nfc_on_nfc;
+        err_code |= ruuvi_interface_timer_create (&nfc_reboot_timer,
+                                            RUUVI_INTERFACE_TIMER_MODE_SINGLE_SHOT, nfc_reboot_timer_isr);
     return err_code;
 }
 
@@ -137,6 +148,8 @@ ruuvi_driver_status_t task_nfc_on_nfc (ruuvi_interface_communication_evt_t evt,
     {
         case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
             ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, "NFC connected \r\n");
+            ruuvi_interface_timer_start (nfc_reboot_timer,
+                                         5000U);
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
