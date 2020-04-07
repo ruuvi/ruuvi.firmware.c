@@ -107,7 +107,7 @@ ruuvi_driver_status_t task_nfc_init (void)
     char msgstr[] = "Data:";
     ruuvi_interface_communication_message_t msg = {0};
     msg.data_length = strlen(msgstr);
-    snprintf(msg.data, sizeof(msg.data), "%s", msgstr);
+    snprintf((char* )msg.data, sizeof(msg.data), "%s", msgstr);
     err_code |= channel.send (&msg);
 
     channel.on_evt = task_nfc_on_nfc;
