@@ -6,7 +6,10 @@
 #include "ruuvi_interface_gpio_interrupt_test.h"
 #include "ruuvi_interface_flash_test.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_communication_ble_advertising_test.h"
+#include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_communication_nfc_test.h"
+#include "ruuvi_interface_communication_radio_test.h"
 #include "ruuvi_interface_power_test.h"
 #include "ruuvi_interface_scheduler_test.h"
 #include "ruuvi_interface_timer_test.h"
@@ -66,14 +69,20 @@ void integration_tests_run (void)
 {
     integration_test_start();
     ri_flash_run_integration_test (&LOG);
+    integration_test_power();
+    ri_timer_integration_test_run (&LOG);
+    ri_scheduler_run_integration_test (&LOG);
+    ri_communication_radio_run_integration_test(&LOG);
+    ri_communication_ble_advertising_run_integration_test(&LOG, RI_RADIO_BLE_1MBPS);
+    ri_communication_ble_advertising_run_integration_test(&LOG, RI_RADIO_BLE_2MBPS);
+#ifdef S140
+    ri_communication_ble_advertising_run_integration_test(&LOG, RI_RADIO_BLE_125KBPS);
+#endif
 #if defined(RB_GPIO_TEST_INPUT) && defined(RB_GPIO_TEST_OUTPUT)
     ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
 #endif
-    integration_test_power();
-    ri_timer_integration_test_run (&LOG);
-    ri_scheduler_run_integration_test (&LOG);
-#if defined(RB_NFC_INTERNAL_INSTALLED) && (RB_NFC_INTERNAL_INSTALLED)
+#if defined(RB_NFC_INTERNAL_INSTALLED)
     ri_communication_nfc_run_integration_test (&LOG);
 #endif
     integration_test_stop();
