@@ -581,7 +581,12 @@ int app_main (void)
     {
         err_code |= task_led_write (RUUVI_BOARD_LED_STATUS_ERROR, true);
         err_code |= task_led_activity_led_set (RUUVI_BOARD_LED_STATUS_ERROR);
-        ruuvi_interface_delay_ms (BOOT_DELAY_MS);
+        // Halt here on error.
+        task_advertisement_stop();
+        while(1){
+             __asm__ ("");
+             ruuvi_interface_yield();
+        }
     }
 
     // Turn LEDs off
