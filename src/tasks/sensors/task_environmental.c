@@ -584,7 +584,8 @@ ruuvi_driver_status_t task_environmental_init (void)
     err_code |= initialize_bme280();
     err_code |= initialize_ntc();
     err_code |= initialize_mcu();
-    err_code |= initialize_lis2dh12();
+    // err_code |= initialize_lis2dh12();
+    RUUVI_DRIVER_ERROR_CHECK (err_code, RUUVI_DRIVER_ERROR_NOT_FOUND);
 
     // Use first valid backend as the default provider.
     for (int ii = 0; ii < ENV_SENSOR_COUNT; ii++)

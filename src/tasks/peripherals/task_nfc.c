@@ -104,11 +104,12 @@ ruuvi_driver_status_t task_nfc_init (void)
     err_code |= ruuvi_interface_communication_nfc_id_set (id_string,
                 strlen ( (char *) id_string));
     err_code |= ruuvi_interface_communication_nfc_init (&channel);
-    // Setup one NULL to DATA to match 1.x and 2.x NFC fields.
-    // TODO @ojousima add text "Data:"
-    ruuvi_interface_communication_message_t msg;
-    msg.data_length = 1;
+    char msgstr[] = "Data:";
+    ruuvi_interface_communication_message_t msg = {0};
+    msg.data_length = strlen(msgstr);
+    snprintf(msg.data, sizeof(msg.data), "%s", msgstr);
     err_code |= channel.send (&msg);
+
     channel.on_evt = task_nfc_on_nfc;
         err_code |= ruuvi_interface_timer_create (&nfc_reboot_timer,
                                             RUUVI_INTERFACE_TIMER_MODE_SINGLE_SHOT, nfc_reboot_timer_isr);
@@ -149,7 +150,7 @@ ruuvi_driver_status_t task_nfc_on_nfc (ruuvi_interface_communication_evt_t evt,
         case RUUVI_INTERFACE_COMMUNICATION_CONNECTED:
             ruuvi_interface_log (RUUVI_INTERFACE_LOG_INFO, "NFC connected \r\n");
             ruuvi_interface_timer_start (nfc_reboot_timer,
-                                         5000U);
+                                         10000U);
             break;
 
         case RUUVI_INTERFACE_COMMUNICATION_DISCONNECTED:
