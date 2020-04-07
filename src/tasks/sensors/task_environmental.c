@@ -637,22 +637,25 @@ ruuvi_driver_status_t task_environmental_data_get (ruuvi_driver_sensor_data_t * 
 
     ruuvi_driver_status_t err_code = RUUVI_DRIVER_SUCCESS;
     err_code = m_active_sensor->data_get (p_data);
-    if(!p_data->valid.datas.pressure_pa)
+
+    if (!p_data->valid.datas.pressure_pa)
     {
         ruuvi_driver_sensor_t * p_bme;
         p_bme = task_sensor_find_backend (m_environmental_sensors,
-        ENV_SENSOR_COUNT, "BME280");
-        if(p_bme != NULL)
+                                          ENV_SENSOR_COUNT, "BME280");
+
+        if (p_bme != NULL)
         {
             // Do not overwrite exisiting valid data
-           // p_data->fields.datas.humidity_rh = !p_data->valid.datas.humidity_rh;
-           // p_data->fields.datas.temperature_c = !p_data->valid.datas.temperature_c;
+            // p_data->fields.datas.humidity_rh = !p_data->valid.datas.humidity_rh;
+            // p_data->fields.datas.temperature_c = !p_data->valid.datas.temperature_c;
             p_bme->data_get (p_data);
             p_data->valid.datas.pressure_pa = 1;
-          //  p_data->fields.datas.humidity_rh = p_data->valid.datas.humidity_rh;
-          //  p_data->fields.datas.temperature_c = p_data->valid.datas.temperature_c;
+            //  p_data->fields.datas.humidity_rh = p_data->valid.datas.humidity_rh;
+            //  p_data->fields.datas.temperature_c = p_data->valid.datas.temperature_c;
         }
     }
+
     return err_code;
 }
 

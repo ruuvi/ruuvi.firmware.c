@@ -449,6 +449,14 @@ void button_on_event_isr (const ruuvi_interface_gpio_evt_t event)
 }
 #endif
 
+static void adv_enter_normal_isr (void * p_context)
+{
+    (void) task_communication_heartbeat_configure (
+        APPLICATION_ADVERTISING_INTERVAL_MS,
+        RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
+        task_sensor_encode_to_5, task_advertisement_send_data);
+}
+
 /**
  * @brief initialize 2-way communication with outside world.
  *
@@ -472,9 +480,13 @@ void init_comms (void)
     status = task_advertisement_init();
     status |= task_advertisement_start();
     status |= task_communication_heartbeat_configure (
-                  APPLICATION_ADVERTISEMENT_UPDATE_INTERVAL_MS,
+                  APPLICATION_ADVERTISING_STARTUP_INTERVAL_MS,
                   RUUVI_INTERFACE_COMMUNICATION_MESSAGE_MAX_LENGTH,
                   task_sensor_encode_to_5, task_advertisement_send_data);
+    // Start a timer to enter slow advertising
+    status |= ruuvi_interface_timer_create (&adv_startup_timer,
+                                            RUUVI_INTERFACE_TIMER_MODE_SINGLE, adv_enter_normal_isr);
+    status |= ruuvi_interface_timer_start (adv_startup_timer, interval_ms);
     // Synchronize ADC to radio activity
     ruuvi_interface_communication_radio_activity_callback_set (on_radio);
     RUUVI_DRIVER_ERROR_CHECK (status, RUUVI_DRIVER_SUCCESS);
