@@ -20,6 +20,7 @@
 #include "main.h"
 #include "run_integration_tests.h"
 #include "ruuvi_interface_power.h"
+#include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
@@ -32,7 +33,7 @@ static
 #endif
 void on_wdt (void)
 {
-    // Store cause of reset to flash
+    // Store cause of reset to flash - TODO
 }
 
 /**
@@ -47,6 +48,7 @@ void setup (void)
     err_code |= ri_log_init (APP_LOG_LEVEL);
     err_code |= ri_yield_init();
 #   endif
+    err_code |= ri_scheduler_init();
     err_code |= rt_gpio_init();
     err_code |= app_button_init();
     err_code |= app_dc_dc_init();
@@ -61,13 +63,15 @@ int app_main (void)
 {
     do
     {
+        // Run scheduled tasks
+        ri_scheduler_execute();
         // Sleep - woken up on event
         ri_yield();
         // Prevent loop being optimized away
         __asm__ ("");
     } while (LOOP_FOREVER);
 
-    // Intentionally non-reachable code.
+    // Intentionally non-reachable code unless unit testing.
     return -1;
 }
 

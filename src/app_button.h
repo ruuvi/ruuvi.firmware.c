@@ -8,7 +8,7 @@
 #include "ruuvi_task_gpio.h"
 
 /**
- * @addtogroup App
+ * @addtogroup app
  */
 /*@{*/
 /**

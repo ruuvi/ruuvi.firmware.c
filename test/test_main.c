@@ -14,6 +14,7 @@
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_log.h"
+#include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_interface_watchdog.h"
 #include "mock_ruuvi_task_gpio.h"
@@ -39,6 +40,7 @@ void test_main_setup (void)
 {
     ri_watchdog_init_ExpectAndReturn (APP_WDT_INTERVAL_MS, &on_wdt, RD_SUCCESS);
     ri_yield_init_ExpectAndReturn (RD_SUCCESS);
+    ri_scheduler_init_ExpectAndReturn (RD_SUCCESS);
     rt_gpio_init_ExpectAndReturn (RD_SUCCESS);
     app_button_init_ExpectAndReturn (RD_SUCCESS);
     app_dc_dc_init_ExpectAndReturn (RD_SUCCESS);
@@ -48,6 +50,7 @@ void test_main_setup (void)
 
 void test_main_loop (void)
 {
+    ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     app_main();
 }

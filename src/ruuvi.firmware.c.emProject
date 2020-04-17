@@ -118,6 +118,8 @@
       <file file_name="app_power.h" />
       <file file_name="app_led.c" />
       <file file_name="app_led.h" />
+      <file file_name="app_sensor.c" />
+      <file file_name="app_sensor.h" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />

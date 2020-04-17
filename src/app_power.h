@@ -3,7 +3,7 @@
 #include "ruuvi_driver_error.h"
 
 /**
- * @addtogroup App
+ * @addtogroup app
  */
 /*@{*/
 /**

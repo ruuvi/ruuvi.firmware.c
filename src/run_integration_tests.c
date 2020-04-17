@@ -14,6 +14,7 @@
 #include "ruuvi_interface_scheduler_test.h"
 #include "ruuvi_interface_timer_test.h"
 #include "ruuvi_interface_watchdog.h"
+#include "ruuvi_interface_yield.h"
 /**
  * @addtogroup integration_test
  */
@@ -27,7 +28,6 @@
 
 void on_integration_test_wdt (void)
 {
-    // Store cause of reset to flash
 }
 
 static inline void LOG (const char * const msg)
@@ -40,6 +40,7 @@ void integration_test_start (void)
 {
     ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_integration_test_wdt);
     ri_log_init (APP_LOG_LEVEL);
+    ri_yield_init();
     LOG ("{\r\n\"firmware\":\"" APP_FW_NAME "\",\r\n");
     LOG ("\"board\":\"" RB_MODEL_STRING "\",\r\n");
     LOG ("\"ruuvi.boards.c\":\"" RUUVI_BOARDS_SEMVER "\",\r\n");
@@ -72,11 +73,11 @@ void integration_tests_run (void)
     integration_test_power();
     ri_timer_integration_test_run (&LOG);
     ri_scheduler_run_integration_test (&LOG);
-    ri_communication_radio_run_integration_test(&LOG);
-    ri_communication_ble_advertising_run_integration_test(&LOG, RI_RADIO_BLE_1MBPS);
-    ri_communication_ble_advertising_run_integration_test(&LOG, RI_RADIO_BLE_2MBPS);
+    ri_communication_radio_run_integration_test (&LOG);
+    ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_1MBPS);
+    ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_2MBPS);
 #ifdef S140
-    ri_communication_ble_advertising_run_integration_test(&LOG, RI_RADIO_BLE_125KBPS);
+    ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
 #endif
 #if defined(RB_GPIO_TEST_INPUT) && defined(RB_GPIO_TEST_OUTPUT)
     ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
