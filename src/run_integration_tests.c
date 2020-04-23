@@ -1,24 +1,33 @@
 #include "app_config.h"
+#include "app_sensor.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_enabled_modules.h"
+#include "ruuvi_driver_sensor_test.h"
 #include "run_integration_tests.h"
-#include "ruuvi_interface_gpio_test.h"
-#include "ruuvi_interface_gpio_interrupt_test.h"
-#include "ruuvi_interface_flash_test.h"
-#include "ruuvi_interface_log.h"
 #include "ruuvi_interface_communication_ble_advertising_test.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_communication_nfc_test.h"
 #include "ruuvi_interface_communication_radio_test.h"
+#include "ruuvi_interface_gpio_test.h"
+#include "ruuvi_interface_gpio_interrupt_test.h"
+#include "ruuvi_interface_flash_test.h"
+#include "ruuvi_interface_i2c.h"
+#include "ruuvi_interface_log.h"
 #include "ruuvi_interface_power_test.h"
+#include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler_test.h"
+#include "ruuvi_interface_spi.h"
 #include "ruuvi_interface_timer_test.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
+#include "ruuvi_task_sensor.h"
+
 /**
  * @addtogroup integration_test
  */
-/*@{*/
+
+/** @{ */
+
 /**
  * @file run_integration_test.h
  * @author Otso Jousimaa <otso@ojousima.net>
@@ -65,6 +74,26 @@ static void integration_test_power (void)
     ri_power_run_integration_test (&LOG, regs);
 }
 
+static void integration_test_sensors (void)
+{
+    rt_sensor_ctx_t * p_sensors;
+    size_t num_sensors = 0;
+    LOG ("\"sensors\": {\r\n");
+    app_sensor_init();
+    app_sensor_ctx_get (&p_sensors, &num_sensors);
+
+    for (size_t ii = 0; ii < num_sensors; ii++)
+    {
+        rd_sensor_run_integration_test (&LOG, &p_sensors[ii]);
+    }
+
+    app_sensor_uninit();
+    // TODO: Uninit I2C
+    (void) ri_rtc_uninit();
+    rd_sensor_timestamp_function_set (NULL);
+    LOG ("}");
+}
+
 /** @brief Run integration tests*/
 void integration_tests_run (void)
 {
@@ -83,7 +112,8 @@ void integration_tests_run (void)
     ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
 #endif
-#if defined(RB_NFC_INTERNAL_INSTALLED)
+    integration_test_sensors();
+#if RB_NFC_INTERNAL_INSTALLED
     ri_communication_nfc_run_integration_test (&LOG);
 #endif
     integration_test_stop();

@@ -323,6 +323,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/message/nfc_ndef_msg_parser_local.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/record/nfc_ndef_record_parser.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/crc16/crc16.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/queue/nrf_queue.c" />
     </folder>
     <folder Name="System">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
@@ -489,6 +490,10 @@
       recurse="Yes" />
     <folder Name="Docs">
       <file file_name="README.md" />
+    </folder>
+    <folder Name="integration_test">
+      <file file_name="run_integration_tests.c" />
+      <file file_name="run_integration_tests.h" />
     </folder>
   </project>
   <project Name="rauno">
