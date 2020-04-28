@@ -76,7 +76,7 @@ static void integration_test_power (void)
 
 static void integration_test_sensors (void)
 {
-    rt_sensor_ctx_t * p_sensors;
+    rt_sensor_ctx_t ** p_sensors;
     size_t num_sensors = 0;
     LOG ("\"sensors\": {\r\n");
     app_sensor_init();
@@ -84,14 +84,23 @@ static void integration_test_sensors (void)
 
     for (size_t ii = 0; ii < num_sensors; ii++)
     {
-        rd_sensor_run_integration_test (&LOG, &p_sensors[ii]);
+        rd_sensor_run_integration_test (&LOG, p_sensors[ii]);
+
+        if (ii < (num_sensors - 1))
+        {
+            LOG (",\r\n");
+        }
+        else
+        {
+            LOG ("\r\n");
+        }
     }
 
     app_sensor_uninit();
     // TODO: Uninit I2C
     (void) ri_rtc_uninit();
     rd_sensor_timestamp_function_set (NULL);
-    LOG ("}");
+    LOG ("},\r\n");
 }
 
 /** @brief Run integration tests*/

@@ -36,6 +36,14 @@
 #   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
 #endif
 
+#ifndef APP_SENSOR_BME280_ENABLED
+#   define APP_SENSOR_BME280_ENABLED RB_ENVIRONMENTAL_BME280_PRESENT
+#endif
+
+#ifndef APP_SENSOR_LIS2DH12_ENABLED
+#   define APP_SENSOR_LIS2DH12_ENABLED RB_ACCELEROMETER_LIS2DH12_PRESENT
+#endif
+
 #ifndef APP_SENSOR_SHTCX_ENABLED
 #   define APP_SENSOR_SHTCX_ENABLED RB_ENVIRONMENTAL_SHTCX_PRESENT
 #endif
@@ -60,9 +68,11 @@
 #endif
 
 // ***** Flash storage constants *****/
-// These constants can be any non-zero uint8, but two files and two records can't have same ID.
+// These constants can be any non-zero uint8, but two files and two records in same file can't have same ID.
 #define APP_FLASH_SENSOR_FILE (0xCEU)
-#define APP_FLASH_SENSOR_SHTCX_RECORD (0xC3U)
+#define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
+#define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
+#define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
 
 /** @brief enable nRF15 SDK implementation of drivers */
 #define RUUVI_NRF5_SDK15_ENABLED (1U)

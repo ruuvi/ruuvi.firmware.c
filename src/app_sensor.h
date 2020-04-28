@@ -84,7 +84,7 @@ rd_status_t app_sensor_init (void);
 rd_status_t app_sensor_uninit (void);
 
 #ifdef RUUVI_RUN_TESTS
-void app_sensor_ctx_get (rt_sensor_ctx_t ** m_sensors, size_t * num_sensors);
+void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
 #endif
 
 #endif // APP_SENSOR_H

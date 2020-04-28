@@ -4,9 +4,12 @@
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_i2c.h"
+#include "ruuvi_interface_bme280.h"
+#include "ruuvi_interface_lis2dh12.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
+#include "ruuvi_interface_spi.h"
 #include "ruuvi_task_sensor.h"
 
 /**
@@ -39,6 +42,62 @@ static
 #endif
 rt_sensor_ctx_t * m_sensors[SENSOR_COUNT] = { 0 }; //!< Sensor APIs.
 
+
+#if APP_SENSOR_BME280_ENABLED
+static rt_sensor_ctx_t bme280 =
+{
+    .sensor = {0},
+    .init = &ri_bme280_init,
+    .configuration = {0},
+    .nvm_file = APP_FLASH_SENSOR_FILE,
+    .nvm_record = APP_FLASH_SENSOR_BME280_RECORD,
+#if RB_ENVIRONMENTAL_BME280_SPI_USE
+    .bus = RD_BUS_SPI,
+    .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,
+#elif RB_ENVIRONMENTAL_BME280_I2C_USE
+    .bus = RD_BUS_I2C,
+    .handle = RB_BME280_I2C_ADDRESS,
+#else
+#   error "No bus defined for BME280"
+#endif
+    .pwr_pin = RI_GPIO_ID_UNUSED,
+    .fifo_pin = RI_GPIO_ID_UNUSED,
+    .level_pin = RI_GPIO_ID_UNUSED
+};
+#endif
+
+#if APP_SENSOR_LIS2DH12_ENABLED
+static rt_sensor_ctx_t lis2dh12 =
+{
+    .sensor = {0},
+    .init = &ri_lis2dh12_init,
+    .configuration = {0},
+    .nvm_file = APP_FLASH_SENSOR_FILE,
+    .nvm_record = APP_FLASH_SENSOR_LIS2DH12_RECORD,
+    .bus = RD_BUS_SPI,
+    .handle = RB_SPI_SS_ACCELEROMETER_PIN,
+    .pwr_pin = RI_GPIO_ID_UNUSED,
+    .fifo_pin = RB_INT_ACC2_PIN,
+    .level_pin = RB_INT_ACC1_PIN
+};
+#endif
+
+#if APP_SENSOR_LIS2DW12_ENABLED
+static rt_sensor_ctx_t lis2dw12 =
+{
+    .sensor = {0},
+    .init = ri_lis2dw12_init,
+    .configuration = {0},
+    .nvm_file = APPLICATION_FLASH_SENSOR_FILE,
+    .nvm_record = APPLICATION_FLASH_SENSOR_LIS2DW12_RECORD,
+    .bus = RD_BUS_SPI,
+    .handle = RB_SPI_SS_ACCELEROMETER_PIN,
+    .pwr_pin = RI_GPIO_ID_UNUSED,
+    .fifo_pin = RB_INT_ACC1_PIN,
+    .level_pin = RB_INT_ACC2_PIN
+};
+#endif
+
 #if APP_SENSOR_SHTCX_ENABLED
 static rt_sensor_ctx_t shtcx =
 {
@@ -62,31 +121,6 @@ static rt_sensor_ctx_t shtcx =
 };
 #endif
 
-#if APP_SENSOR_LIS2DH12_ENABLED
-static rt_sensor_ctx_t lis2dh12 =
-{
-    .sensor = {0},
-    .init = &ri_lis2dh12_init,
-    .configuration = {0},
-    .nvm_file = APP_FLASH_SENSOR_FILE,
-    .nvm_record = APP_FLASH_SENSOR_LIS2DH12_RECORD,
-    .bus = RD_BUS_SPI,
-    .handle = RB_SPI_SS_ACCELEROMETER_PIN
-};
-#endif
-
-#if APP_SENSOR_LIS2DW12_ENABLED
-static rt_sensor_ctx_t lis2dw12 =
-{
-    .sensor = {0},
-    .init = ri_lis2dw12_init,
-    .configuration = {0},
-    .nvm_file = APPLICATION_FLASH_SENSOR_FILE,
-    .nvm_record = APPLICATION_FLASH_SENSOR_LIS2DW12_RECORD,
-    .bus = RD_BUS_SPI,
-    .handle = RB_SPI_SS_ACCELEROMETER_PIN
-};
-#endif
 
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
@@ -101,7 +135,7 @@ void m_sensors_init (void)
     m_sensors[SHTCX_INDEX] = &shtcx;
 #endif
 #if APP_SENSOR_BME280_ENABLED
-    m_sensors[BME280_INDEX] = bme280;
+    m_sensors[BME280_INDEX] = &bme280;
 #endif
 #if APP_SENSOR_NTC_ENABLED
     m_sensors[NTC_INDEX] = ntc;
@@ -110,7 +144,7 @@ void m_sensors_init (void)
     m_sensors[ENV_MCU_INDEX] = env_mcu;
 #endif
 #if APP_SENSOR_LIS2DH12_ENABLED
-    m_sensors[ LIS2DH12_INDEX] = lis2dh12;
+    m_sensors[ LIS2DH12_INDEX] = &lis2dh12;
 #endif
 #if APP_SENSOR_LIS2DW12_ENABLED
     m_sensors[LIS2DW12_INDEX] = lis2dw12;
@@ -145,15 +179,57 @@ ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)
 #ifndef CEEDLING
 static
 #endif
+ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
+{
+    ri_spi_frequency_t freq = RI_SPI_FREQUENCY_1M;
+
+    switch (rb_freq)
+    {
+        case RB_SPI_FREQUENCY_8M:
+            freq = RI_SPI_FREQUENCY_8M;
+            break;
+
+        case RB_SPI_FREQUENCY_4M:
+            freq = RI_SPI_FREQUENCY_4M;
+
+        case RB_SPI_FREQUENCY_2M:
+            freq = RI_SPI_FREQUENCY_2M;
+
+        default:
+        case RB_SPI_FREQUENCY_1M:
+            freq = RI_SPI_FREQUENCY_1M;
+            break;
+    }
+
+    return freq;
+}
+
+#ifndef CEEDLING
+static
+#endif
 rd_status_t app_sensor_buses_init (void)
 {
+    rd_status_t err_code = RD_SUCCESS;
+    ri_gpio_id_t ss_pins[] = RB_SPI_SS_LIST;
+    ri_spi_init_config_t spi_config =
+    {
+        .mosi = RB_SPI_MOSI_PIN,
+        .miso = RB_SPI_MISO_PIN,
+        .sclk = RB_SPI_SCLK_PIN,
+        .ss_pins = ss_pins,
+        .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),
+        // Assume mode 0 always.
+        .mode = RI_SPI_MODE_0
+    };
+    err_code |= ri_spi_init (&spi_config);
     ri_i2c_init_config_t i2c_config =
     {
         .sda = RB_I2C_SDA_PIN,
         .scl = RB_I2C_SCL_PIN,
         .frequency = rb_to_ri_i2c_freq (RB_I2C_FREQ)
     };
-    return ri_i2c_init (&i2c_config);
+    err_code |= ri_i2c_init (&i2c_config);
+    return err_code;
 }
 
 #ifndef CEEDLING
@@ -161,7 +237,10 @@ static
 #endif
 rd_status_t app_sensor_buses_uninit (void)
 {
-    return ri_i2c_uninit ();
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= ri_spi_uninit();
+    err_code |= ri_i2c_uninit ();
+    return err_code;
 }
 
 #ifndef CEEDLING
@@ -257,9 +336,9 @@ rd_status_t app_sensor_uninit (void)
 }
 
 #ifdef RUUVI_RUN_TESTS
-void app_sensor_ctx_get (rt_sensor_ctx_t ** p_sensors, size_t * num_sensors)
+void app_sensor_ctx_get (rt_sensor_ctx_t *** p_sensors, size_t * num_sensors)
 {
-    *p_sensors = m_sensors[0];
+    *p_sensors = m_sensors;
     *num_sensors = SENSOR_COUNT;
 }
 #endif

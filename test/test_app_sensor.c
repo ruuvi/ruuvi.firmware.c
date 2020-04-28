@@ -3,8 +3,10 @@
 #include "app_sensor.h"
 #include "mock_ruuvi_driver_sensor.h"
 #include "mock_ruuvi_task_sensor.h"
+#include "mock_ruuvi_interface_bme280.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_i2c.h"
+#include "mock_ruuvi_interface_lis2dh12.h"
 #include "mock_ruuvi_interface_rtc.h"
 #include "mock_ruuvi_interface_spi.h"
 #include "mock_ruuvi_interface_shtcx.h"
@@ -12,6 +14,7 @@
 void setUp (void)
 {
     m_sensors_init();
+    ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
     rd_sensor_timestamp_function_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
