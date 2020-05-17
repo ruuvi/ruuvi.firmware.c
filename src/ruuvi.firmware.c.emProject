@@ -87,7 +87,6 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_clock.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_gpiote.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/prs/nrfx_prs.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uart.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
@@ -234,7 +233,7 @@
       Name="ruuvi.endpoints.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.endpoints.c"
+      path="ruuvi.endpoints.c/src"
       recurse="Yes" />
     <folder
       Name="ruuvi.libraries.c"

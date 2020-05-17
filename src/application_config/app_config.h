@@ -79,6 +79,7 @@
 #   define APP_ADV_ENABLED 1
 #endif
 
+#define APP_GATT_ENABLED 0
 #ifndef APP_GATT_ENABLED
 #   define APP_GATT_ENABLED (RB_APP_PAGES > 0U) //!< If Flash is at premium, cut GATT off by default
 #endif

@@ -50,29 +50,103 @@ ri_gpio_slope_t get_activation (ri_gpio_evt_t evt)
     return activation;
 }
 
+#if RB_BUTTONS_NUMBER > 0
 #ifndef CEEDLING
 static
 #endif
-void on_button_press (const ri_gpio_evt_t evt)
+void on_button_1_press (const ri_gpio_evt_t evt)
 {
     ri_gpio_slope_t activation = get_activation (evt);
 
     if (activation == evt.slope)
     {
-        LOG ("Button pressed\r\n");
+        LOG ("Button 1 pressed\r\n");
     }
     else
     {
-        LOG ("Button released\r\n");
+        LOG ("Button 1 released\r\n");
     }
 }
+#endif
+
+#if RB_BUTTONS_NUMBER > 1
+#ifndef CEEDLING
+static
+#endif
+void on_button_2_press (const ri_gpio_evt_t evt)
+{
+    ri_gpio_slope_t activation = get_activation (evt);
+
+    if (activation == evt.slope)
+    {
+        LOG ("Button 2 pressed\r\n");
+    }
+    else
+    {
+        LOG ("Button 2 released\r\n");
+    }
+}
+#endif
+
+#if RB_BUTTONS_NUMBER > 2
+#ifndef CEEDLING
+static
+#endif
+void on_button_3_press (const ri_gpio_evt_t evt)
+{
+    ri_gpio_slope_t activation = get_activation (evt);
+
+    if (activation == evt.slope)
+    {
+        LOG ("Button 3 pressed\r\n");
+    }
+    else
+    {
+        LOG ("Button 3 released\r\n");
+    }
+}
+#endif
+
+#if RB_BUTTONS_NUMBER > 3
+#ifndef CEEDLING
+static
+#endif
+void on_button_4_press (const ri_gpio_evt_t evt)
+{
+    ri_gpio_slope_t activation = get_activation (evt);
+
+    if (activation == evt.slope)
+    {
+        LOG ("Button 4 pressed\r\n");
+    }
+    else
+    {
+        LOG ("Button 4 released\r\n");
+    }
+}
+#endif
 
 /** @brief List of buttons to initialize. */
 static const ri_gpio_id_t button_pins[] = RB_BUTTONS_LIST;
 /** @brief GPIO states when button is considered active */
 static const ri_gpio_state_t button_active[] = RB_BUTTONS_ACTIVE_STATE;
 /** @brief Function callbacks on button presses. - TODO: Generalise for multiple buttons */
-static const rt_button_fp_t app_button_handlers[RB_BUTTONS_NUMBER] = {&on_button_press};
+static const rt_button_fp_t app_button_handlers[RB_BUTTONS_NUMBER] = 
+{
+#if RB_BUTTONS_NUMBER > 0
+  &on_button_1_press,
+#endif
+#if RB_BUTTONS_NUMBER > 1
+  &on_button_2_press,
+#endif
+#if RB_BUTTONS_NUMBER > 2
+  &on_button_3_press,
+#endif
+#if RB_BUTTONS_NUMBER > 3
+  &on_button_4_press,
+#endif
+};
+
 static rt_button_init_t m_init_data =
 {
     .p_button_pins = button_pins,

@@ -21,9 +21,10 @@
 #include "app_sensor.h"
 #include "main.h"
 #include "run_integration_tests.h"
+#include "ruuvi_interface_log.h"
 #include "ruuvi_interface_power.h"
 #include "ruuvi_interface_scheduler.h"
-#include "ruuvi_interface_log.h"
+#include "ruuvi_interface_timer.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_button.h"
@@ -50,6 +51,7 @@ void setup (void)
     err_code |= ri_log_init (APP_LOG_LEVEL);
     err_code |= ri_yield_init();
 #   endif
+    err_code |= ri_timer_init();
     err_code |= ri_scheduler_init();
     err_code |= rt_gpio_init();
     err_code |= app_button_init();

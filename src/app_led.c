@@ -29,6 +29,5 @@ rd_status_t app_led_init (void)
             ri_yield_indication_set (&rt_led_activity_indicate);
         }
     }
-
     return  err_code;
 }

@@ -36,6 +36,7 @@ rd_status_t dis_init(ri_comm_dis_init_t * const p_dis)
     snprintf(p_dis->hw_version, sizeof(p_dis->hw_version), RB_BLE_NAME_STRING);
     snprintf(p_dis->manufacturer, sizeof(p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf(p_dis->model, sizeof(p_dis->model), RB_MODEL_STRING);
+    return err_code;
 }
 
 #ifndef CEEDLING
