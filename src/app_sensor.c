@@ -40,7 +40,7 @@
 #ifndef CEEDLING
 static
 #endif
-rt_sensor_ctx_t * m_sensors[SENSOR_COUNT] = { 0 }; //!< Sensor APIs.
+rt_sensor_ctx_t * m_sensors[SENSOR_COUNT]; //!< Sensor APIs.
 
 
 #if APP_SENSOR_BME280_ENABLED
