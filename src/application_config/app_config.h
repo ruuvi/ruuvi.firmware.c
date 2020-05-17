@@ -67,6 +67,18 @@
 #   define APP_SENSOR_SHTCX_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
 #endif
 
+#ifndef APP_NFC_ENABLED
+#   define APP_NFC_ENABLED RB_NFC_INTERNAL_INSTALLED
+#endif 
+
+#ifndef APP_ADV_ENABLED
+#   define APP_ADV_ENABLED 1
+#endif
+
+#ifndef APP_GATT_ENABLED
+#   define APP_GATT_ENABLED (RB_APP_PAGES > 0U) //!< If Flash is at premium, cut GATT off by default
+#endif
+
 // ***** Flash storage constants *****/
 // These constants can be any non-zero uint8, but two files and two records in same file can't have same ID.
 #define APP_FLASH_SENSOR_FILE (0xCEU)
@@ -151,7 +163,7 @@
 #   define APP_FW_NAME "Ruuvi FW"
 #endif
 
-/** @brief Logs conserve lot of flash, enable only on debug builds */
+/** @brief Logs reserve lot of flash, enable only on debug builds */
 #ifndef RI_LOG_ENABLED
 #define RI_LOG_ENABLED (0U)
 #define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
