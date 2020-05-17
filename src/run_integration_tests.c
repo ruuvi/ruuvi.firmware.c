@@ -10,6 +10,7 @@
 #include "ruuvi_interface_communication_radio_test.h"
 #include "ruuvi_interface_gpio_test.h"
 #include "ruuvi_interface_gpio_interrupt_test.h"
+#include "ruuvi_interface_gpio_pwm_test.h"
 #include "ruuvi_interface_flash_test.h"
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_log.h"
@@ -120,7 +121,7 @@ void integration_tests_run (void)
 #if defined(RB_GPIO_TEST_INPUT) && defined(RB_GPIO_TEST_OUTPUT)
     ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
-    //ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
+    ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
 #endif
     integration_test_sensors();
 #if RB_NFC_INTERNAL_INSTALLED
