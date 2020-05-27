@@ -90,6 +90,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -339,6 +340,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -589,6 +591,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -836,6 +839,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -1067,6 +1071,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -1290,6 +1295,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />

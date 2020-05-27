@@ -21,8 +21,8 @@
  */
 
 // Submodule requirements
-#define RUUVI_BOARDS_REQ "0.3.5"
-#define RUUVI_DRIVERS_REQ "0.2.0"
+#define RUUVI_BOARDS_REQ "0.6.0"
+#define RUUVI_DRIVERS_REQ "0.2.2"
 #define RUUVI_LIBRARIES_REQ "0.1.3"
 
 #ifdef CEEDLING
