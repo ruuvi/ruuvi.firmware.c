@@ -8,6 +8,7 @@
 #include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_communication_nfc_test.h"
 #include "ruuvi_interface_communication_radio_test.h"
+#include "ruuvi_interface_communication_uart_test.h"
 #include "ruuvi_interface_gpio_test.h"
 #include "ruuvi_interface_gpio_interrupt_test.h"
 #include "ruuvi_interface_gpio_pwm_test.h"
@@ -119,6 +120,7 @@ void integration_tests_run (void)
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
 #endif
 #if defined(RB_GPIO_TEST_INPUT) && defined(RB_GPIO_TEST_OUTPUT)
+    ri_communication_uart_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
