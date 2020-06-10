@@ -6,6 +6,8 @@
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_lis2dh12.h"
+#include "ruuvi_interface_adc_ntc.h"
+#include "ruuvi_interface_adc_photo.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
@@ -121,6 +123,39 @@ static rt_sensor_ctx_t shtcx =
 };
 #endif
 
+#if APP_SENSOR_PHOTO_ENABLED
+static rt_sensor_ctx_t photo =
+{
+    .sensor = {0},
+    .init = &ri_adc_photo_init,
+    .configuration = {0},
+    .nvm_file = APP_FLASH_SENSOR_FILE,
+    .nvm_record = APP_FLASH_SENSOR_PHOTO_RECORD,
+    .bus = RD_BUS_NONE,
+    .handle = RB_PHOTO_ADC,
+    .pwr_pin = RB_PHOTO_PWR_PIN,
+    .pwr_on = RB_PHOTO_ACTIVE,
+    .fifo_pin = RI_GPIO_ID_UNUSED,
+    .level_pin = RI_GPIO_ID_UNUSED
+};
+#endif
+
+#if APP_SENSOR_NTC_ENABLED
+static rt_sensor_ctx_t ntc =
+{
+    .sensor = {0},
+    .init = &ri_adc_ntc_init,
+    .configuration = {0},
+    .nvm_file = APP_FLASH_SENSOR_FILE,
+    .nvm_record = APP_FLASH_SENSOR_NTC_RECORD,
+    .bus = RD_BUS_NONE,
+    .handle = RB_NTC_ADC,
+    .pwr_pin = RB_NTC_PWR_PIN,
+    .pwr_on = RB_NTC_ACTIVE,
+    .fifo_pin = RI_GPIO_ID_UNUSED,
+    .level_pin = RI_GPIO_ID_UNUSED
+};
+#endif
 
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
@@ -138,7 +173,10 @@ void m_sensors_init (void)
     m_sensors[BME280_INDEX] = &bme280;
 #endif
 #if APP_SENSOR_NTC_ENABLED
-    m_sensors[NTC_INDEX] = ntc;
+    m_sensors[NTC_INDEX] = &ntc;
+#endif
+#if APP_SENSOR_PHOTO_ENABLED
+    m_sensors[PHOTO_INDEX] = &photo;
 #endif
 #if APP_SENSOR_MCU_ENABLED
     m_sensors[ENV_MCU_INDEX] = env_mcu;
