@@ -31,6 +31,14 @@
 #   define APP_WDT_INTERVAL_MS (2U*60U*1000U)
 #endif
 
+#ifndef APP_SENSOR_PHOTO_ENABLED
+#   define APP_SENSOR_PHOTO_ENABLED RB_ENVIRONMENTAL_PHOTO_PRESENT
+#endif
+
+#ifndef APP_SENSOR_NTC_ENABLED
+#   define APP_SENSOR_NTC_ENABLED RB_ENVIRONMENTAL_NTC_PRESENT
+#endif
+
 #define APP_SENSOR_TMP117_ENABLED 0
 #ifndef APP_SENSOR_TMP117_ENABLED
 #   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
@@ -42,7 +50,7 @@
 
 #ifndef RI_BME280_ENABLED
 #   define RI_BME280_ENABLED APP_SENSOR_BME280_ENABLED
-#endif 
+#endif
 
 #ifndef APP_SENSOR_LIS2DH12_ENABLED
 #   define APP_SENSOR_LIS2DH12_ENABLED RB_ACCELEROMETER_LIS2DH12_PRESENT
@@ -73,7 +81,7 @@
 
 #ifndef APP_NFC_ENABLED
 #   define APP_NFC_ENABLED RB_NFC_INTERNAL_INSTALLED
-#endif 
+#endif
 
 #ifndef APP_ADV_ENABLED
 #   define APP_ADV_ENABLED 1
@@ -87,6 +95,8 @@
 // ***** Flash storage constants *****/
 // These constants can be any non-zero uint8, but two files and two records in same file can't have same ID.
 #define APP_FLASH_SENSOR_FILE (0xCEU)
+#define APP_FLASH_SENSOR_NTC_RECORD      (0xC1U)
+#define APP_FLASH_SENSOR_PHOTO_RECORD    (0xC2U)
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
@@ -111,6 +121,15 @@
  */
 #ifndef RI_GPIO_ENABLED
 #   define RI_GPIO_ENABLED (1U)
+#endif
+
+/**
+ * @brief enable Ruuvi ADC interface.
+ *
+ * Required by sensor
+ */
+#ifndef RI_ADC_ENABLED
+#   define RI_ADC_ENABLED (1U)
 #endif
 
 /**
