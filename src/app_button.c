@@ -131,19 +131,19 @@ static const ri_gpio_id_t button_pins[] = RB_BUTTONS_LIST;
 /** @brief GPIO states when button is considered active */
 static const ri_gpio_state_t button_active[] = RB_BUTTONS_ACTIVE_STATE;
 /** @brief Function callbacks on button presses. - TODO: Generalise for multiple buttons */
-static const rt_button_fp_t app_button_handlers[RB_BUTTONS_NUMBER] = 
+static const rt_button_fp_t app_button_handlers[RB_BUTTONS_NUMBER] =
 {
 #if RB_BUTTONS_NUMBER > 0
-  &on_button_1_press,
+    & on_button_1_press,
 #endif
 #if RB_BUTTONS_NUMBER > 1
-  &on_button_2_press,
+    & on_button_2_press,
 #endif
 #if RB_BUTTONS_NUMBER > 2
-  &on_button_3_press,
+    & on_button_3_press,
 #endif
 #if RB_BUTTONS_NUMBER > 3
-  &on_button_4_press,
+    & on_button_4_press,
 #endif
 };
 
