@@ -48,7 +48,7 @@ void setup (void)
     rd_status_t err_code = RD_SUCCESS;
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
-    err_code |= ri_log_init (APP_LOG_LEVEL);
+    err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
     err_code |= ri_yield_init();
 #   endif
     err_code |= ri_timer_init();
@@ -59,14 +59,24 @@ void setup (void)
     err_code |= app_led_init();
     err_code |= app_sensor_init();
     err_code |= app_comms_init();
+    err_code |= app_heartbeat_init(); // Broadcast data.
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
 /**
  * @brief Actual main, redirected for Ceedling
  */
+#ifdef  CEEDLING
 int app_main (void)
+#else
+int main (void)
+#endif
 {
+#   if RUUVI_RUN_TESTS
+    integration_tests_run();
+#   endif
+    setup();
+
     do
     {
         // Run scheduled tasks
@@ -80,17 +90,5 @@ int app_main (void)
     // Intentionally non-reachable code unless unit testing.
     return -1;
 }
-
-#ifndef CEEDLING
-int main (void)
-{
-#   if RUUVI_RUN_TESTS
-    integration_tests_run();
-#   endif
-    setup();
-    // Will never return.
-    return app_main();
-}
-#endif
 
 /*@}*/

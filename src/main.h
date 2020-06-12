@@ -21,19 +21,12 @@
  */
 
 // Submodule requirements
-#define RUUVI_BOARDS_REQ "0.6.0"
+#define RUUVI_BOARDS_REQ "0.7.0"
 #define RUUVI_DRIVERS_REQ "0.2.2"
 #define RUUVI_LIBRARIES_REQ "0.1.3"
 
 #ifdef CEEDLING
-void on_button_isr (const ri_gpio_evt_t event);
-void on_gatt_connected_isr (void * data, size_t data_len);
-void on_gatt_disconnected_isr (void * data, size_t data_len);
-void on_gatt_received_isr (void * data, size_t data_len);
-void on_gatt_sent_isr (void * data, size_t data_len);
-void on_radio_isr (const ri_radio_activity_evt_t evt);
 void on_wdt (void);
-void process_gatt_command (void * p_event_data, uint16_t event_size);
 void setup (void);
 int app_main (void);
 #define LOOP_FOREVER 0 //!< Ceedling run exits

@@ -1,3 +1,4 @@
+#include "app_config.h"
 #include "app_comms.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_interface_communication_radio.h"
@@ -24,10 +25,12 @@
  * @endcode
  */
 
-#ifndef CEEDLING
-static
-#endif
-rd_status_t dis_init(ri_comm_dis_init_t * const p_dis)
+// TODO: On GATT connected
+// TODO: On GATT disconnected
+// TODO: On data received
+
+
+static rd_status_t dis_init(ri_comm_dis_init_t * const p_dis)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_com_get_mac_str(p_dis->deviceaddr, sizeof(p_dis->deviceaddr));
@@ -39,10 +42,7 @@ rd_status_t dis_init(ri_comm_dis_init_t * const p_dis)
     return err_code;
 }
 
-#ifndef CEEDLING
-static
-#endif
-rd_status_t adv_init()
+static rd_status_t adv_init(void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_radio_channels_t channels;
@@ -56,6 +56,7 @@ rd_status_t adv_init()
     adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;
     rt_adv_init(&adv_settings);
     ri_adv_type_set(NONCONNECTABLE_NONSCANNABLE);
+    return err_code;
 }
 
 rd_status_t app_comms_init(void)

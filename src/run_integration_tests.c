@@ -120,7 +120,8 @@ void integration_tests_run (void)
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
 #endif
 #if defined(RB_GPIO_TEST_INPUT) && defined(RB_GPIO_TEST_OUTPUT)
-    ri_communication_uart_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
+    ri_communication_uart_run_integration_test (&LOG, RB_GPIO_TEST_INPUT,
+            RB_GPIO_TEST_OUTPUT);
     ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);

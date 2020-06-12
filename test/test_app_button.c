@@ -50,7 +50,7 @@ void test_app_button_activated (void)
         .pin = RB_BUTTON_1,
         .slope = e_slope
     };
-    on_button_press (evt);
+    on_button_1_press (evt);
 }
 
 void test_app_button_released (void)
@@ -65,12 +65,12 @@ void test_app_button_released (void)
         .pin = RB_BUTTON_1,
         .slope = e_slope
     };
-    on_button_press (evt);
+    on_button_1_press (evt);
 }
 
 void test_app_button_invalid (void)
 {
     // Nothing should happen
     const ri_gpio_evt_t evt = {.pin = 0xFFFF, .slope = 54};
-    on_button_press (evt);
+    on_button_1_press (evt);
 }

@@ -40,7 +40,10 @@
 rd_status_t app_button_init (void);
 
 #ifdef CEEDLING
-void on_button_press (const ri_gpio_evt_t evt);
+void on_button_1_press (const ri_gpio_evt_t evt);
+void on_button_2_press (const ri_gpio_evt_t evt);
+void on_button_3_press (const ri_gpio_evt_t evt);
+void on_button_4_press (const ri_gpio_evt_t evt);
 ri_gpio_slope_t get_activation (ri_gpio_evt_t evt);
 #endif
 /*@}*/
