@@ -739,7 +739,7 @@
       Name="ruuvi.endpoints.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.endpoints.c"
+      path="ruuvi.endpoints.c/src"
       recurse="Yes" />
     <folder
       Name="ruuvi.libraries.c"
