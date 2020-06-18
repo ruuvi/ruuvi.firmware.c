@@ -108,9 +108,8 @@ rd_sensor_data_fields_t app_sensor_available_data (void);
 /**
  * @brief Return last sampled data.
  *
- * This function checks app_config.h for enabled sensors and initializes each of them into
- * mode stored into flash, or into default mode defined in app_config.h if the mode is not
- * stored in flash.
+ * This function checks loops through initialized sensors until all data in
+ * data->fields is valid or all sensors are checked. 
  *
  * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
  * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.

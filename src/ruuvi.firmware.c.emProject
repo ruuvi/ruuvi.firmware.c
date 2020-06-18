@@ -115,16 +115,12 @@
         path="application_config"
         recurse="Yes" />
       <file file_name="main.h" />
-      <file file_name="app_button.c" />
-      <file file_name="app_button.h" />
-      <file file_name="app_power.c" />
-      <file file_name="app_power.h" />
-      <file file_name="app_led.c" />
-      <file file_name="app_led.h" />
-      <file file_name="app_sensor.c" />
-      <file file_name="app_sensor.h" />
-      <file file_name="app_comms.c" />
-      <file file_name="app_comms.h" />
+      <folder
+        Name="app"
+        exclude=""
+        filter="app_*.c;app_*.h"
+        path="."
+        recurse="No" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />

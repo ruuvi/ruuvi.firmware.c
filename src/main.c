@@ -16,8 +16,9 @@
 #include "app_config.h"
 #include "app_button.h"
 #include "app_comms.h"
-#include "app_power.h"
+#include "app_heartbeat.h"
 #include "app_led.h"
+#include "app_power.h"
 #include "app_sensor.h"
 #include "main.h"
 #include "run_integration_tests.h"
@@ -91,4 +92,4 @@ int main (void)
     return -1;
 }
 
-/*@}*/
+/** @} */

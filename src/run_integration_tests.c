@@ -37,6 +37,11 @@
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
 
+#ifndef RUUVI_RUN_TESTS
+// Dummy declaration to compile without access to function.
+void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
+#endif
+
 void on_integration_test_wdt (void)
 {
 }

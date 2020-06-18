@@ -27,4 +27,10 @@
  */
 rd_status_t app_heartbeat_init(void);
 
+#ifdef CEEDLING
+#include "ruuvi_interface_timer.h"
+ri_timer_id_t* get_heart_timer(void);
+void schedule_heartbeat_isr (void * const p_context);
+#endif
+
 #endif // APP_HEARTBEAT_H

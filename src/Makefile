@@ -8,7 +8,7 @@ VARIANTS = default longlife longmem test
 
 .PHONY: all sync ${BOARDS} analysis publish clean 
 
-all: sync clean ${BOARDS}
+all:  clean ${BOARDS}
 
 sync:
 	@echo Synchronizing GIT...

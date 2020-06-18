@@ -18,4 +18,9 @@
 #define APP_FW_NAME "Ruuvi FW-development"
 #endif
 
+/** @brief Communicate sensor data at this interval. 1285 matches Apple guideline. */
+#ifndef APP_HEARTBEAT_INTERVAL_MS
+#   define APP_HEARTBEAT_INTERVAL_MS (1285U)
+#endif
+
 #endif

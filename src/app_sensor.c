@@ -38,6 +38,7 @@
 #endif
 
 #define LOG(msg) ri_log(MAIN_LOG_LEVEL, msg)
+#define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
 
 #ifndef CEEDLING
 static
@@ -323,7 +324,8 @@ rd_status_t app_sensor_init (void)
         do
         {
             init_code = rt_sensor_initialize (m_sensors[ii]);
-        } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++) && (RD_ERROR_SELFTEST == init_code));
+        } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++) 
+                    && (RD_ERROR_SELFTEST == init_code));
 
         if (RD_SUCCESS == init_code)
         {
@@ -345,6 +347,11 @@ rd_status_t app_sensor_init (void)
         else if (RD_ERROR_SELFTEST == init_code)
         {
             err_code |= RD_ERROR_SELFTEST;
+        }
+        // Mark unavailable sensor handles as unused.
+        else
+        {
+            m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
         }
     }
 
