@@ -259,7 +259,7 @@
       arm_fpu_type="FPv4-SP-D16"
       arm_linker_heap_size="8192"
       arm_linker_process_stack_size="0"
-      arm_linker_stack_size="8192"
+      arm_linker_stack_size="16384"
       arm_linker_treat_warnings_as_errors="No"
       arm_simulator_memory_simulation_parameter="RWX 00000000,00100000,FFFFFFFF;RWX 20000000,00010000,CDCDCDCD"
       arm_target_device_name="nRF52832_xxAA"
