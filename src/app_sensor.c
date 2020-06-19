@@ -324,8 +324,9 @@ rd_status_t app_sensor_init (void)
         do
         {
             init_code = rt_sensor_initialize (m_sensors[ii]);
-        } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++) 
-                    && (RD_ERROR_SELFTEST == init_code));
+        } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++)
+
+                  && (RD_ERROR_SELFTEST == init_code));
 
         if (RD_SUCCESS == init_code)
         {

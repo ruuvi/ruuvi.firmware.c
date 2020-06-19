@@ -109,7 +109,7 @@ rd_sensor_data_fields_t app_sensor_available_data (void);
  * @brief Return last sampled data.
  *
  * This function checks loops through initialized sensors until all data in
- * data->fields is valid or all sensors are checked. 
+ * data->fields is valid or all sensors are checked.
  *
  * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
  * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.
