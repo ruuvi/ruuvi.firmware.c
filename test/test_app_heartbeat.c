@@ -83,3 +83,8 @@ void test_schedule_heartbeat_isr (void)
 {
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &heartbeat, RD_SUCCESS);
 }
+
+void test_heartbeat_ok (void)
+{
+    
+}
