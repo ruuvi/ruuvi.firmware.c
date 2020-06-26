@@ -26,36 +26,59 @@
  *
  */
 
+ /** @brief enable nRF15 SDK implementation of drivers */
+#define RUUVI_NRF5_SDK15_ENABLED (1U)
+
 /** @brief If watchdog is not fed at this interval or faster, reboot */
 #ifndef APP_WDT_INTERVAL_MS
 #   define APP_WDT_INTERVAL_MS (2U*60U*1000U)
 #endif
 
+/** @brief Enable sensor tasks */
+#ifndef RT_SENSOR_ENABLED
+#   define RT_SENSOR_ENABLED (1U)
+#endif
+
+/** @brief Enable photosensor */
 #ifndef APP_SENSOR_PHOTO_ENABLED
 #   define APP_SENSOR_PHOTO_ENABLED RB_ENVIRONMENTAL_PHOTO_PRESENT
 #endif
 
+/** @brief Enable Photodiode driver */
+#define RI_ADC_PHOTO_ENABLED APP_SENSOR_PHOTO_ENABLED
+
+/** @brief Enable NTC sensor */
 #ifndef APP_SENSOR_NTC_ENABLED
 #   define APP_SENSOR_NTC_ENABLED RB_ENVIRONMENTAL_NTC_PRESENT
 #endif
+
+/** @brief Enable NTC driver */
+#define RI_ADC_NTC_ENABLED APP_SENSOR_NTC_ENABLED
 
 #define APP_SENSOR_TMP117_ENABLED 0
 #ifndef APP_SENSOR_TMP117_ENABLED
 #   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
 #endif
 
+/** @brief Enable BME280 temperature, humidity, pressure sensor */
 #ifndef APP_SENSOR_BME280_ENABLED
 #   define APP_SENSOR_BME280_ENABLED RB_ENVIRONMENTAL_BME280_PRESENT
 #endif
 
+/** @brief Enable BME280 driver */
 #ifndef RI_BME280_ENABLED
 #   define RI_BME280_ENABLED APP_SENSOR_BME280_ENABLED
 #endif
 
+/** @brief Enable LIS2DH12 sensor */
 #ifndef APP_SENSOR_LIS2DH12_ENABLED
 #   define APP_SENSOR_LIS2DH12_ENABLED RB_ACCELEROMETER_LIS2DH12_PRESENT
 #endif
 
+/** @brief Enable LIS2DH12 driver */
+#define RI_LIS2DH12_ENABLED APP_SENSOR_LIS2DH12_ENABLED
+
+/** @brief Enable SHTCX sensor */
 #ifndef APP_SENSOR_SHTCX_ENABLED
 #   define APP_SENSOR_SHTCX_ENABLED RB_ENVIRONMENTAL_SHTCX_PRESENT
 #endif
@@ -70,7 +93,7 @@
 #   define APP_SENSOR_SHTCX_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
 #endif
 #ifndef APP_SENSOR_SHTCX_RESOLUTION
-#   define APP_SENSOR_SHTCX_RESOLUTION RD_SENSOR_CFG_DEFAULT
+#   define APP_SENSOR_SHTCX_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
 #endif
 #ifndef APP_SENSOR_SHTCX_SAMPLERATE
 #   define APP_SENSOR_SHTCX_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< SHTC sample rate is defined by reads.
@@ -79,18 +102,39 @@
 #   define APP_SENSOR_SHTCX_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
 #endif
 
+/** @brief Enable SHTCX driver */
+#define RI_SHTCX_ENABLED APP_SENSOR_SHTCX_ENABLED
+
+/** @brief Enable Ruuvi NFC in application. */
 #ifndef APP_NFC_ENABLED
 #   define APP_NFC_ENABLED RB_NFC_INTERNAL_INSTALLED
 #endif
 
+/** @brief Enable Ruuvi NFC tasks. */
+#define RT_NFC_ENABLED APP_NFC_ENABLED
+
+/** @brief Enable BLE advertising in application. */
 #ifndef APP_ADV_ENABLED
 #   define APP_ADV_ENABLED 1
 #endif
 
-#define APP_GATT_ENABLED 1
+/** @brief Enable Radio interface. */
+#define RI_RADIO_ENABLED APP_ADV_ENABLED
+
+/** @brief Enable Advertising tasks. */
+#define RT_ADV_ENABLED APP_ADV_ENABLED
+
 #ifndef APP_GATT_ENABLED
 #   define APP_GATT_ENABLED (RB_APP_PAGES > 0U) //!< If Flash is at premium, cut GATT off by default
 #endif
+
+/** @brief Enable GATT tasks */
+#define RT_GATT_ENABLED APP_GATT_ENABLED
+
+/** @brief Enable communication tasks */
+#define RT_COMMUNICATION_ENABLED (RT_NFC_ENABLED | RI_RADIO_ENABLED)
+/** @brief Enable communication interface */
+#define RI_COMM_ENABLED RT_COMMUNICATION_ENABLED
 
 // ***** Flash storage constants *****/
 // These constants can be any non-zero uint8, but two files and two records in same file can't have same ID.
@@ -100,9 +144,6 @@
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
-
-/** @brief enable nRF15 SDK implementation of drivers */
-#define RUUVI_NRF5_SDK15_ENABLED (1U)
 
 /** @brief enable Ruuvi Button tasks. Reset button works regardless of this setting. */
 #ifndef RT_BUTTON_ENABLED
@@ -123,6 +164,8 @@
 #   define RI_GPIO_ENABLED (1U)
 #endif
 
+
+
 /**
  * @brief enable Ruuvi ADC interface.
  *
@@ -139,6 +182,11 @@
  */
 #ifndef RT_GPIO_INT_TABLE_SIZE
 #    define RT_GPIO_INT_TABLE_SIZE (RB_GPIO_NUMBER + 1U)
+#endif
+
+/** @brief Enable Ruuvi I2C interface. */
+#ifndef RI_I2C_ENABLED
+#   define RI_I2C_ENABLED (1U)
 #endif
 
 /**
@@ -158,14 +206,24 @@
 #   define RT_MAX_LED_CFG RB_LEDS_NUMBER
 #endif
 
-/** @brief Enable Ruuvi NFC tasks. */
-#ifndef RT_NFC_ENABLED
-#   define RT_NFC_ENABLED (1U)
-#endif
-
 /** @brief Enable Ruuvi Power interface. */
 #ifndef RI_POWER_ENABLED
 #   define RI_POWER_ENABLED (1U)
+#endif
+
+/** @brief Enable Ruuvi RTC interface. */
+#ifndef RI_RTC_ENABLED
+#   define RI_RTC_ENABLED (1U)
+#endif
+
+/** @brief Enable Ruuvi Scheduler interface. */
+#ifndef RI_SCHEDULER_ENABLED
+#   define RI_SCHEDULER_ENABLED (1U)
+#endif
+
+/** @brief Enable Ruuvi SPI interface. */
+#ifndef RI_SPI_ENABLED
+#   define RI_SPI_ENABLED (1U)
 #endif
 
 /** @brief Enable Ruuvi Timer interface. */

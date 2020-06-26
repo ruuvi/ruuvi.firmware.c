@@ -258,7 +258,8 @@ rd_status_t app_sensor_buses_init (void)
         .ss_pins = ss_pins,
         .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),
         // Assume mode 0 always.
-        .mode = RI_SPI_MODE_0
+        .mode = RI_SPI_MODE_0,
+        .frequency = rb_to_ri_spi_freq(RB_SPI_FREQ)
     };
     err_code |= ri_spi_init (&spi_config);
     ri_i2c_init_config_t i2c_config =

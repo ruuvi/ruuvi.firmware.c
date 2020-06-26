@@ -11,14 +11,15 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 include ${PROJ_DIR}/gcc_sources.make
 
 # Source files common to all targets
-SRC_FILES += ${COMMON_SOURCES} $(STARTUP)
+SRC_FILES += ${COMMON_SOURCES} \
+   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
+   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
 
 
 # Libraries common to all targets
 LIB_FILES += \
- $(SDK_ROOT)/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a \
  $(SDK_ROOT)/external/nrf_oberon/lib/cortex-m4/hard-float/liboberon_2.0.7.a
 
 # Optimization flags
@@ -29,8 +30,9 @@ OPT ?= -O3 -g3
 CFLAGS += $(MODE)
 CFLAGS += $(RUN_TESTS)
 CFLAGS += $(DEBUG)
-# C flags common to all targets
+CFLAGS += $(FW_VERSION)
 CFLAGS += $(OPT)
+CFLAGS += $(COMMON_DEFINES)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 CFLAGS += -DBOARD_KAARLE
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
