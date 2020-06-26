@@ -106,7 +106,6 @@ static void integration_test_sensors (void)
     }
 
     app_sensor_uninit();
-    // TODO: Uninit I2C, SPI
     (void) ri_rtc_uninit();
     rd_sensor_timestamp_function_set (NULL);
     LOG ("},\r\n");

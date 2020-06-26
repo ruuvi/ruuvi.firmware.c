@@ -32,12 +32,6 @@
  * TODO
  * @endcode
  */
-
-#ifndef MAIN_LOG_LEVEL
-#define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
-#endif
-
-#define LOG(msg) ri_log(MAIN_LOG_LEVEL, msg)
 #define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
 
 #ifndef CEEDLING
@@ -64,6 +58,7 @@ static rt_sensor_ctx_t bme280 =
 #   error "No bus defined for BME280"
 #endif
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RI_GPIO_ID_UNUSED,
     .level_pin = RI_GPIO_ID_UNUSED
 };
@@ -80,6 +75,7 @@ static rt_sensor_ctx_t lis2dh12 =
     .bus = RD_BUS_SPI,
     .handle = RB_SPI_SS_ACCELEROMETER_PIN,
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RB_INT_ACC2_PIN,
     .level_pin = RB_INT_ACC1_PIN
 };
@@ -96,6 +92,7 @@ static rt_sensor_ctx_t lis2dw12 =
     .bus = RD_BUS_SPI,
     .handle = RB_SPI_SS_ACCELEROMETER_PIN,
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RB_INT_ACC1_PIN,
     .level_pin = RB_INT_ACC2_PIN
 };
@@ -119,6 +116,7 @@ static rt_sensor_ctx_t shtcx =
     .bus = RD_BUS_I2C,
     .handle = RB_SHTCX_I2C_ADDRESS,
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RI_GPIO_ID_UNUSED,
     .level_pin = RI_GPIO_ID_UNUSED
 };
@@ -205,9 +203,12 @@ ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)
 
         case RB_I2C_FREQUENCY_250k:
             freq = RI_I2C_FREQUENCY_250k;
+            break;
 
-        default:
         case RB_I2C_FREQUENCY_100k:
+
+        // Intentional fall-through.
+        default:
             freq = RI_I2C_FREQUENCY_100k;
             break;
     }
@@ -230,12 +231,16 @@ ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
 
         case RB_SPI_FREQUENCY_4M:
             freq = RI_SPI_FREQUENCY_4M;
+            break;
 
         case RB_SPI_FREQUENCY_2M:
             freq = RI_SPI_FREQUENCY_2M;
+            break;
 
-        default:
         case RB_SPI_FREQUENCY_1M:
+
+        // Intentional fall-through.
+        default:
             freq = RI_SPI_FREQUENCY_1M;
             break;
     }
@@ -249,7 +254,7 @@ static
 rd_status_t app_sensor_buses_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_gpio_id_t ss_pins[] = RB_SPI_SS_LIST;
+    ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
     ri_spi_init_config_t spi_config =
     {
         .mosi = RB_SPI_MOSI_PIN,
@@ -272,10 +277,7 @@ rd_status_t app_sensor_buses_init (void)
     return err_code;
 }
 
-#ifndef CEEDLING
-static
-#endif
-rd_status_t app_sensor_buses_uninit (void)
+static rd_status_t app_sensor_buses_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_spi_uninit();
@@ -283,20 +285,15 @@ rd_status_t app_sensor_buses_uninit (void)
     return err_code;
 }
 
-#ifndef CEEDLING
-static
-#endif
-void app_sensor_rtc_init (void)
+static void app_sensor_rtc_init (void)
 {
     // Returns invalid state if already init, not a problem here.
     (void) ri_rtc_init();
     rd_sensor_timestamp_function_set (&ri_rtc_millis);
 }
 
-#ifndef CEEDLING
-static
-#endif
-void app_sensor_rtc_uninit (void)
+
+static void app_sensor_rtc_uninit (void)
 {
     rd_sensor_timestamp_function_set (NULL);
     (void) ri_rtc_uninit();
@@ -317,7 +314,8 @@ rd_status_t app_sensor_init (void)
         // Enable power to sensor
         if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
         {
-            (void) ri_gpio_configure (m_sensors[ii]->pwr_pin, RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
+            (void) ri_gpio_configure (m_sensors[ii]->pwr_pin,
+                                      RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
             (void) ri_gpio_write (m_sensors[ii]->pwr_pin, m_sensors[ii]->pwr_on);
         }
 
