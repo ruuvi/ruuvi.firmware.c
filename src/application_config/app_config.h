@@ -26,7 +26,7 @@
  *
  */
 
- /** @brief enable nRF15 SDK implementation of drivers */
+/** @brief enable nRF15 SDK implementation of drivers */
 #define RUUVI_NRF5_SDK15_ENABLED (1U)
 
 /** @brief If watchdog is not fed at this interval or faster, reboot */
