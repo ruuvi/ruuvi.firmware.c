@@ -33,24 +33,24 @@
  * @brief Initialize communication methods supported by board
  *
  * After calling this function, NFC is ready to provide device information,
- * advertisement data can be sent and advertisements are connectable for enabling GATT 
+ * advertisement data can be sent and advertisements are connectable for enabling GATT
  * connection.
  *
  * @retval RD_SUCCESS on success.
  * @return error code from stack on error.
  */
-rd_status_t app_comms_init(void);
+rd_status_t app_comms_init (void);
 
 /**
  * @brief Send BLE advertisement.
  *
  * This function queues given message to BLE stack and returns. If the message
- * has to be repeated, use msg->repeat_count. 
+ * has to be repeated, use msg->repeat_count.
  * The advertisements are required for establishing a GATT connection, it's a good
  * idea to send at least at 1285 ms interval if you want centrals to establish
  * connections.
  *
- * If GATT is already connected, message type will automatically be non-connectable. 
+ * If GATT is already connected, message type will automatically be non-connectable.
  *
  * @retval RD_SUCCESS On success and if ADV is not enabled in application.
  * @retval RD_ERROR_NULL if msg is NULL.
@@ -61,12 +61,12 @@ rd_status_t app_comms_init(void);
  *       be converted to extended advertisement on secondary channel with 2 MBit / s
  *       PHY. Most consumer devices won't see these advertisements as of 2020.
  */
-rd_status_t app_comms_send_advertisement(const ri_comm_message_t * const msg);
+rd_status_t app_comms_send_advertisement (const ri_comm_message_t * const msg);
 
 /**
  * @brief Send BLE GATT data via NUS TX.
  *
- * This function queues given message to BLE stack and returns. 
+ * This function queues given message to BLE stack and returns.
  *
  * @retval RD_SUCCESS On success and if GATT is not enabled in application.
  * @retval RD_ERROR_NULL If msg is NULL.
@@ -75,14 +75,14 @@ rd_status_t app_comms_send_advertisement(const ri_comm_message_t * const msg);
  * @retval RD_ERROR_DATA_SIZE If msg->data_length is greater than maximum gatt length.
  *
  * @note GATT data length is at maximum 20 bytes as of 3.29.0, but it may be extended
- *       for larger MTUs in the future. 
+ *       for larger MTUs in the future.
  */
-rd_status_t app_comms_send_gatt(const ri_comm_message_t * const msg);
+rd_status_t app_comms_send_gatt (const ri_comm_message_t * const msg);
 
 /**
- * @brief Sets up NFC data for a reader. 
+ * @brief Sets up NFC data for a reader.
  *
- * This function prepares the given data as hex-encoded string into NFC data field. 
+ * This function prepares the given data as hex-encoded string into NFC data field.
  *
  * @retval RD_SUCCESS On success and if NFC is not enabled in application.
  * @retval RD_ERROR_NULL If msg is NULL.
@@ -93,6 +93,6 @@ rd_status_t app_comms_send_gatt(const ri_comm_message_t * const msg);
  *       be converted to extended advertisement on secondary channel with 2 MBit / s
  *       PHY. Most consumer devices won't see these advertisements as of 2020.
  */
-rd_status_t app_comms_send_nfc(const ri_comm_message_t * const msg);
+rd_status_t app_comms_send_nfc (const ri_comm_message_t * const msg);
 /** @} */
 #endif // APP_COMMS_H
