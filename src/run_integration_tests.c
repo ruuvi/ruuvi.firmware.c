@@ -6,6 +6,8 @@
 #include "run_integration_tests.h"
 #include "ruuvi_interface_communication_ble_advertising_test.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
+#include "ruuvi_interface_communication_ble_gatt_test.h"
+#include "ruuvi_interface_communication_ble_gatt.h"
 #include "ruuvi_interface_communication_nfc_test.h"
 #include "ruuvi_interface_communication_radio_test.h"
 #include "ruuvi_interface_communication_uart_test.h"
@@ -36,6 +38,11 @@
  * @date 2020-02-03
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
+
+#ifndef RUUVI_RUN_TESTS
+// Dummy declaration to compile without access to function.
+void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
+#endif
 
 void on_integration_test_wdt (void)
 {
@@ -99,7 +106,6 @@ static void integration_test_sensors (void)
     }
 
     app_sensor_uninit();
-    // TODO: Uninit I2C
     (void) ri_rtc_uninit();
     rd_sensor_timestamp_function_set (NULL);
     LOG ("},\r\n");
@@ -113,11 +119,19 @@ void integration_tests_run (void)
     integration_test_power();
     ri_timer_integration_test_run (&LOG);
     ri_scheduler_run_integration_test (&LOG);
+    ri_watchdog_feed();
+    integration_test_sensors();
     ri_communication_radio_run_integration_test (&LOG);
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_1MBPS);
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_2MBPS);
+    ri_watchdog_feed();
+    ri_communication_ble_gatt_run_integration_test (&LOG, RI_RADIO_BLE_1MBPS);
+    ri_watchdog_feed();
+    ri_communication_ble_gatt_run_integration_test (&LOG, RI_RADIO_BLE_2MBPS);
 #ifdef S140
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
+    ri_watchdog_feed();
+    ri_communication_ble_gatt_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
 #endif
 #if defined(RB_GPIO_TEST_INPUT) && defined(RB_GPIO_TEST_OUTPUT)
     ri_communication_uart_run_integration_test (&LOG, RB_GPIO_TEST_INPUT,
@@ -126,8 +140,8 @@ void integration_tests_run (void)
     ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
     ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
 #endif
-    integration_test_sensors();
 #if RB_NFC_INTERNAL_INSTALLED
+    ri_watchdog_feed();
     ri_communication_nfc_run_integration_test (&LOG);
 #endif
     integration_test_stop();

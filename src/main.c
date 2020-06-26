@@ -16,8 +16,9 @@
 #include "app_config.h"
 #include "app_button.h"
 #include "app_comms.h"
-#include "app_power.h"
+#include "app_heartbeat.h"
 #include "app_led.h"
+#include "app_power.h"
 #include "app_sensor.h"
 #include "main.h"
 #include "run_integration_tests.h"
@@ -31,6 +32,7 @@
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
 
+#if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
 static
 #endif
@@ -38,6 +40,7 @@ void on_wdt (void)
 {
     // Store cause of reset to flash - TODO
 }
+#endif
 
 /**
  * @brief setup MCU peripherals and board peripherals.
@@ -91,4 +94,4 @@ int main (void)
     return -1;
 }
 
-/*@}*/
+/** @} */

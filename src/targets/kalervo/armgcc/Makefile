@@ -13,7 +13,10 @@ $(OUTPUT_DIRECTORY)/nrf52811_xxaa.out: \
 include ${PROJ_DIR}/gcc_sources.make
 
 # Source files common to all targets
-SRC_FILES += ${COMMON_SOURCES} $(STARTUP)
+SRC_FILES += ${COMMON_SOURCES} \
+   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52811.S \
+   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52811.c
+   
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
 
@@ -26,9 +29,11 @@ OPT ?= -Os
 #OPT += -flto
 
 CFLAGS += $(MODE)
+CFLAGS += $(RUN_TESTS)
 CFLAGS += $(DEBUG)
-# C flags common to all targets
+CFLAGS += $(FW_VERSION)
 CFLAGS += $(OPT)
+CFLAGS += $(COMMON_DEFINES)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 CFLAGS += -DBOARD_KALERVO
 CFLAFS += -DBME280_FLOAT_ENABLE
