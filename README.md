@@ -70,6 +70,50 @@ The report can be found under _build/artifacts/gcov_.
 ## Unit test continuous integration
 Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
 
+# Running integration tests
+Integration tests are run on actual hardware and they verify that sensors are present 
+and reply to traffic on buses. To run integration test, you need to have a SWD connection on 
+target board and JLinkRTTViewer on to read the logs. The logs are JSON and contain 
+string "fail" if a test does not pass. Example log:
+```
+Version: v3.28.14
+'mcu_tests':{
+'library':{
+'peak2peak':{
+'valid_data':'pass',
+'nan_data':'pass',
+'overflow_data':'pass',
+'input_validation':'pass',
+},
+'rms':{
+'valid_data':'pass',
+'nan_data':'pass',
+'overflow_data':'pass',
+'input_validation':'pass',
+},
+'variance':{
+'valid_data':'pass',
+'nan_data':'pass',
+'overflow_data':'pass',
+'input_validation':'pass',
+},
+'total_tests':'15',
+'passed_tests':'15'
+}
+}
+```
+
+# Running system tests
+System test verifies that SDK is upgradeable over DFU and application can be re-updated after SDK update
+using Nordic's buttonless DFU Service. To run system tests you need to have RuuviTag on a devkit and power profiler
+and update `system_tests/.test_env` to match the serial numbers and MAC addresses of your RuuviTags.
+Automated power profiling is still on ToDo, right now you need to check the profile manually.
+
+You also need an Android phone with nRF Connect and ADB connction to run the automated tests. 
+
+After system tests are complete, test log is pulled from the Android and you need to manually review
+the log. See `system_tests/test_sdk_update_result.txt.sample` for an example of what to expect. 
+
 # Usage
 Compile and flash the project to your board using SES. Instructions on how to use a bootloader will be added later on.
 The project is not yet in a useful state for any practical purpose other than learning. 
@@ -96,6 +140,12 @@ Document is generated with Doxygen. Run `make doxygen` to generate the docs loca
 browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
 
 # Changelog
+## 3.28.14
+ - Fix LIS2DH12 reboot occasionally failing
+
+## 3.28.13
+ - Fix LEDs not blinking
+
 ## 3.28.12
  - Automatically release a tag
 
