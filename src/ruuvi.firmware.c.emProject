@@ -711,7 +711,7 @@
       <file file_name="README.md" />
     </folder>
   </project>
-<project Name="kalervo">
+  <project Name="kalervo">
     <configuration
       Name="Common"
       arm_architecture="v7EM"
