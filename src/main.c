@@ -32,6 +32,7 @@
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
 
+#if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
 static
 #endif
@@ -39,6 +40,7 @@ void on_wdt (void)
 {
     // Store cause of reset to flash - TODO
 }
+#endif
 
 /**
  * @brief setup MCU peripherals and board peripherals.

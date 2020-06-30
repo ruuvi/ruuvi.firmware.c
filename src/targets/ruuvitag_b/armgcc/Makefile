@@ -11,7 +11,10 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 include ${PROJ_DIR}/gcc_sources.make
 
 # Source files common to all targets
-SRC_FILES += ${COMMON_SOURCES} $(STARTUP)
+SRC_FILES += ${COMMON_SOURCES} ${NFC_SOURCES} \
+   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
+   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
+
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
 
