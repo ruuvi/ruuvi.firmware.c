@@ -36,7 +36,7 @@ void heartbeat (void * p_event, uint16_t event_size);
 
 #ifdef CEEDLING
 #include "ruuvi_interface_timer.h"
-ri_timer_id_t* get_heart_timer(void);
+ri_timer_id_t * get_heart_timer (void);
 void schedule_heartbeat_isr (void * const p_context);
 #endif
 
