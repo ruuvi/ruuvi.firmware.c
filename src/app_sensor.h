@@ -46,6 +46,9 @@ enum
 #if APP_SENSOR_NTC_ENABLED
     NTC_INDEX,
 #endif
+#if APP_SENSOR_PHOTO_ENABLED
+    PHOTO_INDEX,
+#endif
 #if APP_SENSOR_MCU_ENABLED
     ENV_MCU_INDEX,
 #endif
@@ -66,14 +69,52 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
 /**
  * @brief Initialize sensors into default mode or to a mode stored to flash.
  *
- * This function checks app_config.h for enabled sensors and initializes each of them into
- * mode stored into flash, or into default mode defined in app_config.h if the mode is not
- * stored in flash.
+ * This function checks app_config.h for enabled sensors and initializes each of them
+ * into mode stored into flash, or into default mode defined in app_config.h if the
+ * mode is not stored in flash. Internal sampling rate of sensors does not affect
+ * reading rate of sensors, reading rate must be configured separately.
  *
  * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
  * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.
  */
 rd_status_t app_sensor_init (void);
+
+/**
+ * @brief Configure sampling of sensors.
+ *
+ * This function lets application know what data and how often should be read.
+ * To use sampled data, call @ref app_sensor_get.
+ *
+ * @param[in] data Data fields to sample.
+ * @param[in] interval_ms Interval to sample at. At minimum 1000 ms.
+ *
+ * @retval RD_SUCCESS on success.
+ * @retval RD_ERROR_INVALID_PARAM if interval is less than 1000 ms.
+ *
+ * @note: Future minor version may allow using intervals down to 1 ms on
+ *        sensors with built-in FIFOs and read the FIFO in batches.
+ *
+ */
+rd_status_t app_sensor_sample_config (const rd_sensor_data_fields_t data,
+                                      const uint32_t interval_ms);
+
+/**
+ * @brief Return available data types.
+ *
+ * @return Listing of data the application can provide.
+ */
+rd_sensor_data_fields_t app_sensor_available_data (void);
+
+/**
+ * @brief Return last sampled data.
+ *
+ * This function checks loops through initialized sensors until all data in
+ * data->fields is valid or all sensors are checked.
+ *
+ * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
+ * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.
+ */
+rd_status_t app_sensor_get (rd_sensor_data_t * const data);
 
 /**
  * @brief Uninitialize sensors into low-power mode.

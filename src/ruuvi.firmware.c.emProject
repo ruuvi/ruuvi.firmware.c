@@ -76,6 +76,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/record/nfc_ndef_record_parser.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/crc16/crc16.c" />
       <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/queue/nrf_queue.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/serial/nrf_serial.c" />
     </folder>
     <folder Name="System">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
@@ -90,6 +91,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -101,6 +103,8 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_twi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_nfct.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_timer.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_uart.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uart.c" />
     </folder>
     <folder Name="Application">
       <file file_name="main.c" />
@@ -111,16 +115,12 @@
         path="application_config"
         recurse="Yes" />
       <file file_name="main.h" />
-      <file file_name="app_button.c" />
-      <file file_name="app_button.h" />
-      <file file_name="app_power.c" />
-      <file file_name="app_power.h" />
-      <file file_name="app_led.c" />
-      <file file_name="app_led.h" />
-      <file file_name="app_sensor.c" />
-      <file file_name="app_sensor.h" />
-      <file file_name="app_comms.c" />
-      <file file_name="app_comms.h" />
+      <folder
+        Name="app"
+        exclude=""
+        filter="app_*.c;app_*.h"
+        path="."
+        recurse="No" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -325,6 +325,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/record/nfc_ndef_record_parser.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/crc16/crc16.c" />
       <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/queue/nrf_queue.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/serial/nrf_serial.c" />
     </folder>
     <folder Name="System">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
@@ -339,6 +340,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -350,6 +352,8 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_twi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_nfct.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_timer.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_uart.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uart.c" />
     </folder>
     <folder Name="Application">
       <file file_name="main.c" />
@@ -370,6 +374,8 @@
       <file file_name="app_sensor.h" />
       <file file_name="app_comms.c" />
       <file file_name="app_comms.h" />
+      <file file_name="app_heartbeat.c" />
+      <file file_name="app_heartbeat.h" />
     </folder>
     <folder Name="nRF_Segger_RTT">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/external/segger_rtt/SEGGER_RTT.c" />
@@ -589,6 +595,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -730,7 +737,7 @@
       Name="ruuvi.endpoints.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.endpoints.c"
+      path="ruuvi.endpoints.c/src"
       recurse="Yes" />
     <folder
       Name="ruuvi.libraries.c"
@@ -836,6 +843,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -1052,6 +1060,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/message/nfc_ndef_msg_parser_local.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/record/nfc_ndef_record_parser.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/crc16/crc16.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/queue/nrf_queue.c" />
     </folder>
     <folder Name="System">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52811.s" />
@@ -1067,6 +1076,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -1188,7 +1198,7 @@
       Name="ruuvi.endpoints.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.endpoints.c"
+      path="ruuvi.endpoints.c/src"
       recurse="Yes" />
     <folder
       Name="ruuvi.libraries.c"
@@ -1275,6 +1285,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/message/nfc_ndef_msg_parser_local.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/record/nfc_ndef_record_parser.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/crc16/crc16.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/queue/nrf_queue.c" />
     </folder>
     <folder Name="System">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52811.s" />
@@ -1290,6 +1301,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uarte.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_adc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_saadc.c" />
+      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_pwm.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_spim.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_spi.c" />
@@ -1411,7 +1423,7 @@
       Name="ruuvi.endpoints.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.endpoints.c"
+      path="ruuvi.endpoints.c/src"
       recurse="Yes" />
     <folder
       Name="ruuvi.libraries.c"

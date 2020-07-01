@@ -4,5 +4,6 @@
 #define APP_FW_NAME "Ruuvi FW-debug"
 #define RI_LOG_ENABLED 1
 #define APP_LOG_LEVEL RI_LOG_LEVEL_INFO
+#define APP_WDT_INTERVAL_MS (10U*60U*1000U)
 
 #endif

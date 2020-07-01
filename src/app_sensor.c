@@ -6,6 +6,8 @@
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_lis2dh12.h"
+#include "ruuvi_interface_adc_ntc.h"
+#include "ruuvi_interface_adc_photo.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
@@ -30,12 +32,7 @@
  * TODO
  * @endcode
  */
-
-#ifndef MAIN_LOG_LEVEL
-#define MAIN_LOG_LEVEL RUUVI_INTERFACE_LOG_INFO
-#endif
-
-#define LOG(msg) ri_log(MAIN_LOG_LEVEL, msg)
+#define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
 
 #ifndef CEEDLING
 static
@@ -61,6 +58,7 @@ static rt_sensor_ctx_t bme280 =
 #   error "No bus defined for BME280"
 #endif
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RI_GPIO_ID_UNUSED,
     .level_pin = RI_GPIO_ID_UNUSED
 };
@@ -77,6 +75,7 @@ static rt_sensor_ctx_t lis2dh12 =
     .bus = RD_BUS_SPI,
     .handle = RB_SPI_SS_ACCELEROMETER_PIN,
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RB_INT_ACC2_PIN,
     .level_pin = RB_INT_ACC1_PIN
 };
@@ -93,6 +92,7 @@ static rt_sensor_ctx_t lis2dw12 =
     .bus = RD_BUS_SPI,
     .handle = RB_SPI_SS_ACCELEROMETER_PIN,
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RB_INT_ACC1_PIN,
     .level_pin = RB_INT_ACC2_PIN
 };
@@ -116,11 +116,45 @@ static rt_sensor_ctx_t shtcx =
     .bus = RD_BUS_I2C,
     .handle = RB_SHTCX_I2C_ADDRESS,
     .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
     .fifo_pin = RI_GPIO_ID_UNUSED,
     .level_pin = RI_GPIO_ID_UNUSED
 };
 #endif
 
+#if APP_SENSOR_PHOTO_ENABLED
+static rt_sensor_ctx_t photo =
+{
+    .sensor = {0},
+    .init = &ri_adc_photo_init,
+    .configuration = {0},
+    .nvm_file = APP_FLASH_SENSOR_FILE,
+    .nvm_record = APP_FLASH_SENSOR_PHOTO_RECORD,
+    .bus = RD_BUS_NONE,
+    .handle = RB_PHOTO_ADC,
+    .pwr_pin = RB_PHOTO_PWR_PIN,
+    .pwr_on = RB_PHOTO_ACTIVE,
+    .fifo_pin = RI_GPIO_ID_UNUSED,
+    .level_pin = RI_GPIO_ID_UNUSED
+};
+#endif
+
+#if APP_SENSOR_NTC_ENABLED
+static rt_sensor_ctx_t ntc =
+{
+    .sensor = {0},
+    .init = &ri_adc_ntc_init,
+    .configuration = {0},
+    .nvm_file = APP_FLASH_SENSOR_FILE,
+    .nvm_record = APP_FLASH_SENSOR_NTC_RECORD,
+    .bus = RD_BUS_NONE,
+    .handle = RB_NTC_ADC,
+    .pwr_pin = RB_NTC_PWR_PIN,
+    .pwr_on = RB_NTC_ACTIVE,
+    .fifo_pin = RI_GPIO_ID_UNUSED,
+    .level_pin = RI_GPIO_ID_UNUSED
+};
+#endif
 
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
@@ -138,7 +172,10 @@ void m_sensors_init (void)
     m_sensors[BME280_INDEX] = &bme280;
 #endif
 #if APP_SENSOR_NTC_ENABLED
-    m_sensors[NTC_INDEX] = ntc;
+    m_sensors[NTC_INDEX] = &ntc;
+#endif
+#if APP_SENSOR_PHOTO_ENABLED
+    m_sensors[PHOTO_INDEX] = &photo;
 #endif
 #if APP_SENSOR_MCU_ENABLED
     m_sensors[ENV_MCU_INDEX] = env_mcu;
@@ -166,9 +203,12 @@ ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)
 
         case RB_I2C_FREQUENCY_250k:
             freq = RI_I2C_FREQUENCY_250k;
+            break;
 
-        default:
         case RB_I2C_FREQUENCY_100k:
+
+        // Intentional fall-through.
+        default:
             freq = RI_I2C_FREQUENCY_100k;
             break;
     }
@@ -191,12 +231,16 @@ ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
 
         case RB_SPI_FREQUENCY_4M:
             freq = RI_SPI_FREQUENCY_4M;
+            break;
 
         case RB_SPI_FREQUENCY_2M:
             freq = RI_SPI_FREQUENCY_2M;
+            break;
 
-        default:
         case RB_SPI_FREQUENCY_1M:
+
+        // Intentional fall-through.
+        default:
             freq = RI_SPI_FREQUENCY_1M;
             break;
     }
@@ -210,7 +254,7 @@ static
 rd_status_t app_sensor_buses_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_gpio_id_t ss_pins[] = RB_SPI_SS_LIST;
+    ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
     ri_spi_init_config_t spi_config =
     {
         .mosi = RB_SPI_MOSI_PIN,
@@ -219,7 +263,8 @@ rd_status_t app_sensor_buses_init (void)
         .ss_pins = ss_pins,
         .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),
         // Assume mode 0 always.
-        .mode = RI_SPI_MODE_0
+        .mode = RI_SPI_MODE_0,
+        .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)
     };
     err_code |= ri_spi_init (&spi_config);
     ri_i2c_init_config_t i2c_config =
@@ -232,10 +277,7 @@ rd_status_t app_sensor_buses_init (void)
     return err_code;
 }
 
-#ifndef CEEDLING
-static
-#endif
-rd_status_t app_sensor_buses_uninit (void)
+static rd_status_t app_sensor_buses_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_spi_uninit();
@@ -243,20 +285,15 @@ rd_status_t app_sensor_buses_uninit (void)
     return err_code;
 }
 
-#ifndef CEEDLING
-static
-#endif
-void app_sensor_rtc_init (void)
+static void app_sensor_rtc_init (void)
 {
     // Returns invalid state if already init, not a problem here.
     (void) ri_rtc_init();
     rd_sensor_timestamp_function_set (&ri_rtc_millis);
 }
 
-#ifndef CEEDLING
-static
-#endif
-void app_sensor_rtc_uninit (void)
+
+static void app_sensor_rtc_uninit (void)
 {
     rd_sensor_timestamp_function_set (NULL);
     (void) ri_rtc_uninit();
@@ -277,7 +314,8 @@ rd_status_t app_sensor_init (void)
         // Enable power to sensor
         if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
         {
-            (void) ri_gpio_configure (m_sensors[ii]->pwr_pin, RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
+            (void) ri_gpio_configure (m_sensors[ii]->pwr_pin,
+                                      RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
             (void) ri_gpio_write (m_sensors[ii]->pwr_pin, m_sensors[ii]->pwr_on);
         }
 
@@ -285,7 +323,9 @@ rd_status_t app_sensor_init (void)
         do
         {
             init_code = rt_sensor_initialize (m_sensors[ii]);
-        } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++) && (RD_ERROR_SELFTEST == init_code));
+        } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++)
+
+                  && (RD_ERROR_SELFTEST == init_code));
 
         if (RD_SUCCESS == init_code)
         {
@@ -307,6 +347,11 @@ rd_status_t app_sensor_init (void)
         else if (RD_ERROR_SELFTEST == init_code)
         {
             err_code |= RD_ERROR_SELFTEST;
+        }
+        // Mark unavailable sensor handles as unused.
+        else
+        {
+            m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
         }
     }
 

@@ -15,9 +15,10 @@
  */
 #include "app_config.h"
 #include "app_button.h"
-#include "app_comms.h" 
-#include "app_power.h"
+#include "app_comms.h"
+#include "app_heartbeat.h"
 #include "app_led.h"
+#include "app_power.h"
 #include "app_sensor.h"
 #include "main.h"
 #include "run_integration_tests.h"
@@ -31,6 +32,7 @@
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
 
+#if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
 static
 #endif
@@ -38,6 +40,7 @@ void on_wdt (void)
 {
     // Store cause of reset to flash - TODO
 }
+#endif
 
 /**
  * @brief setup MCU peripherals and board peripherals.
@@ -48,7 +51,7 @@ void setup (void)
     rd_status_t err_code = RD_SUCCESS;
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
-    err_code |= ri_log_init (APP_LOG_LEVEL);
+    err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
     err_code |= ri_yield_init();
 #   endif
     err_code |= ri_timer_init();
@@ -59,14 +62,24 @@ void setup (void)
     err_code |= app_led_init();
     err_code |= app_sensor_init();
     err_code |= app_comms_init();
+    err_code |= app_heartbeat_init(); // Broadcast data.
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
 /**
  * @brief Actual main, redirected for Ceedling
  */
+#ifdef  CEEDLING
 int app_main (void)
+#else
+int main (void)
+#endif
 {
+#   if RUUVI_RUN_TESTS
+    integration_tests_run();
+#   endif
+    setup();
+
     do
     {
         // Run scheduled tasks
@@ -81,16 +94,4 @@ int app_main (void)
     return -1;
 }
 
-#ifndef CEEDLING
-int main (void)
-{
-#   if RUUVI_RUN_TESTS
-    integration_tests_run();
-#   endif
-    setup();
-    // Will never return.
-    return app_main();
-}
-#endif
-
-/*@}*/
+/** @} */
