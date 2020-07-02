@@ -182,12 +182,17 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_sensor.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_3.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_5.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_compress.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_compress_test.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_peak2peak.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_rms.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_test.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_test_analysis.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_variance.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_ringbuffer.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_ringbuffer_test.c
+  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_ringbuffer_test.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/liblzf-3.6/lzf_c.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/liblzf-3.6/lzf_d.c
   
 RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/main.c \
@@ -316,7 +321,8 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks \
   $(PROJ_DIR)/ruuvi.endpoints.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
-  $(PROJ_DIR)/ruuvi.libraries.c/src
+  $(PROJ_DIR)/ruuvi.libraries.c/src \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/liblzf-3.6
 
 COMMON_DEFINES= \
   -DAPPLICATION_DRIVER_CONFIGURED
