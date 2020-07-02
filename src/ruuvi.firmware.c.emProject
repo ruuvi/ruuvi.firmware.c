@@ -236,7 +236,12 @@
       path="ruuvi.endpoints.c/src"
       recurse="Yes" />
     <folder Name="ruuvi.libraries.c">
-      <folder Name="src" path="ruuvi.libraries.c/src" />
+      <folder
+        Name="src"
+        exclude=""
+        filter="*.c;*.h"
+        path="ruuvi.libraries.c/src"
+        recurse="Yes" />
     </folder>
     <folder Name="Docs">
       <file file_name="README.md" />

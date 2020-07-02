@@ -53,7 +53,7 @@ void on_integration_test_wdt (void)
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
-    ri_delay_ms(1); // Avoid overflowing log buffer.
+    ri_delay_ms (1); // Avoid overflowing log buffer.
 }
 
 /** @brief Print test open JSON to console */
@@ -147,13 +147,12 @@ static void driver_integration_tests_run (void)
     ri_watchdog_feed();
     ri_communication_nfc_run_integration_test (&LOG);
 #endif
-    
 }
 
 /** @brief Run library integration tests */
 static void library_integration_tests_run (void)
 {
-    ruuvi_library_test_all_run(&LOG);
+    ruuvi_library_test_all_run (&LOG);
 }
 
 void integration_tests_run (void)
@@ -166,7 +165,6 @@ void integration_tests_run (void)
     driver_integration_tests_run();
     LOG ("}\r\n");
     integration_test_stop();
-
 }
 
 /*@}*/
