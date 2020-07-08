@@ -364,7 +364,7 @@ rd_status_t app_sensor_uninit (void)
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
-        if (NULL != m_sensors[ii] && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
+        if ((NULL != m_sensors[ii]) && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
         {
             m_sensors[ii]->sensor.uninit (&m_sensors[ii]->sensor, m_sensors[ii]->bus,
                                           m_sensors[ii]->handle);

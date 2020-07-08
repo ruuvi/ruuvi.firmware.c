@@ -42,7 +42,7 @@ rd_status_t app_heartbeat_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
 
-    if (!ri_timer_is_init() || ! ri_scheduler_is_init())
+    if ((!ri_timer_is_init()) || (!ri_scheduler_is_init()))
     {
         err_code |= RD_ERROR_INVALID_STATE;
     }
