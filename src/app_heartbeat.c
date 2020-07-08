@@ -41,20 +41,29 @@ void schedule_heartbeat_isr (void * const p_context)
 rd_status_t app_heartbeat_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= ri_timer_create (&heart_timer, RI_TIMER_MODE_REPEATED,
-                                 &schedule_heartbeat_isr);
 
-    if (RD_SUCCESS == err_code)
+    if (!ri_timer_is_init() || ! ri_scheduler_is_init())
     {
-        err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);
+        err_code |= RD_ERROR_INVALID_STATE;
+    }
+    else
+    {
+        err_code |= ri_timer_create (&heart_timer, RI_TIMER_MODE_REPEATED,
+                                     &schedule_heartbeat_isr);
+
+        if (RD_SUCCESS == err_code)
+        {
+            err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);
+        }
     }
 
     return err_code;
 }
 
 
-// Give CEEDLING a handle to state of module.
+
 #ifdef CEEDLING
+// Give CEEDLING a handle to state of module.
 ri_timer_id_t * get_heart_timer (void)
 {
     return &heart_timer;

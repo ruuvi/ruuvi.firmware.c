@@ -364,14 +364,17 @@ rd_status_t app_sensor_uninit (void)
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
-        m_sensors[ii]->sensor.uninit (&m_sensors[ii]->sensor, m_sensors[ii]->bus,
-                                      m_sensors[ii]->handle);
-
-        // Disable power to sensor
-        if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
+        if (NULL != m_sensors[ii] && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
         {
-            (void) ri_gpio_write (m_sensors[ii]->pwr_pin, !m_sensors[ii]->pwr_on);
-            (void) ri_gpio_configure (m_sensors[ii]->pwr_pin, RI_GPIO_MODE_HIGH_Z);
+            m_sensors[ii]->sensor.uninit (&m_sensors[ii]->sensor, m_sensors[ii]->bus,
+                                          m_sensors[ii]->handle);
+
+            // Disable power to sensor
+            if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
+            {
+                (void) ri_gpio_write (m_sensors[ii]->pwr_pin, !m_sensors[ii]->pwr_on);
+                (void) ri_gpio_configure (m_sensors[ii]->pwr_pin, RI_GPIO_MODE_HIGH_Z);
+            }
         }
     }
 

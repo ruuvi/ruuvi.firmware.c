@@ -39,8 +39,8 @@ void test_app_heartbeat_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_timer_id_t * p_heart_timer = get_heart_timer();
-    ri_scheduler_is_init_ExpectAndReturn (true);
     ri_timer_is_init_ExpectAndReturn (true);
+    ri_scheduler_is_init_ExpectAndReturn (true);
     ri_timer_create_ExpectAndReturn (p_heart_timer, RI_TIMER_MODE_REPEATED,
                                      &schedule_heartbeat_isr, RD_SUCCESS);
     ri_timer_create_ReturnArrayThruPtr_p_timer_id (&p_mock_tid, 1);
@@ -52,7 +52,6 @@ void test_app_heartbeat_init (void)
 void test_app_heartbeat_init_notimer (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_scheduler_is_init_ExpectAndReturn (true);
     ri_timer_is_init_ExpectAndReturn (false);
     err_code = app_heartbeat_init();
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
@@ -61,6 +60,7 @@ void test_app_heartbeat_init_notimer (void)
 void test_app_heartbeat_init_noscheduler (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+    ri_timer_is_init_ExpectAndReturn (true);
     ri_scheduler_is_init_ExpectAndReturn (false);
     err_code = app_heartbeat_init();
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
@@ -70,8 +70,8 @@ void test_app_heartbeat_init_timer_alloc_fail (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_timer_id_t * p_heart_timer = get_heart_timer();
-    ri_scheduler_is_init_ExpectAndReturn (true);
     ri_timer_is_init_ExpectAndReturn (true);
+    ri_scheduler_is_init_ExpectAndReturn (true);
     ri_timer_create_ExpectAndReturn (p_heart_timer, RI_TIMER_MODE_REPEATED,
                                      &schedule_heartbeat_isr, RD_ERROR_RESOURCES);
     err_code = app_heartbeat_init();
@@ -82,9 +82,9 @@ void test_app_heartbeat_init_timer_alloc_fail (void)
 void test_schedule_heartbeat_isr (void)
 {
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &heartbeat, RD_SUCCESS);
+    schedule_heartbeat_isr (NULL);
 }
 
 void test_heartbeat_ok (void)
 {
-    
 }
