@@ -24,6 +24,8 @@
 #include "ruuvi_interface_timer_test.h"
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
+#include "ruuvi_library.h"
+#include "ruuvi_library_test.h"
 #include "ruuvi_task_sensor.h"
 
 /**
@@ -51,6 +53,7 @@ void on_integration_test_wdt (void)
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
+    ri_delay_ms (1); // Avoid overflowing log buffer.
 }
 
 /** @brief Print test open JSON to console */
@@ -63,6 +66,7 @@ void integration_test_start (void)
     LOG ("\"board\":\"" RB_MODEL_STRING "\",\r\n");
     LOG ("\"ruuvi.boards.c\":\"" RUUVI_BOARDS_SEMVER "\",\r\n");
     LOG ("\"ruuvi.drivers.c\":\"" RUUVI_DRIVERS_SEMVER "\",\r\n");
+    LOG ("\"ruuvi.libraries.c\":\"" RUUVI_LIBRARIES_SEMVER "\",\r\n");
 }
 
 /** @brief Print test close JSON to console */
@@ -111,10 +115,9 @@ static void integration_test_sensors (void)
     LOG ("},\r\n");
 }
 
-/** @brief Run integration tests*/
-void integration_tests_run (void)
+/** @brief Run driver integration tests */
+static void driver_integration_tests_run (void)
 {
-    integration_test_start();
     ri_flash_run_integration_test (&LOG);
     integration_test_power();
     ri_timer_integration_test_run (&LOG);
@@ -144,6 +147,23 @@ void integration_tests_run (void)
     ri_watchdog_feed();
     ri_communication_nfc_run_integration_test (&LOG);
 #endif
+}
+
+/** @brief Run library integration tests */
+static void library_integration_tests_run (void)
+{
+    ruuvi_library_test_all_run (&LOG);
+}
+
+void integration_tests_run (void)
+{
+    integration_test_start();
+    LOG ("\"libraries\": {\r\n");
+    library_integration_tests_run();
+    LOG ("},\r\n");
+    LOG ("\"drivers\": {\r\n");
+    driver_integration_tests_run();
+    LOG ("}\r\n");
     integration_test_stop();
 }
 
