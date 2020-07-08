@@ -3,10 +3,20 @@
 #include "app_config.h"
 #include "app_heartbeat.h"
 #include "mock_app_comms.h"
+#include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
+#include "mock_ruuvi_driver_sensor.h"
+#include "mock_ruuvi_endpoint_5.h"
+#include "mock_ruuvi_interface_communication_ble_advertising.h"
+#include "mock_ruuvi_interface_communication_radio.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_interface_timer.h"
+#include "mock_ruuvi_interface_watchdog.h"
+#include "mock_ruuvi_task_adc.h"
+#include "mock_ruuvi_task_advertisement.h"
+#include "mock_ruuvi_task_gatt.h"
+#include "mock_ruuvi_task_nfc.h"
 
 #include "application_mode_default.h" //!< Ceedling doesn't follow includes by default.
 
@@ -85,6 +95,30 @@ void test_schedule_heartbeat_isr (void)
     schedule_heartbeat_isr (NULL);
 }
 
-void test_heartbeat_ok (void)
+static void re_5_encode_expect (void)
 {
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    re_5_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+}
+
+void test_heartbeat_df5_all_ok (void)
+{
+    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    app_sensor_available_data_ExpectAndReturn (fields);
+    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    re_5_encode_expect ();
+    rt_adv_send_data_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    heartbeat (NULL, 0);
 }

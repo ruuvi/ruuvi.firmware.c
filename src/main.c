@@ -62,7 +62,7 @@ void setup (void)
     err_code |= app_led_init();
     err_code |= app_sensor_init();
     err_code |= app_comms_init();
-    err_code |= app_heartbeat_init(); // Broadcast data.
+    err_code |= app_heartbeat_init();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
