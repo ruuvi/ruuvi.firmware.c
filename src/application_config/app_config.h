@@ -211,6 +211,11 @@
 #define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
 
+/** @brief Enable ADC tasks */
+#ifndef RT_ADC_ENABLED
+#   define RT_ADC_ENABLED (1U)
+#endif
+
 /** @brief enable Ruuvi Button tasks. Reset button works regardless of this setting. */
 #ifndef RT_BUTTON_ENABLED
 #   define RT_BUTTON_ENABLED (1U)
