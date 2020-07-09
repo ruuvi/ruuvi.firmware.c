@@ -319,7 +319,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer/ \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks \
-  $(PROJ_DIR)/ruuvi.endpoints.c/src \
+  $(PROJ_DIR)/ruuvi.endpoints.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
   $(PROJ_DIR)/ruuvi.libraries.c/src \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/include \

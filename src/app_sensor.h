@@ -101,10 +101,6 @@ rd_status_t app_sensor_sample_config (const rd_sensor_data_fields_t data,
 /**
  * @brief Return available data types.
  *
- * @note This is refreshed from sensor structs RAM which makes
- * this a relatively expensive function call due to looping over
- * all sensor contexts. Cache this if microseconds count in your application.
- *
  * @return Listing of data the application can provide.
  */
 rd_sensor_data_fields_t app_sensor_available_data (void);
@@ -130,11 +126,6 @@ rd_status_t app_sensor_uninit (void);
 
 #ifdef RUUVI_RUN_TESTS
 void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
-#endif
-
-#ifdef CEEDLING
-#include "ruuvi_interface_communication_radio.h"
-void on_radio (const ri_radio_activity_evt_t evt);
 #endif
 
 #endif // APP_SENSOR_H

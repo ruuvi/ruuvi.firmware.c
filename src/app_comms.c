@@ -63,8 +63,8 @@ rd_status_t app_comms_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_dis_init_t dis;
-    // Allow switchover to extended / 2 MBPS comms.
-    err_code |= ri_radio_init (RI_RADIO_BLE_2MBPS);
+    err_code |= ri_radio_init (
+                    RI_RADIO_BLE_2MBPS); //!< Allow switchover to extended / 2 MBPS comms.
 
     if (RD_SUCCESS == err_code)
     {
@@ -80,7 +80,6 @@ rd_status_t app_comms_init (void)
         err_code |= rt_gatt_dfu_init();
         err_code |= rt_gatt_dis_init (&dis);
         err_code |= rt_gatt_nus_init();
-        err_code |= rt_gatt_enable();
 #endif
     }
 
