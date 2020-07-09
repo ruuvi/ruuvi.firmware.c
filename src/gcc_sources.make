@@ -182,17 +182,17 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_sensor.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_3.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_5.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_compress.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_compress_test.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_peak2peak.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_rms.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_test.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_test_analysis.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_variance.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_ringbuffer.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/ruuvi_library_ringbuffer_test.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/liblzf-3.6/lzf_c.c \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/liblzf-3.6/lzf_d.c
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/ruuvi_library_compress.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/liblzf-3.6/lzf_c.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/liblzf-3.6/lzf_d.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/peak2peak/ruuvi_library_peak2peak.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/rms/ruuvi_library_rms.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/variance/ruuvi_library_variance.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/ringbuffer/ruuvi_library_ringbuffer.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/integration_tests/ruuvi_library_compress_test.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/integration_tests/ruuvi_library_test.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/integration_tests/ruuvi_library_test_analysis.c \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/integration_tests/ruuvi_library_ringbuffer_test.c
   
 RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/main.c \
@@ -322,7 +322,10 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.endpoints.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
   $(PROJ_DIR)/ruuvi.libraries.c/src \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/liblzf-3.6
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/include \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/ \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/liblzf-3.6 \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/integration_tests 
 
 COMMON_DEFINES= \
   -DAPPLICATION_DRIVER_CONFIGURED
