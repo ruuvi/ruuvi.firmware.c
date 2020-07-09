@@ -230,7 +230,7 @@ void on_radio (const ri_radio_activity_evt_t evt)
         err_code |= rt_adc_vdd_prepare (&configuration);
         RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     }
-    else if (RI_RADIO_AFTER == evt)
+    else
     {
         err_code |= rt_adc_vdd_sample();
         RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);

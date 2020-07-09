@@ -137,3 +137,25 @@ void test_app_sensor_uninit_ok (void)
     err_code = app_sensor_uninit();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
+
+void test_app_sensor_on_radio_before_ok(void)
+{
+    static rd_sensor_configuration_t configuration =
+    {
+        .dsp_function  = RD_SENSOR_CFG_DEFAULT,
+        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
+        .mode          = RD_SENSOR_CFG_SINGLE,
+        .resolution    = RD_SENSOR_CFG_DEFAULT,
+        .samplerate    = RD_SENSOR_CFG_DEFAULT,
+        .scale         = RD_SENSOR_CFG_DEFAULT
+    };
+    rt_adc_vdd_prepare_ExpectWithArrayAndReturn(&configuration, 1, RD_SUCCESS);
+    on_radio(RI_RADIO_BEFORE);
+}
+
+void test_app_sensor_on_radio_after_ok(void)
+{
+
+    rt_adc_vdd_sample_ExpectAndReturn(RD_SUCCESS);
+    on_radio(RI_RADIO_AFTER);
+}

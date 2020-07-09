@@ -30,12 +30,17 @@ static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
     rd_status_t err_code = RD_SUCCESS;
     re_5_data_t ep_data =
     {
-        .accelerationx_g = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD),
-        .accelerationy_g = rd_sensor_data_parse (data, RD_SENSOR_ACC_Y_FIELD),
-        .accelerationz_g = rd_sensor_data_parse (data, RD_SENSOR_ACC_Z_FIELD),
-        .humidity_rh = rd_sensor_data_parse (data,     RD_SENSOR_HUMI_FIELD),
-        .pressure_pa = rd_sensor_data_parse (data,     RD_SENSOR_PRES_FIELD),
-        .temperature_c = rd_sensor_data_parse (data,   RD_SENSOR_TEMP_FIELD),
+        .accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD),
+        .accelerationy_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Y_FIELD),
+        .accelerationz_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Z_FIELD),
+        .humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD),
+        .pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD),
+        .temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD),
+        .address           = RE_5_INVALID_MAC,
+        .tx_power          = RE_5_INVALID_POWER,
+        .battery_v         = RE_5_INVALID_VOLTAGE,
+        .measurement_count = RE_5_INVALID_SEQUENCE,
+        .movement_count    = RE_5_INVALID_MOVEMENT
     };
     err_code |= ri_radio_address_get (&ep_data.address);
     err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
