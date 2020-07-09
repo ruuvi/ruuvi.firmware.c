@@ -31,7 +31,7 @@ do
   do
     APPNAME=${BOARD}_armgcc_ruuvifw_${VARIANT}_${TAG}_app.hex
     FULLNAME=${BOARD}_armgcc_ruuvifw_${VARIANT}_${TAG}_full.hex
-    DFUNAME=${BOARD}_armgcc_ruuvifw_${VARIANT}_${TAG}_dfu.zip
+    DFUNAME=${BOARD}_armgcc_ruuvifw_${VARIANT}_${TAG}_dfu_app.zip
     SDKNAME=${BOARD}_armgcc_ruuvifw_${VARIANT}_${TAG}_sdk12.3_to_15.3_dfu.zip
 
     curl -XPOST -H "Authorization:token ${GH_TOKEN}" -H "Content-Type:application/octet-stream" --data-binary @targets/${BOARD}/armgcc/${APPNAME} https://uploads.github.com/repos/${GH_USER}/${GH_REPO}/releases/${id}/assets?name=${APPNAME}
