@@ -1,9 +1,7 @@
 #include "app_config.h"
 #include "app_sensor.h"
 #include "ruuvi_boards.h"
-#include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
-#include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_bme280.h"
@@ -14,7 +12,6 @@
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_spi.h"
-#include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
 
 /**
@@ -48,15 +45,7 @@ static rt_sensor_ctx_t bme280 =
 {
     .sensor = {0},
     .init = &ri_bme280_init,
-    .configuration =
-    {
-        .dsp_function  = APP_SENSOR_BME280_DSP_FUNC,
-        .dsp_parameter = APP_SENSOR_BME280_DSP_PARAM,
-        .mode          = APP_SENSOR_BME280_MODE,
-        .resolution    = APP_SENSOR_BME280_RESOLUTION,
-        .samplerate    = APP_SENSOR_BME280_SAMPLERATE,
-        .scale         = APP_SENSOR_BME280_SCALE
-    },
+    .configuration = {0},
     .nvm_file = APP_FLASH_SENSOR_FILE,
     .nvm_record = APP_FLASH_SENSOR_BME280_RECORD,
 #if RB_ENVIRONMENTAL_BME280_SPI_USE
@@ -80,15 +69,7 @@ static rt_sensor_ctx_t lis2dh12 =
 {
     .sensor = {0},
     .init = &ri_lis2dh12_init,
-    .configuration =
-    {
-        .dsp_function  = APP_SENSOR_LIS2DH12_DSP_FUNC,
-        .dsp_parameter = APP_SENSOR_LIS2DH12_DSP_PARAM,
-        .mode          = APP_SENSOR_LIS2DH12_MODE,
-        .resolution    = APP_SENSOR_LIS2DH12_RESOLUTION,
-        .samplerate    = APP_SENSOR_LIS2DH12_SAMPLERATE,
-        .scale         = APP_SENSOR_LIS2DH12_SCALE
-    },
+    .configuration = {0},
     .nvm_file = APP_FLASH_SENSOR_FILE,
     .nvm_record = APP_FLASH_SENSOR_LIS2DH12_RECORD,
     .bus = RD_BUS_SPI,
@@ -122,8 +103,7 @@ static rt_sensor_ctx_t shtcx =
 {
     .sensor = {0},
     .init = &ri_shtcx_init,
-    .configuration =
-    {
+    .configuration = {
         .dsp_function  = APP_SENSOR_SHTCX_DSP_FUNC,
         .dsp_parameter = APP_SENSOR_SHTCX_DSP_PARAM,
         .mode          = APP_SENSOR_SHTCX_MODE,
@@ -208,36 +188,10 @@ void m_sensors_init (void)
 #endif
 }
 
-// Measure battery voltage after radio event
 #ifndef CEEDLING
 static
 #endif
-void on_radio (const ri_radio_activity_evt_t evt)
-{
-    rd_status_t err_code = RD_SUCCESS;
-
-    if (RI_RADIO_BEFORE == evt)
-    {
-        rd_sensor_configuration_t configuration =
-        {
-            .dsp_function  = RD_SENSOR_CFG_DEFAULT,
-            .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
-            .mode          = RD_SENSOR_CFG_SINGLE,
-            .resolution    = RD_SENSOR_CFG_DEFAULT,
-            .samplerate    = RD_SENSOR_CFG_DEFAULT,
-            .scale         = RD_SENSOR_CFG_DEFAULT
-        };
-        err_code |= rt_adc_vdd_prepare (&configuration);
-        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
-    }
-    else
-    {
-        err_code |= rt_adc_vdd_sample();
-        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
-    }
-}
-
-static ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)
+ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)
 {
     ri_i2c_frequency_t freq = RI_I2C_FREQUENCY_100k;
 
@@ -262,7 +216,10 @@ static ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)
     return freq;
 }
 
-static ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
+#ifndef CEEDLING
+static
+#endif
+ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
 {
     ri_spi_frequency_t freq = RI_SPI_FREQUENCY_1M;
 
@@ -291,7 +248,10 @@ static ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
     return freq;
 }
 
-static rd_status_t app_sensor_buses_init (void)
+#ifndef CEEDLING
+static
+#endif
+rd_status_t app_sensor_buses_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
@@ -395,8 +355,6 @@ rd_status_t app_sensor_init (void)
         }
     }
 
-    // Synchronize battery measurement to radio activity.
-    ri_radio_activity_callback_set (on_radio);
     return err_code;
 }
 
@@ -406,55 +364,19 @@ rd_status_t app_sensor_uninit (void)
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
-        if ( (NULL != m_sensors[ii]) && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
-        {
-            m_sensors[ii]->sensor.uninit (&m_sensors[ii]->sensor, m_sensors[ii]->bus,
-                                          m_sensors[ii]->handle);
+        m_sensors[ii]->sensor.uninit (&m_sensors[ii]->sensor, m_sensors[ii]->bus,
+                                      m_sensors[ii]->handle);
 
-            // Disable power to sensor
-            if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
-            {
-                (void) ri_gpio_write (m_sensors[ii]->pwr_pin, !m_sensors[ii]->pwr_on);
-                (void) ri_gpio_configure (m_sensors[ii]->pwr_pin, RI_GPIO_MODE_HIGH_Z);
-            }
+        // Disable power to sensor
+        if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
+        {
+            (void) ri_gpio_write (m_sensors[ii]->pwr_pin, !m_sensors[ii]->pwr_on);
+            (void) ri_gpio_configure (m_sensors[ii]->pwr_pin, RI_GPIO_MODE_HIGH_Z);
         }
     }
 
-    err_code |= app_sensor_buses_uninit();
+    (void) app_sensor_buses_uninit();
     app_sensor_rtc_uninit();
-    ri_radio_activity_callback_set (NULL);
-    return err_code;
-}
-
-rd_sensor_data_fields_t app_sensor_available_data (void)
-{
-    rd_sensor_data_fields_t available = {0};
-
-    for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
-    {
-        if ( (NULL != m_sensors[ii])
-                && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
-        {
-            available.bitfield |= m_sensors[ii]->sensor.provides.bitfield;
-        }
-    }
-
-    return available;
-}
-
-rd_status_t app_sensor_get (rd_sensor_data_t * const data)
-{
-    rd_status_t err_code = RD_SUCCESS;
-
-    for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
-    {
-        if ( (NULL != m_sensors[ii])
-                && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
-        {
-            err_code |= m_sensors[ii]->sensor.data_get (data);
-        }
-    }
-
     return err_code;
 }
 
