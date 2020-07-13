@@ -17,12 +17,13 @@
 /**
  * @file app_comms.h
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2020-04-29
+ * @date 2020-07-13
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  *
  * Typical usage:
  * @code{.c}
- * TODO
+ * rd_status_t err_code = app_comms_init();
+ * RD_ERROR_CHECK(err_code, RD_SUCCESS);
  * @endcode
  */
 
@@ -45,8 +46,8 @@ rd_status_t app_comms_init (void);
 
 #ifdef CEEDLING
 /** Handles for unit test framework */
-void on_gatt_connected (void * p_data, size_t data_len);
-void on_gatt_disconnected (void * p_data, size_t data_len);
+void on_gatt_connected_isr (void * p_data, size_t data_len);
+void on_gatt_disconnected_isr (void * p_data, size_t data_len);
 #endif
 
 
