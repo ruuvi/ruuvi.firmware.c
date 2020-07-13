@@ -10,7 +10,7 @@
 /**
  * @file main.c
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2019-12-26
+ * @date 2020-07-13
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
 #include "app_config.h"

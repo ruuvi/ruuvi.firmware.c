@@ -1431,7 +1431,7 @@
       Name="ruuvi.libraries.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.libraries.c"
+      path="ruuvi.libraries.c/src"
       recurse="Yes" />
     <folder Name="Docs">
       <file file_name="README.md" />

@@ -71,12 +71,16 @@ void heartbeat (void * p_event, uint16_t event_size)
     encode_to_5 (&data, &msg);
     msg.repeat_count = 1;
     err_code = rt_adv_send_data (&msg);
+    // Advertising should always be successful
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 
     if (RD_SUCCESS == err_code)
     {
         heartbeat_ok = true;
     }
 
+    // Cut endpoint 5 data to fit into GATT msg.
+    msg.data_length = 18;
     err_code = rt_gatt_send_asynchronous (&msg);
 
     if (RD_SUCCESS == err_code)
