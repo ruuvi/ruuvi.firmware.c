@@ -27,7 +27,7 @@ static void test_dis_init (ri_comm_dis_init_t * const p_dis)
     snprintf (p_dis->deviceaddr, sizeof (p_dis->deviceaddr), "AA:BB:CC:DD:EE:FF");
     snprintf (p_dis->deviceid, sizeof (p_dis->deviceid), "00:11:22:33:44:55:66:77");
     snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
-    snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "");
+    snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "Check PCB");
     snprintf (p_dis->manufacturer, sizeof (p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf (p_dis->model, sizeof (p_dis->model), RB_MODEL_STRING);
 }

@@ -55,7 +55,7 @@ static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis)
     err_code |= rt_com_get_mac_str (p_dis->deviceaddr, sizeof (p_dis->deviceaddr));
     err_code |= rt_com_get_id_str (p_dis->deviceid, sizeof (p_dis->deviceid));
     snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
-    snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "");
+    snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "Check PCB");
     snprintf (p_dis->manufacturer, sizeof (p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf (p_dis->model, sizeof (p_dis->model), RB_MODEL_STRING);
     return err_code;
