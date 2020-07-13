@@ -25,8 +25,25 @@
  * @endcode
  */
 
-// TODO: On GATT connected
-// TODO: On GATT disconnected
+/** @brief Callback when GATT is connected" */
+#ifndef CEEDLING
+static
+#endif
+void on_gatt_connected_isr (void * p_data, size_t data_len)
+{
+    // Stop advertising for GATT
+    rt_gatt_disable();
+}
+
+/** @brief Callback when GATT is disconnected" */
+#ifndef CEEDLING
+static
+#endif
+void on_gatt_disconnected_isr (void * p_data, size_t data_len)
+{
+    // Start advertising for GATT
+    rt_gatt_enable();
+}
 // TODO: On data received
 
 
@@ -64,7 +81,7 @@ rd_status_t app_comms_init (void)
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_dis_init_t dis;
     // Allow switchover to extended / 2 MBPS comms.
-    err_code |= ri_radio_init (RI_RADIO_BLE_2MBPS);
+    err_code |= ri_radio_init (APP_MODULATION);
 
     if (RD_SUCCESS == err_code)
     {
@@ -80,6 +97,8 @@ rd_status_t app_comms_init (void)
         err_code |= rt_gatt_dfu_init();
         err_code |= rt_gatt_dis_init (&dis);
         err_code |= rt_gatt_nus_init();
+        rt_gatt_set_on_connected_isr (&on_gatt_connected_isr);
+        rt_gatt_set_on_disconn_isr (&on_gatt_disconnected_isr);
         err_code |= rt_gatt_enable();
 #endif
     }

@@ -178,6 +178,17 @@
 #   define RI_RADIO_ENABLED APP_ADV_ENABLED
 #endif
 
+/** @brief Select modulation used in application */
+#ifndef APP_MODULATION
+#   if(RB_BLE_CODED_SUPPORTED)
+#       define APP_MODULATION RI_RADIO_BLE_125KBPS
+#   elif(RB_BLE_2MBPS_SUPPORTED)
+#       define APP_MODULATION RI_RADIO_BLE_2MBPS
+#   else
+#       define APP_MODULATION RI_RADIO_BLE_1MBPS
+#   endif
+#endif
+
 /** @brief Enable Advertising tasks. */
 #ifndef RT_ADV_ENABLED
 #   define RT_ADV_ENABLED APP_ADV_ENABLED

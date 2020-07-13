@@ -43,5 +43,12 @@
  */
 rd_status_t app_comms_init (void);
 
+#ifdef CEEDLING
+/** Handles for unit test framework */
+void on_gatt_connected (void * p_data, size_t data_len);
+void on_gatt_disconnected (void * p_data, size_t data_len);
+#endif
+
+
 /** @} */
 #endif // APP_COMMS_H
