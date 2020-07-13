@@ -45,7 +45,9 @@
 #endif
 
 /** @brief Enable Photodiode driver */
-#define RI_ADC_PHOTO_ENABLED APP_SENSOR_PHOTO_ENABLED
+#ifndef RI_ADC_PHOTO_ENABLED
+#    define RI_ADC_PHOTO_ENABLED APP_SENSOR_PHOTO_ENABLED
+#endif
 
 /** @brief Enable NTC sensor */
 #ifndef APP_SENSOR_NTC_ENABLED
@@ -53,7 +55,9 @@
 #endif
 
 /** @brief Enable NTC driver */
-#define RI_ADC_NTC_ENABLED APP_SENSOR_NTC_ENABLED
+#ifndef RI_ADC_NTC_ENABLED
+#   define RI_ADC_NTC_ENABLED APP_SENSOR_NTC_ENABLED
+#endif
 
 #define APP_SENSOR_TMP117_ENABLED 0
 #ifndef APP_SENSOR_TMP117_ENABLED
@@ -72,13 +76,53 @@
 #   define RI_BME280_I2C_ENABLED RB_ENVIRONMENTAL_BME280_I2C_USE
 #endif
 
+#ifndef APP_SENSOR_BME280_DSP_FUNC
+#   define APP_SENSOR_BME280_DSP_FUNC RD_SENSOR_DSP_LOW_PASS
+#endif
+#ifndef APP_SENSOR_BME280_DSP_PARAM
+#   define APP_SENSOR_BME280_DSP_PARAM (16U)
+#endif
+#ifndef APP_SENSOR_BME280_MODE
+#   define APP_SENSOR_BME280_MODE RD_SENSOR_CFG_CONTINUOUS
+#endif
+#ifndef APP_SENSOR_BME280_RESOLUTION
+#   define APP_SENSOR_BME280_RESOLUTION RD_SENSOR_CFG_DEFAULT
+#endif
+#ifndef APP_SENSOR_BME280_SAMPLERATE
+#   define APP_SENSOR_BME280_SAMPLERATE (1U)
+#endif
+#ifndef APP_SENSOR_BME280_SCALE
+#   define APP_SENSOR_BME280_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
+#endif
+
 /** @brief Enable LIS2DH12 sensor */
 #ifndef APP_SENSOR_LIS2DH12_ENABLED
 #   define APP_SENSOR_LIS2DH12_ENABLED RB_ACCELEROMETER_LIS2DH12_PRESENT
 #endif
 
+#ifndef APP_SENSOR_LIS2DH12_DSP_FUNC
+#   define APP_SENSOR_LIS2DH12_DSP_FUNC RD_SENSOR_DSP_LAST
+#endif
+#ifndef APP_SENSOR_LIS2DH12_DSP_PARAM
+#   define APP_SENSOR_LIS2DH12_DSP_PARAM (1U)
+#endif
+#ifndef APP_SENSOR_LIS2DH12_MODE
+#   define APP_SENSOR_LIS2DH12_MODE RD_SENSOR_CFG_CONTINUOUS
+#endif
+#ifndef APP_SENSOR_LIS2DH12_RESOLUTION
+#   define APP_SENSOR_LIS2DH12_RESOLUTION (10U) //!< bits
+#endif
+#ifndef APP_SENSOR_LIS2DH12_SAMPLERATE
+#   define APP_SENSOR_LIS2DH12_SAMPLERATE (10U) //!< Hz
+#endif
+#ifndef APP_SENSOR_LIS2DH12_SCALE
+#   define APP_SENSOR_LIS2DH12_SCALE (2U) //!< G
+#endif
+
 /** @brief Enable LIS2DH12 driver */
-#define RI_LIS2DH12_ENABLED APP_SENSOR_LIS2DH12_ENABLED
+#ifndef RI_LIS2DH12_ENABLED
+#    define RI_LIS2DH12_ENABLED APP_SENSOR_LIS2DH12_ENABLED
+#endif
 
 /** @brief Enable SHTCX sensor */
 #ifndef APP_SENSOR_SHTCX_ENABLED
@@ -105,7 +149,14 @@
 #endif
 
 /** @brief Enable SHTCX driver */
-#define RI_SHTCX_ENABLED APP_SENSOR_SHTCX_ENABLED
+#ifndef RI_SHTCX_ENABLED
+#   define RI_SHTCX_ENABLED APP_SENSOR_SHTCX_ENABLED
+#endif
+
+/** @brief Enable atomic operations */
+#ifndef RI_ATOMIC_ENABLED
+#   define RI_ATOMIC_ENABLED (1U)
+#endif
 
 /** @brief Enable Ruuvi NFC in application. */
 #ifndef APP_NFC_ENABLED
@@ -113,7 +164,9 @@
 #endif
 
 /** @brief Enable Ruuvi NFC tasks. */
-#define RT_NFC_ENABLED APP_NFC_ENABLED
+#ifndef RT_NFC_ENABLED
+#   define RT_NFC_ENABLED APP_NFC_ENABLED
+#endif
 
 /** @brief Enable BLE advertising in application. */
 #ifndef APP_ADV_ENABLED
@@ -121,22 +174,33 @@
 #endif
 
 /** @brief Enable Radio interface. */
-#define RI_RADIO_ENABLED APP_ADV_ENABLED
+#ifndef RI_RADIO_ENABLED
+#   define RI_RADIO_ENABLED APP_ADV_ENABLED
+#endif
 
 /** @brief Enable Advertising tasks. */
-#define RT_ADV_ENABLED APP_ADV_ENABLED
+#ifndef RT_ADV_ENABLED
+#   define RT_ADV_ENABLED APP_ADV_ENABLED
+#endif
 
 #ifndef APP_GATT_ENABLED
 #   define APP_GATT_ENABLED (RB_APP_PAGES > 0U) //!< If Flash is at premium, cut GATT off by default
 #endif
 
 /** @brief Enable GATT tasks */
-#define RT_GATT_ENABLED APP_GATT_ENABLED
+#ifndef RT_GATT_ENABLED
+#   define RT_GATT_ENABLED APP_GATT_ENABLED
+#endif
 
 /** @brief Enable communication tasks */
-#define RT_COMMUNICATION_ENABLED (RT_NFC_ENABLED | RI_RADIO_ENABLED)
+#ifndef RT_COMMUNICATION_ENABLED
+#   define RT_COMMUNICATION_ENABLED (RT_NFC_ENABLED | RI_RADIO_ENABLED)
+#endif
+
 /** @brief Enable communication interface */
-#define RI_COMM_ENABLED RT_COMMUNICATION_ENABLED
+#ifndef RI_COMM_ENABLED
+#   define RI_COMM_ENABLED RT_COMMUNICATION_ENABLED
+#endif
 
 // ***** Flash storage constants *****/
 // These constants can be any non-zero uint8, but two files and two records in same file can't have same ID.
@@ -146,6 +210,11 @@
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
+
+/** @brief Enable ADC tasks */
+#ifndef RT_ADC_ENABLED
+#   define RT_ADC_ENABLED (1U)
+#endif
 
 /** @brief enable Ruuvi Button tasks. Reset button works regardless of this setting. */
 #ifndef RT_BUTTON_ENABLED

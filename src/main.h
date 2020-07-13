@@ -22,8 +22,9 @@
 
 // Submodule requirements
 #define RUUVI_BOARDS_REQ "0.7.0"
-#define RUUVI_DRIVERS_REQ "0.2.2"
-#define RUUVI_LIBRARIES_REQ "0.1.3"
+#define RUUVI_DRIVERS_REQ "0.2.5"
+#define RUUVI_ENDPOINTS_REQ "0.2.0"
+#define RUUVI_LIBRARIES_REQ "0.2.0"
 
 #ifdef CEEDLING
 void on_wdt (void);
