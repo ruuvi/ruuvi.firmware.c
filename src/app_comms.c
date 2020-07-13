@@ -46,6 +46,16 @@ void on_gatt_disconnected_isr (void * p_data, size_t data_len)
     rt_gatt_enable();
 }
 // TODO: On data received
+
+static rd_status_t ble_name_string_create (char * const name_str, const size_t name_len)
+{
+    uint64_t radio_addr = 0;
+    rd_status_t err_code = ri_radio_address_get (&radio_addr);
+    radio_addr &= 0xFFFF;
+    snprintf (name_str, name_len, "%s %04X", RB_BLE_NAME_STRING, (uint16_t) radio_addr);
+    return err_code;
+}
+
 #endif //!< if GATT ENABLED
 
 
@@ -75,15 +85,6 @@ static rd_status_t adv_init (void)
     adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;
     err_code |= rt_adv_init (&adv_settings);
     err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);
-    return err_code;
-}
-
-static rd_status_t ble_name_string_create (char * const name_str, const size_t name_len)
-{
-    uint64_t radio_addr = 0;
-    rd_status_t err_code = ri_radio_address_get (&radio_addr);
-    radio_addr &= 0xFFFF;
-    snprintf (name_str, name_len, "%s %04X", RB_BLE_NAME_STRING, (uint16_t) radio_addr);
     return err_code;
 }
 
