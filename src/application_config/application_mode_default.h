@@ -23,4 +23,9 @@
 #   define APP_HEARTBEAT_INTERVAL_MS (1285U)
 #endif
 
+/** @brief Resample battery voltage at this interval */
+#ifndef APP_BATTERY_SAMPLE_MS
+#   define APP_BATTERY_SAMPLE_MS (60ULL*1000ULL)
+#endif
+
 #endif

@@ -41,7 +41,7 @@
 static
 #endif
 rt_sensor_ctx_t * m_sensors[SENSOR_COUNT]; //!< Sensor APIs.
-
+uint64_t vdd_update_time = 0;
 
 #if APP_SENSOR_BME280_ENABLED
 static rt_sensor_ctx_t bme280 =
@@ -216,24 +216,32 @@ void on_radio (const ri_radio_activity_evt_t evt)
 {
     rd_status_t err_code = RD_SUCCESS;
 
-    if (RI_RADIO_BEFORE == evt)
+    if (vdd_update_time < ri_rtc_millis())
     {
-        rd_sensor_configuration_t configuration =
+        if (RI_RADIO_BEFORE == evt)
         {
-            .dsp_function  = RD_SENSOR_CFG_DEFAULT,
-            .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
-            .mode          = RD_SENSOR_CFG_SINGLE,
-            .resolution    = RD_SENSOR_CFG_DEFAULT,
-            .samplerate    = RD_SENSOR_CFG_DEFAULT,
-            .scale         = RD_SENSOR_CFG_DEFAULT
-        };
-        err_code |= rt_adc_vdd_prepare (&configuration);
-        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
-    }
-    else
-    {
-        err_code |= rt_adc_vdd_sample();
-        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+            rd_sensor_configuration_t configuration =
+            {
+                .dsp_function  = RD_SENSOR_CFG_DEFAULT,
+                .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
+                .mode          = RD_SENSOR_CFG_SINGLE,
+                .resolution    = RD_SENSOR_CFG_DEFAULT,
+                .samplerate    = RD_SENSOR_CFG_DEFAULT,
+                .scale         = RD_SENSOR_CFG_DEFAULT
+            };
+            err_code |= rt_adc_vdd_prepare (&configuration);
+            RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+        }
+        else
+        {
+            if (true == rt_adc_is_init())
+            {
+                vdd_update_time = ri_rtc_millis();
+                vdd_update_time += APP_BATTERY_SAMPLE_MS;
+                err_code |= rt_adc_vdd_sample();
+                RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+            }
+        }
     }
 }
 

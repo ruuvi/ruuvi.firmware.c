@@ -199,12 +199,19 @@ void test_app_sensor_on_radio_before_ok (void)
         .samplerate    = RD_SENSOR_CFG_DEFAULT,
         .scale         = RD_SENSOR_CFG_DEFAULT
     };
+    static uint64_t time = 1ULL;
+    ri_rtc_millis_ExpectAndReturn (time);
     rt_adc_vdd_prepare_ExpectWithArrayAndReturn (&configuration, 1, RD_SUCCESS);
     on_radio (RI_RADIO_BEFORE);
 }
 
 void test_app_sensor_on_radio_after_ok (void)
 {
+    static uint64_t time = 1ULL;
+    static bool adc_init_value = true;
+    ri_rtc_millis_ExpectAndReturn (time);
+    rt_adc_is_init_ExpectAndReturn (true);
+    ri_rtc_millis_ExpectAndReturn (time);
     rt_adc_vdd_sample_ExpectAndReturn (RD_SUCCESS);
     on_radio (RI_RADIO_AFTER);
 }
