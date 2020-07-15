@@ -34,6 +34,7 @@ void tearDown (void)
 {
 }
 
+void resetTest (void); //!< Clears test memory.
 
 /**
  * @brief Initializes timers for reading and sending heartbeat transmissions.
@@ -95,6 +96,9 @@ void test_schedule_heartbeat_isr (void)
     schedule_heartbeat_isr (NULL);
 }
 
+
+extern uint16_t m_measurement_count;
+
 static void re_5_encode_expect (void)
 {
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -148,4 +152,28 @@ void test_heartbeat_df5_none_ok (void)
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     heartbeat (NULL, 0);
+}
+
+void test_heartbeat_df5_measurement_cnt_rollover (void)
+{
+    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    uint16_t measurement_count = 0;
+    m_measurement_count = 0;
+
+    while (measurement_count < RE_5_INVALID_SEQUENCE)
+    {
+        measurement_count++;
+        app_sensor_available_data_ExpectAndReturn (fields);
+        rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+        app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+        re_5_encode_expect ();
+        rt_adv_send_data_ExpectAnyArgsAndReturn (RD_SUCCESS);
+        rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
+        rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
+        ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+        heartbeat (NULL, 0);
+        resetTest(); // Avoid running out of memory.
+    }
+
+    TEST_ASSERT (0 == m_measurement_count);
 }

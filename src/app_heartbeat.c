@@ -23,6 +23,10 @@
 #include "ruuvi_task_nfc.h"
 
 static ri_timer_id_t heart_timer; //!< Timer for updating data.
+#ifndef CEEDLING
+static
+#endif
+uint16_t m_measurement_count; //!< Increment on new samples.
 
 static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
                                 ri_comm_message_t * const msg)
@@ -39,7 +43,7 @@ static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
         .address           = RE_5_INVALID_MAC,
         .tx_power          = RE_5_INVALID_POWER,
         .battery_v         = RE_5_INVALID_VOLTAGE,
-        .measurement_count = RE_5_INVALID_SEQUENCE,
+        .measurement_count = m_measurement_count,
         .movement_count    = RE_5_INVALID_MOVEMENT
     };
     err_code |= ri_radio_address_get (&ep_data.address);
@@ -69,6 +73,12 @@ void heartbeat (void * p_event, uint16_t event_size)
     data.data = data_values;
     app_sensor_get (&data);
     encode_to_5 (&data, &msg);
+
+    if (RE_5_INVALID_SEQUENCE == ++m_measurement_count)
+    {
+        m_measurement_count = 0;
+    }
+
     msg.repeat_count = 1;
     err_code = rt_adv_send_data (&msg);
     // Advertising should always be successful
