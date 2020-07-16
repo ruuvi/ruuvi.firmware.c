@@ -49,6 +49,7 @@ void on_wdt (void)
 void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+    float motion_threshold = APP_MOTION_THRESHOLD;
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
@@ -61,6 +62,7 @@ void setup (void)
     err_code |= app_dc_dc_init();
     err_code |= app_led_init();
     err_code |= app_sensor_init();
+    err_code |= app_sensor_acc_thr_set(&motion_threshold);
     err_code |= app_comms_init();
     err_code |= app_heartbeat_init();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
