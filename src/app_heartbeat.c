@@ -32,7 +32,7 @@ static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
                                 ri_comm_message_t * const msg)
 {
     rd_status_t err_code = RD_SUCCESS;
-    uint16_t movement_count = (uint16_t)(app_sensor_event_count_get() & 0xFFFEU);
+    uint8_t movement_count = (uint8_t) (app_sensor_event_count_get() & 0xFEU);
     re_5_data_t ep_data =
     {
         .accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD),

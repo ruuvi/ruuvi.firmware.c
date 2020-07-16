@@ -184,7 +184,7 @@ uint32_t app_sensor_event_count_get (void);
  *
  *
  */
-rd_status_t app_sensor_acceleration_threshold_set (float * threshold_g);
+rd_status_t app_sensor_acc_thr_set (float * threshold_g);
 
 
 #ifdef RUUVI_RUN_TESTS

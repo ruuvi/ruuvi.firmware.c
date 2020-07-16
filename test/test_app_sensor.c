@@ -400,6 +400,28 @@ void test_app_sensor_find_provider_no_valid (void)
     }
 }
 
+void test_app_sensor_find_provider_null (void)
+{
+    if (SENSOR_COUNT > 3)
+    {
+        for (size_t ii = 1; ii < SENSOR_COUNT; ii++)
+        {
+            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < 2));
+        }
+
+        // Mock provided data
+        rd_sensor_data_fields_t fields_wanted =
+        {
+            .datas.temperature_c = 1,
+        };
+        m_sensors[0] = NULL;
+        m_sensors[1]->sensor.provides = fields_lis;
+        m_sensors[2]->sensor.provides = fields_photo;
+        const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
+        TEST_ASSERT (p_sensor == & (m_sensors[1]->sensor));
+    }
+}
+
 /**
  * @brief Set threshold for accelerometer interrupts.
  *
@@ -437,7 +459,7 @@ static rd_status_t mock_level_interrupt_set (const bool enable,
     return RD_SUCCESS;
 }
 
-void test_app_sensor_acceleration_threshold_set_ok (void)
+void test_app_sensor_acc_thr_set_ok (void)
 {
     if (SENSOR_COUNT > 2U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
@@ -457,13 +479,13 @@ void test_app_sensor_acceleration_threshold_set_ok (void)
                 RI_GPIO_MODE_INPUT_NOPULL,
                 &on_accelerometer_isr,
                 RD_SUCCESS);
-        rd_status_t err_code = app_sensor_acceleration_threshold_set (&ths);
+        rd_status_t err_code = app_sensor_acc_thr_set (&ths);
         TEST_ASSERT (RD_SUCCESS == err_code);
         TEST_ASSERT (1U == level_interrupt_set_enabled);
     }
 }
 
-void test_app_sensor_acceleration_threshold_set_disable (void)
+void test_app_sensor_acc_thr_set_disable (void)
 {
     if (SENSOR_COUNT > 2U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
@@ -479,13 +501,13 @@ void test_app_sensor_acceleration_threshold_set_disable (void)
         level_interrupt_set_disabled = 0U;
         ri_gpio_interrupt_disable_ExpectAndReturn (RB_INT_LEVEL_PIN,
                 RD_SUCCESS);
-        rd_status_t err_code = app_sensor_acceleration_threshold_set (NULL);
+        rd_status_t err_code = app_sensor_acc_thr_set (NULL);
         TEST_ASSERT (RD_SUCCESS == err_code);
         TEST_ASSERT (1U == level_interrupt_set_disabled);
     }
 }
 
-void test_app_sensor_acceleration_threshold_set_no_provider (void)
+void test_app_sensor_acc_thr_set_no_provider (void)
 {
     if (SENSOR_COUNT > 3U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
@@ -501,13 +523,13 @@ void test_app_sensor_acceleration_threshold_set_no_provider (void)
         m_sensors[1]->sensor.level_interrupt_set = &mock_level_interrupt_set;
         level_interrupt_set_enabled = 0U;
         float ths = 0.1F;
-        rd_status_t err_code = app_sensor_acceleration_threshold_set (&ths);
+        rd_status_t err_code = app_sensor_acc_thr_set (&ths);
         TEST_ASSERT (RD_ERROR_NOT_SUPPORTED == err_code);
         TEST_ASSERT (0U == level_interrupt_set_enabled);
     }
 }
 
-void test_app_sensor_acceleration_threshold_set_null_interrupt_set (void)
+void test_app_sensor_acc_thr_set_null_interrupt_set (void)
 {
     if (SENSOR_COUNT > 3U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
@@ -523,7 +545,7 @@ void test_app_sensor_acceleration_threshold_set_null_interrupt_set (void)
         m_sensors[1]->sensor.level_interrupt_set = NULL;
         level_interrupt_set_enabled = 0U;
         float ths = 0.1F;
-        rd_status_t err_code = app_sensor_acceleration_threshold_set (&ths);
+        rd_status_t err_code = app_sensor_acc_thr_set (&ths);
         TEST_ASSERT (RD_ERROR_NOT_SUPPORTED == err_code);
         TEST_ASSERT (0U == level_interrupt_set_enabled);
     }

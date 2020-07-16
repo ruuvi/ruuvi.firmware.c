@@ -505,13 +505,10 @@ rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data)
     for (size_t ii = 0; (ii < SENSOR_COUNT) && (NULL == provider); ii++)
     {
         if ( (NULL != m_sensors[ii])
-                && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
+                && rd_sensor_is_init (& (m_sensors[ii]->sensor))
+                && (! (~ (m_sensors[ii]->sensor.provides.bitfield) & data.bitfield)))
         {
-            // if there is no field in data which is not provided, return the sensor
-            if (! (~ (m_sensors[ii]->sensor.provides.bitfield) & data.bitfield))
-            {
-                provider = & (m_sensors[ii]->sensor);
-            }
+            provider = & (m_sensors[ii]->sensor);
         }
     }
 
@@ -529,7 +526,7 @@ uint32_t app_sensor_event_count_get (void)
 }
 
 
-rd_status_t app_sensor_acceleration_threshold_set (float * const threshold_g)
+rd_status_t app_sensor_acc_thr_set (float * const threshold_g)
 {
     rd_status_t err_code = RD_SUCCESS;
     const rd_sensor_data_fields_t acceleration =
@@ -538,7 +535,7 @@ rd_status_t app_sensor_acceleration_threshold_set (float * const threshold_g)
         .datas.acceleration_y_g = 1,
         .datas.acceleration_z_g = 1
     };
-    rd_sensor_t * provider = app_sensor_find_provider (acceleration);
+    const rd_sensor_t * const provider = app_sensor_find_provider (acceleration);
 
     if (RI_GPIO_ID_UNUSED == RB_INT_LEVEL_PIN)
     {
