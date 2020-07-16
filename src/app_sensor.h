@@ -62,7 +62,6 @@ enum
 };
 
 #ifdef CEEDLING
-extern rt_sensor_ctx_t * m_sensors[]; //!< Give Ceedling a handle to sensors in project
 void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
 #endif
 
@@ -128,13 +127,75 @@ rd_status_t app_sensor_get (rd_sensor_data_t * const data);
  */
 rd_status_t app_sensor_uninit (void);
 
+/**
+ * @brief Uninitialize sensors into low-power mode.
+ *
+ * @retval RD_SUCCESS On success.
+ * @return Error code from stack on error.
+ */
+rd_status_t app_sensor_uninit (void);
+
+/**
+ * @brief Find and return a sensor which can provide requested data.
+ *
+ * Loops through sensors in order of priority, if board has SHTC temperature and
+ * humidity sensor and LIS2DH12 acceleration and temperature sensor, searching
+ * for the sensor will return the one which is first in m_sensors list.
+ *
+ * Works only witjh initialized sensors, will not return a sensor which is supported
+ * in firmawre but not initialized due to self-test error etc.
+ *
+ * @param[in] data fields which sensor must provide.
+ * @return Pointer to SENSOR, NULL if suitable sensor is not found.
+ * @note If parameter data is empty, first initialized sensor will be returned.
+ */
+rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data);
+
+
+/**
+ * @brief Increment event counter of application. Rolls over at 2^32.
+ */
+void app_sensor_event_increment (void);
+
+/**
+ * @brief Get current event count.
+ *
+ * @return Number of events accumulated, rolls over at int32_t.
+ */
+uint32_t app_sensor_event_count_get (void);
+
+/**
+ * @brief Set threshold for accelerometer interrupts.
+ *
+ * Accelerometers are high-passed so gravity won't affect given threshold.
+ * Acceleration event is triggered when the threshold is exceeded on any axis.
+ * Acceleration event ceases when acceleration falls below the threshold, and
+ * can then be triggered again. Maximum rate for acceleration events is then
+ * accelerometer sample rate divided by two.
+ *
+ * On acceleration event @ref app_sensor_event_increment is called.
+ *
+ * @param[in, out] threshold_g In: Thershold of acceleration, > 0. Interpreted as
+ *                                 "at least this much". NULL to disable interrupts.
+ *                             Out: Configured threshold.
+ * @retval RD_SUCCESS if threshold was configured.
+ * @retval RD_ERROR_NOT_IMPLEMENTED if threshold is lower than 0 (negative).
+ * @retval RD_ERROR_NOT_SUPPORTED if no suitable accelerometer is initialized.
+ *
+ *
+ */
+rd_status_t app_sensor_acceleration_threshold_set (float * threshold_g);
+
+
 #ifdef RUUVI_RUN_TESTS
 void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
 #endif
 
 #ifdef CEEDLING
 #include "ruuvi_interface_communication_radio.h"
-void on_radio (const ri_radio_activity_evt_t evt);
+#include "ruuvi_interface_gpio_interrupt.h"
+void on_radio_isr (const ri_radio_activity_evt_t evt);
+void on_accelerometer_isr (const ri_gpio_evt_t event);
 #endif
 
 #endif // APP_SENSOR_H

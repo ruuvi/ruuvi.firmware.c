@@ -101,6 +101,7 @@ extern uint16_t m_measurement_count;
 
 static void re_5_encode_expect (void)
 {
+    app_sensor_event_count_get_ExpectAndReturn(1);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);

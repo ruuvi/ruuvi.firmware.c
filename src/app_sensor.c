@@ -5,6 +5,7 @@
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_gpio.h"
+#include "ruuvi_interface_gpio_interrupt.h"
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_lis2dh12.h"
@@ -16,6 +17,11 @@
 #include "ruuvi_interface_spi.h"
 #include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
+
+static inline void LOG (const char * const msg)
+{
+    ri_log (RI_LOG_LEVEL_INFO, msg);
+}
 
 /**
  * @addtogroup app_sensor
@@ -41,7 +47,8 @@
 static
 #endif
 rt_sensor_ctx_t * m_sensors[SENSOR_COUNT]; //!< Sensor APIs.
-uint64_t vdd_update_time = 0;
+static uint64_t vdd_update_time;           //!< timestamp of VDD update.
+static uint32_t m_event_counter;           //!< Number of events registered in app_sensor.
 
 #if APP_SENSOR_BME280_ENABLED
 static rt_sensor_ctx_t bme280 =
@@ -212,7 +219,7 @@ void m_sensors_init (void)
 #ifndef CEEDLING
 static
 #endif
-void on_radio (const ri_radio_activity_evt_t evt)
+void on_radio_isr (const ri_radio_activity_evt_t evt)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -242,6 +249,18 @@ void on_radio (const ri_radio_activity_evt_t evt)
                 RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
             }
         }
+    }
+}
+
+#ifndef CEEDLING
+static
+#endif
+void on_accelerometer_isr (const ri_gpio_evt_t event)
+{
+    if (RI_GPIO_SLOPE_LOTOHI == event.slope)
+    {
+        LOG ("Movement \r\n");
+        app_sensor_event_increment();
     }
 }
 
@@ -404,7 +423,7 @@ rd_status_t app_sensor_init (void)
     }
 
     // Synchronize battery measurement to radio activity.
-    ri_radio_activity_callback_set (on_radio);
+    ri_radio_activity_callback_set (on_radio_isr);
     return err_code;
 }
 
@@ -461,6 +480,90 @@ rd_status_t app_sensor_get (rd_sensor_data_t * const data)
         {
             err_code |= m_sensors[ii]->sensor.data_get (data);
         }
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Find and return a sensor which can provide requested data.
+ *
+ * Loops through sensors in order of priority, if board has SHTC temperature and
+ * humidity sensor and LIS2DH12 acceleration and temperature sensor, searching
+ * for the sensor will return the one which is first in m_sensors list.
+ *
+ * Works only witjh initialized sensors, will not return a sensor which is supported
+ * in firmawre but not initialized due to self-test error etc.
+ *
+ * @param[in] data fields which sensor must provide.
+ * @return Pointer to SENSOR, NULL if suitable sensor is not found.
+ */
+rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data)
+{
+    rd_sensor_t * provider = NULL;
+
+    for (size_t ii = 0; (ii < SENSOR_COUNT) && (NULL == provider); ii++)
+    {
+        if ( (NULL != m_sensors[ii])
+                && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
+        {
+            // if there is no field in data which is not provided, return the sensor
+            if (! (~ (m_sensors[ii]->sensor.provides.bitfield) & data.bitfield))
+            {
+                provider = & (m_sensors[ii]->sensor);
+            }
+        }
+    }
+
+    return provider;
+}
+
+void app_sensor_event_increment (void)
+{
+    m_event_counter++;
+}
+
+uint32_t app_sensor_event_count_get (void)
+{
+    return m_event_counter;
+}
+
+
+rd_status_t app_sensor_acceleration_threshold_set (float * const threshold_g)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const rd_sensor_data_fields_t acceleration =
+    {
+        .datas.acceleration_x_g = 1,
+        .datas.acceleration_y_g = 1,
+        .datas.acceleration_z_g = 1
+    };
+    rd_sensor_t * provider = app_sensor_find_provider (acceleration);
+
+    if (RI_GPIO_ID_UNUSED == RB_INT_LEVEL_PIN)
+    {
+        err_code |= RD_ERROR_NOT_SUPPORTED;
+    }
+    else if ( (NULL == provider) || (NULL == provider->level_interrupt_set))
+    {
+        err_code |= RD_ERROR_NOT_SUPPORTED;
+    }
+    else if (NULL == threshold_g)
+    {
+        ri_gpio_interrupt_disable (RB_INT_LEVEL_PIN);
+        err_code |= provider->level_interrupt_set (false, threshold_g);
+    }
+    else if (0 > *threshold_g)
+    {
+        err_code |= RD_ERROR_NOT_IMPLEMENTED;
+    }
+    else
+    {
+        ri_gpio_interrupt_enable (RB_INT_LEVEL_PIN,
+                                  RI_GPIO_SLOPE_TOGGLE,
+                                  RI_GPIO_MODE_INPUT_NOPULL,
+                                  &on_accelerometer_isr);
+        err_code |= provider->level_interrupt_set (true, threshold_g);
     }
 
     return err_code;
