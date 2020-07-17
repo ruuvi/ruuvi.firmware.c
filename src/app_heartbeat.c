@@ -32,6 +32,7 @@ static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
                                 ri_comm_message_t * const msg)
 {
     rd_status_t err_code = RD_SUCCESS;
+    uint8_t movement_count = (uint8_t) (app_sensor_event_count_get() & 0xFEU);
     re_5_data_t ep_data =
     {
         .accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD),
@@ -44,7 +45,7 @@ static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
         .tx_power          = RE_5_INVALID_POWER,
         .battery_v         = RE_5_INVALID_VOLTAGE,
         .measurement_count = m_measurement_count,
-        .movement_count    = RE_5_INVALID_MOVEMENT
+        .movement_count    = movement_count
     };
     err_code |= ri_radio_address_get (&ep_data.address);
     err_code |= ri_adv_tx_power_get (&ep_data.tx_power);

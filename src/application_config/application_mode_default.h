@@ -28,4 +28,7 @@
 #   define APP_BATTERY_SAMPLE_MS (60ULL*1000ULL)
 #endif
 
+#ifndef APP_MOTION_THRESHOLD
+#   define APP_MOTION_THRESHOLD (0.064F)
+#endif
 #endif
