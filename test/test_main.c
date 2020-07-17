@@ -44,6 +44,7 @@ void tearDown (void)
 void test_main (void)
 {
     // <setup>
+    float motion_threshold = APP_MOTION_THRESHOLD;
     ri_watchdog_init_ExpectAndReturn (APP_WDT_INTERVAL_MS, &on_wdt, RD_SUCCESS);
     ri_yield_init_ExpectAndReturn (RD_SUCCESS);
     ri_timer_init_ExpectAndReturn (RD_SUCCESS);
@@ -53,6 +54,7 @@ void test_main (void)
     app_dc_dc_init_ExpectAndReturn (RD_SUCCESS);
     app_led_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_init_ExpectAndReturn (RD_SUCCESS);
+    app_sensor_acc_thr_set_ExpectWithArrayAndReturn (&motion_threshold, 1, RD_SUCCESS);
     app_comms_init_ExpectAndReturn (RD_SUCCESS);
     app_heartbeat_init_ExpectAndReturn (RD_SUCCESS);
     // </setup>

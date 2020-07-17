@@ -26,6 +26,7 @@
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_library.h"
 #include "ruuvi_library_test.h"
+#include "ruuvi_task_gpio.h"
 #include "ruuvi_task_sensor.h"
 
 /**
@@ -90,9 +91,11 @@ static void integration_test_power (void)
 static void integration_test_sensors (void)
 {
     rt_sensor_ctx_t ** p_sensors;
+    rd_status_t err_code = RD_SUCCESS;
     size_t num_sensors = 0;
     LOG ("\"sensors\": {\r\n");
-    app_sensor_init();
+    err_code |= rt_gpio_init();
+    err_code |= app_sensor_init();
     app_sensor_ctx_get (&p_sensors, &num_sensors);
 
     for (size_t ii = 0; ii < num_sensors; ii++)
@@ -107,9 +110,14 @@ static void integration_test_sensors (void)
         {
             LOG ("\r\n");
         }
+
+        // Let logs print out.
+        ri_delay_ms (10);
     }
 
     app_sensor_uninit();
+    ri_gpio_interrupt_uninit();
+    ri_gpio_uninit();
     (void) ri_rtc_uninit();
     rd_sensor_timestamp_function_set (NULL);
     LOG ("},\r\n");

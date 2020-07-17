@@ -74,6 +74,7 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
  * reading rate of sensors, reading rate must be configured separately.
  *
  * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
+ * @retavl RD_ERROR_INVALID_STATE if GPIO or GPIO interrupts are not enabled.
  * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.
  */
 rd_status_t app_sensor_init (void);

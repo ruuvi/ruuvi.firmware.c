@@ -37,6 +37,8 @@ void tearDown (void)
 void test_app_sensor_init_ok (void)
 {
     rd_status_t err_code;
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
@@ -93,6 +95,8 @@ static const rd_sensor_data_fields_t fields_expected =
 void test_app_sensor_init_first_time (void)
 {
     rd_status_t err_code;
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
@@ -114,6 +118,8 @@ void test_app_sensor_init_first_time (void)
 void test_app_sensor_init_not_found (void)
 {
     rd_status_t err_code;
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
@@ -132,6 +138,8 @@ void test_app_sensor_init_not_found (void)
 void test_app_sensor_init_selftest_fail (void)
 {
     rd_status_t err_code;
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
@@ -150,6 +158,23 @@ void test_app_sensor_init_selftest_fail (void)
     ri_radio_activity_callback_set_Expect (&on_radio_isr);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_ERROR_SELFTEST == err_code);
+}
+
+void test_app_sensor_init_no_gpio (void)
+{
+    rd_status_t err_code;
+    ri_gpio_is_init_ExpectAndReturn (false);
+    err_code = app_sensor_init();
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
+}
+
+void test_app_sensor_init_no_gpio_int (void)
+{
+    rd_status_t err_code;
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (false);
+    err_code = app_sensor_init();
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
 }
 
 static rd_status_t mock_uninit (rd_sensor_t * sensor, rd_bus_t bus, uint8_t handle)

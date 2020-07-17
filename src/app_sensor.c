@@ -102,8 +102,8 @@ static rt_sensor_ctx_t lis2dh12 =
     .handle = RB_SPI_SS_ACCELEROMETER_PIN,
     .pwr_pin = RI_GPIO_ID_UNUSED,
     .pwr_on  = RI_GPIO_HIGH,
-    .fifo_pin = RB_INT_ACC2_PIN,
-    .level_pin = RB_INT_ACC1_PIN
+    .fifo_pin = RB_INT_FIFO_PIN,
+    .level_pin = RB_INT_LEVEL_PIN
 };
 #endif
 
@@ -333,14 +333,23 @@ static rd_status_t app_sensor_buses_init (void)
         .mode = RI_SPI_MODE_0,
         .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)
     };
-    err_code |= ri_spi_init (&spi_config);
     ri_i2c_init_config_t i2c_config =
     {
         .sda = RB_I2C_SDA_PIN,
         .scl = RB_I2C_SCL_PIN,
         .frequency = rb_to_ri_i2c_freq (RB_I2C_FREQ)
     };
-    err_code |= ri_i2c_init (&i2c_config);
+
+    if ( (!ri_gpio_is_init()) || (!ri_gpio_interrupt_is_init()))
+    {
+        err_code |= RD_ERROR_INVALID_STATE;
+    }
+    else
+    {
+        err_code |= ri_spi_init (&spi_config);
+        err_code |= ri_i2c_init (&i2c_config);
+    }
+
     return err_code;
 }
 
@@ -370,60 +379,64 @@ rd_status_t app_sensor_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     m_sensors_init();
-    app_sensor_buses_init();
-    app_sensor_rtc_init();
+    err_code |= app_sensor_buses_init();
 
-    for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
+    if (RD_SUCCESS == err_code)
     {
-        rd_status_t init_code = RD_SUCCESS;
-        size_t retries = 0;
-
-        // Enable power to sensor
-        if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
+        app_sensor_rtc_init();
+        for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
         {
-            (void) ri_gpio_configure (m_sensors[ii]->pwr_pin,
-                                      RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
-            (void) ri_gpio_write (m_sensors[ii]->pwr_pin, m_sensors[ii]->pwr_on);
-        }
+            rd_status_t init_code = RD_SUCCESS;
+            size_t retries = 0;
 
-        // Some sensors, such as accelerometer may fail on user moving the board. Retry.
-        do
-        {
-            init_code = rt_sensor_initialize (m_sensors[ii]);
-        } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++)
+            // Enable power to sensor
+            if (m_sensors[ii]->pwr_pin != RI_GPIO_ID_UNUSED)
+            {
+                (void) ri_gpio_configure (m_sensors[ii]->pwr_pin,
+                                          RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
+                (void) ri_gpio_write (m_sensors[ii]->pwr_pin, m_sensors[ii]->pwr_on);
+            }
 
-                  && (RD_ERROR_SELFTEST == init_code));
+            // Some sensors, such as accelerometer may fail on user moving the board. Retry.
+            do
+            {
+                init_code = rt_sensor_initialize (m_sensors[ii]);
+            } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++)
 
-        if (RD_SUCCESS == init_code)
-        {
-            // Check for a configuration in flash.
-            init_code = rt_sensor_load (m_sensors[ii]);
+                      && (RD_ERROR_SELFTEST == init_code));
 
-            // Configuration found, use it.
             if (RD_SUCCESS == init_code)
             {
-                init_code = rt_sensor_configure (m_sensors[ii]);
+                // Check for a configuration in flash.
+                init_code = rt_sensor_load (m_sensors[ii]);
+
+                // Configuration found, use it.
+                if (RD_SUCCESS == init_code)
+                {
+                    init_code = rt_sensor_configure (m_sensors[ii]);
+                }
+                // Configuration not found, use defaults, store to flash.
+                else
+                {
+                    init_code = rt_sensor_configure (m_sensors[ii]);
+                    rt_sensor_store (m_sensors[ii]);
+                }
             }
-            // Configuration not found, use defaults, store to flash.
+            else if (RD_ERROR_SELFTEST == init_code)
+            {
+                err_code |= RD_ERROR_SELFTEST;
+            }
+            // Mark unavailable sensor handles as unused.
             else
             {
-                init_code = rt_sensor_configure (m_sensors[ii]);
-                rt_sensor_store (m_sensors[ii]);
+                m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
             }
         }
-        else if (RD_ERROR_SELFTEST == init_code)
-        {
-            err_code |= RD_ERROR_SELFTEST;
-        }
-        // Mark unavailable sensor handles as unused.
-        else
-        {
-            m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
-        }
+
+        // Synchronize battery measurement to radio activity.
+        ri_radio_activity_callback_set (on_radio_isr);
     }
 
-    // Synchronize battery measurement to radio activity.
-    ri_radio_activity_callback_set (on_radio_isr);
     return err_code;
 }
 
@@ -556,10 +569,10 @@ rd_status_t app_sensor_acc_thr_set (float * const threshold_g)
     }
     else
     {
-        ri_gpio_interrupt_enable (RB_INT_LEVEL_PIN,
-                                  RI_GPIO_SLOPE_TOGGLE,
-                                  RI_GPIO_MODE_INPUT_NOPULL,
-                                  &on_accelerometer_isr);
+        err_code |= ri_gpio_interrupt_enable (RB_INT_LEVEL_PIN,
+                                              RI_GPIO_SLOPE_TOGGLE,
+                                              RI_GPIO_MODE_INPUT_NOPULL,
+                                              &on_accelerometer_isr);
         err_code |= provider->level_interrupt_set (true, threshold_g);
     }
 
