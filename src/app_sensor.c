@@ -384,6 +384,7 @@ rd_status_t app_sensor_init (void)
     if (RD_SUCCESS == err_code)
     {
         app_sensor_rtc_init();
+
         for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
         {
             rd_status_t init_code = RD_SUCCESS;

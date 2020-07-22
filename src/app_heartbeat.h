@@ -21,6 +21,9 @@
  * The heartbeat interval should be at most as logging rate to make sure
  * that application will log fresh data.
  *
+ * The heartbeat data is passed on to logging module which then decides
+ * if sample should be logged. 
+ *
  * @retval RD_SUCCESS on success
  * @retval RD_ERROR_INVALID_STATE if timers or scheduler is not initialized.
  * @retval RD_ERROR_RESOURCES if a timer cannot be allocated.

@@ -213,14 +213,43 @@
 #   define RI_COMM_ENABLED RT_COMMUNICATION_ENABLED
 #endif
 
+/** @brief Enable GATT tasks */
+#ifndef RT_FLASH_ENABLED
+#   define RT_FLASH_ENABLED (RB_APP_PAGES > 0U)
+#endif
+
 // ***** Flash storage constants *****/
-// These constants can be any non-zero uint8, but two files and two records in same file can't have same ID.
+// File constants can be any non-zero uint8.
+// Record constants can be any non-zero uint16
+// Two files and two records in same file can't have same ID.
 #define APP_FLASH_SENSOR_FILE (0xCEU)
 #define APP_FLASH_SENSOR_NTC_RECORD      (0xC1U)
 #define APP_FLASH_SENSOR_PHOTO_RECORD    (0xC2U)
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
+
+#define APP_FLASH_LOG_FILE (0xF0U)
+#define APP_FLASH_LOG_CONFIG_RECORD      (0x01U)
+#define APP_FLASH_LOG_DATA_RECORD_PREFIX (0xF0U) //!< Prefix, append with U8 number
+#define APP_FLASH_LOG_DATA_RECORDS_NUM   (RB_APP_PAGES - 2) //!< swap page + settings.
+
+// ** Logging constants ** //
+#ifndef APP_LOG_INTERVAL_S
+#   define APP_LOG_INTERVAL_S (5U * 60U)
+#endif
+#ifndef APP_LOG_OVERFLOW
+#   define APP_LOG_OVERFLOW (true)
+#endif
+#ifndef APP_LOG_TEMPERATURE_ENABLED
+#   define APP_LOG_TEMPERATURE_ENABLED (true)
+#endif
+#ifndef APP_LOG_HUMIDITY_ENABLED
+#   define APP_LOG_HUMIDITY_ENABLED (true)
+#endif
+#ifndef APP_LOG_PRESSURE_ENABLED
+#   define APP_LOG_PRESSURE_ENABLED (true)
+#endif
 
 /** @brief Enable ADC tasks */
 #ifndef RT_ADC_ENABLED
@@ -329,8 +358,8 @@
 
 /** @brief Logs reserve lot of flash, enable only on debug builds */
 #ifndef RI_LOG_ENABLED
-#define RI_LOG_ENABLED (0U)
-#define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
+#   define RI_LOG_ENABLED (0U)
+#   define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
 #endif
 
 /*@}*/

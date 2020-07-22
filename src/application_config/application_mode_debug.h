@@ -10,4 +10,8 @@
 #   define APP_HEARTBEAT_INTERVAL_MS (221U)
 #endif
 
+#ifndef APP_LOG_INTERVAL_S
+#   define APP_LOG_INTERVAL_S (0U) //!< Gets limited to heartbeat rate.
+#endif
+
 #endif
