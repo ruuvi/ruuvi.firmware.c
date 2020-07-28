@@ -6,17 +6,20 @@
 #include "ruuvi_library.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_log.h"
+#include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_task_flash.h"
 #include "mock_ruuvi_library_compress.h"
 
 #include <string.h>
 
 #define NUM_FIELDS 4 //XXX, should support any number of fields
+#define IGNORE_RECORD_IDX 0xFFU
 
 extern app_log_record_t    m_log_input_block;
 extern app_log_record_t    m_log_output_block;
 extern rl_compress_state_t m_compress_state;
 extern app_log_config_t    m_log_config;
+extern uint64_t            m_last_sample_ms;
 
 void setUp (void)
 {
@@ -26,6 +29,53 @@ void setUp (void)
 
 void tearDown (void)
 {
+}
+
+static void store_block_expect (const uint8_t record_idx, const bool block_flash)
+{
+    rt_flash_free_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                   RD_SUCCESS);
+
+    if (IGNORE_RECORD_IDX == record_idx)
+    {
+        rt_flash_free_IgnoreArg_record_id();
+    }
+
+    rt_flash_busy_ExpectAndReturn (block_flash);
+
+    if (block_flash)
+    {
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
+
+    rt_flash_gc_run_ExpectAndReturn (RD_SUCCESS);
+    rt_flash_busy_ExpectAndReturn (block_flash);
+
+    if (block_flash)
+    {
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
+
+    rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                    &m_log_input_block, sizeof (m_log_input_block),
+                                    RD_SUCCESS);
+
+    if (IGNORE_RECORD_IDX == record_idx)
+    {
+        rt_flash_store_IgnoreArg_record_id();
+    }
+
+    rt_flash_busy_ExpectAndReturn (block_flash);
+
+    if (block_flash)
+    {
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
 }
 
 /**
@@ -154,6 +204,7 @@ void test_app_log_process_sequence (void)
     rd_status_t err_code = RD_SUCCESS;
     float samples[NUM_FIELDS] = {0};
     const uint16_t interval_s = 4U;
+    m_last_sample_ms = 0;
     app_log_config_t store =
     {
         .interval_s = interval_s,
@@ -196,7 +247,7 @@ void test_app_log_process_sequence (void)
         }
 
         err_code |= app_log_process (&sample);
-        sample.timestamp_ms += interval_s / 2;
+        sample.timestamp_ms += (interval_s / 2) * 1000;
     }
 
     TEST_ASSERT (RD_SUCCESS == err_code);
@@ -205,6 +256,7 @@ void test_app_log_process_sequence (void)
 void test_app_log_process_fill_blocks (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+    m_last_sample_ms = 0;
     float samples[4] = {0}; //!< number of fields to mock-store.
     rd_sensor_data_t sample =
     {
@@ -233,15 +285,8 @@ void test_app_log_process_fill_blocks (void)
                                      &m_compress_state,
                                      RL_COMPRESS_END);
         rl_compress_IgnoreArg_data();
-        rt_flash_free_ExpectAndReturn (APP_FLASH_LOG_FILE,
-                                       (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
-                                       RD_SUCCESS);
-        rt_flash_gc_run_ExpectAndReturn (RD_SUCCESS);
-        rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE,
-                                        (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
-                                        &m_log_input_block, sizeof (m_log_input_block),
-                                        RD_SUCCESS);
-        sample.timestamp_ms++;
+        store_block_expect (record_idx, ii % 2);
+        sample.timestamp_ms += (m_log_config.interval_s * 1001U);
         record_idx++;
         record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
         err_code |= app_log_process (&sample);
@@ -282,7 +327,11 @@ void test_app_log_read_from_start (void)
     app_log_record_t record = {0};
     record.start_timestamp_s = 1U;
     record.end_timestamp_s = 10U;
+    rl_data_t data = {0};
+    uint32_t timestamp = sample.timestamp_ms / 1000;
     uint8_t record_idx = 0;
+    // Stash current block.
+    store_block_expect (record_idx, false);
     // Load flash, check if we can find a block which has start timestamp before
     // and end timestamp after target time.
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
@@ -290,15 +339,13 @@ void test_app_log_read_from_start (void)
                                    &record, sizeof (record),
                                    RD_SUCCESS);
     rt_flash_load_IgnoreArg_message();
-    rt_flash_load_ReturnThruPtr_message (&record);
-    rl_decompress_ExpectAndReturn (NULL,
-                                   m_log_output_block.storage,
-                                   sizeof (m_log_output_block.storage),
-                                   &m_compress_state,
-                                   NULL,
-                                   RD_SUCCESS);
-    rl_decompress_IgnoreArg_data();
-    rl_decompress_IgnoreArg_start_timestamp();
+    rt_flash_load_ReturnArrayThruPtr_message (&record, 1);
+    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
+                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
+                                            sizeof (m_log_output_block.storage),
+                                            &m_compress_state, 1,
+                                            &timestamp, 1,
+                                            RD_SUCCESS);
     err_code |= app_log_read (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -330,6 +377,7 @@ void test_app_log_config_set_ok (void)
                                     &defaults, sizeof (defaults),
                                     RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
+    store_block_expect (IGNORE_RECORD_IDX, false);
     err_code |= app_log_config_set (&defaults);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }

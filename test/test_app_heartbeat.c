@@ -3,6 +3,7 @@
 #include "app_config.h"
 #include "app_heartbeat.h"
 #include "mock_app_comms.h"
+#include "mock_app_log.h"
 #include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_driver_sensor.h"
@@ -125,6 +126,7 @@ void test_heartbeat_df5_all_ok (void)
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -139,6 +141,7 @@ void test_heartbeat_df5_adv_ok (void)
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_ERROR_INVALID_STATE);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -152,6 +155,7 @@ void test_heartbeat_df5_none_ok (void)
     rt_adv_send_data_ExpectAnyArgsAndReturn (RD_ERROR_INVALID_STATE);
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -172,6 +176,7 @@ void test_heartbeat_df5_measurement_cnt_rollover (void)
         rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
         rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
         ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+        app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
         heartbeat (NULL, 0);
         resetTest(); // Avoid running out of memory.
     }

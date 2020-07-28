@@ -53,6 +53,11 @@ static
 #endif
 app_log_config_t m_log_config; //!< Configuration for logging.
 
+#ifndef CEEDLING
+static
+#endif
+uint64_t m_last_sample_ms; //!< Timestamp of last processed sample.
+
 /**
  * @brief Convert Ruuvi driver data to ruuvi library data.
  */
@@ -180,19 +185,18 @@ rd_status_t app_log_init (void)
 rd_status_t app_log_process (const rd_sensor_data_t * const sample)
 {
     rd_status_t err_code = RD_SUCCESS;
-    static uint64_t last_sample_ms;
-    uint64_t next_sample_ms = last_sample_ms + (m_log_config.interval_s * 1000U);
+    uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000U);
     LOGD ("LOG: Sample received\r\n");
 
     // Always store first sample.
-    if (0 == last_sample_ms)
+    if (0 == m_last_sample_ms)
     {
         next_sample_ms = 0;
     }
 
     //Check if new sample should be processed
     if ( (!m_decompressing)
-            && (next_sample_ms < sample->timestamp_ms))
+            && (next_sample_ms <= sample->timestamp_ms))
     {
         LOGD ("LOG: Storing sample\r\n");
         rl_status_t lib_status = RL_SUCCESS;
@@ -217,12 +221,16 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
             RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
         }
 
-        last_sample_ms = sample->timestamp_ms;
+        m_last_sample_ms = sample->timestamp_ms;
         m_log_input_block.end_timestamp_s = sample->timestamp_ms;
+    }
+    else if (m_decompressing)
+    {
+        err_code |= RD_ERROR_BUSY;
     }
     else
     {
-        err_code |= RD_ERROR_BUSY;
+        // No action needed.
     }
 
     return err_code;
@@ -247,6 +255,7 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample)
     rl_status_t lib_status = RL_SUCCESS;
     static uint8_t record_idx = 0U;
     uint8_t records_searched = 0U;
+    uint32_t target_ts_s = sample->timestamp_ms / 1000U;
 
     if (!m_decompressing)
     {
@@ -257,8 +266,8 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample)
     }
 
     // Search for a block that contains data in given time range.
-    while ( ( (sample->timestamp_ms < m_log_output_block.start_timestamp_s)
-              || (sample->timestamp_ms > m_log_output_block.end_timestamp_s))
+    while ( ( (target_ts_s < m_log_output_block.start_timestamp_s)
+              || (target_ts_s > m_log_output_block.end_timestamp_s))
             && (records_searched < APP_FLASH_LOG_DATA_RECORDS_NUM))
     {
         err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
@@ -270,15 +279,14 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample)
     }
 
     // If valid block was found
-    if ( (sample->timestamp_ms >= m_log_output_block.start_timestamp_s)
-            && (sample->timestamp_ms <= m_log_output_block.end_timestamp_s))
+    if ( (target_ts_s >= m_log_output_block.start_timestamp_s)
+            && (target_ts_s <= m_log_output_block.end_timestamp_s))
     {
         // Decompress data.
         rl_data_t data = {0};
-        data.time = sample->timestamp_ms;
         lib_status |= rl_decompress (&data, m_log_output_block.storage,
                                      sizeof (m_log_output_block.storage),
-                                     &m_compress_state, &data.time);
+                                     &m_compress_state, &target_ts_s);
 
         if (RL_SUCCESS == lib_status)
         {
@@ -331,6 +339,9 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 rd_status_t app_log_config_get (app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
+    err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
+                               APP_FLASH_LOG_CONFIG_RECORD,
+                               &configuration, sizeof (configuration));
     memcpy (configuration, &m_log_config, sizeof (m_log_config));
     return err_code;
 }
