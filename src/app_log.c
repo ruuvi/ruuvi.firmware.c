@@ -41,6 +41,8 @@ static
 #endif
 app_log_record_t m_log_output_block;   //!< Block read from flash for examination.
 
+static bool m_decompressing; //!< Flag, decompression op ongoing. Cannot store data.
+
 #if ((!defined(CEEDLING)) && (!defined(RUUVI_RUN_TESTS)))
 static
 #endif
@@ -68,30 +70,61 @@ static rl_data_t rd_2_rl (const rd_sensor_data_t * const sample)
     return rl_data;
 }
 
+/**
+ * @brief Convert Ruuvi library data to ruuvi driver data.
+ */
+static void rl_2_rd (rd_sensor_data_t * const sample,
+                     const rl_data_t * const data)
+{
+    sample->timestamp_ms = ( (uint64_t) data->time * (uint64_t) 1000U);
+    rd_sensor_data_set (sample, RD_SENSOR_HUMI_FIELD, data->payload[0]);
+    rd_sensor_data_set (sample, RD_SENSOR_TEMP_FIELD, data->payload[1]);
+    rd_sensor_data_set (sample, RD_SENSOR_PRES_FIELD, data->payload[2]);
+}
+
 static rd_status_t store_block (const app_log_record_t * const record)
 {
     static uint8_t record_idx = 0;
+    uint8_t num_tries = 0;
+    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= rt_flash_free (APP_FLASH_LOG_FILE,
-                               (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx);
-    // It's not a problem if there wasn't old block to erase.
-    err_code &= ~RD_ERROR_NOT_FOUND;
-    while(rt_flash_busy())
+    m_log_input_block.num_samples++;
+
+    do
     {
-      ri_yield();
-    }
-    err_code |= rt_flash_gc_run ();
-    while(rt_flash_busy())
-    {
-      ri_yield();
-    }
-    err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
-                                (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
-                                &m_log_input_block, sizeof (m_log_input_block));
-    while(rt_flash_busy())
-    {
-      ri_yield();
-    }
+        err_code = rt_flash_free (APP_FLASH_LOG_FILE,
+                                  (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx);
+        // It's not a problem if there wasn't old block to erase.
+        err_code &= ~RD_ERROR_NOT_FOUND;
+
+        while (rt_flash_busy())
+        {
+            ri_yield();
+        }
+
+        err_code |= rt_flash_gc_run ();
+
+        while (rt_flash_busy())
+        {
+            ri_yield();
+        }
+
+        err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
+                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                    &m_log_input_block, sizeof (m_log_input_block));
+
+        while (rt_flash_busy())
+        {
+            ri_yield();
+        }
+
+        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+        // Erase another block and try again if there was error.
+    } while (RD_SUCCESS != err_code && num_tries < APP_FLASH_LOG_DATA_RECORDS_NUM);
+
+    memset (&m_compress_state, 0, sizeof (m_compress_state));
+    memset (&m_log_input_block, 0, sizeof (m_log_input_block));
+    m_log_input_block.start_timestamp_s = end_timestamp;
     record_idx++;
     record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
     return err_code;
@@ -149,7 +182,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
     rd_status_t err_code = RD_SUCCESS;
     static uint64_t last_sample_ms;
     uint64_t next_sample_ms = last_sample_ms + (m_log_config.interval_s * 1000U);
-    LOGD("LOG: Sample received\r\n");
+    LOGD ("LOG: Sample received\r\n");
 
     // Always store first sample.
     if (0 == last_sample_ms)
@@ -158,12 +191,12 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
     }
 
     //Check if new sample should be processed
-    if (next_sample_ms < sample->timestamp_ms)
+    if ( (!m_decompressing)
+            && (next_sample_ms < sample->timestamp_ms))
     {
-        LOGD("LOG: Storing sample\r\n");
+        LOGD ("LOG: Storing sample\r\n");
         rl_status_t lib_status = RL_SUCCESS;
         rl_data_t data = rd_2_rl (sample);
-        
         lib_status |= rl_compress (&data,
                                    m_log_input_block.storage,
                                    sizeof (m_log_input_block.storage),
@@ -175,13 +208,8 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         }
         else if (RL_COMPRESS_END == lib_status)
         {
-            LOG("LOG: Storing block\r\n");
-            m_log_input_block.num_samples++;
-            m_log_input_block.end_timestamp_s = sample->timestamp_ms;
+            LOG ("LOG: Storing block\r\n");
             err_code |= store_block (&m_log_input_block);
-            memset (&m_compress_state, 0, sizeof (m_compress_state));
-            memset (&m_log_input_block, 0, sizeof (m_log_input_block));
-            m_log_input_block.start_timestamp_s = sample->timestamp_ms;
         }
         else
         {
@@ -190,6 +218,11 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         }
 
         last_sample_ms = sample->timestamp_ms;
+        m_log_input_block.end_timestamp_s = sample->timestamp_ms;
+    }
+    else
+    {
+        err_code |= RD_ERROR_BUSY;
     }
 
     return err_code;
@@ -210,7 +243,56 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
  */
 rd_status_t app_log_read (rd_sensor_data_t * const sample)
 {
-    return RD_ERROR_NOT_IMPLEMENTED;
+    rd_status_t err_code = RD_SUCCESS;
+    rl_status_t lib_status = RL_SUCCESS;
+    static uint8_t record_idx = 0U;
+    uint8_t records_searched = 0U;
+
+    if (!m_decompressing)
+    {
+        LOG ("Starting decompression, store current block to flash.\r\n");
+        err_code |= store_block (&m_log_input_block);
+        m_decompressing = true;
+        memset (&m_compress_state, 0, sizeof (m_compress_state));
+    }
+
+    // Search for a block that contains data in given time range.
+    while ( ( (sample->timestamp_ms < m_log_output_block.start_timestamp_s)
+              || (sample->timestamp_ms > m_log_output_block.end_timestamp_s))
+            && (records_searched < APP_FLASH_LOG_DATA_RECORDS_NUM))
+    {
+        err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                   &m_log_output_block, sizeof (m_log_output_block));
+        record_idx++;
+        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
+        records_searched++;
+    }
+
+    // If valid block was found
+    if ( (sample->timestamp_ms >= m_log_output_block.start_timestamp_s)
+            && (sample->timestamp_ms <= m_log_output_block.end_timestamp_s))
+    {
+        // Decompress data.
+        rl_data_t data = {0};
+        data.time = sample->timestamp_ms;
+        lib_status |= rl_decompress (&data, m_log_output_block.storage,
+                                     sizeof (m_log_output_block.storage),
+                                     &m_compress_state, &data.time);
+
+        if (RL_SUCCESS == lib_status)
+        {
+            rl_2_rd (sample, &data);
+        }
+    }
+    // If required data is not found, stop decompression, report not found.
+    else
+    {
+        err_code |= RD_ERROR_NOT_FOUND;
+        m_decompressing = false;
+    }
+
+    return err_code;
 }
 
 /**
@@ -233,9 +315,9 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
                                     APP_FLASH_LOG_CONFIG_RECORD,
                                     &configuration, sizeof (configuration));
 
-        // TODO: Flush current data to flash
         if (RD_SUCCESS == err_code)
         {
+            store_block (&m_log_input_block);
             memcpy (&m_log_config, configuration, sizeof (m_log_config));
         }
     }
@@ -249,7 +331,7 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 rd_status_t app_log_config_get (app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
-    memcpy(configuration, &m_log_config, sizeof(m_log_config));
+    memcpy (configuration, &m_log_config, sizeof (m_log_config));
     return err_code;
 }
 

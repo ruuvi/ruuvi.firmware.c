@@ -22,7 +22,7 @@
  * that application will log fresh data.
  *
  * The heartbeat data is passed on to logging module which then decides
- * if sample should be logged. 
+ * if sample should be logged.
  *
  * @retval RD_SUCCESS on success
  * @retval RD_ERROR_INVALID_STATE if timers or scheduler is not initialized.

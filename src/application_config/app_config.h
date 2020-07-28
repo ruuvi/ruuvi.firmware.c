@@ -195,7 +195,8 @@
 #endif
 
 #ifndef APP_GATT_ENABLED
-#   define APP_GATT_ENABLED (RB_APP_PAGES > 0U) //!< If Flash is at premium, cut GATT off by default
+//!< If Flash is at premium, cut GATT off by default.
+#   define APP_GATT_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)
 #endif
 
 /** @brief Enable GATT tasks */
@@ -213,12 +214,19 @@
 #   define RI_COMM_ENABLED RT_COMMUNICATION_ENABLED
 #endif
 
-/** @brief Enable GATT tasks */
+/** @brief Enable Flash tasks if there is storage space */
 #ifndef RT_FLASH_ENABLED
-#   define RT_FLASH_ENABLED (RB_APP_PAGES > 0U)
+#   define RT_FLASH_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)
 #endif
 
+/** @brief Enable Ruuvi Flash interface. */
+#define RI_FLASH_ENABLED RT_FLASH_ENABLED
+
 // ***** Flash storage constants *****/
+
+#define APP_FLASH_PAGES (16U) //!< 64 kB flash storage if page size is 4 kB.
+#define APP_FLASH_LOG_DATA_RECORDS_NUM   (APP_FLASH_PAGES - 2U) //!< swap page + settings.
+
 // File constants can be any non-zero uint8.
 // Record constants can be any non-zero uint16
 // Two files and two records in same file can't have same ID.
@@ -232,7 +240,6 @@
 #define APP_FLASH_LOG_FILE (0xF0U)
 #define APP_FLASH_LOG_CONFIG_RECORD      (0x01U)
 #define APP_FLASH_LOG_DATA_RECORD_PREFIX (0xF0U) //!< Prefix, append with U8 number
-#define APP_FLASH_LOG_DATA_RECORDS_NUM   (RB_APP_PAGES - 2) //!< swap page + settings.
 
 // ** Logging constants ** //
 #ifndef APP_LOG_INTERVAL_S
@@ -298,13 +305,6 @@
 /** @brief Enable Ruuvi I2C interface. */
 #ifndef RI_I2C_ENABLED
 #   define RI_I2C_ENABLED (1U)
-#endif
-
-/**
- * @brief Enable Ruuvi Flash interface on boards with enough RAM & Flash
- */
-#ifndef RI_FLASH_ENABLED
-#   define RI_FLASH_ENABLED (RB_APP_PAGES > 0U)
 #endif
 
 /** @brief Enable Ruuvi led tasks. */

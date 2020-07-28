@@ -111,8 +111,9 @@ void heartbeat (void * p_event, uint16_t event_size)
     {
         ri_watchdog_feed();
     }
-    err_code = app_log_process(&data);
-    RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
+
+    err_code = app_log_process (&data);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 
 /**
