@@ -28,6 +28,7 @@
 #include "app_config.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
+#include "ruuvi_interface_communication.h"
 #include "ruuvi_task_sensor.h"
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
@@ -186,6 +187,32 @@ uint32_t app_sensor_event_count_get (void);
  *
  */
 rd_status_t app_sensor_acc_thr_set (float * threshold_g);
+
+/**
+ * @brief Handle data coming in to the application.
+ *
+ * Interprets the desired action, executes it and aknowledges to
+ * reply_fp with ri_comm_message_t containing ruuvi endpoint encoded message.
+ *
+ * For example a Log Read command gets replied with all the logged elements.
+ *
+ *
+ * @param[in] ri_reply_fp Function pointer to send replies to.
+ * @param[in] raw_message Payload sent by client. Must be a standard Ruuvi Endpoint
+ *                        message.
+ * @param[in] data_len Payload sent by client.
+ *
+ * @retval RD_SUCCESS Data was handled, including replying with error to reply_fp.
+ * @retval RD_ERROR_NULL Raw message is NULL.
+ * @retval RD_ERROR_DATA_SIZE data_len is less than RE_STANDARD_MESSAGE_LENGTH.
+ *
+ * @warning Executing these commands can be resource intensive. Consider
+ *          stopping app_heartbeat before entering this function.
+ *
+ */
+rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t ri_reply_fp,
+                               const uint8_t * const raw_message,
+                               const uint16_t data_len);
 
 
 #ifdef RUUVI_RUN_TESTS

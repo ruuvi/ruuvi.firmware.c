@@ -341,7 +341,7 @@ rd_status_t app_log_config_get (app_log_config_t * const configuration)
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
                                APP_FLASH_LOG_CONFIG_RECORD,
-                               &configuration, sizeof (configuration));
+                               configuration, sizeof (configuration));
     memcpy (configuration, &m_log_config, sizeof (m_log_config));
     return err_code;
 }

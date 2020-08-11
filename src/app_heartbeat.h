@@ -30,6 +30,30 @@
  */
 rd_status_t app_heartbeat_init (void);
 
+/**
+ * @brief (Re)starts app heartbeats.
+ *
+ * Calling this while heartbeats are ongoing has no effect.
+ *
+ * @retval RD_SUCCESS on success
+ * @retval RD_ERROR_INVALID_STATE if heartbeat is not initialized.
+ */
+rd_status_t app_heartbeat_start (void);
+
+/**
+ * @brief Stops app heartbeats.
+ *
+ * This should be called to reduce the number of interrupts during heavier processing,
+ * e.g. stop while replaying sensor logs to attached device.
+ * Calling this has no effect if heartbeats are already stopped.
+ *
+ * @note Remember to restart the heartbeat, othewise app watchdog will trigger.
+ *
+ * @retval RD_SUCCESS on success.
+ * @retval RD_ERROR_INVALID_STATE if heartbeat is not initialized.
+ */
+rd_status_t app_heartbeat_stop (void);
+
 #ifdef CEEDLING
 #include "ruuvi_interface_timer.h"
 ri_timer_id_t * get_heart_timer (void);

@@ -24,6 +24,7 @@
 #include "ruuvi_task_nfc.h"
 
 static ri_timer_id_t heart_timer; //!< Timer for updating data.
+
 #ifndef CEEDLING
 static
 #endif
@@ -151,7 +152,37 @@ rd_status_t app_heartbeat_init (void)
     return err_code;
 }
 
+rd_status_t app_heartbeat_start (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
 
+    if (NULL == heart_timer)
+    {
+        err_code |= RD_ERROR_INVALID_STATE;
+    }
+    else
+    {
+        err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);
+    }
+
+    return err_code;
+}
+
+rd_status_t app_heartbeat_stop (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    if (NULL == heart_timer)
+    {
+        err_code |= RD_ERROR_INVALID_STATE;
+    }
+    else
+    {
+        err_code |= ri_timer_stop (heart_timer);
+    }
+
+    return err_code;
+}
 
 #ifdef CEEDLING
 // Give CEEDLING a handle to state of module.

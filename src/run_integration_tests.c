@@ -74,6 +74,7 @@ void integration_test_start (void)
 void integration_test_stop (void)
 {
     LOG ("}");
+    ri_yield_uninit();
 }
 
 static void integration_test_power (void)

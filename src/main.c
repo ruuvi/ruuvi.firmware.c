@@ -2,11 +2,7 @@
  * @defgroup main Program main
  *
  */
-/*@}*/
-/**
- * @addtogroup main
- */
-/*@{*/
+/** @{ */
 /**
  * @file main.c
  * @author Otso Jousimaa <otso@ojousima.net>
@@ -55,8 +51,8 @@ void setup (void)
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
-    err_code |= ri_yield_init();
 #   endif
+    err_code |= ri_yield_init();
     err_code |= ri_timer_init();
     err_code |= ri_scheduler_init();
     err_code |= rt_gpio_init();
@@ -71,6 +67,7 @@ void setup (void)
     (void) app_sensor_acc_thr_set (&motion_threshold);
     err_code |= app_comms_init();
     err_code |= app_heartbeat_init();
+    err_code |= app_heartbeat_start();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 

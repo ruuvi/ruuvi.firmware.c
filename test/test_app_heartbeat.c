@@ -97,6 +97,41 @@ void test_schedule_heartbeat_isr (void)
     schedule_heartbeat_isr (NULL);
 }
 
+void test_app_heartbeat_stop (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    ri_timer_stop_ExpectAndReturn (p_heart_timer, RD_SUCCESS);
+    err_code |= app_heartbeat_stop();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_heartbeat_start (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    ri_timer_start_ExpectAndReturn (&mock_tid, APP_HEARTBEAT_INTERVAL_MS, NULL, RD_SUCCESS);
+    err_code |= app_heartbeat_stop();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_heartbeat_start_notinit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    *p_heart_timer = NULL;
+    err_code |= app_heartbeat_start();
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
+}
+
+void test_app_heartbeat_stop_notinit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    *p_heart_timer = NULL;
+    err_code |= app_heartbeat_stop();
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
+}
 
 extern uint16_t m_measurement_count;
 
