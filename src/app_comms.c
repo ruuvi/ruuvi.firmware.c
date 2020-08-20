@@ -79,9 +79,9 @@ void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_
         err_code |= app_heartbeat_start();
     }
 
-    RD_ERROR_CHECK (err_code, RD_SUCCESS);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
-
+#if APP_GATT_ENABLED
 #ifndef CEEDLING
 static
 #endif
@@ -90,7 +90,6 @@ void handle_gatt (void * p_data, uint16_t data_len)
     handle_comms (&rt_gatt_send_asynchronous, p_data, data_len);
 }
 
-#if APP_GATT_ENABLED
 /** @brief Callback when GATT is connected" */
 #ifndef CEEDLING
 static

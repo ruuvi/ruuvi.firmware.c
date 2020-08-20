@@ -21,6 +21,8 @@
 #include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
 
+#include <string.h>
+
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
@@ -740,6 +742,7 @@ static rd_status_t app_sensor_encode_log (uint8_t * const buffer,
  * @param[in] reply_fp Function pointer to reply to.
  * @param[in] raw_message original query from remote.
  * @param[in] sample Data sample to send.
+ * @param[in] time_offset_ms Offset between tag time and real time.
  * @retval RD_SUCCESS reply was sent successfully.
  * @retval error code from reply_fp in case of error.
  *
@@ -748,7 +751,8 @@ static rd_status_t app_sensor_encode_log (uint8_t * const buffer,
  */
 static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,
         const uint8_t * const raw_message,
-        const rd_sensor_data_t * const sample)
+        const rd_sensor_data_t * const sample,
+        const int64_t time_offset_ms)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_message_t msg = {0};
@@ -767,11 +771,23 @@ static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,
         if (rd_sensor_has_valid_data (sample, ii))
         {
             rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);
-            err_code |= app_sensor_encode_log (msg.data, sample->timestamp_ms, sample->data[ii],
+            int64_t real_time_ms = 0;
+
+            if ( (0 - time_offset_ms) < (int64_t) sample->timestamp_ms)
+            {
+                real_time_ms = sample->timestamp_ms + time_offset_ms;
+            }
+
+            err_code |= app_sensor_encode_log (msg.data, real_time_ms, sample->data[ii],
                                                type);
 
             if (RD_SUCCESS == err_code)
             {
+                msg.repeat_count = 1;
+                msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+                msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+
+                // TODO: refactor into function.
                 do
                 {
                     err_code = reply_fp (&msg);
@@ -784,6 +800,34 @@ static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,
             }
         }
     }
+
+    return err_code;
+}
+
+/**
+ * @brief Send no more sensor log data message.
+ * TODO -refactor encoding to endpoints.
+ */
+static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,
+                                        const uint8_t * const raw_message)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_comm_message_t msg = {0};
+    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];
+    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;
+    memset (&msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);
+
+    do
+    {
+        err_code = reply_fp (&msg);
+
+        if (RD_ERROR_NO_MEM == err_code)
+        {
+            ri_yield();
+        }
+    } while (RD_ERROR_NO_MEM == err_code);
 
     return err_code;
 }
@@ -809,6 +853,7 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
 {
     rd_status_t err_code = RD_SUCCESS;
     rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs = {0};
     sample.fields = fields;
     float data[rd_sensor_data_fieldcount (&sample)];
     sample.data = data;
@@ -819,39 +864,42 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
     // Cannot have start_s >= current_time_s
     if (current_time_s > start_s)
     {
-        // Parse offset to system clock.
-        uint32_t system_time_s = ri_rtc_millis() / 1000U;
-        uint32_t offset_p = 0;
-        uint32_t offset_n = 0;
+        // Parse offset to system clock - flows over in 68 years.
+        LOG ("Sending logged data\r\n");
+        int32_t system_time_s = ri_rtc_millis() / 1000U;
+        int64_t offset_ms = ( (int64_t) current_time_s - (int64_t) system_time_s) *
+                            (int64_t) 1000;
 
-        if (current_time_s >= system_time_s)
+        if (offset_ms > sample.timestamp_ms)
         {
-            offset_p = current_time_s - system_time_s;
+            sample.timestamp_ms = 0;
         }
         else
         {
-            offset_n = system_time_s - current_time_s;
+            sample.timestamp_ms -= offset_ms;
         }
-
-        // Apply offset to start time
-        if (offset_p <= start_s)
-        {
-            start_s = start_s - offset_p + offset_n;
-        }
-
-        sample.timestamp_ms = start_s * 1000U;
 
         while (RD_SUCCESS == err_code)
         {
             // Reset data validity
             sample.valid.bitfield = 0;
             // Timestamp and fields are set in log read function.
-            err_code |= app_log_read (&sample);
+            err_code |= app_log_read (&sample, &rs);
 
             // If data element was found, send log element.
             if (RD_SUCCESS == err_code)
             {
-                err_code |= app_sensor_send_data (reply_fp, raw_message, &sample);
+                err_code |= app_sensor_send_data (reply_fp, raw_message,
+                                                  &sample, offset_ms);
+            }
+            else if (RD_ERROR_NOT_FOUND == err_code)
+            {
+                err_code |= app_sensor_send_eof (reply_fp, raw_message);
+                LOG ("Logged data sent\r\n");
+            }
+            else
+            {
+                // No action needed, error code gets returned to caller.
             }
         }
     }
@@ -861,7 +909,8 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
         err_code |= RD_ERROR_INVALID_PARAM;
     }
 
-    // Send op status.
+    // Send op status, remove expected not found
+    err_code &= ~RD_ERROR_NOT_FOUND;
     return err_code;
 }
 

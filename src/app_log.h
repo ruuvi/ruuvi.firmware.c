@@ -36,13 +36,31 @@ typedef struct
     rd_sensor_data_fields_t fields; //!< Fields to log.
 } app_log_config_t;                 //!< Logging configuration.
 
+// TODO: Generalize to N elements.
+typedef struct
+{
+    uint32_t timestamp_s;
+    float temperature_c;
+    float humidity_rh;
+    float pressure_pa;
+} app_log_element_t;
+
+typedef struct
+{
+    uint8_t page_idx; //!< Index of page being read.
+    uint16_t element_idx; //!< Index of element being read.
+    const uint64_t oldest_element_ms; //!< Age of oldest element to return in system time.
+} app_log_read_state_t; //!< Log read state.
+
+#define APP_LOG_MAX_SAMPLES (STORAGE_BLOCK_SIZE/sizeof(app_log_element_t))
+
 typedef struct
 {
     uint32_t start_timestamp_s;           //!< Timestamp of first sample.
     uint32_t end_timestamp_s;             //!< Timestamp of last sample.
     size_t num_samples;                   //!< Number of samples in block.
     app_log_config_t block_configuration; //!< Configuration of this data block.
-    uint8_t storage[STORAGE_BLOCK_SIZE];  //!< Raw storage.
+    app_log_element_t storage[APP_LOG_MAX_SAMPLES];  //!< Raw storage.
 } app_log_record_t; //!< Record for application sensor logs.
 
 /**
@@ -74,17 +92,21 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample);
 /**
  * @brief Get data from log.
  *
- * Searches for first logged sample after given timestamp and returns it. Loop over
- * this function to get all logged data.
+ * Searches for first logged samples after given timestamp and returns them
+ * without guarantees about sample order. Loop over this function to get all
+ * logged data.
  *
- * @param[in,out] sample Input: Requested data fields with timestamp set.
- *                       Output: Filled fields with valid data.
+ * @param[out] sample Sensor sample.
+ * @param[in,out] p_read_state State of reads.
  *
  * @retval RD_SUCCESS if a sample was retrieved.
+ * @retval RD_ERROR_NULL if either parameter is NULL.
+ * @
  * @retval RD_ERROR_NOT_FOUND if no newer data than requested timestamp was found.
  *
  */
-rd_status_t app_log_read (rd_sensor_data_t * const sample);
+rd_status_t app_log_read (rd_sensor_data_t * const sample,
+                          app_log_read_state_t * const p_read_state);
 
 /**
  * @brief Configure logging.

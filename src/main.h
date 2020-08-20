@@ -24,7 +24,7 @@
 #define RUUVI_BOARDS_REQ "0.7.2"
 #define RUUVI_DRIVERS_REQ "0.2.6"
 #define RUUVI_ENDPOINTS_REQ "0.2.0"
-#define RUUVI_LIBRARIES_REQ "0.3.0"
+#define RUUVI_LIBRARIES_REQ "0.3.1"
 
 #ifdef CEEDLING
 void on_wdt (void);
