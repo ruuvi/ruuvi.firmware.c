@@ -3,8 +3,12 @@
 #include "app_config.h"
 #include "app_comms.h"
 #include "ruuvi_boards.h"
+#include "mock_app_heartbeat.h"
+#include "mock_app_sensor.h"
+#include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_communication_ble_advertising.h"
 #include "mock_ruuvi_interface_communication_radio.h"
+#include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_task_advertisement.h"
 #include "mock_ruuvi_task_communication.h"
 #include "mock_ruuvi_task_gatt.h"
@@ -80,6 +84,7 @@ void test_app_comms_init_ok (void)
     rt_gatt_nus_init_ExpectAndReturn (RD_SUCCESS);
     rt_gatt_set_on_connected_isr_Expect (&on_gatt_connected_isr);
     rt_gatt_set_on_disconn_isr_Expect (&on_gatt_disconnected_isr);
+    rt_gatt_set_on_received_isr_Expect (&on_gatt_data_isr);
     rt_gatt_enable_ExpectAndReturn (RD_SUCCESS);
 #endif
     rd_status_t err_code = app_comms_init();

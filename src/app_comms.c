@@ -29,7 +29,7 @@
  * TODO
  * @endcode
  */
-
+#if APP_GATT_ENABLED
 #ifndef CEEDLING
 static
 #endif
@@ -81,7 +81,7 @@ void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_
 
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
-#if APP_GATT_ENABLED
+
 #ifndef CEEDLING
 static
 #endif

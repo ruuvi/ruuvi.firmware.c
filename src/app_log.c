@@ -167,7 +167,6 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
     if (next_sample_ms <= sample->timestamp_ms)
     {
         LOGD ("LOG: Storing sample\r\n");
-        rl_status_t lib_status = RL_SUCCESS;
         app_log_element_t element =
         {
             .timestamp_s = sample->timestamp_ms / 1000U,
@@ -317,7 +316,6 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
                           app_log_read_state_t * const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
-    rl_status_t lib_status = RL_SUCCESS;
 
     if ( (NULL != sample)
             && (NULL != p_rs))
@@ -412,7 +410,8 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_read (rd_sensor_data_t * const sample)
+rd_status_t app_log_read (rd_sensor_data_t * const sample,
+                          app_log_read_state_t * const p_read_state)
 {
     return RD_ERROR_NOT_FOUND;
 }

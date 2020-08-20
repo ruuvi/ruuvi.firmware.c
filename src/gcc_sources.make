@@ -180,6 +180,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_sensor.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_error.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/ruuvi_driver_sensor.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoints.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_3.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_5.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/ruuvi_library_compress.c \
@@ -201,6 +202,7 @@ RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/app_comms.c \
   $(PROJ_DIR)/app_heartbeat.c \
   $(PROJ_DIR)/app_led.c \
+  $(PROJ_DIR)/app_log.c \
   $(PROJ_DIR)/app_power.c \
   $(PROJ_DIR)/app_sensor.c
 

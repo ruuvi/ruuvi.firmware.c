@@ -1,9 +1,12 @@
 #include "unity.h"
 
+#include "app_config.h"
 #include "app_sensor.h"
 
+#include "mock_app_log.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_driver_sensor.h"
+#include "mock_ruuvi_endpoints.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_gpio_interrupt.h"
 #include "mock_ruuvi_interface_i2c.h"
@@ -16,6 +19,7 @@
 #include "mock_ruuvi_interface_lis2dh12.h"
 #include "mock_ruuvi_interface_shtcx.h"
 #include "mock_ruuvi_interface_tmp117.h"
+#include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_task_adc.h"
 #include "mock_ruuvi_task_sensor.h"
 #include "mock_ruuvi_interface_communication_radio.h"

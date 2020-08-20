@@ -5,6 +5,7 @@
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_library.h"
 #include "mock_ruuvi_driver_error.h"
+#include "mock_ruuvi_endpoints.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_task_flash.h"
@@ -17,9 +18,124 @@
 
 extern app_log_record_t    m_log_input_block;
 extern app_log_record_t    m_log_output_block;
-extern rl_compress_state_t m_compress_state;
 extern app_log_config_t    m_log_config;
 extern uint64_t            m_last_sample_ms;
+#if RL_COMPRESS_ENABLED
+extern rl_compress_state_t m_compress_state;
+#endif
+
+const app_log_element_t e_1_1 =
+{
+    .timestamp_s = 800 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_1_2 =
+{
+    .timestamp_s = 1000 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_1_3 =
+{
+    .timestamp_s = 1200 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_1_4 =
+{
+    .timestamp_s = 1400 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_2_1 =
+{
+    .timestamp_s = 1600 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_2_2 =
+{
+    .timestamp_s = 1800 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_2_3 =
+{
+    .timestamp_s = 2000 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_2_4 =
+{
+    .timestamp_s = 2200 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_3_1 =
+{
+    .timestamp_s = 2400 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_3_2 =
+{
+    .timestamp_s = 2600 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_3_3 =
+{
+    .timestamp_s = 2800 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_3_4 =
+{
+    .timestamp_s = 3000 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_4_1 =
+{
+    .timestamp_s = 3200 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_4_2 =
+{
+    .timestamp_s = 3400 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_4_3 =
+{
+    .timestamp_s = 3600 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_4_4 =
+{
+    .timestamp_s = 3800 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
 
 void setUp (void)
 {
@@ -189,12 +305,14 @@ void test_app_log_process_ok (void)
         },
         .data = samples
     };
+#if RL_COMPRESS_ENABLED
     rl_compress_ExpectAndReturn (NULL,
                                  m_log_input_block.storage,
                                  sizeof (m_log_input_block.storage),
                                  &m_compress_state,
                                  RL_SUCCESS);
     rl_compress_IgnoreArg_data();
+#endif
     err_code |= app_log_process (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -236,6 +354,8 @@ void test_app_log_process_sequence (void)
 
     for (size_t ii = 0; ii < 6; ii++)
     {
+#       if RL_COMPRESS_ENABLED
+
         if (! (ii % 2))
         {
             rl_compress_ExpectAndReturn (NULL,
@@ -246,6 +366,7 @@ void test_app_log_process_sequence (void)
             rl_compress_IgnoreArg_data();
         }
 
+#       endif
         err_code |= app_log_process (&sample);
         sample.timestamp_ms += (interval_s / 2) * 1000;
     }
@@ -279,12 +400,16 @@ void test_app_log_process_fill_blocks (void)
 
     for (size_t ii = 0; ii < APP_FLASH_LOG_DATA_RECORDS_NUM * 2; ii++)
     {
+#       if RL_COMPRESS_ENABLED
         rl_compress_ExpectAndReturn (NULL,
                                      m_log_input_block.storage,
                                      sizeof (m_log_input_block.storage),
                                      &m_compress_state,
                                      RL_COMPRESS_END);
         rl_compress_IgnoreArg_data();
+#       else
+        m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
+#       endif
         store_block_expect (record_idx, ii % 2);
         sample.timestamp_ms += (m_log_config.interval_s * 1001U);
         record_idx++;
@@ -292,61 +417,6 @@ void test_app_log_process_fill_blocks (void)
         err_code |= app_log_process (&sample);
     }
 
-    TEST_ASSERT (RD_SUCCESS == err_code);
-}
-
-/**
- * @brief Get data from log.
- *
- * Searches for first logged sample after given timestamp and returns it. Loop over
- * this function to get all logged data.
- *
- * @param[in,out] sample Input: Requested data fields with timestamp set.
- *                       Output: Filled fields with valid data.
- *
- * @retval RD_SUCCESS if a sample was retrieved.
- * @retval RD_ERROR_NOT_FOUND if no newer data than requested timestamp was found.
- *
- */
-void test_app_log_read_from_start (void)
-{
-    rd_status_t err_code = RD_SUCCESS;
-    float samples[NUM_FIELDS] = {0};
-    rd_sensor_data_t sample =
-    {
-        .timestamp_ms = 2000U,
-        .fields = {
-            .datas.temperature_c = 1,
-            .datas.humidity_rh = 1,
-            .datas.pressure_pa = 1,
-            .datas.voltage_v = 1
-        },
-        .valid = { 0 },
-        .data = samples
-    };
-    app_log_record_t record = {0};
-    record.start_timestamp_s = 1U;
-    record.end_timestamp_s = 10U;
-    rl_data_t data = {0};
-    uint32_t timestamp = sample.timestamp_ms / 1000;
-    uint8_t record_idx = 0;
-    // Stash current block.
-    store_block_expect (record_idx, false);
-    // Load flash, check if we can find a block which has start timestamp before
-    // and end timestamp after target time.
-    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
-                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
-                                   &record, sizeof (record),
-                                   RD_SUCCESS);
-    rt_flash_load_IgnoreArg_message();
-    rt_flash_load_ReturnArrayThruPtr_message (&record, 1);
-    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
-                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
-                                            sizeof (m_log_output_block.storage),
-                                            &m_compress_state, 1,
-                                            &timestamp, 1,
-                                            RD_SUCCESS);
-    err_code |= app_log_read (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
@@ -476,6 +546,240 @@ void test_app_log_config_get_not_init (void)
     rt_flash_load_IgnoreArg_message();
     err_code |= app_log_config_get (&defaults);
     TEST_ASSERT (RD_ERROR_NOT_INITIALIZED == err_code);
+}
+
+/**
+ * @brief Get data from log.
+ *
+ * Searches for first logged sample after given timestamp and returns it. Loop over
+ * this function to get all logged data.
+ *
+ * @param[in,out] sample Input: Requested data fields with timestamp set.
+ *                       Output: Filled fields with valid data.
+ *
+ * @retval RD_SUCCESS if a sample was retrieved.
+ * @retval RD_ERROR_NOT_FOUND if no newer data than requested timestamp was found.
+ *
+ */
+void test_app_log_read_from_start (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    float samples[NUM_FIELDS] = {0};
+    rd_sensor_data_t sample =
+    {
+        .timestamp_ms = 0U,
+        .fields = {
+            .datas.temperature_c = 1,
+            .datas.humidity_rh = 1,
+            .datas.pressure_pa = 1,
+            .datas.voltage_v = 1
+        },
+        .valid = { 0 },
+        .data = samples
+    };
+    app_log_record_t r1 =
+    {
+        .start_timestamp_s = 800  * 1000,
+        .end_timestamp_s   = 1600 * 1000,
+        .num_samples = 4,
+        .storage = { e_1_1, e_1_2, e_1_3, e_1_4 }
+    };
+    app_log_read_state_t rs = {0};
+    rl_data_t data = {0};
+    uint32_t timestamp = sample.timestamp_ms / 1000;
+    uint8_t record_idx = 0;
+    // Load flash, check if we can find a block which has end timestamp after target time.
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                   &r1, sizeof (r1),
+                                   RD_SUCCESS);
+    rt_flash_load_IgnoreArg_message();
+    rt_flash_load_ReturnArrayThruPtr_message (&r1, 1);
+#if RL_COMPRESS_ENABLED
+    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
+                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
+                                            sizeof (m_log_output_block.storage),
+                                            &m_compress_state, 1,
+                                            &timestamp, 1,
+                                            RD_SUCCESS);
+#endif
+    err_code |= app_log_read (&sample, &rs);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_log_read_null (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs = {0};
+    err_code = app_log_read (NULL, &rs);
+    TEST_ASSERT (RD_ERROR_NULL == err_code);
+    err_code = app_log_read (&sample, NULL);
+    TEST_ASSERT (RD_ERROR_NULL == err_code);
+    err_code = app_log_read (NULL, NULL);
+    TEST_ASSERT (RD_ERROR_NULL == err_code);
+}
+
+void test_app_log_read_no_stored_data (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs = {0};
+    uint8_t record_idx = 0;
+
+    for (; record_idx < APP_FLASH_LOG_DATA_RECORDS_NUM;)
+    {
+        rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                       (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                       &m_log_output_block, sizeof (m_log_output_block),
+                                       RD_ERROR_NOT_FOUND);
+        record_idx++;
+    }
+
+    err_code = app_log_read (&sample, &rs);
+    TEST_ASSERT (RD_ERROR_NOT_FOUND == err_code);
+}
+
+void test_app_log_read_skip_old_data (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs =
+    {
+        .oldest_element_ms = 1000 * 1000
+    };
+    app_log_record_t old = {0};
+    app_log_record_t new =
+    {
+        .start_timestamp_s = 800  * 1000,
+        .end_timestamp_s   = 1600 * 1000,
+        .num_samples = 4,
+        .storage = { e_1_1, e_1_2, e_1_3, e_1_4 }
+    };
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U),
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&old, sizeof (old));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 1U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&new, sizeof (new));
+    err_code = app_log_read (&sample, &rs);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_log_read_skip_missing_data (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs =
+    {
+        .oldest_element_ms = 1000 * 1000
+    };
+    app_log_record_t old = {0};
+    app_log_record_t new =
+    {
+        .start_timestamp_s = 3200  * 1000,
+        .end_timestamp_s   = 4000 * 1000,
+        .num_samples = 4,
+        .storage = { e_4_1, e_4_2, e_4_3, e_4_4 }
+    };
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U),
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&old, sizeof (old));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 1U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_ERROR_NOT_FOUND);
+    rt_flash_load_ReturnMemThruPtr_message (&new, sizeof (new));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 2U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&new, sizeof (new));
+    err_code = app_log_read (&sample, &rs);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_log_read_out_of_sequence_data (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs =
+    {
+        .oldest_element_ms = 1000 * 1000
+    };
+    app_log_record_t r1 =
+    {
+        .start_timestamp_s = 800  * 1000,
+        .end_timestamp_s   = 1600 * 1000,
+        .num_samples = 4,
+        .storage = { e_1_1, e_1_2, e_1_3, e_1_4 }
+    };
+    app_log_record_t r2 =
+    {
+        .start_timestamp_s = 1600  * 1000,
+        .end_timestamp_s   = 2400 * 1000,
+        .num_samples = 4,
+        .storage = { e_2_1, e_2_2, e_2_3, e_2_4 }
+    };
+    app_log_record_t r3 =
+    {
+        .start_timestamp_s = 2400  * 1000,
+        .end_timestamp_s   = 3200 * 1000,
+        .num_samples = 4,
+        .storage = { e_3_1, e_3_2, e_3_3, e_3_4 }
+    };
+    app_log_record_t r4 =
+    {
+        .start_timestamp_s = 3200  * 1000,
+        .end_timestamp_s   = 4000 * 1000,
+        .num_samples = 4,
+        .storage = { e_4_1, e_4_2, e_4_3, e_4_4 }
+    };
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U),
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r3, sizeof (r3));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 1U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r4, sizeof (r4));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 2U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r1, sizeof (r1));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 3U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r2, sizeof (r2));
+
+    for (size_t ii = 4; ii < APP_FLASH_LOG_DATA_RECORDS_NUM; ii++)
+    {
+        rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                       (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + ii,
+                                       &m_log_output_block, sizeof (m_log_output_block),
+                                       RD_ERROR_NOT_FOUND);
+    }
+
+    uint8_t num_reads = 0;
+
+    while (RD_SUCCESS == err_code)
+    {
+        err_code |= app_log_read (&sample, &rs);
+        num_reads++;
+    }
+
+    TEST_ASSERT (RD_ERROR_NOT_FOUND == err_code);
+    TEST_ASSERT (17 == num_reads);
 }
 
 /** @} */
