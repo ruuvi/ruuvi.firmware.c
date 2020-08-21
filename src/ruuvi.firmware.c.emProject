@@ -824,6 +824,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/message/nfc_ndef_msg_parser_local.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/parser/record/nfc_ndef_record_parser.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/libraries/crc16/crc16.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/libraries/queue/nrf_queue.c" />
     </folder>
     <folder Name="System">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/ses_startup_nrf52.s" />
@@ -849,6 +850,8 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_twi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/hal/nrf_nvmc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_twi.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_nfct.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_timer.c" />
     </folder>
     <folder Name="Application">
       <file file_name="main.c" />
@@ -902,6 +905,7 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_rec.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/text/nfc_text_rec.c" />
+      <file file_name="../../nRF5_SDK_15.3.0_59ac345/components/nfc/platform/nfc_platform.c" />
     </folder>
     <folder Name="nRF_SoftDevice">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/softdevice/common/nrf_sdh.c" />
@@ -969,13 +973,13 @@
       Name="ruuvi.endpoints.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.endpoints.c"
+      path="ruuvi.endpoints.c/src"
       recurse="Yes" />
     <folder
       Name="ruuvi.libraries.c"
       exclude=""
       filter="*.c;*.h"
-      path="ruuvi.libraries.c"
+      path="ruuvi.libraries.c/src"
       recurse="Yes" />
     <folder Name="Docs">
       <file file_name="README.md" />
