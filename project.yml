@@ -28,6 +28,22 @@
 :extension:
   :executable: .out
 
+:tools:
+# Ceedling defaults to using gcc for compiling, linking, etc.
+# As [:tools] is blank, gcc will be used (so long as it's in your system path)
+# See documentation to configure a given toolchain for use
+  :test_linker:
+    :executable: gcc                  #absolute file path
+    :name: 'gcc linker'
+    :arguments:
+      - ${1}                          #list of object files to link (Ruby method call param list sub)
+      - -lm                           #link with math header
+      - -o ${2}                       #executable file output (Ruby method call param list sub)
+
+:tools_gcov_linker:
+  :arguments:
+    - -lm
+
 :paths:
   :test:
     - +:test/**
