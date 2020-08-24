@@ -20,12 +20,13 @@
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
 
+#include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 
 #define STORAGE_RECORD_HEADER_SIZE (96U) //!< bytes allocated for header.
 /** @brief bytes of compressed data.  */
-#define STORAGE_BLOCK_SIZE (RB_FLASH_PAGE_SIZE - STORAGE_RECORD_HEADER_SIZE) 
+#define STORAGE_BLOCK_SIZE (RB_FLASH_PAGE_SIZE - STORAGE_RECORD_HEADER_SIZE)
 
 typedef struct
 {

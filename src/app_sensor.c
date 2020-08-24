@@ -47,6 +47,7 @@ static inline void LOG (const char * const msg)
  * @endcode
  */
 #define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
+#define APP_SENSOR_COMM_TIMEOUT_MS (2000U) //!< Timeout for comms.
 
 #ifndef CEEDLING
 static
@@ -666,6 +667,10 @@ static rd_sensor_data_fields_t re2rd_fields (const re_type_t type)
         case RE_ENV_TEMP:
             fields.datas.temperature_c = 1;
             break;
+
+        default:
+            RD_ERROR_CHECK (RD_ERROR_NOT_IMPLEMENTED, ~RD_ERROR_FATAL);
+            break;
     }
 
     return fields;
@@ -735,6 +740,49 @@ static rd_status_t app_sensor_encode_log (uint8_t * const buffer,
 }
 
 /**
+ * @brief Blocking send message function.
+ *
+ * Calls reply_fp with given data, and if reply_fp returns ERR_NO_MEM
+ * yields and retries. Has optional timeout. Function will return once
+ * message has been queued to driver buffer, not necessarily sent.
+ *
+ * @param[in] reply_fp Function pointer to use to send the data.
+ * @param[in] msg Message to send.
+ * @param[in] timeout_ms Number of milliseconds until timeout. 0 to disable.
+ * @retval RD_SUCCESS Message was queued to TX buffer.
+ * @retval RD_ERROR_TIMEOUT Message was queued to TX buffer.
+ * @return Error code from driver, such as RD_ERROR_INVALID_STATE.
+ *
+ * @note Timeout requires RTC and some process which brings thread out
+ * of yield.
+ */
+static rd_status_t app_sensor_blocking_send (const ri_comm_xfer_fp_t reply_fp,
+        ri_comm_message_t * const msg,
+        const uint32_t timeout_ms)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint64_t now = ri_rtc_millis();
+
+    do
+    {
+        err_code = reply_fp (msg);
+
+        if (RD_ERROR_NO_MEM == err_code)
+        {
+            ri_yield();
+        }
+
+        if (timeout_ms
+                && (ri_rtc_millis() > (now + timeout_ms)))
+        {
+            err_code |= RD_ERROR_TIMEOUT;
+        }
+    } while (RD_ERROR_NO_MEM == err_code);
+
+    return err_code;
+}
+
+/**
  * @brief Send data element.
  *
  * This function sends given data element to given reply function pointer.
@@ -756,47 +804,46 @@ static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_message_t msg = {0};
-    const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);
 
-    /*
-      for each valid data in sample
-        parse data type
-        parse data value
-        format msg
-        send msg
-    */
-    for (uint8_t ii = 0; ii < fieldcount; ii++)
+    if ( (NULL == sample)
+            || (NULL == reply_fp))
     {
-        // Data valid?
-        if (rd_sensor_has_valid_data (sample, ii))
+        err_code |= RD_ERROR_NULL;
+    }
+    else
+    {
+        const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);
+
+        /*
+          for each valid data in sample
+            parse data type
+            parse data value
+            format msg
+            send msg
+        */
+        for (uint8_t ii = 0; ii < fieldcount; ii++)
         {
-            rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);
-            int64_t real_time_ms = 0;
-
-            if ( (0 - time_offset_ms) < (int64_t) sample->timestamp_ms)
+            // Data valid?
+            if (rd_sensor_has_valid_data (sample, ii))
             {
-                real_time_ms = sample->timestamp_ms + time_offset_ms;
-            }
+                rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);
+                int64_t real_time_ms = 0;
 
-            err_code |= app_sensor_encode_log (msg.data, real_time_ms, sample->data[ii],
-                                               type);
-
-            if (RD_SUCCESS == err_code)
-            {
-                msg.repeat_count = 1;
-                msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
-                msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
-
-                // TODO: refactor into function.
-                do
+                if ( (0 - time_offset_ms) < (int64_t) sample->timestamp_ms)
                 {
-                    err_code = reply_fp (&msg);
+                    real_time_ms = sample->timestamp_ms + time_offset_ms;
+                }
 
-                    if (RD_ERROR_NO_MEM == err_code)
-                    {
-                        ri_yield();
-                    }
-                } while (RD_ERROR_NO_MEM == err_code);
+                err_code |= app_sensor_encode_log (msg.data, real_time_ms, sample->data[ii],
+                                                   type);
+
+                if (RD_SUCCESS == err_code)
+                {
+                    msg.repeat_count = 1;
+                    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+                    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+                    err_code |= app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
+                }
             }
         }
     }
@@ -807,6 +854,7 @@ static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,
 /**
  * @brief Send no more sensor log data message.
  * TODO -refactor encoding to endpoints.
+ * TODO -refactor into comms
  */
 static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,
                                         const uint8_t * const raw_message)
@@ -818,17 +866,7 @@ static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,
     msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];
     msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;
     memset (&msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);
-
-    do
-    {
-        err_code = reply_fp (&msg);
-
-        if (RD_ERROR_NO_MEM == err_code)
-        {
-            ri_yield();
-        }
-    } while (RD_ERROR_NO_MEM == err_code);
-
+    app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
     return err_code;
 }
 

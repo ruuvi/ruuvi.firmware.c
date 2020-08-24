@@ -26,6 +26,12 @@
 #include <string.h>
 
 extern rt_sensor_ctx_t * m_sensors[];
+static uint32_t m_expect_sends = 0;
+
+static rd_status_t dummy_comm (ri_comm_message_t * const msg)
+{
+    return RD_SUCCESS;
+}
 
 void setUp (void)
 {
@@ -611,4 +617,100 @@ void test_app_sensor_accelerometer_isr (void)
     on_accelerometer_isr (evt);
     incremented_cnt = app_sensor_event_count_get ();
     TEST_ASSERT ( (orig_cnt + 1) == incremented_cnt);
+}
+
+
+static void app_sensor_encode_log_Expect (const uint8_t source)
+{
+    re_log_write_header_ExpectAndReturn (NULL, source, RE_SUCCESS);
+    re_log_write_header_IgnoreArg_buffer();
+    re_log_write_timestamp_ExpectAndReturn (NULL, 0, RE_SUCCESS);
+    re_log_write_timestamp_IgnoreArg_buffer();
+    re_log_write_timestamp_IgnoreArg_timestamp_ms();
+    re_log_write_data_ExpectAndReturn (NULL, 0, source, RE_SUCCESS);
+    re_log_write_data_IgnoreArg_buffer();
+    re_log_write_data_IgnoreArg_data();
+}
+
+static void app_sensor_blocking_send_Expect()
+{
+    ri_rtc_millis_ExpectAndReturn (0);
+    ri_rtc_millis_ExpectAndReturn (0);
+    m_expect_sends++;
+}
+
+static void app_sensor_send_data_Expect (const ri_comm_xfer_fp_t reply_fp,
+        const uint8_t * const raw_message,
+        const rd_sensor_data_t * const sample,
+        const uint8_t fieldcount,
+        const uint8_t * const sources,
+        const rd_sensor_data_bitfield_t * const types,
+        const int64_t time_offset_ms)
+{
+    rd_sensor_data_fieldcount_ExpectAndReturn (NULL, fieldcount);
+    rd_sensor_data_fieldcount_IgnoreArg_target();
+
+    for (size_t ii = 0; ii < fieldcount; ii++)
+    {
+        rd_sensor_has_valid_data_ExpectAndReturn (NULL, ii, true);
+        rd_sensor_has_valid_data_IgnoreArg_target();
+        rd_sensor_field_type_ExpectAndReturn (NULL, ii, types[ii]);
+        rd_sensor_field_type_IgnoreArg_target();
+        app_sensor_encode_log_Expect (sources[ii]);
+    }
+
+    app_sensor_blocking_send_Expect();
+}
+
+static void app_sensor_send_eof_Expect ()
+{
+    app_sensor_blocking_send_Expect ();
+}
+
+static void app_sensor_log_read_Expect (const ri_comm_xfer_fp_t reply_fp,
+                                        const rd_sensor_data_fields_t fields,
+                                        const uint8_t fieldcount,
+                                        const uint8_t * const sources,
+                                        const rd_sensor_data_bitfield_t * const types,
+                                        const uint8_t * const raw_message)
+{
+    uint32_t current_time_s = (1000 * 1000 * 1000);
+    rd_sensor_data_t sample = {0};
+    sample.fields = fields;
+    float data[fieldcount];
+    sample.data = data;
+    rd_sensor_data_fieldcount_ExpectAndReturn (NULL, fieldcount);
+    rd_sensor_data_fieldcount_IgnoreArg_target();
+    re_std_log_current_time_ExpectAndReturn (raw_message, current_time_s);
+    re_std_log_start_time_ExpectAndReturn (raw_message, (0));
+    ri_rtc_millis_ExpectAndReturn (0);
+    app_log_read_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    // Assuming tests are run on 64-bit system
+    app_sensor_send_data_Expect (reply_fp, raw_message, &sample, fieldcount, sources,
+                                 types, current_time_s * 1000);
+}
+
+static void app_sensor_log_read_eof_Expect ()
+{
+    app_log_read_ExpectAnyArgsAndReturn (RD_ERROR_NOT_FOUND);
+    app_sensor_send_eof_Expect ();
+}
+
+void test_app_sensor_handle_accx (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION_X;
+    rd_sensor_data_fields_t fields = { .datas.acceleration_x_g = 1 };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] = { RE_STANDARD_DESTINATION_ACCELERATION_X };
+    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_X_FIELD.bitfield};
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect ();
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (2 == m_expect_sends);
 }

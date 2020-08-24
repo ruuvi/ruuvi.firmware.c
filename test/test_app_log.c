@@ -2,11 +2,13 @@
 
 #include "app_config.h"
 #include "app_log.h"
-#include "ruuvi_driver_sensor.h"
 #include "ruuvi_library.h"
+#include "ruuvi_interface_communication.h"
 #include "mock_ruuvi_driver_error.h"
+#include "mock_ruuvi_driver_sensor.h"
 #include "mock_ruuvi_endpoints.h"
 #include "mock_ruuvi_interface_log.h"
+#include "mock_ruuvi_interface_rtc.h"
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_task_flash.h"
 #include "mock_ruuvi_library_compress.h"
@@ -14,15 +16,10 @@
 #include <string.h>
 
 #define NUM_FIELDS 4 //XXX, should support any number of fields
+#define STORED_FIELDS  ( APP_LOG_TEMPERATURE_ENABLED + \
+                         APP_LOG_HUMIDITY_ENABLED + \
+                         APP_LOG_PRESSURE_ENABLED)
 #define IGNORE_RECORD_IDX 0xFFU
-
-extern app_log_record_t    m_log_input_block;
-extern app_log_record_t    m_log_output_block;
-extern app_log_config_t    m_log_config;
-extern uint64_t            m_last_sample_ms;
-#if RL_COMPRESS_ENABLED
-extern rl_compress_state_t m_compress_state;
-#endif
 
 const app_log_element_t e_1_1 =
 {
@@ -145,6 +142,51 @@ void setUp (void)
 
 void tearDown (void)
 {
+}
+
+extern app_log_record_t    m_log_input_block;
+extern app_log_record_t    m_log_output_block;
+extern app_log_config_t    m_log_config;
+extern uint64_t            m_last_sample_ms;
+#if RL_COMPRESS_ENABLED
+extern rl_compress_state_t m_compress_state;
+#endif
+
+static void sample_process_expect (const rd_sensor_data_t * const sample)
+{
+    if (APP_LOG_TEMPERATURE_ENABLED)
+    {
+        rd_sensor_data_parse_ExpectAndReturn (sample, RD_SENSOR_TEMP_FIELD, 0);
+    }
+
+    if (APP_LOG_HUMIDITY_ENABLED)
+    {
+        rd_sensor_data_parse_ExpectAndReturn (sample, RD_SENSOR_HUMI_FIELD, 0);
+    }
+
+    if (APP_LOG_PRESSURE_ENABLED)
+    {
+        rd_sensor_data_parse_ExpectAndReturn (sample, RD_SENSOR_PRES_FIELD, 0);
+    }
+}
+
+static void sample_read_expect (rd_sensor_data_t * const sample,
+                                const app_log_element_t * const p_el)
+{
+    if (APP_LOG_TEMPERATURE_ENABLED)
+    {
+        rd_sensor_data_set_Expect (sample, RD_SENSOR_TEMP_FIELD, p_el->temperature_c);
+    }
+
+    if (APP_LOG_HUMIDITY_ENABLED)
+    {
+        rd_sensor_data_set_Expect (sample, RD_SENSOR_HUMI_FIELD, p_el->humidity_rh);
+    }
+
+    if (APP_LOG_PRESSURE_ENABLED)
+    {
+        rd_sensor_data_set_Expect (sample, RD_SENSOR_PRES_FIELD, p_el->pressure_pa);
+    }
 }
 
 static void store_block_expect (const uint8_t record_idx, const bool block_flash)
@@ -305,14 +347,15 @@ void test_app_log_process_ok (void)
         },
         .data = samples
     };
-#if RL_COMPRESS_ENABLED
+    sample_process_expect (&sample);
+#   if RL_COMPRESS_ENABLED
     rl_compress_ExpectAndReturn (NULL,
                                  m_log_input_block.storage,
                                  sizeof (m_log_input_block.storage),
                                  &m_compress_state,
                                  RL_SUCCESS);
     rl_compress_IgnoreArg_data();
-#endif
+#   endif
     err_code |= app_log_process (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -354,19 +397,19 @@ void test_app_log_process_sequence (void)
 
     for (size_t ii = 0; ii < 6; ii++)
     {
-#       if RL_COMPRESS_ENABLED
-
         if (! (ii % 2))
         {
+            sample_process_expect (&sample);
+#           if RL_COMPRESS_ENABLED
             rl_compress_ExpectAndReturn (NULL,
                                          m_log_input_block.storage,
                                          sizeof (m_log_input_block.storage),
                                          &m_compress_state,
                                          RL_SUCCESS);
             rl_compress_IgnoreArg_data();
+#           endif
         }
 
-#       endif
         err_code |= app_log_process (&sample);
         sample.timestamp_ms += (interval_s / 2) * 1000;
     }
@@ -400,6 +443,11 @@ void test_app_log_process_fill_blocks (void)
 
     for (size_t ii = 0; ii < APP_FLASH_LOG_DATA_RECORDS_NUM * 2; ii++)
     {
+        for (size_t ii = 0; ii < STORED_FIELDS; ii++)
+        {
+            rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+        }
+
 #       if RL_COMPRESS_ENABLED
         rl_compress_ExpectAndReturn (NULL,
                                      m_log_input_block.storage,
@@ -585,8 +633,6 @@ void test_app_log_read_from_start (void)
         .storage = { e_1_1, e_1_2, e_1_3, e_1_4 }
     };
     app_log_read_state_t rs = {0};
-    rl_data_t data = {0};
-    uint32_t timestamp = sample.timestamp_ms / 1000;
     uint8_t record_idx = 0;
     // Load flash, check if we can find a block which has end timestamp after target time.
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
@@ -596,6 +642,8 @@ void test_app_log_read_from_start (void)
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnArrayThruPtr_message (&r1, 1);
 #if RL_COMPRESS_ENABLED
+    uint32_t timestamp = sample.timestamp_ms / 1000;
+    rl_data_t data = {0};
     rl_decompress_ExpectWithArrayAndReturn (&data, 1,
                                             m_log_output_block.storage, sizeof (m_log_output_block.storage),
                                             sizeof (m_log_output_block.storage),
@@ -603,6 +651,7 @@ void test_app_log_read_from_start (void)
                                             &timestamp, 1,
                                             RD_SUCCESS);
 #endif
+    sample_read_expect (&sample, &r1.storage[0]);
     err_code |= app_log_read (&sample, &rs);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -666,6 +715,7 @@ void test_app_log_read_skip_old_data (void)
                                    &m_log_output_block, sizeof (m_log_output_block),
                                    RD_SUCCESS);
     rt_flash_load_ReturnMemThruPtr_message (&new, sizeof (new));
+    sample_read_expect (&sample, &new.storage[0]);
     err_code = app_log_read (&sample, &rs);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -701,6 +751,7 @@ void test_app_log_read_skip_missing_data (void)
                                    &m_log_output_block, sizeof (m_log_output_block),
                                    RD_SUCCESS);
     rt_flash_load_ReturnMemThruPtr_message (&new, sizeof (new));
+    sample_read_expect (&sample, &new.storage[0]);
     err_code = app_log_read (&sample, &rs);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -741,26 +792,43 @@ void test_app_log_read_out_of_sequence_data (void)
         .num_samples = 4,
         .storage = { e_4_1, e_4_2, e_4_3, e_4_4 }
     };
+    app_log_record_t * records[4] = {&r1, &r2, &r3, &r4};
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U),
                                    &m_log_output_block, sizeof (m_log_output_block),
                                    RD_SUCCESS);
     rt_flash_load_ReturnMemThruPtr_message (&r3, sizeof (r3));
+    sample_read_expect (&sample, & (records[2]->storage[0]));
+    sample_read_expect (&sample, & (records[2]->storage[1]));
+    sample_read_expect (&sample, & (records[2]->storage[2]));
+    sample_read_expect (&sample, & (records[2]->storage[3]));
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 1U,
                                    &m_log_output_block, sizeof (m_log_output_block),
                                    RD_SUCCESS);
     rt_flash_load_ReturnMemThruPtr_message (&r4, sizeof (r4));
+    sample_read_expect (&sample, & (records[3]->storage[0]));
+    sample_read_expect (&sample, & (records[3]->storage[1]));
+    sample_read_expect (&sample, & (records[3]->storage[2]));
+    sample_read_expect (&sample, & (records[3]->storage[3]));
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 2U,
                                    &m_log_output_block, sizeof (m_log_output_block),
                                    RD_SUCCESS);
     rt_flash_load_ReturnMemThruPtr_message (&r1, sizeof (r1));
+    sample_read_expect (&sample, & (records[0]->storage[0]));
+    sample_read_expect (&sample, & (records[0]->storage[1]));
+    sample_read_expect (&sample, & (records[0]->storage[2]));
+    sample_read_expect (&sample, & (records[0]->storage[3]));
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 3U,
                                    &m_log_output_block, sizeof (m_log_output_block),
                                    RD_SUCCESS);
     rt_flash_load_ReturnMemThruPtr_message (&r2, sizeof (r2));
+    sample_read_expect (&sample, & (records[1]->storage[0]));
+    sample_read_expect (&sample, & (records[1]->storage[1]));
+    sample_read_expect (&sample, & (records[1]->storage[2]));
+    sample_read_expect (&sample, & (records[1]->storage[3]));
 
     for (size_t ii = 4; ii < APP_FLASH_LOG_DATA_RECORDS_NUM; ii++)
     {
@@ -781,5 +849,6 @@ void test_app_log_read_out_of_sequence_data (void)
     TEST_ASSERT (RD_ERROR_NOT_FOUND == err_code);
     TEST_ASSERT (17 == num_reads);
 }
+
 
 /** @} */

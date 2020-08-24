@@ -203,7 +203,7 @@ rd_status_t app_sensor_acc_thr_set (float * threshold_g);
  * @param[in] data_len Payload sent by client.
  *
  * @retval RD_SUCCESS Data was handled, including replying with error to reply_fp.
- * @retval RD_ERROR_NULL Raw message is NULL.
+ * @retval RD_ERROR_NULL Raw message or replyfp is NULL.
  * @retval RD_ERROR_DATA_SIZE data_len is less than RE_STANDARD_MESSAGE_LENGTH.
  *
  * @warning Executing these commands can be resource intensive. Consider
