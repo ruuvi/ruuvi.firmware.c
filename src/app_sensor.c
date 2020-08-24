@@ -699,6 +699,10 @@ static uint8_t rd2re_fields (const rd_sensor_data_bitfield_t fields)
     else if (fields.humidity_rh) { header_value = RE_ENV_HUMI; }
     else if (fields.pressure_pa) { header_value = RE_ENV_PRES; }
     else if (fields.temperature_c) { header_value = RE_ENV_TEMP; }
+    else
+    {
+        // No action needed
+    }
 
     return header_value;
 }
@@ -725,7 +729,7 @@ static rd_status_t app_sensor_encode_log (uint8_t * const buffer,
     rd_status_t err_code = RD_SUCCESS;
     const uint8_t source = rd2re_fields (type);
 
-    if (source)
+    if (0 != source)
     {
         re_log_write_header (buffer, source);
         re_log_write_timestamp (buffer, timestamp_ms);
@@ -772,12 +776,41 @@ static rd_status_t app_sensor_blocking_send (const ri_comm_xfer_fp_t reply_fp,
             ri_yield();
         }
 
-        if (timeout_ms
+        if ( (0 != timeout_ms)
                 && (ri_rtc_millis() > (now + timeout_ms)))
         {
             err_code |= RD_ERROR_TIMEOUT;
         }
     } while (RD_ERROR_NO_MEM == err_code);
+
+    return err_code;
+}
+
+/**
+ * if valid data in sample
+ * parse data type
+ * parse data value
+ * format msg
+ * send msg
+ */
+static rd_status_t send_field (const ri_comm_xfer_fp_t reply_fp,
+                               const uint8_t * const raw_message,
+                               const rd_sensor_data_bitfield_t type,
+                               const float value,
+                               const int64_t real_time_ms)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_comm_message_t msg = {0};
+    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value,
+                                       type);
+
+    if (RD_SUCCESS == err_code)
+    {
+        msg.repeat_count = 1;
+        msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+        msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+        err_code |= app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
+    }
 
     return err_code;
 }
@@ -803,48 +836,21 @@ static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,
         const int64_t time_offset_ms)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_comm_message_t msg = {0};
+    const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);
+    int64_t real_time_ms = 0;
 
-    if ( (NULL == sample)
-            || (NULL == reply_fp))
+    if ( (0 - time_offset_ms) < (int64_t) sample->timestamp_ms)
     {
-        err_code |= RD_ERROR_NULL;
+        real_time_ms = sample->timestamp_ms + time_offset_ms;
     }
-    else
+
+    for (uint8_t ii = 0; ii < fieldcount; ii++)
     {
-        const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);
-
-        /*
-          for each valid data in sample
-            parse data type
-            parse data value
-            format msg
-            send msg
-        */
-        for (uint8_t ii = 0; ii < fieldcount; ii++)
+        if (rd_sensor_has_valid_data (sample, ii))
         {
-            // Data valid?
-            if (rd_sensor_has_valid_data (sample, ii))
-            {
-                rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);
-                int64_t real_time_ms = 0;
-
-                if ( (0 - time_offset_ms) < (int64_t) sample->timestamp_ms)
-                {
-                    real_time_ms = sample->timestamp_ms + time_offset_ms;
-                }
-
-                err_code |= app_sensor_encode_log (msg.data, real_time_ms, sample->data[ii],
-                                                   type);
-
-                if (RD_SUCCESS == err_code)
-                {
-                    msg.repeat_count = 1;
-                    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
-                    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
-                    err_code |= app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
-                }
-            }
+            rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);
+            err_code |= send_field (reply_fp, raw_message,
+                                    type, sample->data[ii], real_time_ms);
         }
     }
 
@@ -904,7 +910,7 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
     {
         // Parse offset to system clock - flows over in 68 years.
         LOG ("Sending logged data\r\n");
-        int32_t system_time_s = ri_rtc_millis() / 1000U;
+        int32_t system_time_s = (int32_t) (ri_rtc_millis() / 1000U);
         int64_t offset_ms = ( (int64_t) current_time_s - (int64_t) system_time_s) *
                             (int64_t) 1000;
 

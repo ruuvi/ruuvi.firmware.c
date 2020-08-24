@@ -657,9 +657,8 @@ static void app_sensor_send_data_Expect (const ri_comm_xfer_fp_t reply_fp,
         rd_sensor_field_type_ExpectAndReturn (NULL, ii, types[ii]);
         rd_sensor_field_type_IgnoreArg_target();
         app_sensor_encode_log_Expect (sources[ii]);
+        app_sensor_blocking_send_Expect();
     }
-
-    app_sensor_blocking_send_Expect();
 }
 
 static void app_sensor_send_eof_Expect ()
@@ -699,13 +698,14 @@ static void app_sensor_log_read_eof_Expect ()
 void test_app_sensor_handle_accx (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
     uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
     raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
     raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION_X;
     rd_sensor_data_fields_t fields = { .datas.acceleration_x_g = 1 };
     const uint8_t fieldcount = 1;
     const uint8_t sources[1] = { RE_STANDARD_DESTINATION_ACCELERATION_X };
-    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_X_FIELD.bitfield};
+    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_X_FIELD.datas};
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
     app_sensor_log_read_eof_Expect ();
     err_code |= app_sensor_handle (&dummy_comm,
@@ -713,4 +713,79 @@ void test_app_sensor_handle_accx (void)
                                    sizeof (raw_message));
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (2 == m_expect_sends);
+}
+
+void test_app_sensor_handle_accy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION_Y;
+    rd_sensor_data_fields_t fields = { .datas.acceleration_y_g = 1 };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] = { RE_STANDARD_DESTINATION_ACCELERATION_Y };
+    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_Y_FIELD.datas};
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect ();
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (2 == m_expect_sends);
+}
+
+void test_app_sensor_handle_accz (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION_Z;
+    rd_sensor_data_fields_t fields = { .datas.acceleration_z_g = 1 };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] = { RE_STANDARD_DESTINATION_ACCELERATION_Z };
+    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_Z_FIELD.datas};
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect ();
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (2 == m_expect_sends);
+}
+
+void test_app_sensor_handle_accxyz (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION;
+    rd_sensor_data_fields_t fields =
+    {
+        .datas.acceleration_x_g = 1,
+        .datas.acceleration_y_g = 1,
+        .datas.acceleration_z_g = 1
+    };
+    const uint8_t fieldcount = 3;
+    const uint8_t sources[3] =
+    {
+        RE_STANDARD_DESTINATION_ACCELERATION_X,
+        RE_STANDARD_DESTINATION_ACCELERATION_Y,
+        RE_STANDARD_DESTINATION_ACCELERATION_Z,
+    };
+    const rd_sensor_data_bitfield_t types[3] =
+    {
+        RD_SENSOR_ACC_X_FIELD.datas,
+        RD_SENSOR_ACC_Y_FIELD.datas,
+        RD_SENSOR_ACC_Z_FIELD.datas
+    };
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect ();
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT ( (fieldcount + 1) == m_expect_sends);
 }
