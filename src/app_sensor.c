@@ -1,8 +1,10 @@
 #include "app_config.h"
+#include "app_log.h"
 #include "app_sensor.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
+#include "ruuvi_endpoints.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_gpio_interrupt.h"
@@ -15,8 +17,11 @@
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_spi.h"
+#include "ruuvi_interface_yield.h"
 #include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
+
+#include <string.h>
 
 static inline void LOG (const char * const msg)
 {
@@ -42,6 +47,7 @@ static inline void LOG (const char * const msg)
  * @endcode
  */
 #define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
+#define APP_SENSOR_COMM_TIMEOUT_MS (2000U) //!< Timeout for comms.
 
 #ifndef CEEDLING
 static
@@ -49,6 +55,22 @@ static
 rt_sensor_ctx_t * m_sensors[SENSOR_COUNT]; //!< Sensor APIs.
 static uint64_t vdd_update_time;           //!< timestamp of VDD update.
 static uint32_t m_event_counter;           //!< Number of events registered in app_sensor.
+
+/**
+ * @brief Sensor operation, such as read or configure.
+ *
+ * These are used when outside central commands sensor to e.g. configure a sensor
+ * or read log. Operations are targeted on specific data types, such as
+ * temperature or acceleration. The operation is execcuted on first
+ * provider of given data if applicable.
+ *
+ * @param[in] reply_fp A function to which send operation acknowledgement.
+ * @param[in] fields Affected fields.
+ * @param[in] raw_message Original message triggering operation.
+ */
+typedef rd_status_t (*sensor_op) (const ri_comm_xfer_fp_t reply_fp,
+                                  const rd_sensor_data_fields_t fields,
+                                  const uint8_t * const raw_message);
 
 #if APP_SENSOR_BME280_ENABLED
 static rt_sensor_ctx_t bme280 =
@@ -384,6 +406,7 @@ rd_status_t app_sensor_init (void)
     if (RD_SUCCESS == err_code)
     {
         app_sensor_rtc_init();
+
         for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
         {
             rd_status_t init_code = RD_SUCCESS;
@@ -574,6 +597,402 @@ rd_status_t app_sensor_acc_thr_set (float * const threshold_g)
                                               RI_GPIO_MODE_INPUT_NOPULL,
                                               &on_accelerometer_isr);
         err_code |= provider->level_interrupt_set (true, threshold_g);
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Determine which fields are affected by given endpoint.
+ *
+ * @param[in] type Ruuvi Endpoint type.
+ * @return Ruuvi Driver fields corresponding to endpoint.
+ */
+static rd_sensor_data_fields_t re2rd_fields (const re_type_t type)
+{
+    rd_sensor_data_fields_t fields = {0};
+
+    switch (type)
+    {
+        case RE_ACC_XYZ:
+            fields.datas.acceleration_x_g = 1;
+            fields.datas.acceleration_y_g = 1;
+            fields.datas.acceleration_z_g = 1;
+            break;
+
+        case RE_ACC_X:
+            fields.datas.acceleration_x_g = 1;
+            break;
+
+        case RE_ACC_Y:
+            fields.datas.acceleration_y_g = 1;
+            break;
+
+        case RE_ACC_Z:
+            fields.datas.acceleration_z_g = 1;
+            break;
+
+        case RE_GYR_XYZ:
+            fields.datas.gyro_x_dps = 1;
+            fields.datas.gyro_y_dps = 1;
+            fields.datas.gyro_z_dps = 1;
+            break;
+
+        case RE_GYR_X:
+            fields.datas.gyro_x_dps = 1;
+            break;
+
+        case RE_GYR_Y:
+            fields.datas.gyro_y_dps = 1;
+            break;
+
+        case RE_GYR_Z:
+            fields.datas.gyro_z_dps = 1;
+            break;
+
+        case RE_ENV_ALL:
+            fields.datas.humidity_rh = 1;
+            fields.datas.pressure_pa = 1;
+            fields.datas.temperature_c = 1;
+            break;
+
+        case RE_ENV_HUMI:
+            fields.datas.humidity_rh = 1;
+            break;
+
+        case RE_ENV_PRES:
+            fields.datas.pressure_pa = 1;
+            break;
+
+        case RE_ENV_TEMP:
+            fields.datas.temperature_c = 1;
+            break;
+
+        default:
+            RD_ERROR_CHECK (RD_ERROR_NOT_IMPLEMENTED, ~RD_ERROR_FATAL);
+            break;
+    }
+
+    return fields;
+}
+
+/**
+ * @brief Convert Ruuvi Driver data type to Ruuvi endpoint header.
+ *
+ * @param[in] field Data field to convert, exactly one must be set.
+ * @return Ruuvi Endpoint constant corresponding to field. 0 if field is invalid.
+ */
+static uint8_t rd2re_fields (const rd_sensor_data_bitfield_t fields)
+{
+    // Implementing field->header assigments as a look-up table would
+    // rely on specific representation of bitfield at compile time.
+    // Little-endian, big-endian, BE-8, BE-32 etc. Using if-else
+    // here for robustness.
+    uint8_t header_value = 0;
+
+    if (fields.acceleration_x_g) { header_value = RE_ACC_X; }
+    else if (fields.acceleration_y_g) { header_value = RE_ACC_Y; }
+    else if (fields.acceleration_z_g) { header_value = RE_ACC_Z; }
+    else if (fields.gyro_x_dps) { header_value = RE_GYR_X; }
+    else if (fields.gyro_y_dps) { header_value = RE_GYR_Y; }
+    else if (fields.gyro_z_dps) { header_value = RE_GYR_Z; }
+    else if (fields.humidity_rh) { header_value = RE_ENV_HUMI; }
+    else if (fields.pressure_pa) { header_value = RE_ENV_PRES; }
+    else if (fields.temperature_c) { header_value = RE_ENV_TEMP; }
+    else
+    {
+        // No action needed
+    }
+
+    return header_value;
+}
+
+/**
+ * @brief encode log element into given buffer.
+ *
+ * @param[in] buffer Buffer to encode data into.
+ * @param[in] timestamp_ms Float value to encode.
+ * @param[in] data Float value to encode.
+ * @param[in] type Type of data to encode. Only one type/message is implemented.
+ *
+ * @note This function will not set the destination endpoint in buffer.
+ * @retval RD_SUCCESS Data was encoded successfully.
+ * @retval RD_ERROR_NULL Buffer or data was NULL.
+ * @retval RD_ERROR_INVALID_PARAM Type had no field set.
+ * @retval RD_ERROR_NOT_IMPLEMENTED Type had > 1 field set or encoding type is not implemented.
+ */
+static rd_status_t app_sensor_encode_log (uint8_t * const buffer,
+        const uint64_t timestamp_ms,
+        const float data,
+        const rd_sensor_data_bitfield_t type)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t source = rd2re_fields (type);
+
+    if (0 != source)
+    {
+        re_log_write_header (buffer, source);
+        re_log_write_timestamp (buffer, timestamp_ms);
+        re_log_write_data (buffer, data, source);
+    }
+    else
+    {
+        err_code |= RD_ERROR_INVALID_PARAM;
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Blocking send message function.
+ *
+ * Calls reply_fp with given data, and if reply_fp returns ERR_NO_MEM
+ * yields and retries. Has optional timeout. Function will return once
+ * message has been queued to driver buffer, not necessarily sent.
+ *
+ * @param[in] reply_fp Function pointer to use to send the data.
+ * @param[in] msg Message to send.
+ * @param[in] timeout_ms Number of milliseconds until timeout. 0 to disable.
+ * @retval RD_SUCCESS Message was queued to TX buffer.
+ * @retval RD_ERROR_TIMEOUT Message was queued to TX buffer.
+ * @return Error code from driver, such as RD_ERROR_INVALID_STATE.
+ *
+ * @note Timeout requires RTC and some process which brings thread out
+ * of yield.
+ */
+static rd_status_t app_sensor_blocking_send (const ri_comm_xfer_fp_t reply_fp,
+        ri_comm_message_t * const msg,
+        const uint32_t timeout_ms)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint64_t now = ri_rtc_millis();
+
+    do
+    {
+        err_code = reply_fp (msg);
+
+        if (RD_ERROR_NO_MEM == err_code)
+        {
+            ri_yield();
+        }
+
+        if ( (0 != timeout_ms)
+                && (ri_rtc_millis() > (now + timeout_ms)))
+        {
+            err_code |= RD_ERROR_TIMEOUT;
+        }
+    } while (RD_ERROR_NO_MEM == err_code);
+
+    return err_code;
+}
+
+/**
+ * if valid data in sample
+ * parse data type
+ * parse data value
+ * format msg
+ * send msg
+ */
+static rd_status_t send_field (const ri_comm_xfer_fp_t reply_fp,
+                               const uint8_t * const raw_message,
+                               const rd_sensor_data_bitfield_t type,
+                               const float value,
+                               const int64_t real_time_ms)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_comm_message_t msg = {0};
+    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value,
+                                       type);
+
+    if (RD_SUCCESS == err_code)
+    {
+        msg.repeat_count = 1;
+        msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+        msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+        err_code |= app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Send data element.
+ *
+ * This function sends given data element to given reply function pointer.
+ *
+ * @param[in] reply_fp Function pointer to reply to.
+ * @param[in] raw_message original query from remote.
+ * @param[in] sample Data sample to send.
+ * @param[in] time_offset_ms Offset between tag time and real time.
+ * @retval RD_SUCCESS reply was sent successfully.
+ * @retval error code from reply_fp in case of error.
+ *
+ * @note This function blocks until reply_fp returns something else than
+ *       RD_ERROR_NO_MEM.
+ */
+static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,
+        const uint8_t * const raw_message,
+        const rd_sensor_data_t * const sample,
+        const int64_t time_offset_ms)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);
+    int64_t real_time_ms = 0;
+
+    if ( (0 - time_offset_ms) < (int64_t) sample->timestamp_ms)
+    {
+        real_time_ms = sample->timestamp_ms + time_offset_ms;
+    }
+
+    for (uint8_t ii = 0; ii < fieldcount; ii++)
+    {
+        if (rd_sensor_has_valid_data (sample, ii))
+        {
+            rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);
+            err_code |= send_field (reply_fp, raw_message,
+                                    type, sample->data[ii], real_time_ms);
+        }
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Send no more sensor log data message.
+ * TODO -refactor encoding to endpoints.
+ * TODO -refactor into comms
+ */
+static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,
+                                        const uint8_t * const raw_message)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_comm_message_t msg = {0};
+    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];
+    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;
+    memset (&msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);
+    app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
+    return err_code;
+}
+
+/**
+ * @brief Log read sensor op.
+ *
+ * @ref sensor_op.
+ *
+ * @param[in] reply_fp Function pointer to which send logs.
+ * @param[fields] Fields to read.
+ * @param[raw_message] Original message from remote.
+ * @retval RD_SUCCESS on success.
+ * @retval RD_ERROR_INVALID_PARAM if start of logs is after current time.
+ * @retval error code from reply_fp if reply fails.
+ *
+ * @note This function blocks until all requested logs are sent and will therefore
+ *       block for a long time.
+ */
+static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
+                                        const rd_sensor_data_fields_t fields,
+                                        const uint8_t * const raw_message)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs = {0};
+    sample.fields = fields;
+    float data[rd_sensor_data_fieldcount (&sample)];
+    sample.data = data;
+    // Parse start, end times.
+    uint32_t current_time_s = re_std_log_current_time (raw_message);
+    uint32_t start_s = re_std_log_start_time (raw_message);
+
+    // Cannot have start_s >= current_time_s
+    if (current_time_s > start_s)
+    {
+        // Parse offset to system clock - flows over in 68 years.
+        LOG ("Sending logged data\r\n");
+        int32_t system_time_s = (int32_t) (ri_rtc_millis() / 1000U);
+        int64_t offset_ms = ( (int64_t) current_time_s - (int64_t) system_time_s) *
+                            (int64_t) 1000;
+
+        if (offset_ms > sample.timestamp_ms)
+        {
+            sample.timestamp_ms = 0;
+        }
+        else
+        {
+            sample.timestamp_ms -= offset_ms;
+        }
+
+        while (RD_SUCCESS == err_code)
+        {
+            // Reset data validity
+            sample.valid.bitfield = 0;
+            // Timestamp and fields are set in log read function.
+            err_code |= app_log_read (&sample, &rs);
+
+            // If data element was found, send log element.
+            if (RD_SUCCESS == err_code)
+            {
+                err_code |= app_sensor_send_data (reply_fp, raw_message,
+                                                  &sample, offset_ms);
+            }
+            else if (RD_ERROR_NOT_FOUND == err_code)
+            {
+                err_code |= app_sensor_send_eof (reply_fp, raw_message);
+                LOG ("Logged data sent\r\n");
+            }
+            else
+            {
+                // No action needed, error code gets returned to caller.
+            }
+        }
+    }
+    // Start time >= current time
+    else
+    {
+        err_code |= RD_ERROR_INVALID_PARAM;
+    }
+
+    // Send op status, remove expected not found
+    err_code &= ~RD_ERROR_NOT_FOUND;
+    return err_code;
+}
+
+rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t reply_fp,
+                               const uint8_t * const raw_message,
+                               const uint16_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    if (NULL == raw_message)
+    {
+        err_code |= RD_ERROR_NULL;
+    }
+    else if (data_len < RE_STANDARD_MESSAGE_LENGTH)
+    {
+        err_code |= RD_ERROR_DATA_SIZE;
+    }
+    else
+    {
+        // Parse affected fields. It's ok to have unspecified value here,
+        // in that case fields end up being empty and error is reported via reply_fp.
+        re_type_t type = (re_type_t) raw_message[RE_STANDARD_DESTINATION_INDEX];
+        rd_sensor_data_fields_t target_fields = re2rd_fields (type);
+        // Parse desired operation.
+        re_op_t op = (re_op_t) raw_message[RE_STANDARD_OPERATION_INDEX];
+
+        // If target and op are valid, execute.
+        switch (op)
+        {
+            case RE_STANDARD_LOG_VALUE_READ:
+                err_code |= app_sensor_log_read (reply_fp,
+                                                 target_fields, raw_message);
+                break;
+
+            default:
+                // Reply with error on unknown op.
+                break;
+        }
     }
 
     return err_code;

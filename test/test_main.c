@@ -13,9 +13,11 @@
 #include "mock_app_comms.h"
 #include "mock_app_heartbeat.h"
 #include "mock_app_led.h"
+#include "mock_app_log.h"
 #include "mock_app_power.h"
 #include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
+#include "mock_ruuvi_task_flash.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_scheduler.h"
@@ -50,13 +52,17 @@ void test_main (void)
     ri_timer_init_ExpectAndReturn (RD_SUCCESS);
     ri_scheduler_init_ExpectAndReturn (RD_SUCCESS);
     rt_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_yield_low_power_enable_ExpectAndReturn (true, RD_SUCCESS);
+    rt_flash_init_ExpectAndReturn (RD_SUCCESS);
     app_button_init_ExpectAndReturn (RD_SUCCESS);
     app_dc_dc_init_ExpectAndReturn (RD_SUCCESS);
     app_led_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_init_ExpectAndReturn (RD_SUCCESS);
+    app_log_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_acc_thr_set_ExpectWithArrayAndReturn (&motion_threshold, 1, RD_SUCCESS);
     app_comms_init_ExpectAndReturn (RD_SUCCESS);
     app_heartbeat_init_ExpectAndReturn (RD_SUCCESS);
+    app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);

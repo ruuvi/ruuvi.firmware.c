@@ -1,7 +1,7 @@
 <!DOCTYPE Linker_Placement_File>
 <Root name="Flash Section Placement">
   <MemorySegment name="FLASH" start="$(FLASH_PH_START)" size="$(FLASH_PH_SIZE)">
-    <ProgramSection load="no" name=".reserved_flash" start="$(FLASH_PH_START)" size="$(FLASH_START)-$(FLASH_PH_START)" />
+    <ProgramSection load="no" name=".reserved_flash_sd" start="$(FLASH_PH_START)" size="$(FLASH_START)-$(FLASH_PH_START)" />
     <ProgramSection alignment="0x100" load="Yes" name=".vectors" start="$(FLASH_START)" />
     <ProgramSection alignment="4" load="Yes" name=".init" />
     <ProgramSection alignment="4" load="Yes" name=".init_rodata" />
@@ -30,6 +30,8 @@
     <ProgramSection alignment="4" load="Yes" runin=".fast_run" name=".fast" />
     <ProgramSection alignment="4" load="Yes" runin=".data_run" name=".data" />
     <ProgramSection alignment="4" load="Yes" runin=".tdata_run" name=".tdata" />
+    <ProgramSection alignment="4" keep="Yes" load="No" name=".storage_flash" start="0x60000" size="0x15000" address_symbol="__start_storage_flash" end_symbol="__stop_storage_flash" />
+    <ProgramSection load="no" name=".reserved_flash_bl" start="$(FLASH_START)+$(FLASH_SIZE)" size="$(FLASH_PH_START)+$(FLASH_PH_SIZE)-$(FLASH_START)-$(FLASH_SIZE)" />
   </MemorySegment>
   <MemorySegment name="RAM" start="$(RAM_PH_START)" size="$(RAM_PH_SIZE)">
     <ProgramSection load="no" name=".reserved_ram" start="$(RAM_PH_START)" size="$(RAM_START)-$(RAM_PH_START)" />

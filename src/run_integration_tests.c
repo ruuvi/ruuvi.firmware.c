@@ -74,6 +74,7 @@ void integration_test_start (void)
 void integration_test_stop (void)
 {
     LOG ("}");
+    ri_yield_uninit();
 }
 
 static void integration_test_power (void)
@@ -144,13 +145,17 @@ static void driver_integration_tests_run (void)
     ri_watchdog_feed();
     ri_communication_ble_gatt_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
 #endif
-#if defined(RB_GPIO_TEST_INPUT) && defined(RB_GPIO_TEST_OUTPUT)
-    ri_communication_uart_run_integration_test (&LOG, RB_GPIO_TEST_INPUT,
-            RB_GPIO_TEST_OUTPUT);
-    ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
-    ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
-    ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
-#endif
+
+    if ( (RI_GPIO_ID_UNUSED != RB_GPIO_TEST_INPUT)
+            && (RI_GPIO_ID_UNUSED != RB_GPIO_TEST_OUTPUT))
+    {
+        ri_communication_uart_run_integration_test (&LOG, RB_GPIO_TEST_INPUT,
+                RB_GPIO_TEST_OUTPUT);
+        ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
+        ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
+        ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
+    }
+
 #if RB_NFC_INTERNAL_INSTALLED
     ri_watchdog_feed();
     ri_communication_nfc_run_integration_test (&LOG);
@@ -160,7 +165,7 @@ static void driver_integration_tests_run (void)
 /** @brief Run library integration tests */
 static void library_integration_tests_run (void)
 {
-    ruuvi_library_test_all_run (&LOG);
+    rl_test_all_run (&LOG);
 }
 
 void integration_tests_run (void)

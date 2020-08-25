@@ -2,11 +2,7 @@
  * @defgroup main Program main
  *
  */
-/*@}*/
-/**
- * @addtogroup main
- */
-/*@{*/
+/** @{ */
 /**
  * @file main.c
  * @author Otso Jousimaa <otso@ojousima.net>
@@ -18,6 +14,7 @@
 #include "app_comms.h"
 #include "app_heartbeat.h"
 #include "app_led.h"
+#include "app_log.h"
 #include "app_power.h"
 #include "app_sensor.h"
 #include "main.h"
@@ -29,6 +26,7 @@
 #include "ruuvi_interface_watchdog.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_button.h"
+#include "ruuvi_task_flash.h"
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
 
@@ -53,24 +51,26 @@ void setup (void)
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
-    err_code |= ri_yield_init();
 #   endif
+    err_code |= ri_yield_init();
     err_code |= ri_timer_init();
     err_code |= ri_scheduler_init();
     err_code |= rt_gpio_init();
+    err_code |= ri_yield_low_power_enable (true);
+    err_code |= rt_flash_init();
     err_code |= app_button_init();
     err_code |= app_dc_dc_init();
     err_code |= app_led_init();
     err_code |= app_sensor_init();
-    err_code |= app_sensor_acc_thr_set (&motion_threshold);
+    err_code |= app_log_init();
+    // Allow fail on boards which do not have accelerometer.
+    (void) app_sensor_acc_thr_set (&motion_threshold);
     err_code |= app_comms_init();
     err_code |= app_heartbeat_init();
+    err_code |= app_heartbeat_start();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
-/**
- * @brief Actual main, redirected for Ceedling
- */
 #ifdef  CEEDLING
 int app_main (void)
 #else

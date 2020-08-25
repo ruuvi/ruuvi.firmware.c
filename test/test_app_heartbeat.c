@@ -3,6 +3,7 @@
 #include "app_config.h"
 #include "app_heartbeat.h"
 #include "mock_app_comms.h"
+#include "mock_app_log.h"
 #include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_driver_sensor.h"
@@ -96,6 +97,42 @@ void test_schedule_heartbeat_isr (void)
     schedule_heartbeat_isr (NULL);
 }
 
+void test_app_heartbeat_stop (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    ri_timer_stop_ExpectAndReturn (*p_heart_timer, RD_SUCCESS);
+    err_code |= app_heartbeat_stop();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_heartbeat_start (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    ri_timer_start_ExpectAndReturn (*p_heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL,
+                                    RD_SUCCESS);
+    err_code |= app_heartbeat_start();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_heartbeat_start_notinit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    *p_heart_timer = NULL;
+    err_code |= app_heartbeat_start();
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
+}
+
+void test_app_heartbeat_stop_notinit (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_timer_id_t * p_heart_timer = get_heart_timer();
+    *p_heart_timer = NULL;
+    err_code |= app_heartbeat_stop();
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
+}
 
 extern uint16_t m_measurement_count;
 
@@ -125,6 +162,7 @@ void test_heartbeat_df5_all_ok (void)
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -139,6 +177,7 @@ void test_heartbeat_df5_adv_ok (void)
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_ERROR_INVALID_STATE);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -152,6 +191,7 @@ void test_heartbeat_df5_none_ok (void)
     rt_adv_send_data_ExpectAnyArgsAndReturn (RD_ERROR_INVALID_STATE);
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -172,6 +212,7 @@ void test_heartbeat_df5_measurement_cnt_rollover (void)
         rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
         rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
         ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+        app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
         heartbeat (NULL, 0);
         resetTest(); // Avoid running out of memory.
     }
