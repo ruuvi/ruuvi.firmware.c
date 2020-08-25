@@ -789,3 +789,90 @@ void test_app_sensor_handle_accxyz (void)
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT ( (fieldcount + 1) == m_expect_sends);
 }
+
+void test_app_sensor_handle_humidity (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_HUMIDITY;
+    rd_sensor_data_fields_t fields =
+    {
+        .datas.humidity_rh = 1,
+    };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] =
+    {
+        RE_STANDARD_DESTINATION_HUMIDITY
+    };
+    const rd_sensor_data_bitfield_t types[1] =
+    {
+        RD_SENSOR_HUMI_FIELD.datas,
+    };
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect ();
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT ( (fieldcount + 1) == m_expect_sends);
+}
+
+void test_app_sensor_handle_pressure (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_PRESSURE;
+    rd_sensor_data_fields_t fields =
+    {
+        .datas.pressure_pa = 1,
+    };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] =
+    {
+        RE_STANDARD_DESTINATION_PRESSURE
+    };
+    const rd_sensor_data_bitfield_t types[1] =
+    {
+        RD_SENSOR_PRES_FIELD.datas,
+    };
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect ();
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT ( (fieldcount + 1) == m_expect_sends);
+}
+
+void test_app_sensor_handle_temperature (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_TEMPERATURE;
+    rd_sensor_data_fields_t fields =
+    {
+        .datas.temperature_c = 1,
+    };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] =
+    {
+        RE_STANDARD_DESTINATION_TEMPERATURE
+    };
+    const rd_sensor_data_bitfield_t types[1] =
+    {
+        RD_SENSOR_TEMP_FIELD.datas,
+    };
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect ();
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT ( (fieldcount + 1) == m_expect_sends);
+}

@@ -30,10 +30,9 @@
  * @endcode
  */
 #if APP_GATT_ENABLED
-#ifndef CEEDLING
-static
-#endif
-void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_len)
+
+static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
+                          size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -121,17 +120,8 @@ static
 void on_gatt_data_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-
-    if (data_len < RI_SCHEDULER_SIZE)
-    {
-        err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_gatt);
-    }
-    else
-    {
-        err_code |= RD_ERROR_DATA_SIZE;
-    }
-
-    RD_ERROR_CHECK (err_code, RD_SUCCESS);
+    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_gatt);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 
 static rd_status_t ble_name_string_create (char * const name_str, const size_t name_len)

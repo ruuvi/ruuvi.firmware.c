@@ -137,20 +137,6 @@ rd_status_t app_log_init (void)
     return err_code;
 }
 
-/**
- * @brief Process data into log.
- *
- * If time elapsed since last logged element is larger than logging interval, data is
- * stored to RAM buffer. While data is being stored to RAM buffer, it is also stored to
- * compressed buffer. When compressed buffer fills 4000 bytes it will be written to flash.
- * If there is no more room for new blocks in flash, oldest flash block is erased and
- * replaced with new data.
- *
- * @retval RD_SUCCESS if data was logged.
- * @retval RD_ERROR_NO_MEMORY if data cannot be stored to flash and overflow is false.
- * @retval RD_ERROR_BUSY previous operation is in process, e.g. writing to flash.
- * @note   First sample is always stored.
- */
 rd_status_t app_log_process (const rd_sensor_data_t * const sample)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -299,19 +285,6 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
     return err_code;
 }
 
-/**
- * @brief Get data from log.
- *
- * Searches for first logged sample after given timestamp and returns it. Loop over
- * this function to get all logged data.
- *
- * @param[in,out] sample Input: Requested data fields with timestamp set.
- *                       Output: Filled fields with valid data.
- *
- * @retval RD_SUCCESS if a sample was retrieved.
- * @retval RD_ERROR_NOT_FOUND if no newer data than requested timestamp was found.
- *
- */
 rd_status_t app_log_read (rd_sensor_data_t * const sample,
                           app_log_read_state_t * const p_rs)
 {
@@ -348,12 +321,6 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
     return err_code;
 }
 
-/**
- * @brief Configure logging.
- *
- * Calling this function will flush current log buffer into flash, possibly leading
- * to NULL entries.
- */
 rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -378,9 +345,6 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
     return err_code;
 }
 
-/**
- * @brief Read current logging configuration.
- */
 rd_status_t app_log_config_get (app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -393,7 +357,7 @@ rd_status_t app_log_config_get (app_log_config_t * const configuration)
 
 
 #else
-//Dummy implementation to save space
+//Dummy implementation to save flash space
 rd_status_t app_log_init (void)
 {
     return RD_SUCCESS;

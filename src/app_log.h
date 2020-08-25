@@ -81,13 +81,14 @@ rd_status_t app_log_init();
  * @brief Process data into log.
  *
  * If time elapsed since last logged element is larger than logging interval, data is
- * stored to RAM buffer. While data is being stored to RAM buffer, it is also stored to
- * compressed buffer. When compressed buffer fills 4000 bytes it will be written to flash.
+ * stored to RAM buffer. The RAM buffer may be compressed. When the buffer fills
+ * @ref STORAGE_BLOCK_SIZE bytes it will be written to flash.
  * If there is no more room for new blocks in flash, oldest flash block is erased and
  * replaced with new data.
  *
  * @retval RD_SUCCESS Data was logged.
- * @retval RD_ERROR_NO_MEMORY Data cannot be stored to flash and overflow is false.
+ * @retval RD_ERROR_NO_MEMORY Data cannot be stored to flash and overflow is configured
+ *                            as false.
  * @retval RD_ERROR_BUSY Previous operation is in process, e.g. writing to flash.
  */
 rd_status_t app_log_process (const rd_sensor_data_t * const sample);

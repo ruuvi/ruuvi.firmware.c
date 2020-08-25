@@ -3,6 +3,7 @@
 #include "app_config.h"
 #include "app_comms.h"
 #include "ruuvi_boards.h"
+#include "ruuvi_endpoints.h"
 #include "mock_app_heartbeat.h"
 #include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
@@ -20,6 +21,13 @@ void setUp (void)
 
 void tearDown (void)
 {
+}
+
+static void RD_ERROR_CHECK_EXPECT (rd_status_t err_code, rd_status_t fatal)
+{
+    rd_error_check_Expect (err_code, fatal, "", 0);
+    rd_error_check_IgnoreArg_p_file ();
+    rd_error_check_IgnoreArg_line ();
 }
 
 static void test_dis_init (ri_comm_dis_init_t * const p_dis)
@@ -102,4 +110,47 @@ void test_on_gatt_disconnected (void)
 {
     rt_gatt_enable_ExpectAndReturn (RD_SUCCESS);
     on_gatt_disconnected_isr (NULL, 0);
+}
+
+void test_on_gatt_received (void)
+{
+    uint8_t data[RI_SCHEDULER_SIZE];
+    ri_scheduler_event_put_ExpectAndReturn (data, sizeof (data), &handle_gatt, RD_SUCCESS);
+    RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
+    on_gatt_data_isr (data, sizeof (data));
+}
+
+void test_on_gatt_received_toobig (void)
+{
+    uint8_t toobig[RI_SCHEDULER_SIZE + 1];
+    ri_scheduler_event_put_ExpectAndReturn (toobig, sizeof (toobig), &handle_gatt,
+                                            RD_ERROR_INVALID_LENGTH);
+    RD_ERROR_CHECK_EXPECT (RD_ERROR_INVALID_LENGTH, ~RD_ERROR_FATAL);
+    on_gatt_data_isr (toobig, sizeof (toobig));
+}
+
+void test_handle_gatt_sensor_op_acc (void)
+{
+    uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION;
+    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
+    app_sensor_handle_ExpectAndReturn (&rt_gatt_send_asynchronous, mock_data,
+                                       sizeof (mock_data), RD_SUCCESS);
+    app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
+    RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
+    handle_gatt (mock_data, sizeof (mock_data));
+}
+
+void test_handle_gatt_null_data (void)
+{
+    RD_ERROR_CHECK_EXPECT (RD_ERROR_NULL, ~RD_ERROR_FATAL);
+    handle_gatt (NULL, 0);
+}
+
+void test_handle_gatt_short_data (void)
+{
+    uint8_t mock_data[RE_STANDARD_HEADER_LENGTH] = {0};
+    mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION;
+    RD_ERROR_CHECK_EXPECT (RD_ERROR_INVALID_PARAM, ~RD_ERROR_FATAL);
+    handle_gatt (mock_data, sizeof (mock_data));
 }
