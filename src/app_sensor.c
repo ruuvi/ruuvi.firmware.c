@@ -521,19 +521,6 @@ rd_status_t app_sensor_get (rd_sensor_data_t * const data)
     return err_code;
 }
 
-/**
- * @brief Find and return a sensor which can provide requested data.
- *
- * Loops through sensors in order of priority, if board has SHTC temperature and
- * humidity sensor and LIS2DH12 acceleration and temperature sensor, searching
- * for the sensor will return the one which is first in m_sensors list.
- *
- * Works only witjh initialized sensors, will not return a sensor which is supported
- * in firmawre but not initialized due to self-test error etc.
- *
- * @param[in] data fields which sensor must provide.
- * @return Pointer to SENSOR, NULL if suitable sensor is not found.
- */
 rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data)
 {
     rd_sensor_t * provider = NULL;
