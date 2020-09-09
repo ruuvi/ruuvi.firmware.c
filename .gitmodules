@@ -10,3 +10,6 @@
 [submodule "ruuvi.libraries.c"]
 	path = src/ruuvi.libraries.c
 	url = https://github.com/ruuvi/ruuvi.libraries.c
+[submodule "src/semver.c"]
+	path = src/semver
+	url = https://github.com/h2non/semver.c.git

@@ -1,0 +1,229 @@
+#ifndef APP_SENSOR_H
+#define APP_SENSOR_H
+/**
+ * @addtogroup app
+ */
+/** @{ */
+/**
+ * @defgroup app_sensor Application sensor control
+ * @brief Initialize, configure and read sensors.
+ */
+/** @} */
+/**
+ * @addtogroup app_sensor
+ */
+/** @{ */
+/**
+ * @file app_sensor.h
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2020-04-16
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ *
+ * Typical usage:
+ * @code{.c}
+ * TODO
+ * @endcode
+ */
+
+#include "app_config.h"
+#include "ruuvi_boards.h"
+#include "ruuvi_driver_error.h"
+#include "ruuvi_interface_communication.h"
+#include "ruuvi_task_sensor.h"
+
+#define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
+
+enum
+{
+#if APP_SENSOR_TMP117_ENABLED
+    TMP117_INDEX,
+#endif
+#if APP_SENSOR_SHTCX_ENABLED
+    SHTCX_INDEX,
+#endif
+#if APP_SENSOR_BME280_ENABLED
+    BME280_INDEX,
+#endif
+#if APP_SENSOR_NTC_ENABLED
+    NTC_INDEX,
+#endif
+#if APP_SENSOR_PHOTO_ENABLED
+    PHOTO_INDEX,
+#endif
+#if APP_SENSOR_MCU_ENABLED
+    ENV_MCU_INDEX,
+#endif
+#if APP_SENSOR_LIS2DH12_ENABLED
+    LIS2DH12_INDEX,
+#endif
+#if APP_SENSOR_LIS2DW12_ENABLED
+    LIS2DW12_INDEX,
+#endif
+    SENSOR_COUNT
+};
+
+#ifdef CEEDLING
+void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
+#endif
+
+/**
+ * @brief Initialize sensors into default mode or to a mode stored to flash.
+ *
+ * This function checks app_config.h for enabled sensors and initializes each of them
+ * into mode stored into flash, or into default mode defined in app_config.h if the
+ * mode is not stored in flash. Internal sampling rate of sensors does not affect
+ * reading rate of sensors, reading rate must be configured separately.
+ *
+ * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
+ * @retavl RD_ERROR_INVALID_STATE if GPIO or GPIO interrupts are not enabled.
+ * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.
+ */
+rd_status_t app_sensor_init (void);
+
+/**
+ * @brief Configure sampling of sensors.
+ *
+ * This function lets application know what data and how often should be read.
+ * To use sampled data, call @ref app_sensor_get.
+ *
+ * @param[in] data Data fields to sample.
+ * @param[in] interval_ms Interval to sample at. At minimum 1000 ms.
+ *
+ * @retval RD_SUCCESS on success.
+ * @retval RD_ERROR_INVALID_PARAM if interval is less than 1000 ms.
+ *
+ * @note: Future minor version may allow using intervals down to 1 ms on
+ *        sensors with built-in FIFOs and read the FIFO in batches.
+ *
+ */
+rd_status_t app_sensor_sample_config (const rd_sensor_data_fields_t data,
+                                      const uint32_t interval_ms);
+
+/**
+ * @brief Return available data types.
+ *
+ * @note This is refreshed from sensor structs RAM which makes
+ * this a relatively expensive function call due to looping over
+ * all sensor contexts. Cache this if microseconds count in your application.
+ *
+ * @return Listing of data the application can provide.
+ */
+rd_sensor_data_fields_t app_sensor_available_data (void);
+
+/**
+ * @brief Return last sampled data.
+ *
+ * This function checks loops through initialized sensors until all data in
+ * data->fields is valid or all sensors are checked.
+ *
+ * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
+ * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.
+ */
+rd_status_t app_sensor_get (rd_sensor_data_t * const data);
+
+/**
+ * @brief Uninitialize sensors into low-power mode.
+ *
+ * @retval RD_SUCCESS On success.
+ * @return Error code from stack on error.
+ */
+rd_status_t app_sensor_uninit (void);
+
+/**
+ * @brief Uninitialize sensors into low-power mode.
+ *
+ * @retval RD_SUCCESS On success.
+ * @return Error code from stack on error.
+ */
+rd_status_t app_sensor_uninit (void);
+
+/**
+ * @brief Find and return a sensor which can provide requested data.
+ *
+ * Loops through sensors in order of priority, if board has SHTC temperature and
+ * humidity sensor and LIS2DH12 acceleration and temperature sensor, searching
+ * for the sensor will return the one which is first in m_sensors list.
+ *
+ * Works only witjh initialized sensors, will not return a sensor which is supported
+ * in firmawre but not initialized due to self-test error etc.
+ *
+ * @param[in] data fields which sensor must provide.
+ * @return Pointer to SENSOR, NULL if suitable sensor is not found.
+ * @note If parameter data is empty, first initialized sensor will be returned.
+ */
+rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data);
+
+
+/**
+ * @brief Increment event counter of application. Rolls over at 2^32.
+ */
+void app_sensor_event_increment (void);
+
+/**
+ * @brief Get current event count.
+ *
+ * @return Number of events accumulated, rolls over at int32_t.
+ */
+uint32_t app_sensor_event_count_get (void);
+
+/**
+ * @brief Set threshold for accelerometer interrupts.
+ *
+ * Accelerometers are high-passed so gravity won't affect given threshold.
+ * Acceleration event is triggered when the threshold is exceeded on any axis.
+ * Acceleration event ceases when acceleration falls below the threshold, and
+ * can then be triggered again. Maximum rate for acceleration events is then
+ * accelerometer sample rate divided by two.
+ *
+ * On acceleration event @ref app_sensor_event_increment is called.
+ *
+ * @param[in, out] threshold_g In: Thershold of acceleration, > 0. Interpreted as
+ *                                 "at least this much". NULL to disable interrupts.
+ *                             Out: Configured threshold.
+ * @retval RD_SUCCESS if threshold was configured.
+ * @retval RD_ERROR_NOT_IMPLEMENTED if threshold is lower than 0 (negative).
+ * @retval RD_ERROR_NOT_SUPPORTED if no suitable accelerometer is initialized.
+ *
+ *
+ */
+rd_status_t app_sensor_acc_thr_set (float * threshold_g);
+
+/**
+ * @brief Handle data coming in to the application.
+ *
+ * Interprets the desired action, executes it and aknowledges to
+ * reply_fp with ri_comm_message_t containing ruuvi endpoint encoded message.
+ *
+ * For example a Log Read command gets replied with all the logged elements.
+ *
+ *
+ * @param[in] ri_reply_fp Function pointer to send replies to.
+ * @param[in] raw_message Payload sent by client. Must be a standard Ruuvi Endpoint
+ *                        message.
+ * @param[in] data_len Payload sent by client.
+ *
+ * @retval RD_SUCCESS Data was handled, including replying with error to reply_fp.
+ * @retval RD_ERROR_NULL Raw message or replyfp is NULL.
+ * @retval RD_ERROR_DATA_SIZE data_len is less than RE_STANDARD_MESSAGE_LENGTH.
+ *
+ * @warning Executing these commands can be resource intensive. Consider
+ *          stopping app_heartbeat before entering this function.
+ *
+ */
+rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t ri_reply_fp,
+                               const uint8_t * const raw_message,
+                               const uint16_t data_len);
+
+
+#ifdef RUUVI_RUN_TESTS
+void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
+#endif
+
+#ifdef CEEDLING
+#include "ruuvi_interface_communication_radio.h"
+#include "ruuvi_interface_gpio_interrupt.h"
+void on_radio_isr (const ri_radio_activity_evt_t evt);
+void on_accelerometer_isr (const ri_gpio_evt_t event);
+#endif
+
+#endif // APP_SENSOR_H

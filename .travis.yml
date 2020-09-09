@@ -34,14 +34,7 @@ script:
       wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
       unzip -q nRF5_SDK_15.3.0_59ac345.zip
     fi
-  - |
-    astyle --project=".astylerc" --recursive \
-           "src/application_config/*.h" \
-           "src/tasks/*.c" \
-           "src/tasks/*.h" \
-           "src/tests/*.c" \
-           "src/tests/*.h"
-  - astyle --project=".astylerc" "src/main.c"
+  - make astyle
   - git diff --exit-code --diff-filter=d --color
   - build-wrapper-linux-x86-64 --out-dir bw-output make all
   - ceedling test:all
@@ -52,6 +45,10 @@ script:
 cache:
   directories:
     - nRF5_SDK_15.3.0_59ac345
+    - src/ruuvi.boards.c
+    - src/ruuvi.drivers.c
+    - src/ruuvi.endpoints.c
+    - src/ruuvi.libraries.c
 
 addons:
   sonarcloud:

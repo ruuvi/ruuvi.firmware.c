@@ -268,9 +268,7 @@ doxygen:
 astyle:
 	astyle --project=".astylerc" --recursive \
 			  "src/application_config/*.h" \
-			  "src/tasks/*.c" \
-			  "src/tasks/*.h" \
-			  "src/tests/*.c" \
-			  "src/tests/*.h" \
 			  "test/*.c"
-	astyle --project=".astylerc" "src/main.c" "src/main.h"
+	astyle --project=".astylerc" "src/main.c" "src/main.h" \
+	                  "src/app_*.c" "src/app_*.h" \
+	                  "src/run_integration_tests.c" "src/run_integration_tests.h" 

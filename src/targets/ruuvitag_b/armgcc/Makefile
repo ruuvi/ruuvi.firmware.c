@@ -11,7 +11,10 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 include ${PROJ_DIR}/gcc_sources.make
 
 # Source files common to all targets
-SRC_FILES += ${COMMON_SOURCES} $(STARTUP)
+SRC_FILES += ${COMMON_SOURCES} ${NFC_SOURCES} \
+   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
+   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
+
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
 
@@ -30,6 +33,7 @@ CFLAGS += $(RUN_TESTS)
 CFLAGS += $(DEBUG)
 CFLAGS += $(FW_VERSION)
 CFLAGS += $(OPT)
+CFLAGS += $(COMMON_DEFINES)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
 CFLAGS += -DBOARD_RUUVITAG_B
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET

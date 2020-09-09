@@ -1,0 +1,41 @@
+{
+  "url": "https://api.github.com/repos/ruuvi/ruuvi.firmware.c/releases/22533806",
+  "assets_url": "https://api.github.com/repos/ruuvi/ruuvi.firmware.c/releases/22533806/assets",
+  "upload_url": "https://uploads.github.com/repos/ruuvi/ruuvi.firmware.c/releases/22533806/assets{?name,label}",
+  "html_url": "https://github.com/ruuvi/ruuvi.firmware.c/releases/tag/v3.28.13",
+  "id": 22533806,
+  "node_id": "MDc6UmVsZWFzZTIyNTMzODA2",
+  "tag_name": "v3.28.13",
+  "target_commitish": "master",
+  "name": "Fix",
+  "draft": false,
+  "author": {
+    "login": "ojousima",
+    "id": 2360368,
+    "node_id": "MDQ6VXNlcjIzNjAzNjg=",
+    "avatar_url": "https://avatars2.githubusercontent.com/u/2360368?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/ojousima",
+    "html_url": "https://github.com/ojousima",
+    "followers_url": "https://api.github.com/users/ojousima/followers",
+    "following_url": "https://api.github.com/users/ojousima/following{/other_user}",
+    "gists_url": "https://api.github.com/users/ojousima/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/ojousima/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/ojousima/subscriptions",
+    "organizations_url": "https://api.github.com/users/ojousima/orgs",
+    "repos_url": "https://api.github.com/users/ojousima/repos",
+    "events_url": "https://api.github.com/users/ojousima/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/ojousima/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "prerelease": true,
+  "created_at": "2019-12-31T12:24:12Z",
+  "published_at": "2019-12-31T16:10:32Z",
+  "assets": [
+
+  ],
+  "tarball_url": "https://api.github.com/repos/ruuvi/ruuvi.firmware.c/tarball/v3.28.13",
+  "zipball_url": "https://api.github.com/repos/ruuvi/ruuvi.firmware.c/zipball/v3.28.13",
+  "body": ""
+}

@@ -96,6 +96,15 @@ Document is generated with Doxygen. Run `make doxygen` to generate the docs loca
 browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
 
 # Changelog
+## 3.29.0
+ - Refactor, move tasks under drivers.
+ - Refactor, store log data to flash.
+ - Improve GATT power consumption.
+ - Improve GATT data rate.
+
+## 3.28.12
+ - Fix leds not blinking
+
 ## 3.28.12
  - Automatically release a tag
 
