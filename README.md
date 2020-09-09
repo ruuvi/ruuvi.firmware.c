@@ -102,7 +102,7 @@ browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
  - Improve GATT power consumption.
  - Improve GATT data rate.
 
-## 3.28.12
+## 3.28.13
  - Fix leds not blinking
 
 ## 3.28.12
