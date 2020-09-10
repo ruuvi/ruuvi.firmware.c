@@ -58,9 +58,10 @@ void setup (void)
     err_code |= rt_gpio_init();
     err_code |= ri_yield_low_power_enable (true);
     err_code |= rt_flash_init();
+    err_code |= app_led_init();
+    err_code |= app_led_activate (RB_LED_STATUS_ERROR);
     err_code |= app_button_init();
     err_code |= app_dc_dc_init();
-    err_code |= app_led_init();
     err_code |= app_sensor_init();
     err_code |= app_log_init();
     // Allow fail on boards which do not have accelerometer.
@@ -68,6 +69,10 @@ void setup (void)
     err_code |= app_comms_init();
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
+    err_code |= app_led_deactivate (RB_LED_STATUS_ERROR);
+    err_code |= app_led_activate (RB_LED_STATUS_OK);
+    err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);
+    err_code |= app_led_deactivate (RB_LED_STATUS_OK);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -84,10 +89,11 @@ int main (void)
 
     do
     {
-        // Run scheduled tasks
         ri_scheduler_execute();
         // Sleep - woken up on event
+        app_led_deactivate (RB_LED_ACTIVITY);
         ri_yield();
+        app_led_activate (RB_LED_ACTIVITY);
         // Prevent loop being optimized away
         __asm__ ("");
     } while (LOOP_FOREVER);
