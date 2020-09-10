@@ -26,6 +26,8 @@
 #define RUUVI_ENDPOINTS_REQ "0.2.0"
 #define RUUVI_LIBRARIES_REQ "0.3.1"
 
+#define APP_SELFTEST_OK_DELAY_MS (500U) //!< time to show "ok" led.
+
 #ifdef CEEDLING
 void on_wdt (void);
 void setup (void);
