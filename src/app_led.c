@@ -27,12 +27,12 @@ rd_status_t app_led_init (void)
 
 rd_status_t app_led_activate (const ri_gpio_id_t led)
 {
-    return rt_led_write ( (uint16_t) led, true);
+    return rt_led_write (led, true);
 }
 
 rd_status_t app_led_deactivate (const ri_gpio_id_t led)
 {
-    return rt_led_write ( (uint16_t) led, false);
+    return rt_led_write (led, false);
 }
 
 /** @} */
