@@ -95,7 +95,6 @@ void test_app_comms_init_ok (void)
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_radio_address_get_ReturnThruPtr_address (&address);
     rt_gatt_init_ExpectAndReturn ("Ruuvi 01A0", RD_SUCCESS);
-    rt_gatt_dfu_init_ExpectAndReturn (RD_SUCCESS);
     rt_gatt_dis_init_ExpectWithArrayAndReturn (&dis, 1, RD_SUCCESS);
     rt_gatt_nus_init_ExpectAndReturn (RD_SUCCESS);
     rt_gatt_set_on_connected_isr_Expect (&on_gatt_connected_isr);

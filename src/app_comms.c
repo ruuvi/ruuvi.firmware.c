@@ -289,7 +289,6 @@ rd_status_t app_comms_init (void)
         char name[SCAN_RSP_NAME_MAX_LEN + 1] = {0};
         ble_name_string_create (name, sizeof (name));
         err_code |= rt_gatt_init (name);
-        err_code |= rt_gatt_dfu_init();
         err_code |= rt_gatt_dis_init (&dis);
         err_code |= rt_gatt_nus_init();
         rt_gatt_set_on_connected_isr (&on_gatt_connected_isr);
