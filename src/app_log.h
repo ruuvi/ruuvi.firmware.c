@@ -125,5 +125,10 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration);
  */
 rd_status_t app_log_config_get (app_log_config_t * const configuration);
 
+/**
+ * @brief Purge everything stored to flash.
+ */
+void app_log_purge_flash (void);
+
 /** @} */
 #endif // APP_LOG_H

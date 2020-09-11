@@ -1,6 +1,7 @@
 #include "app_button.h"
 #include "app_comms.h"
 #include "app_led.h"
+#include "app_log.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_flash.h"
@@ -55,7 +56,7 @@ void button_timer_handler_isr (void * p_context)
 
     if (p_action->factory_reset)
     {
-        ri_flash_purge();
+        app_log_purge_flash();
         // Execution stops here normally
         ri_power_enter_bootloader();
         // Reset on fail to enter BL

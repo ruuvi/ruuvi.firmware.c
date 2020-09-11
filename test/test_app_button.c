@@ -5,7 +5,7 @@
 #include "ruuvi_driver_error.h"
 #include "mock_app_comms.h"
 #include "mock_app_led.h"
-#include "mock_ruuvi_interface_flash.h"
+#include "mock_app_log.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_power.h"
@@ -34,7 +34,7 @@ void test_button_handler_factory_reset (void)
 {
     button_action_t action = {0};
     action.factory_reset = 1;
-    ri_flash_purge_Expect();
+    app_log_purge_flash_Expect();
     ri_power_enter_bootloader_Expect();
     ri_power_reset_Expect();
     button_timer_handler_isr (&action);
