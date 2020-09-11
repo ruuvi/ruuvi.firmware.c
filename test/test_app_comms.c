@@ -73,7 +73,6 @@ static rt_adv_init_t adv_settings =
 };
 
 void test_app_comms_init_ok (void)
-
 {
     ri_comm_dis_init_t dis = {0};
     // Allow switchover to extended / 2 MBPS comms.
@@ -107,6 +106,19 @@ void test_app_comms_init_ok (void)
     rd_status_t err_code = app_comms_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
+
+void test_app_comms_init_timer_fail (void)
+
+{
+    ri_comm_dis_init_t dis = {0};
+    // Allow switchover to extended / 2 MBPS comms.
+    ri_radio_init_ExpectAndReturn (APP_MODULATION, RD_SUCCESS);
+    ri_timer_create_ExpectAndReturn (&m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,
+                                     &comm_mode_change_isr, RD_ERROR_RESOURCES);
+    rd_status_t err_code = app_comms_init();
+    TEST_ASSERT (RD_ERROR_RESOURCES == err_code);
+}
+
 
 
 void test_on_gatt_connected (void)
