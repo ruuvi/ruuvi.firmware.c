@@ -29,6 +29,12 @@
 
 #include "ruuvi_interface_communication.h"
 
+/** @brief Repeat advertisement until explicitly stopped. */
+#define APP_COMM_ADV_REPEAT_FOREVER (255U)
+/** @brief Disable advertising. */
+#define APP_COMM_ADV_DISABLE (0U)
+/** @brief Initial period of fast advertising */
+#define APP_FAST_ADV_TIME_MS (5U * 1000U)
 
 /**
  * @brief Initialize communication methods supported by board
@@ -44,12 +50,40 @@
  */
 rd_status_t app_comms_init (void);
 
+/**
+ * @brief Get number of time BLE advertisement should be sent.
+ *
+ * @return Number of times to send same advertisement.
+ *
+ * @note Special value APP_COMM_ADV_REPEAT_FOREVER keeps sending
+ *       advertisement until new value is set.
+ * @note APP_COMM_ADV_DISABLE means advertisement should not be sent at all.
+ */
+uint8_t app_comms_bleadv_send_count_get();
+
+/**
+ * @brief Set number of time BLE advertisement should be sent.
+ *
+ * @param[in] count Number of times to send same advertisement.
+ *
+ * @note Special value APP_COMM_ADV_REPEAT_FOREVER keeps sending
+ *       advertisement until new value is set.
+ * @note APP_COMM_ADV_DISABLE means advertisement should not be sent at all.
+ */
+void app_comms_bleadv_send_count_set (const uint8_t count);
+
 #ifdef CEEDLING
 /** Handles for unit test framework */
+typedef struct
+{
+    unsigned int switch_to_normal : 1;
+    unsigned int disable_config : 1;
+} mode_changes_t;
 void on_gatt_connected_isr (void * p_data, size_t data_len);
 void on_gatt_disconnected_isr (void * p_data, size_t data_len);
 void on_gatt_data_isr (void * p_data, size_t data_len);
 void handle_gatt (void * p_data, uint16_t data_len);
+void comm_mode_change_isr (void * const p_context);
 #endif
 
 

@@ -10,10 +10,14 @@
 #include "mock_ruuvi_interface_communication_ble_advertising.h"
 #include "mock_ruuvi_interface_communication_radio.h"
 #include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_interface_timer.h"
 #include "mock_ruuvi_task_advertisement.h"
 #include "mock_ruuvi_task_communication.h"
 #include "mock_ruuvi_task_gatt.h"
 #include "mock_ruuvi_task_nfc.h"
+
+extern mode_changes_t m_mode_ops;
+extern ri_timer_id_t m_comm_timer;
 
 void setUp (void)
 {
@@ -74,6 +78,8 @@ void test_app_comms_init_ok (void)
     ri_comm_dis_init_t dis = {0};
     // Allow switchover to extended / 2 MBPS comms.
     ri_radio_init_ExpectAndReturn (APP_MODULATION, RD_SUCCESS);
+    ri_timer_create_ExpectAndReturn (&m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,
+                                     &comm_mode_change_isr, RD_SUCCESS);
     test_dis_init (&dis);
 #if APP_NFC_ENABLED
     rt_nfc_init_ExpectWithArrayAndReturn (&dis, 1, RD_SUCCESS);
@@ -81,6 +87,9 @@ void test_app_comms_init_ok (void)
 #if APP_ADV_ENABLED
     rt_adv_init_ExpectAndReturn (&adv_settings, RD_SUCCESS);
     ri_adv_type_set_ExpectAndReturn (NONCONNECTABLE_NONSCANNABLE, RD_SUCCESS);
+    ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
+    ri_timer_start_ExpectAndReturn (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops,
+                                    RD_SUCCESS);
 #endif
 #if APP_GATT_ENABLED
     uint64_t address = 0xAABBCCDDEEFF01A0;
@@ -153,4 +162,23 @@ void test_handle_gatt_short_data (void)
     mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION;
     RD_ERROR_CHECK_EXPECT (RD_ERROR_INVALID_PARAM, ~RD_ERROR_FATAL);
     handle_gatt (mock_data, sizeof (mock_data));
+}
+
+void test_bleadv_repeat_count_set_get (void)
+{
+    const uint8_t count = 5;
+    app_comms_bleadv_send_count_set (count);
+    uint8_t check = app_comms_bleadv_send_count_get();
+    TEST_ASSERT (count == check);
+}
+
+void test_comm_mode_change_isr (void)
+{
+    mode_changes_t mode = {0};
+    mode.switch_to_normal = 1;
+    app_comms_bleadv_send_count_set (5);
+    comm_mode_change_isr (&mode);
+    uint8_t adv_repeat = app_comms_bleadv_send_count_get();
+    TEST_ASSERT (0 == mode.switch_to_normal);
+    TEST_ASSERT (1 == adv_repeat);
 }
