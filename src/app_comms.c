@@ -335,6 +335,7 @@ rd_status_t app_comms_configuration_enable()
     err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
     config_enabled_on_next_conn = true;
     err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+    return err_code;
 }
 
 /** @} */
