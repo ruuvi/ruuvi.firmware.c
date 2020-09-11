@@ -40,11 +40,17 @@
 rd_status_t app_button_init (void);
 
 #ifdef CEEDLING
-void on_button_1_press (const ri_gpio_evt_t evt);
-void on_button_2_press (const ri_gpio_evt_t evt);
-void on_button_3_press (const ri_gpio_evt_t evt);
-void on_button_4_press (const ri_gpio_evt_t evt);
-ri_gpio_slope_t get_activation (ri_gpio_evt_t evt);
+typedef struct
+{
+    unsigned int factory_reset : 1;
+} button_action_t;
+void on_button_1_press_isr (const ri_gpio_evt_t evt);
+void on_button_2_press_isr (const ri_gpio_evt_t evt);
+void on_button_3_press_isr (const ri_gpio_evt_t evt);
+void on_button_4_press_isr (const ri_gpio_evt_t evt);
+ri_gpio_slope_t get_activation (const ri_gpio_evt_t * const evt);
+void button_timer_handler_isr (void * p_context);
+void button_handler (void * p_event_data, uint16_t event_size);
 #endif
 /*@}*/
 

@@ -28,6 +28,16 @@
 #   define APP_BATTERY_SAMPLE_MS (60ULL*1000ULL)
 #endif
 
+/** @brief Time to long press of a button. */
+#ifndef APP_BUTTON_LONG_PRESS_TIME_MS
+#   define APP_BUTTON_LONG_PRESS_TIME_MS (5000U)
+#endif
+
+/** @brief Configuration mode disabled on this timeout. */
+#ifndef APP_CONFIG_ENABLED_TIME_MS
+#   define APP_CONFIG_ENABLED_TIME_MS (5U * 60U * 1000U)
+#endif
+
 #ifndef APP_MOTION_THRESHOLD
 #   define APP_MOTION_THRESHOLD (0.064F)
 #endif

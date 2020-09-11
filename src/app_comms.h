@@ -72,6 +72,24 @@ uint8_t app_comms_bleadv_send_count_get (void);
  */
 void app_comms_bleadv_send_count_set (const uint8_t count);
 
+/**
+ * @brief Enable security-sensitive configuration options.
+ *
+ * After calling this function:
+ *   - DFU service is enabled which allows firmware updates.
+ *   - Device ID is readable through DIS/Serial Number characteristic.
+ *   - Configuration commands are allowed.
+ *
+ * The configuration is enabled for the next communication connection and is disabled
+ * after disconnection or once timeout is triggered.
+ *
+ * This also calls app_led to indicate configuration is enabled.
+ *
+ * @retval RD_SUCCESS if configuration mode was entered.
+ * @retval RD_ERROR_INVALID_STATE if communications are not initialized.
+ */
+rd_status_t app_comms_configuration_enable (void);
+
 #ifdef CEEDLING
 /** Handles for unit test framework */
 typedef struct

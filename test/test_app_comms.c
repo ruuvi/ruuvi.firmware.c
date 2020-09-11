@@ -5,6 +5,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_endpoints.h"
 #include "mock_app_heartbeat.h"
+#include "mock_app_led.h"
 #include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_communication_ble_advertising.h"
@@ -129,6 +130,7 @@ void test_on_gatt_connected (void)
 void test_on_gatt_disconnected (void)
 {
     rt_gatt_enable_ExpectAndReturn (RD_SUCCESS);
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     on_gatt_disconnected_isr (NULL, 0);
 }
 
