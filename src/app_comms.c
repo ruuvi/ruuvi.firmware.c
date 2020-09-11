@@ -51,7 +51,7 @@ static
 #endif
 mode_changes_t m_mode_ops;     //!< Pending mode changes.
 
-uint8_t app_comms_bleadv_send_count_get()
+uint8_t app_comms_bleadv_send_count_get (void)
 {
     return m_bleadv_repeat_count;
 }
@@ -112,7 +112,7 @@ TODO:
  * @brief Calculate how many times advertisements must be repeated
  *        to send at the initial fast rate.
  */
-static uint8_t initial_advertisement_send_count()
+static uint8_t initial_adv_send_count (void)
 {
     uint8_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
 
@@ -262,7 +262,7 @@ static rd_status_t adv_init (void)
     adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;
     err_code |= rt_adv_init (&adv_settings);
     err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);
-    app_comms_bleadv_send_count_set (initial_advertisement_send_count());
+    app_comms_bleadv_send_count_set (initial_adv_send_count());
     m_mode_ops.switch_to_normal = 1;
     prepare_mode_change (&m_mode_ops);
     return err_code;

@@ -64,7 +64,7 @@ static rd_status_t send_adv (ri_comm_message_t * const p_msg)
 
     if (APP_COMM_ADV_DISABLE != repeat_count)
     {
-        if (repeat_count == APP_COMM_ADV_REPEAT_FOREVER)
+        if (APP_COMM_ADV_REPEAT_FOREVER == repeat_count)
         {
             p_msg->repeat_count = RI_COMM_MSG_REPEAT_FOREVER;
         }

@@ -59,7 +59,7 @@ rd_status_t app_comms_init (void);
  *       advertisement until new value is set.
  * @note APP_COMM_ADV_DISABLE means advertisement should not be sent at all.
  */
-uint8_t app_comms_bleadv_send_count_get();
+uint8_t app_comms_bleadv_send_count_get (void);
 
 /**
  * @brief Set number of time BLE advertisement should be sent.
