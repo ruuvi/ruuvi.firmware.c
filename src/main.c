@@ -91,9 +91,9 @@ int main (void)
     {
         ri_scheduler_execute();
         // Sleep - woken up on event
-        app_led_deactivate (RB_LED_ACTIVITY);
+        app_led_activity_indicate (false);
         ri_yield();
-        app_led_activate (RB_LED_ACTIVITY);
+        app_led_activity_indicate (true);
         // Prevent loop being optimized away
         __asm__ ("");
     } while (LOOP_FOREVER);

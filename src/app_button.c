@@ -16,7 +16,7 @@
 /**
  * @addtogroup app_button
  */
-/*@{*/
+/** @{ */
 /**
  * @file app_button.c
  * @author Otso Jousimaa <otso@ojousima.net>
@@ -267,4 +267,4 @@ rd_status_t app_button_init (void)
 }
 #endif
 
-/*@}*/
+/** @} */
