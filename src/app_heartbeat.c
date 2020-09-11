@@ -57,6 +57,34 @@ static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
     return err_code;
 }
 
+static rd_status_t send_adv (ri_comm_message_t * const p_msg)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t repeat_count = app_comms_bleadv_send_count_get();
+
+    if (APP_COMM_ADV_DISABLE != repeat_count)
+    {
+        if (APP_COMM_ADV_REPEAT_FOREVER == repeat_count)
+        {
+            p_msg->repeat_count = RI_COMM_MSG_REPEAT_FOREVER;
+        }
+        else
+        {
+            p_msg->repeat_count = repeat_count;
+        }
+
+        err_code = rt_adv_send_data (p_msg);
+        // Advertising should always be successful
+        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+    }
+    else
+    {
+        rt_adv_stop();
+    }
+
+    return err_code;
+}
+
 /**
  * @brief When timer triggers, schedule reading sensors and sending data.
  *
@@ -67,7 +95,7 @@ static
 #endif
 void heartbeat (void * p_event, uint16_t event_size)
 {
-    ri_comm_message_t msg;
+    ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     bool heartbeat_ok = false;
     rd_sensor_data_t data = { 0 };
@@ -82,8 +110,7 @@ void heartbeat (void * p_event, uint16_t event_size)
         m_measurement_count = 0;
     }
 
-    msg.repeat_count = 1;
-    err_code = rt_adv_send_data (&msg);
+    err_code = send_adv (&msg);
     // Advertising should always be successful
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 
@@ -94,6 +121,8 @@ void heartbeat (void * p_event, uint16_t event_size)
 
     // Cut endpoint 5 data to fit into GATT msg.
     msg.data_length = 18;
+    // Gatt Link layer takes care of delivery.
+    msg.repeat_count = 1;
     err_code = rt_gatt_send_asynchronous (&msg);
 
     if (RD_SUCCESS == err_code)

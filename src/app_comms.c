@@ -7,6 +7,7 @@
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_scheduler.h"
+#include "ruuvi_interface_timer.h"
 #include "ruuvi_task_advertisement.h"
 #include "ruuvi_task_communication.h"
 #include "ruuvi_task_gatt.h"
@@ -21,7 +22,7 @@
 /**
  * @file app_comms.c
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2020-04-29
+ * @date 2020-09-10
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  *
  * Typical usage:
@@ -29,6 +30,105 @@
  * TODO
  * @endcode
  */
+
+#ifndef CEEDLING
+typedef struct
+{
+    unsigned int switch_to_normal : 1; //!< Stop initial fast advertising.
+    unsigned int disable_config : 1;   //!< Disable configuration mode.
+} mode_changes_t;
+#endif
+
+static uint8_t m_bleadv_repeat_count; //!< Number of times to repeat advertisement.
+
+#ifndef CEEDLING
+static
+#endif
+ri_timer_id_t m_comm_timer;    //!< Timer for communication mode changes.
+
+#ifndef CEEDLING
+static
+#endif
+mode_changes_t m_mode_ops;     //!< Pending mode changes.
+
+uint8_t app_comms_bleadv_send_count_get (void)
+{
+    return m_bleadv_repeat_count;
+}
+
+void app_comms_bleadv_send_count_set (const uint8_t count)
+{
+    m_bleadv_repeat_count = count;
+}
+
+/**
+ * @brief Start a timer for switching over to normal mode.
+ */
+static rd_status_t timed_switch_to_normal_mode (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_mode_ops.switch_to_normal = 1;
+    err_code |= ri_timer_stop (m_comm_timer);
+    err_code |= ri_timer_start (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops);
+    return err_code;
+}
+
+static rd_status_t prepare_mode_change (const mode_changes_t * p_change)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    if (p_change->switch_to_normal)
+    {
+        err_code |= timed_switch_to_normal_mode();
+    }
+
+    return err_code;
+}
+
+#ifndef CEEDLING
+static
+#endif
+void comm_mode_change_isr (void * const p_context)
+{
+    mode_changes_t * const p_change = (mode_changes_t *) p_context;
+
+    if (p_change->switch_to_normal)
+    {
+        app_comms_bleadv_send_count_set (1);
+        p_change->switch_to_normal = 0;
+    }
+
+#if 0
+TODO:
+    Configuration mode
+    else if (p_mode->disable_config)
+    {
+    }
+
+#endif
+}
+
+/**
+ * @brief Calculate how many times advertisements must be repeated
+ *        to send at the initial fast rate.
+ */
+static uint8_t initial_adv_send_count (void)
+{
+    uint8_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
+
+    if (0 == num_sends)
+    {
+        num_sends = 1;
+    }
+
+    if (APP_COMM_ADV_REPEAT_FOREVER == num_sends)
+    {
+        num_sends = APP_COMM_ADV_REPEAT_FOREVER - 1;
+    }
+
+    return num_sends;
+}
+
 #if APP_GATT_ENABLED
 
 static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
@@ -162,6 +262,9 @@ static rd_status_t adv_init (void)
     adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;
     err_code |= rt_adv_init (&adv_settings);
     err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);
+    app_comms_bleadv_send_count_set (initial_adv_send_count());
+    m_mode_ops.switch_to_normal = 1;
+    prepare_mode_change (&m_mode_ops);
     return err_code;
 }
 
@@ -170,6 +273,8 @@ rd_status_t app_comms_init (void)
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_dis_init_t dis = {0};
     err_code |= ri_radio_init (APP_MODULATION);
+    err_code |= ri_timer_create (&m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,
+                                 &comm_mode_change_isr);
 
     if (RD_SUCCESS == err_code)
     {
