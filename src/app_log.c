@@ -386,7 +386,7 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
 
 void app_log_purge_flash (void)
 {
-    return RD_SUCCESS;
+    return;
 }
 #endif
 

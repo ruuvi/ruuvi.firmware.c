@@ -4,6 +4,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "mock_app_comms.h"
+#include "mock_app_heartbeat.h"
 #include "mock_app_led.h"
 #include "mock_app_log.h"
 #include "mock_ruuvi_interface_gpio.h"
@@ -34,6 +35,7 @@ void test_button_handler_factory_reset (void)
 {
     button_action_t action = {0};
     action.factory_reset = 1;
+    app_heartbeat_stop_ExpectAndReturn(RD_SUCCESS);
     app_log_purge_flash_Expect();
     ri_power_enter_bootloader_Expect();
     ri_power_reset_Expect();

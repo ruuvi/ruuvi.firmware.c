@@ -1,5 +1,6 @@
 #include "app_button.h"
 #include "app_comms.h"
+#include "app_heartbeat.h"
 #include "app_led.h"
 #include "app_log.h"
 #include "ruuvi_boards.h"
@@ -56,6 +57,7 @@ void button_timer_handler_isr (void * p_context)
 
     if (p_action->factory_reset)
     {
+        app_heartbeat_stop();
         app_log_purge_flash();
         // Execution stops here normally
         ri_power_enter_bootloader();
