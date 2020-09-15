@@ -310,7 +310,7 @@ rd_status_t app_comms_configure_next_enable (void)
     err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
     return err_code;
 }
-#else 
+#else
 rd_status_t app_comms_configure_next_enable (void)
 {
     return RD_ERROR_NOT_ENABLED;
@@ -339,7 +339,7 @@ void comm_mode_change_isr (void * const p_context)
         app_led_activity_set (RB_LED_ACTIVITY);
         p_change->disable_config = 0;
     }
-#endif 
+#endif
 }
 
 static rd_status_t adv_init (void)
@@ -374,7 +374,7 @@ rd_status_t app_comms_init (void)
 #if APP_COMMS_BIDIR_ENABLED
         ri_comm_dis_init_t dis = {0};
         err_code |= dis_init (&dis);
-#endif 
+#endif
 #if APP_NFC_ENABLED
         err_code |= rt_nfc_init (&dis);
         rt_nfc_set_on_connected_isr (&on_nfc_connected_isr);
