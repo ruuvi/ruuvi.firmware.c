@@ -214,6 +214,11 @@
 #   define RI_COMM_ENABLED RT_COMMUNICATION_ENABLED
 #endif
 
+/** @brief Enable bidirectional communication */
+#ifndef APP_COMMS_BIDIR_ENABLED
+#   define APP_COMMS_BIDIR_ENABLED ((APP_GATT_ENABLED) + (APP_NFC_ENABLED))
+#endif
+
 /** @brief Enable Flash tasks if there is storage space */
 #ifndef RT_FLASH_ENABLED
 #   define RT_FLASH_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)

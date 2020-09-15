@@ -31,6 +31,11 @@
  * @endcode
  */
 
+#if APP_COMMS_BIDIR_ENABLED
+static bool m_config_enabled_on_current_conn; //!< This connection has config enabled.
+static bool m_config_enabled_on_next_conn;    //!< Next connection has config enabled.
+#endif
+
 #ifndef CEEDLING
 typedef struct
 {
@@ -51,9 +56,62 @@ static
 #endif
 mode_changes_t m_mode_ops;     //!< Pending mode changes.
 
-static bool m_config_enabled_on_current_conn; //!< This connection has config enabled.
-static bool m_config_enabled_on_next_conn;    //!< Next connection has config enabled.
+uint8_t app_comms_bleadv_send_count_get (void)
+{
+    return m_bleadv_repeat_count;
+}
 
+void app_comms_bleadv_send_count_set (const uint8_t count)
+{
+    m_bleadv_repeat_count = count;
+}
+
+/**
+ * @brief Start a timer for switching over to normal mode.
+ */
+static rd_status_t timed_switch_to_normal_mode (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_mode_ops.switch_to_normal = 1;
+    err_code |= ri_timer_stop (m_comm_timer);
+    err_code |= ri_timer_start (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops);
+    return err_code;
+}
+
+static rd_status_t prepare_mode_change (const mode_changes_t * p_change)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    if (p_change->switch_to_normal)
+    {
+        err_code |= timed_switch_to_normal_mode();
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Calculate how many times advertisements must be repeated
+ *        to send at the initial fast rate.
+ */
+static uint8_t initial_adv_send_count (void)
+{
+    uint8_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
+
+    if (0 == num_sends)
+    {
+        num_sends = 1;
+    }
+
+    if (APP_COMM_ADV_REPEAT_FOREVER == num_sends)
+    {
+        num_sends = APP_COMM_ADV_REPEAT_FOREVER - 1;
+    }
+
+    return num_sends;
+}
+
+#if APP_COMMS_BIDIR_ENABLED
 /**
  * @brief Allow configuration commands on next connection.
  *
@@ -94,84 +152,6 @@ static rd_status_t config_conn_end (void)
     m_config_enabled_on_next_conn = false;
     return RD_SUCCESS;
 }
-
-uint8_t app_comms_bleadv_send_count_get (void)
-{
-    return m_bleadv_repeat_count;
-}
-
-void app_comms_bleadv_send_count_set (const uint8_t count)
-{
-    m_bleadv_repeat_count = count;
-}
-
-/**
- * @brief Start a timer for switching over to normal mode.
- */
-static rd_status_t timed_switch_to_normal_mode (void)
-{
-    rd_status_t err_code = RD_SUCCESS;
-    m_mode_ops.switch_to_normal = 1;
-    err_code |= ri_timer_stop (m_comm_timer);
-    err_code |= ri_timer_start (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops);
-    return err_code;
-}
-
-static rd_status_t prepare_mode_change (const mode_changes_t * p_change)
-{
-    rd_status_t err_code = RD_SUCCESS;
-
-    if (p_change->switch_to_normal)
-    {
-        err_code |= timed_switch_to_normal_mode();
-    }
-
-    return err_code;
-}
-
-#ifndef CEEDLING
-static
-#endif
-void comm_mode_change_isr (void * const p_context)
-{
-    mode_changes_t * const p_change = (mode_changes_t *) p_context;
-
-    if (p_change->switch_to_normal)
-    {
-        app_comms_bleadv_send_count_set (1);
-        p_change->switch_to_normal = 0;
-    }
-
-    if (p_change->disable_config)
-    {
-        enable_config_on_next_conn (false);
-        app_led_activity_set (RB_LED_ACTIVITY);
-        p_change->disable_config = 0;
-    }
-}
-
-/**
- * @brief Calculate how many times advertisements must be repeated
- *        to send at the initial fast rate.
- */
-static uint8_t initial_adv_send_count (void)
-{
-    uint8_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
-
-    if (0 == num_sends)
-    {
-        num_sends = 1;
-    }
-
-    if (APP_COMM_ADV_REPEAT_FOREVER == num_sends)
-    {
-        num_sends = APP_COMM_ADV_REPEAT_FOREVER - 1;
-    }
-
-    return num_sends;
-}
-
-#if APP_GATT_ENABLED
 
 static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
                           size_t data_len)
@@ -222,6 +202,8 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
 
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
+
+#if APP_GATT_ENABLED
 
 #ifndef CEEDLING
 static
@@ -303,9 +285,7 @@ void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 {
     config_conn_end();
 }
-
 #endif
-
 
 static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis)
 {
@@ -317,6 +297,49 @@ static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis)
     snprintf (p_dis->manufacturer, sizeof (p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf (p_dis->model, sizeof (p_dis->model), RB_MODEL_STRING);
     return err_code;
+}
+
+rd_status_t app_comms_configure_next_enable (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= rt_gatt_dfu_init();
+    m_mode_ops.disable_config = 1;
+    err_code |= ri_timer_stop (m_comm_timer);
+    err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
+    m_config_enabled_on_next_conn = true;
+    err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+    return err_code;
+}
+#else 
+rd_status_t app_comms_configure_next_enable (void)
+{
+    return RD_ERROR_NOT_ENABLED;
+}
+#endif //!< APP_COMMS_BIDIR_ENABLED
+
+
+
+#ifndef CEEDLING
+static
+#endif
+void comm_mode_change_isr (void * const p_context)
+{
+    mode_changes_t * const p_change = (mode_changes_t *) p_context;
+
+    if (p_change->switch_to_normal)
+    {
+        app_comms_bleadv_send_count_set (1);
+        p_change->switch_to_normal = 0;
+    }
+
+#if APP_COMMS_BIDIR_ENABLED
+    if (p_change->disable_config)
+    {
+        enable_config_on_next_conn (false);
+        app_led_activity_set (RB_LED_ACTIVITY);
+        p_change->disable_config = 0;
+    }
+#endif 
 }
 
 static rd_status_t adv_init (void)
@@ -342,14 +365,16 @@ static rd_status_t adv_init (void)
 rd_status_t app_comms_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_comm_dis_init_t dis = {0};
     err_code |= ri_radio_init (APP_MODULATION);
     err_code |= ri_timer_create (&m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,
                                  &comm_mode_change_isr);
 
     if (RD_SUCCESS == err_code)
     {
+#if APP_COMMS_BIDIR_ENABLED
+        ri_comm_dis_init_t dis = {0};
         err_code |= dis_init (&dis);
+#endif 
 #if APP_NFC_ENABLED
         err_code |= rt_nfc_init (&dis);
         rt_nfc_set_on_connected_isr (&on_nfc_connected_isr);
@@ -371,18 +396,6 @@ rd_status_t app_comms_init (void)
 #endif
     }
 
-    return err_code;
-}
-
-rd_status_t app_comms_configure_next_enable (void)
-{
-    rd_status_t err_code = RD_SUCCESS;
-    err_code |= rt_gatt_dfu_init();
-    m_mode_ops.disable_config = 1;
-    err_code |= ri_timer_stop (m_comm_timer);
-    err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
-    m_config_enabled_on_next_conn = true;
-    err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
     return err_code;
 }
 
