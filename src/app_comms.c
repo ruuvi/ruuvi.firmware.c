@@ -274,7 +274,6 @@ static
 void on_nfc_connected_isr (void * p_data, size_t data_len)
 {
     config_setup_on_this_conn();
-    app_comms_configure_next_enable();
 }
 
 /** @brief Callback when NFC is disconnected" */
@@ -284,6 +283,7 @@ static
 void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 {
     config_conn_end();
+    app_comms_configure_next_enable();
 }
 #endif
 
