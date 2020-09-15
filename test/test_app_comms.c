@@ -84,6 +84,7 @@ void test_app_comms_init_ok (void)
 #if APP_NFC_ENABLED
     rt_nfc_init_ExpectWithArrayAndReturn (&dis, 1, RD_SUCCESS);
     rt_nfc_set_on_connected_isr_Expect (&on_nfc_connected_isr);
+    rt_nfc_set_on_disconn_isr_Expect (&on_nfc_disconnected_isr);
 #endif
 #if APP_ADV_ENABLED
     rt_adv_init_ExpectAndReturn (&adv_settings, RD_SUCCESS);
@@ -109,10 +110,7 @@ void test_app_comms_init_ok (void)
 }
 
 void test_app_comms_init_timer_fail (void)
-
 {
-    ri_comm_dis_init_t dis = {0};
-    // Allow switchover to extended / 2 MBPS comms.
     ri_radio_init_ExpectAndReturn (APP_MODULATION, RD_SUCCESS);
     ri_timer_create_ExpectAndReturn (&m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,
                                      &comm_mode_change_isr, RD_ERROR_RESOURCES);
@@ -201,7 +199,19 @@ void test_comm_mode_change_isr_disable_config (void)
 {
     mode_changes_t mode = {0};
     mode.disable_config = 1;
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     comm_mode_change_isr (&mode);
     TEST_ASSERT (0 == mode.disable_config);
+}
+
+void test_app_comm_configurable_gatt_after_nfc (void)
+{
+    rt_gatt_dfu_init_ExpectAndReturn (RD_SUCCESS);
+    ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
+    ri_timer_start_ExpectAndReturn (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops,
+                                    RD_SUCCESS);
+    app_led_activity_set_ExpectAndReturn (RB_LED_CONFIG_ENABLED, RD_SUCCESS);
+    on_nfc_connected_isr (NULL, 0);
+    on_nfc_disconnected_isr (NULL, 0);
+    rt_gatt_disable_ExpectAndReturn (RD_SUCCESS);
+    on_gatt_connected_isr (NULL, 0);
 }

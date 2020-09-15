@@ -134,7 +134,7 @@ void test_button_handler_enable_config_release()
     app_led_deactivate_ExpectAndReturn (RB_LED_BUTTON_PRESS, RD_SUCCESS);
     app_led_activity_pause_Expect (false);
     ri_timer_stop_ExpectAndReturn (m_button_timer, RD_SUCCESS);
-    app_comms_configuration_enable_ExpectAndReturn (RD_SUCCESS);
+    app_comms_configure_next_enable_ExpectAndReturn (RD_SUCCESS);
     button_handler (&evt, sizeof (evt));
     TEST_ASSERT (0 == m_button_action.factory_reset);
 }

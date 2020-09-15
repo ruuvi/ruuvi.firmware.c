@@ -54,21 +54,15 @@ mode_changes_t m_mode_ops;     //!< Pending mode changes.
 static bool m_config_enabled_on_current_conn; //!< This connection has config enabled.
 static bool m_config_enabled_on_next_conn;    //!< Next connection has config enabled.
 
+/**
+ * @brief Allow configuration commands on connection.
+ *
+ * @param[in] enable True to enable configuration on connection, false to disable.
+ */
 static rd_status_t enable_config_on_this_conn (const bool enable)
 {
-    rd_status_t err_code = RD_SUCCESS;
     m_config_enabled_on_current_conn = enable;
-
-    if (enable)
-    {
-        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
-    }
-    else
-    {
-        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
-    }
-
-    return err_code;
+    return RD_SUCCESS;
 }
 
 uint8_t app_comms_bleadv_send_count_get (void)
@@ -232,6 +226,7 @@ void on_gatt_disconnected_isr (void * p_data, size_t data_len)
     rt_gatt_enable();
     m_config_enabled_on_next_conn = false;
     (void) enable_config_on_this_conn (false);
+    app_led_activity_set (RB_LED_ACTIVITY);
 }
 
 /**
@@ -261,7 +256,11 @@ static rd_status_t ble_name_string_create (char * const name_str, const size_t n
 #endif //!< if GATT ENABLED
 
 #if APP_NFC_ENABLED
-/** @brief Callback when NFV is connected" */
+/**
+ * @brief Callback when NFC is connected.
+ *
+ * Enables configuration on NFC connection and on next connection.
+ */
 #ifndef CEEDLING
 static
 #endif
@@ -269,7 +268,18 @@ void on_nfc_connected_isr (void * p_data, size_t data_len)
 {
     m_config_enabled_on_next_conn = true;
     (void) enable_config_on_this_conn (true);
+    app_comms_configure_next_enable();
 }
+
+/** @brief Callback when NFC is disconnected" */
+#ifndef CEEDLING
+static
+#endif
+void on_nfc_disconnected_isr (void * p_data, size_t data_len)
+{
+    (void) enable_config_on_this_conn (false);
+}
+
 #endif
 
 
@@ -319,6 +329,7 @@ rd_status_t app_comms_init (void)
 #if APP_NFC_ENABLED
         err_code |= rt_nfc_init (&dis);
         rt_nfc_set_on_connected_isr (&on_nfc_connected_isr);
+        rt_nfc_set_on_disconn_isr (&on_nfc_disconnected_isr);
 #endif
 #if APP_ADV_ENABLED
         err_code |= adv_init();
@@ -339,7 +350,7 @@ rd_status_t app_comms_init (void)
     return err_code;
 }
 
-rd_status_t app_comms_configuration_enable()
+rd_status_t app_comms_configure_next_enable (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_gatt_dfu_init();

@@ -111,7 +111,7 @@ static void handle_enable_config_button (const bool activated)
         app_led_deactivate (RB_LED_BUTTON_PRESS);
         app_led_activity_pause (false);
         (void) ri_timer_stop (m_button_timer);
-        (void) app_comms_configuration_enable();
+        (void) app_comms_configure_next_enable();
     }
 }
 
