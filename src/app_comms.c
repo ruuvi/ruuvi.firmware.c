@@ -1,6 +1,7 @@
 #include "app_config.h"
 #include "app_comms.h"
 #include "app_heartbeat.h"
+#include "app_led.h"
 #include "app_sensor.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_endpoints.h"
@@ -13,7 +14,6 @@
 #include "ruuvi_task_gatt.h"
 #include "ruuvi_task_nfc.h"
 #include <stdio.h>
-
 
 /**
  * @addtogroup app_comms
@@ -50,6 +50,26 @@ ri_timer_id_t m_comm_timer;    //!< Timer for communication mode changes.
 static
 #endif
 mode_changes_t m_mode_ops;     //!< Pending mode changes.
+
+static bool config_enabled_on_current_conn; //!< This connection has config enabled.
+static bool config_enabled_on_next_conn;    //!< Next connection has config enabled.
+
+static rd_status_t enable_config_on_this_conn (const bool enable)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    config_enabled_on_current_conn = enable;
+
+    if (enable)
+    {
+        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+    }
+    else
+    {
+        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
+    }
+
+    return err_code;
+}
 
 uint8_t app_comms_bleadv_send_count_get (void)
 {
@@ -98,14 +118,11 @@ void comm_mode_change_isr (void * const p_context)
         p_change->switch_to_normal = 0;
     }
 
-#if 0
-TODO:
-    Configuration mode
-    else if (p_mode->disable_config)
+    if (p_change->disable_config)
     {
+        (void) enable_config_on_this_conn (false);
+        p_change->disable_config = 0;
     }
-
-#endif
 }
 
 /**
@@ -197,6 +214,12 @@ void on_gatt_connected_isr (void * p_data, size_t data_len)
 {
     // Stop advertising for GATT
     rt_gatt_disable();
+
+    if (config_enabled_on_next_conn)
+    {
+        config_enabled_on_next_conn = false;
+        (void) enable_config_on_this_conn (true);
+    }
 }
 
 /** @brief Callback when GATT is disconnected" */
@@ -207,6 +230,8 @@ void on_gatt_disconnected_isr (void * p_data, size_t data_len)
 {
     // Start advertising for GATT
     rt_gatt_enable();
+    config_enabled_on_next_conn = false;
+    (void) enable_config_on_this_conn (false);
 }
 
 /**
@@ -298,6 +323,18 @@ rd_status_t app_comms_init (void)
 #endif
     }
 
+    return err_code;
+}
+
+rd_status_t app_comms_configuration_enable()
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= rt_gatt_dfu_init();
+    m_mode_ops.disable_config = 1;
+    err_code |= ri_timer_stop (m_comm_timer);
+    err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
+    config_enabled_on_next_conn = true;
+    err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
     return err_code;
 }
 

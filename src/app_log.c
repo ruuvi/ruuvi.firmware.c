@@ -355,6 +355,10 @@ rd_status_t app_log_config_get (app_log_config_t * const configuration)
     return err_code;
 }
 
+void app_log_purge_flash (void)
+{
+    ri_flash_purge();
+}
 
 #else
 //Dummy implementation to save flash space
@@ -378,6 +382,11 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
                           app_log_read_state_t * const p_read_state)
 {
     return RD_ERROR_NOT_FOUND;
+}
+
+void app_log_purge_flash (void)
+{
+    return;
 }
 #endif
 

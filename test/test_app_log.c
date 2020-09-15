@@ -7,6 +7,7 @@
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_driver_sensor.h"
 #include "mock_ruuvi_endpoints.h"
+#include "mock_ruuvi_interface_flash.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_rtc.h"
 #include "mock_ruuvi_interface_yield.h"
@@ -850,5 +851,10 @@ void test_app_log_read_out_of_sequence_data (void)
     TEST_ASSERT (17 == num_reads);
 }
 
+void test_app_log_purge_flash (void)
+{
+    ri_flash_purge_Expect();
+    app_log_purge_flash();
+}
 
 /** @} */

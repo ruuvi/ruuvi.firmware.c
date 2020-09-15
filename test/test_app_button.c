@@ -3,12 +3,23 @@
 #include "app_button.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
+#include "mock_app_comms.h"
+#include "mock_app_heartbeat.h"
+#include "mock_app_led.h"
+#include "mock_app_log.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_log.h"
+#include "mock_ruuvi_interface_power.h"
+#include "mock_ruuvi_interface_scheduler.h"
+#include "mock_ruuvi_interface_timer.h"
 #include "mock_ruuvi_task_button.h"
 #include "mock_ruuvi_task_gpio.h"
 
 #include <stddef.h>
+
+extern ri_timer_id_t m_button_timer;
+extern button_action_t m_button_action;
+extern rt_button_init_t m_init_data;
 
 void setUp (void)
 {
@@ -18,6 +29,23 @@ void setUp (void)
 
 void tearDown (void)
 {
+}
+
+void test_button_handler_factory_reset (void)
+{
+    button_action_t action = {0};
+    action.factory_reset = 1;
+    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
+    app_log_purge_flash_Expect();
+    ri_power_enter_bootloader_Expect();
+    ri_power_reset_Expect();
+    button_timer_handler_isr (&action);
+}
+
+void test_button_handler_no_action (void)
+{
+    button_action_t action = {0};
+    button_timer_handler_isr (&action);
 }
 
 void test_app_button_ok (void)
@@ -32,16 +60,15 @@ void test_app_button_ok (void)
         ri_gpio_write_ExpectAndReturn (button_pwr_pins[ii], RI_GPIO_HIGH, RD_SUCCESS);
     }
 
-    // It would be difficult to mock the callback addresses, allow any argument
-    rt_button_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_timer_create_ExpectAndReturn (&m_button_timer, RI_TIMER_MODE_SINGLE_SHOT,
+                                     &button_timer_handler_isr, RD_SUCCESS);
+    rt_button_init_ExpectAndReturn (&m_init_data, RD_SUCCESS);
     err_code = app_button_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
-void test_app_button_activated (void)
+void test_app_button1_activated (void)
 {
-    // TODO: Change mode, start reboot timer
-    TEST_IGNORE_MESSAGE ("Implement");
     ri_gpio_state_t activation[] = RB_BUTTONS_ACTIVE_STATE;
     ri_gpio_slope_t e_slope = (RI_GPIO_HIGH == activation[0]) ? RI_GPIO_SLOPE_LOTOHI :
                               RI_GPIO_SLOPE_HITOLO;
@@ -50,13 +77,13 @@ void test_app_button_activated (void)
         .pin = RB_BUTTON_1,
         .slope = e_slope
     };
-    on_button_1_press (evt);
+    ri_scheduler_event_put_ExpectWithArrayAndReturn (&evt, 1, sizeof (evt), &button_handler,
+            RD_SUCCESS);
+    on_button_1_press_isr (evt);
 }
 
-void test_app_button_released (void)
+void test_app_button1_released (void)
 {
-    // TODO: Stop reboot timer
-    TEST_IGNORE_MESSAGE ("Implement");
     ri_gpio_state_t activation[] = RB_BUTTONS_ACTIVE_STATE;
     ri_gpio_slope_t e_slope = (RI_GPIO_LOW == activation[0]) ? RI_GPIO_SLOPE_LOTOHI :
                               RI_GPIO_SLOPE_HITOLO;
@@ -65,12 +92,49 @@ void test_app_button_released (void)
         .pin = RB_BUTTON_1,
         .slope = e_slope
     };
-    on_button_1_press (evt);
+    ri_scheduler_event_put_ExpectWithArrayAndReturn (&evt, 1, sizeof (evt), &button_handler,
+            RD_SUCCESS);
+    on_button_1_press_isr (evt);
 }
 
 void test_app_button_invalid (void)
 {
     // Nothing should happen
     const ri_gpio_evt_t evt = {.pin = 0xFFFF, .slope = 54};
-    on_button_1_press (evt);
+    ri_scheduler_event_put_ExpectWithArrayAndReturn (&evt, 1, sizeof (evt), &button_handler,
+            RD_SUCCESS);
+    on_button_1_press_isr (evt);
+}
+
+void test_button_handler_enable_config_press()
+{
+    bool active_states[] = RB_BUTTONS_ACTIVE_STATE;
+    ri_gpio_evt_t evt =
+    {
+        .pin = RB_BUTTON_ENABLE_CONFIG,
+        .slope = active_states[0]
+    };
+    app_led_activity_pause_Expect (true);
+    app_led_activate_ExpectAndReturn (RB_LED_BUTTON_PRESS, RD_SUCCESS);
+    ri_timer_stop_ExpectAndReturn (m_button_timer, RD_SUCCESS);
+    ri_timer_start_ExpectAndReturn (m_button_timer, APP_BUTTON_LONG_PRESS_TIME_MS,
+                                    &m_button_action, RD_SUCCESS);
+    button_handler (&evt, sizeof (evt));
+    TEST_ASSERT (1 == m_button_action.factory_reset);
+}
+
+void test_button_handler_enable_config_release()
+{
+    bool active_states[] = RB_BUTTONS_ACTIVE_STATE;
+    ri_gpio_evt_t evt =
+    {
+        .pin = RB_BUTTON_ENABLE_CONFIG,
+        .slope = !active_states[0]
+    };
+    app_led_deactivate_ExpectAndReturn (RB_LED_BUTTON_PRESS, RD_SUCCESS);
+    app_led_activity_pause_Expect (false);
+    ri_timer_stop_ExpectAndReturn (m_button_timer, RD_SUCCESS);
+    app_comms_configuration_enable_ExpectAndReturn (RD_SUCCESS);
+    button_handler (&evt, sizeof (evt));
+    TEST_ASSERT (0 == m_button_action.factory_reset);
 }

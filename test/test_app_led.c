@@ -49,3 +49,36 @@ void test_app_led_deactivate_ok (void)
     rd_status_t err_code = app_led_deactivate (m_led_pins[0]);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
+
+void test_app_led_activity_set (void)
+{
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    rd_status_t err_code = app_led_activity_set (m_led_pins[0]);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_led_activity_indicate (void)
+{
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    rd_status_t err_code = app_led_activity_set (m_led_pins[0]);
+    rt_led_write_ExpectAndReturn (m_led_pins[0], true, RD_SUCCESS);
+    err_code |= app_led_activity_indicate (true);
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    err_code |= app_led_activity_indicate (false);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_led_activity_pause (void)
+{
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    rd_status_t err_code = app_led_activity_set (m_led_pins[0]);
+    app_led_activity_pause (true);
+    err_code |= app_led_activity_indicate (true);
+    err_code |= app_led_activity_indicate (false);
+    app_led_activity_pause (false);
+    rt_led_write_ExpectAndReturn (m_led_pins[0], true, RD_SUCCESS);
+    err_code |= app_led_activity_indicate (true);
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    err_code |= app_led_activity_indicate (false);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}

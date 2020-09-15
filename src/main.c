@@ -73,6 +73,7 @@ void setup (void)
     err_code |= app_led_activate (RB_LED_STATUS_OK);
     err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);
     err_code |= app_led_deactivate (RB_LED_STATUS_OK);
+    err_code |= app_led_activity_set (RB_LED_ACTIVITY);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -91,9 +92,9 @@ int main (void)
     {
         ri_scheduler_execute();
         // Sleep - woken up on event
-        app_led_deactivate (RB_LED_ACTIVITY);
+        app_led_activity_indicate (false);
         ri_yield();
-        app_led_activate (RB_LED_ACTIVITY);
+        app_led_activity_indicate (true);
         // Prevent loop being optimized away
         __asm__ ("");
     } while (LOOP_FOREVER);

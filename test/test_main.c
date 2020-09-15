@@ -68,11 +68,12 @@ void test_main (void)
     app_led_activate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
     ri_delay_ms_ExpectAndReturn (APP_SELFTEST_OK_DELAY_MS, RD_SUCCESS);
     app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
-    app_led_deactivate_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    app_led_activate_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    app_led_activity_indicate_ExpectAndReturn (true, RD_SUCCESS);
     app_main();
 }
 

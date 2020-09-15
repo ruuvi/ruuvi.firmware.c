@@ -5,6 +5,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_endpoints.h"
 #include "mock_app_heartbeat.h"
+#include "mock_app_led.h"
 #include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_communication_ble_advertising.h"
@@ -129,6 +130,7 @@ void test_on_gatt_connected (void)
 void test_on_gatt_disconnected (void)
 {
     rt_gatt_enable_ExpectAndReturn (RD_SUCCESS);
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     on_gatt_disconnected_isr (NULL, 0);
 }
 
@@ -183,7 +185,7 @@ void test_bleadv_repeat_count_set_get (void)
     TEST_ASSERT (count == check);
 }
 
-void test_comm_mode_change_isr (void)
+void test_comm_mode_change_isr_switch_to_normal (void)
 {
     mode_changes_t mode = {0};
     mode.switch_to_normal = 1;
@@ -192,4 +194,13 @@ void test_comm_mode_change_isr (void)
     uint8_t adv_repeat = app_comms_bleadv_send_count_get();
     TEST_ASSERT (0 == mode.switch_to_normal);
     TEST_ASSERT (1 == adv_repeat);
+}
+
+void test_comm_mode_change_isr_disable_config (void)
+{
+    mode_changes_t mode = {0};
+    mode.disable_config = 1;
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    comm_mode_change_isr (&mode);
+    TEST_ASSERT (0 == mode.disable_config);
 }

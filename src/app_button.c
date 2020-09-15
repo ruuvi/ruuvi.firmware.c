@@ -1,15 +1,23 @@
 #include "app_button.h"
+#include "app_comms.h"
+#include "app_heartbeat.h"
+#include "app_led.h"
+#include "app_log.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
+#include "ruuvi_interface_flash.h"
+#include "ruuvi_interface_power.h"
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_gpio_interrupt.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_scheduler.h"
+#include "ruuvi_interface_timer.h"
 #include "ruuvi_task_button.h"
 
 /**
  * @addtogroup app_button
  */
-/*@{*/
+/** @{ */
 /**
  * @file app_button.c
  * @author Otso Jousimaa <otso@ojousima.net>
@@ -19,23 +27,57 @@
 
 #if RB_BUTTONS_NUMBER
 
+#ifndef CEEDLING
+static
+#endif
+ri_timer_id_t m_button_timer;
+
+#ifndef CEEDLING
+typedef struct
+{
+    unsigned int factory_reset : 1; //!< Button should do a factory reset.
+} button_action_t;
+#endif
+#ifndef CEEDLING
+static
+#endif
+button_action_t m_button_action;
+
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
+}
+
+#ifndef CEEDLING
+static
+#endif
+void button_timer_handler_isr (void * p_context)
+{
+    button_action_t * p_action = (button_action_t *) p_context;
+
+    if (p_action->factory_reset)
+    {
+        app_heartbeat_stop();
+        app_log_purge_flash();
+        // Execution stops here normally
+        ri_power_enter_bootloader();
+        // Reset on fail to enter BL
+        ri_power_reset();
+    }
 }
 
 // Find which button was pressed
 #ifndef CEEDLING
 static
 #endif
-ri_gpio_slope_t get_activation (ri_gpio_evt_t evt)
+ri_gpio_slope_t get_activation (const ri_gpio_evt_t * const evt)
 {
     size_t ii;
     const ri_gpio_id_t buttons[] = RB_BUTTONS_LIST;
     const ri_gpio_state_t states[] = RB_BUTTONS_ACTIVE_STATE;
     ri_gpio_slope_t activation;
 
-    for (ii = 0; (ii < RB_BUTTONS_NUMBER) && (buttons[ii] != evt.pin); ii++) {};
+    for (ii = 0; (ii < RB_BUTTONS_NUMBER) && (buttons[ii] != evt->pin); ii++) {};
 
     if (ii < RB_BUTTONS_NUMBER)
     {
@@ -50,22 +92,55 @@ ri_gpio_slope_t get_activation (ri_gpio_evt_t evt)
     return activation;
 }
 
+static void handle_enable_config_button (const bool activated)
+{
+    if (activated)
+    {
+        LOG ("Config button pressed\r\n");
+        m_button_action.factory_reset = 1;
+        // Disable activity led to not turn off the button indication led.
+        app_led_activity_pause (true);
+        app_led_activate (RB_LED_BUTTON_PRESS);
+        ri_timer_stop (m_button_timer);
+        ri_timer_start (m_button_timer, APP_BUTTON_LONG_PRESS_TIME_MS, &m_button_action);
+    }
+    else
+    {
+        LOG ("Config button released\r\n");
+        m_button_action.factory_reset = 0;
+        app_led_deactivate (RB_LED_BUTTON_PRESS);
+        app_led_activity_pause (false);
+        (void) ri_timer_stop (m_button_timer);
+        (void) app_comms_configuration_enable();
+    }
+}
+
+#ifndef CEEDLING
+static
+#endif
+void button_handler (void * p_event_data, uint16_t event_size)
+{
+    if ( (NULL != p_event_data) && (sizeof (ri_gpio_evt_t) == event_size))
+    {
+        const ri_gpio_evt_t * const p_evt = (ri_gpio_evt_t *) p_event_data;
+        const ri_gpio_slope_t activation = get_activation (p_evt);
+
+        if (RB_BUTTON_ENABLE_CONFIG == p_evt->pin)
+        {
+            handle_enable_config_button (p_evt->slope == activation);
+        }
+    }
+}
+
 #if RB_BUTTONS_NUMBER > 0
 #ifndef CEEDLING
 static
 #endif
-void on_button_1_press (const ri_gpio_evt_t evt)
+void on_button_1_press_isr (const ri_gpio_evt_t evt)
 {
-    ri_gpio_slope_t activation = get_activation (evt);
-
-    if (activation == evt.slope)
-    {
-        LOG ("Button 1 pressed\r\n");
-    }
-    else
-    {
-        LOG ("Button 1 released\r\n");
-    }
+    rd_status_t err_code = ri_scheduler_event_put (&evt, sizeof (ri_gpio_evt_t),
+                           &button_handler);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 #endif
 
@@ -134,20 +209,23 @@ static const ri_gpio_state_t button_active[] = RB_BUTTONS_ACTIVE_STATE;
 static const rt_button_fp_t app_button_handlers[RB_BUTTONS_NUMBER] =
 {
 #if RB_BUTTONS_NUMBER > 0
-    & on_button_1_press,
+    & on_button_1_press_isr,
 #endif
 #if RB_BUTTONS_NUMBER > 1
-    & on_button_2_press,
+    & on_button_2_press_isr,
 #endif
 #if RB_BUTTONS_NUMBER > 2
-    & on_button_3_press,
+    & on_button_3_press_isr,
 #endif
 #if RB_BUTTONS_NUMBER > 3
-    & on_button_4_press,
+    & on_button_4_press_isr,
 #endif
 };
 
-static rt_button_init_t m_init_data =
+#ifndef CEEDLING
+static
+#endif
+rt_button_init_t m_init_data =
 {
     .p_button_pins = button_pins,
     .p_button_active = button_active,
@@ -178,6 +256,8 @@ rd_status_t app_button_init (void)
     }
 
 #   endif
+    err_code |= ri_timer_create (&m_button_timer, RI_TIMER_MODE_SINGLE_SHOT,
+                                 &button_timer_handler_isr);
     err_code |= rt_button_init (&m_init_data);
     return err_code;
 }
@@ -189,4 +269,4 @@ rd_status_t app_button_init (void)
 }
 #endif
 
-/*@}*/
+/** @} */
