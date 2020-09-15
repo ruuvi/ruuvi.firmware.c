@@ -51,13 +51,13 @@ static
 #endif
 mode_changes_t m_mode_ops;     //!< Pending mode changes.
 
-static bool config_enabled_on_current_conn; //!< This connection has config enabled.
-static bool config_enabled_on_next_conn;    //!< Next connection has config enabled.
+static bool m_config_enabled_on_current_conn; //!< This connection has config enabled.
+static bool m_config_enabled_on_next_conn;    //!< Next connection has config enabled.
 
 static rd_status_t enable_config_on_this_conn (const bool enable)
 {
     rd_status_t err_code = RD_SUCCESS;
-    config_enabled_on_current_conn = enable;
+    m_config_enabled_on_current_conn = enable;
 
     if (enable)
     {
@@ -215,9 +215,9 @@ void on_gatt_connected_isr (void * p_data, size_t data_len)
     // Stop advertising for GATT
     rt_gatt_disable();
 
-    if (config_enabled_on_next_conn)
+    if (m_config_enabled_on_next_conn)
     {
-        config_enabled_on_next_conn = false;
+        m_config_enabled_on_next_conn = false;
         (void) enable_config_on_this_conn (true);
     }
 }
@@ -230,7 +230,7 @@ void on_gatt_disconnected_isr (void * p_data, size_t data_len)
 {
     // Start advertising for GATT
     rt_gatt_enable();
-    config_enabled_on_next_conn = false;
+    m_config_enabled_on_next_conn = false;
     (void) enable_config_on_this_conn (false);
 }
 
@@ -259,6 +259,18 @@ static rd_status_t ble_name_string_create (char * const name_str, const size_t n
 }
 
 #endif //!< if GATT ENABLED
+
+#if APP_NFC_ENABLED
+/** @brief Callback when NFV is connected" */
+#ifndef CEEDLING
+static
+#endif
+void on_nfc_connected_isr (void * p_data, size_t data_len)
+{
+    m_config_enabled_on_next_conn = true;
+    (void) enable_config_on_this_conn (true);
+}
+#endif
 
 
 static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis)
@@ -306,6 +318,7 @@ rd_status_t app_comms_init (void)
         err_code |= dis_init (&dis);
 #if APP_NFC_ENABLED
         err_code |= rt_nfc_init (&dis);
+        rt_nfc_set_on_connected_isr (&on_nfc_connected_isr);
 #endif
 #if APP_ADV_ENABLED
         err_code |= adv_init();
@@ -333,7 +346,7 @@ rd_status_t app_comms_configuration_enable()
     m_mode_ops.disable_config = 1;
     err_code |= ri_timer_stop (m_comm_timer);
     err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
-    config_enabled_on_next_conn = true;
+    m_config_enabled_on_next_conn = true;
     err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
     return err_code;
 }

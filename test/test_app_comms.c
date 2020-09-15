@@ -83,6 +83,7 @@ void test_app_comms_init_ok (void)
     test_dis_init (&dis);
 #if APP_NFC_ENABLED
     rt_nfc_init_ExpectWithArrayAndReturn (&dis, 1, RD_SUCCESS);
+    rt_nfc_set_on_connected_isr_Expect (&on_nfc_connected_isr);
 #endif
 #if APP_ADV_ENABLED
     rt_adv_init_ExpectAndReturn (&adv_settings, RD_SUCCESS);

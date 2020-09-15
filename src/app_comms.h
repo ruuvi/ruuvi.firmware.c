@@ -101,6 +101,7 @@ void on_gatt_connected_isr (void * p_data, size_t data_len);
 void on_gatt_disconnected_isr (void * p_data, size_t data_len);
 void on_gatt_data_isr (void * p_data, size_t data_len);
 void handle_gatt (void * p_data, uint16_t data_len);
+void on_nfc_connected_isr (void * p_data, size_t data_len);
 void comm_mode_change_isr (void * const p_context);
 #endif
 
