@@ -199,6 +199,7 @@ void test_comm_mode_change_isr_disable_config (void)
 {
     mode_changes_t mode = {0};
     mode.disable_config = 1;
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     comm_mode_change_isr (&mode);
     TEST_ASSERT (0 == mode.disable_config);
 }

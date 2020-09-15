@@ -55,13 +55,43 @@ static bool m_config_enabled_on_current_conn; //!< This connection has config en
 static bool m_config_enabled_on_next_conn;    //!< Next connection has config enabled.
 
 /**
- * @brief Allow configuration commands on connection.
+ * @brief Allow configuration commands on next connection.
  *
  * @param[in] enable True to enable configuration on connection, false to disable.
  */
-static rd_status_t enable_config_on_this_conn (const bool enable)
+static rd_status_t enable_config_on_next_conn (const bool enable)
 {
-    m_config_enabled_on_current_conn = enable;
+    m_config_enabled_on_next_conn = enable;
+    return RD_SUCCESS;
+}
+
+/**
+ * @brief Enable configuration on this connection if appropriate.
+ *
+ * This function should be called on connection established interrupt.
+ * After calling this function, next connection will not be configurable
+ * unless @ref enable_config_on_next_conn is called with true.
+ *
+ * @retval RD_SUCCESS Always.
+ */
+static rd_status_t config_setup_on_this_conn (void)
+{
+    m_config_enabled_on_current_conn = m_config_enabled_on_next_conn;
+    m_config_enabled_on_next_conn = false;
+    return RD_SUCCESS;
+}
+
+/**
+ * @brief Cleanup connection configuration.
+ *
+ * This function should be called on connection lost interrupt.
+ *
+ * @retval RD_SUCCESS Always.
+ */
+static rd_status_t config_conn_end (void)
+{
+    m_config_enabled_on_current_conn = m_config_enabled_on_next_conn;
+    m_config_enabled_on_next_conn = false;
     return RD_SUCCESS;
 }
 
@@ -114,7 +144,8 @@ void comm_mode_change_isr (void * const p_context)
 
     if (p_change->disable_config)
     {
-        (void) enable_config_on_this_conn (false);
+        enable_config_on_next_conn (false);
+        app_led_activity_set (RB_LED_ACTIVITY);
         p_change->disable_config = 0;
     }
 }
@@ -207,13 +238,8 @@ static
 void on_gatt_connected_isr (void * p_data, size_t data_len)
 {
     // Stop advertising for GATT
-    rt_gatt_disable();
-
-    if (m_config_enabled_on_next_conn)
-    {
-        m_config_enabled_on_next_conn = false;
-        (void) enable_config_on_this_conn (true);
-    }
+    rt_gatt_disable ();
+    config_setup_on_this_conn ();
 }
 
 /** @brief Callback when GATT is disconnected" */
@@ -223,9 +249,8 @@ static
 void on_gatt_disconnected_isr (void * p_data, size_t data_len)
 {
     // Start advertising for GATT
-    rt_gatt_enable();
-    m_config_enabled_on_next_conn = false;
-    (void) enable_config_on_this_conn (false);
+    rt_gatt_enable ();
+    config_conn_end();
     app_led_activity_set (RB_LED_ACTIVITY);
 }
 
@@ -266,8 +291,7 @@ static
 #endif
 void on_nfc_connected_isr (void * p_data, size_t data_len)
 {
-    m_config_enabled_on_next_conn = true;
-    (void) enable_config_on_this_conn (true);
+    config_setup_on_this_conn();
     app_comms_configure_next_enable();
 }
 
@@ -277,7 +301,7 @@ static
 #endif
 void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 {
-    (void) enable_config_on_this_conn (false);
+    config_conn_end();
 }
 
 #endif

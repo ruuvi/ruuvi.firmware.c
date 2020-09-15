@@ -88,7 +88,7 @@ void app_comms_bleadv_send_count_set (const uint8_t count);
  * @retval RD_SUCCESS if configuration mode was entered.
  * @retval RD_ERROR_INVALID_STATE if communications are not initialized.
  */
-rd_status_t app_comms_configuration_enable (void);
+rd_status_t app_comms_configure_next_enable (void);
 
 #ifdef CEEDLING
 /** Handles for unit test framework */
@@ -102,6 +102,7 @@ void on_gatt_disconnected_isr (void * p_data, size_t data_len);
 void on_gatt_data_isr (void * p_data, size_t data_len);
 void handle_gatt (void * p_data, uint16_t data_len);
 void on_nfc_connected_isr (void * p_data, size_t data_len);
+void on_nfc_disconnected_isr (void * p_data, size_t data_len);
 void comm_mode_change_isr (void * const p_context);
 #endif
 
