@@ -35,7 +35,7 @@
 
 /** @brief Configuration mode disabled on this timeout. */
 #ifndef APP_CONFIG_ENABLED_TIME_MS
-#   define APP_CONFIG_ENABLED_TIME_MS (5U * 60U * 1000U)
+#   define APP_CONFIG_ENABLED_TIME_MS (1U * 60U * 1000U)
 #endif
 
 #ifndef APP_MOTION_THRESHOLD
