@@ -35,7 +35,7 @@ void test_button_handler_factory_reset (void)
 {
     button_action_t action = {0};
     action.factory_reset = 1;
-    app_heartbeat_stop_ExpectAndReturn(RD_SUCCESS);
+    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
     app_log_purge_flash_Expect();
     ri_power_enter_bootloader_Expect();
     ri_power_reset_Expect();
