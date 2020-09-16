@@ -10,12 +10,15 @@
  * Default configuration for Ruuvi Firmware.
  */
 
-/** @brief name for Device Information Service.
- *
- * This should be provided by build script
+/**
+ * @brief name for Device Information Service.
  */
 #ifndef APP_FW_NAME
-#define APP_FW_NAME "Ruuvi FW-development"
+#define APP_FW_NAME "Ruuvi FW "
+#endif
+
+#ifndef APP_FW_VERSION
+#define APP_FW_VERSION "-devel"
 #endif
 
 /** @brief Communicate sensor data at this interval. 1285 matches Apple guideline. */

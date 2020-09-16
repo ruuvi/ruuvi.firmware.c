@@ -290,9 +290,13 @@ void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis)
 {
     rd_status_t err_code = RD_SUCCESS;
+    size_t name_idx = 0;
     err_code |= rt_com_get_mac_str (p_dis->deviceaddr, sizeof (p_dis->deviceaddr));
     err_code |= rt_com_get_id_str (p_dis->deviceid, sizeof (p_dis->deviceid));
-    snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
+    name_idx = snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
+    snprintf (p_dis->fw_version + name_idx,
+              sizeof (p_dis->fw_version) - name_idx,
+              APP_FW_VERSION);
     snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "Check PCB");
     snprintf (p_dis->manufacturer, sizeof (p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf (p_dis->model, sizeof (p_dis->model), RB_MODEL_STRING);
@@ -333,12 +337,14 @@ void comm_mode_change_isr (void * const p_context)
     }
 
 #if APP_COMMS_BIDIR_ENABLED
+
     if (p_change->disable_config)
     {
         enable_config_on_next_conn (false);
         app_led_activity_set (RB_LED_ACTIVITY);
         p_change->disable_config = 0;
     }
+
 #endif
 }
 

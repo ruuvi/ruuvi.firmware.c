@@ -37,13 +37,17 @@ static void RD_ERROR_CHECK_EXPECT (rd_status_t err_code, rd_status_t fatal)
 
 static void test_dis_init (ri_comm_dis_init_t * const p_dis)
 {
+    size_t name_idx = 0;
     rt_com_get_mac_str_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_com_get_mac_str_ReturnArrayThruPtr_mac_str ("AA:BB:CC:DD:EE:FF", 18);
     rt_com_get_id_str_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_com_get_id_str_ReturnArrayThruPtr_id_str ("00:11:22:33:44:55:66:77", 24);
     snprintf (p_dis->deviceaddr, sizeof (p_dis->deviceaddr), "AA:BB:CC:DD:EE:FF");
     snprintf (p_dis->deviceid, sizeof (p_dis->deviceid), "00:11:22:33:44:55:66:77");
-    snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
+    name_idx = snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
+    snprintf (p_dis->fw_version + name_idx,
+              sizeof (p_dis->fw_version) - name_idx,
+              APP_FW_VERSION);
     snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "Check PCB");
     snprintf (p_dis->manufacturer, sizeof (p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf (p_dis->model, sizeof (p_dis->model), RB_MODEL_STRING);
