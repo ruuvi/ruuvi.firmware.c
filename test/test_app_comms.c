@@ -20,13 +20,13 @@
 
 extern mode_changes_t m_mode_ops;
 extern ri_timer_id_t m_comm_timer;
-extern bool m_config_enabled_on_current_conn;
+extern bool m_config_enabled_on_curr_conn;
 extern bool m_config_enabled_on_next_conn;
 
 void setUp (void)
 {
     rd_error_check_Ignore();
-    m_config_enabled_on_current_conn = false;
+    m_config_enabled_on_curr_conn = false;
     m_config_enabled_on_next_conn = false;
     m_mode_ops.switch_to_normal = false;
 }
@@ -208,7 +208,7 @@ void test_handle_gatt_disconnected (void)
     app_comms_ble_uninit_Expect();
     app_comms_ble_init_Expect (true);
     handle_gatt_disconnected (NULL, 0);
-    TEST_ASSERT (!m_config_enabled_on_current_conn);
+    TEST_ASSERT (!m_config_enabled_on_curr_conn);
 }
 
 void test_on_gatt_disconnected_isr (void)

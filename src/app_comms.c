@@ -35,7 +35,7 @@
 #ifndef CEEDLING
 static
 #endif
-bool m_config_enabled_on_current_conn; //!< This connection has config enabled.
+bool m_config_enabled_on_curr_conn; //!< This connection has config enabled.
 #ifndef CEEDLING
 static
 #endif
@@ -140,7 +140,7 @@ static rd_status_t enable_config_on_next_conn (const bool enable)
  */
 static rd_status_t config_setup_on_this_conn (void)
 {
-    m_config_enabled_on_current_conn = m_config_enabled_on_next_conn;
+    m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;
     m_config_enabled_on_next_conn = false;
     m_mode_ops.switch_to_normal = 0;
     return RD_SUCCESS;
@@ -155,7 +155,7 @@ static rd_status_t config_setup_on_this_conn (void)
  */
 static rd_status_t config_conn_end (void)
 {
-    m_config_enabled_on_current_conn = false;
+    m_config_enabled_on_curr_conn = false;
     return RD_SUCCESS;
 }
 
