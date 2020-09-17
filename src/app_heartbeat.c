@@ -74,8 +74,6 @@ static rd_status_t send_adv (ri_comm_message_t * const p_msg)
         }
 
         err_code = rt_adv_send_data (p_msg);
-        // Advertising should always be successful
-        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     }
     else
     {

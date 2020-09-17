@@ -61,7 +61,7 @@ void test_main (void)
     app_sensor_init_ExpectAndReturn (RD_SUCCESS);
     app_log_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_acc_thr_set_ExpectWithArrayAndReturn (&motion_threshold, 1, RD_SUCCESS);
-    app_comms_init_ExpectAndReturn (RD_SUCCESS);
+    app_comms_init_ExpectAndReturn (true, RD_SUCCESS);
     app_heartbeat_init_ExpectAndReturn (RD_SUCCESS);
     app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
     app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);

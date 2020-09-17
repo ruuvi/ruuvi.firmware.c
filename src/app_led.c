@@ -17,7 +17,10 @@
 
 static const uint16_t        m_led_pins[]   = RB_LEDS_LIST;
 static const ri_gpio_state_t m_led_active[] = RB_LEDS_ACTIVE_STATE;
-static ri_gpio_id_t m_activity_led;
+#ifndef CEEDLING
+static
+#endif
+ri_gpio_id_t m_activity_led          = RI_GPIO_ID_UNUSED;
 static bool m_activity_ind_paused;
 
 rd_status_t app_led_init (void)
@@ -39,7 +42,14 @@ rd_status_t app_led_deactivate (const ri_gpio_id_t led)
 
 rd_status_t app_led_activity_set (const ri_gpio_id_t led)
 {
-    rd_status_t err_code = app_led_deactivate (led);
+    rd_status_t err_code = RD_SUCCESS;
+
+    if (RI_GPIO_ID_UNUSED != m_activity_led)
+    {
+        err_code |= app_led_deactivate (m_activity_led);
+    }
+
+    err_code |= app_led_deactivate (led);
 
     if (RD_SUCCESS == err_code)
     {
