@@ -100,13 +100,19 @@ static void adv_init_Expect (void)
 #endif
 }
 
-static void gatt_init_Expect (ri_comm_dis_init_t * p_dis)
+static void gatt_init_Expect (ri_comm_dis_init_t * p_dis, const bool secure)
 {
 #if APP_GATT_ENABLED
     static uint64_t address = 0xAABBCCDDEEFF01A0;
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_radio_address_get_ReturnThruPtr_address (&address);
     rt_gatt_init_ExpectAndReturn ("Ruuvi 01A0", RD_SUCCESS);
+
+    if (!secure)
+    {
+        rt_gatt_dfu_init_ExpectAndReturn (RD_SUCCESS);
+    }
+
     rt_gatt_dis_init_ExpectWithArrayAndReturn (p_dis, 1, RD_SUCCESS);
     rt_gatt_nus_init_ExpectAndReturn (RD_SUCCESS);
     rt_gatt_set_on_connected_isr_Expect (&on_gatt_connected_isr);
@@ -137,7 +143,7 @@ static void app_comms_ble_init_Expect (const bool secure)
     memset (&ble_dis, 0, sizeof (ble_dis));
     test_dis_init (&ble_dis, secure);
     adv_init_Expect();
-    gatt_init_Expect (&ble_dis);
+    gatt_init_Expect (&ble_dis, secure);
 }
 
 void test_app_comms_init_ok (void)
@@ -150,7 +156,7 @@ void test_app_comms_init_ok (void)
     test_dis_init (&dis, true);
     nfc_init_Expect (&dis);
     adv_init_Expect();
-    gatt_init_Expect (&dis);
+    gatt_init_Expect (&dis, true);
     rd_status_t err_code = app_comms_init (true);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }

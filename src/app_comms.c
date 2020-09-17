@@ -447,13 +447,19 @@ static rd_status_t adv_init (void)
     return err_code;
 }
 
-static rd_status_t gatt_init (ri_comm_dis_init_t * const p_dis, const bool secure)
+static rd_status_t gatt_init (const ri_comm_dis_init_t * const p_dis, const bool secure)
 {
     rd_status_t err_code = RD_SUCCESS;
 #if APP_GATT_ENABLED
     char name[SCAN_RSP_NAME_MAX_LEN + 1] = {0};
     ble_name_string_create (name, sizeof (name));
     err_code |= rt_gatt_init (name);
+
+    if (!secure)
+    {
+        err_code |= rt_gatt_dfu_init();
+    }
+
     err_code |= rt_gatt_dis_init (p_dis);
     err_code |= rt_gatt_nus_init ();
     rt_gatt_set_on_connected_isr (&on_gatt_connected_isr);
