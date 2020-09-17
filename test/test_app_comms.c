@@ -311,6 +311,6 @@ void test_app_comm_configurable_gatt_after_nfc (void)
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &handle_gatt_connected, RD_SUCCESS);
     on_gatt_connected_isr (NULL, 0);
     test_handle_gatt_connected ();
-    TEST_ASSERT (m_config_enabled_on_current_conn);
+    TEST_ASSERT (m_config_enabled_on_curr_conn);
     TEST_ASSERT (!m_mode_ops.switch_to_normal);
 }
