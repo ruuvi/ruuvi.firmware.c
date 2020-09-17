@@ -66,7 +66,7 @@ void setup (void)
     err_code |= app_log_init();
     // Allow fail on boards which do not have accelerometer.
     (void) app_sensor_acc_thr_set (&motion_threshold);
-    err_code |= app_comms_init();
+    err_code |= app_comms_init (APP_LOCKED_AT_BOOT);
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
     err_code |= app_led_deactivate (RB_LED_STATUS_ERROR);

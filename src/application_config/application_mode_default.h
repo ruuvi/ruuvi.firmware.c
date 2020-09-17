@@ -44,4 +44,8 @@
 #ifndef APP_MOTION_THRESHOLD
 #   define APP_MOTION_THRESHOLD (0.064F)
 #endif
+
+#ifndef APP_LOCKED_AT_BOOT
+#   define APP_LOCKED_AT_BOOT (true)
+#endif
 #endif

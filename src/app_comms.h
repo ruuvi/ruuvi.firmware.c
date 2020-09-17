@@ -45,10 +45,12 @@
  *
  * Use ruuvi task functions, such as rt_gatt_send_asynchronous to send data out.
  *
+ * @param[in] secure If true, GATT won't expose DFU service and device ID.
+ *                   If false, DFU service is open and device ID can be read through GATT.
  * @retval RD_SUCCESS on success.
  * @return error code from stack on error.
  */
-rd_status_t app_comms_init (void);
+rd_status_t app_comms_init (const bool secure);
 
 /**
  * @brief Get number of time BLE advertisement should be sent.
@@ -90,6 +92,10 @@ void app_comms_bleadv_send_count_set (const uint8_t count);
  */
 rd_status_t app_comms_configure_next_enable (void);
 
+rd_status_t app_comms_ble_init (const bool secure);
+
+rd_status_t app_comms_ble_uninit (void);
+
 #ifdef CEEDLING
 /** Handles for unit test framework */
 typedef struct
@@ -100,7 +106,11 @@ typedef struct
 void on_gatt_connected_isr (void * p_data, size_t data_len);
 void on_gatt_disconnected_isr (void * p_data, size_t data_len);
 void on_gatt_data_isr (void * p_data, size_t data_len);
-void handle_gatt (void * p_data, uint16_t data_len);
+void handle_gatt_data (void * p_data, uint16_t data_len);
+void handle_gatt_connected (void * p_data, uint16_t data_len);
+void handle_gatt_disconnected (void * p_data, uint16_t data_len);
+void handle_nfc_connected (void * p_data, uint16_t data_len);
+void handle_nfc_disconnected (void * p_data, uint16_t data_len);
 void on_nfc_connected_isr (void * p_data, size_t data_len);
 void on_nfc_disconnected_isr (void * p_data, size_t data_len);
 void comm_mode_change_isr (void * const p_context);

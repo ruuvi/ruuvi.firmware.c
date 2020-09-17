@@ -9,9 +9,11 @@
 
 static const ri_gpio_id_t    m_led_pins[]    = RB_LEDS_LIST;
 static const ri_gpio_state_t m_leds_active[] = RB_LEDS_ACTIVE_STATE;
+extern ri_gpio_id_t m_activity_led;
 
 void setUp (void)
 {
+    m_activity_led = RI_GPIO_ID_UNUSED;
 }
 
 void tearDown (void)
@@ -54,6 +56,16 @@ void test_app_led_activity_set (void)
 {
     rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
     rd_status_t err_code = app_led_activity_set (m_led_pins[0]);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_led_activity_set_reset_previous (void)
+{
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    rd_status_t err_code = app_led_activity_set (m_led_pins[0]);
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    rt_led_write_ExpectAndReturn (m_led_pins[0], false, RD_SUCCESS);
+    err_code |= app_led_activity_set (m_led_pins[0]);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
