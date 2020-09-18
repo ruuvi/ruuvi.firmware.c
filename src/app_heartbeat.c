@@ -73,7 +73,7 @@ static rd_status_t send_adv (ri_comm_message_t * const p_msg)
             p_msg->repeat_count = repeat_count;
         }
 
-        err_code = rt_adv_send_data (p_msg);
+        err_code |= rt_adv_send_data (p_msg);
     }
     else
     {
