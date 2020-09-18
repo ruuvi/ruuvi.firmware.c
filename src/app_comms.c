@@ -14,6 +14,7 @@
 #include "ruuvi_task_gatt.h"
 #include "ruuvi_task_nfc.h"
 #include <stdio.h>
+#include <string.h>
 
 /**
  * @addtogroup app_comms
@@ -369,6 +370,7 @@ rd_status_t app_comms_configure_next_enable (void)
 static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis, const bool secure)
 {
     rd_status_t err_code = RD_SUCCESS;
+    memset (p_dis, 0, sizeof (ri_comm_dis_init_t));
 #if APP_COMMS_BIDIR_ENABLED
     size_t name_idx = 0;
     err_code |= rt_com_get_mac_str (p_dis->deviceaddr, sizeof (p_dis->deviceaddr));
@@ -485,9 +487,10 @@ rd_status_t app_comms_init (const bool secure)
         }
 
         ri_comm_dis_init_t dis = {0};
-        err_code |= dis_init (&dis, secure);
+        err_code |= dis_init (&dis, false);
         err_code |= nfc_init (&dis);
         err_code |= adv_init();
+        err_code |= dis_init (&dis, secure);
         err_code |= gatt_init (&dis, secure);
     }
 
