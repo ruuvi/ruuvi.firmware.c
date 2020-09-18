@@ -95,12 +95,13 @@ static rd_status_t store_block (const app_log_record_t * const record)
 
         RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
         // Erase another block and try again if there was error.
-    } while ( (RD_SUCCESS != err_code) && (num_tries++ < APP_FLASH_LOG_DATA_RECORDS_NUM));
+        num_tries++;
+        record_idx++;
+        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
+    } while ( (RD_SUCCESS != err_code) && (num_tries < APP_FLASH_LOG_DATA_RECORDS_NUM));
 
     memset (&m_log_input_block, 0, sizeof (m_log_input_block));
     m_log_input_block.start_timestamp_s = end_timestamp;
-    record_idx++;
-    record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
     return err_code;
 }
 
