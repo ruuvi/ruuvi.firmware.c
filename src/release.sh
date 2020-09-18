@@ -18,7 +18,7 @@ release=$(curl -XPOST -H "Authorization:token ${GH_TOKEN}" --data "{\"tag_name\"
 echo "${release}"
 
 # Extract the id of the release from the creation response
-id=$(cat release_output | grep -m 1 "id.:" | grep -Eo '[0-9]+')
+id=$( echo "${release}" | grep -m 1 "id.:" | grep -Eo '[0-9]+')
 [ "$id" ] || { echo "Error: Failed to get release id for tag: $tag"; echo "$release" | awk 'length($0)<100' >&2; exit 1; }
 echo "${id}"
 
