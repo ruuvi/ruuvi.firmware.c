@@ -45,6 +45,7 @@ static void RD_ERROR_CHECK_EXPECT (rd_status_t err_code, rd_status_t fatal)
 static void test_dis_init (ri_comm_dis_init_t * const p_dis, const bool secure)
 {
     size_t name_idx = 0;
+    memset (p_dis, 0, sizeof (ri_comm_dis_init_t));
     rt_com_get_mac_str_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_com_get_mac_str_ReturnArrayThruPtr_mac_str ("AA:BB:CC:DD:EE:FF", 18);
     snprintf (p_dis->deviceaddr, sizeof (p_dis->deviceaddr), "AA:BB:CC:DD:EE:FF");
@@ -148,15 +149,17 @@ static void app_comms_ble_init_Expect (const bool secure)
 
 void test_app_comms_init_ok (void)
 {
-    ri_comm_dis_init_t dis = {0};
+    ri_comm_dis_init_t ble_dis = {0};
+    ri_comm_dis_init_t nfc_dis = {0};
     // Allow switchover to extended / 2 MBPS comms.
     ri_radio_init_ExpectAndReturn (APP_MODULATION, RD_SUCCESS);
     ri_timer_create_ExpectAndReturn (&m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,
                                      &comm_mode_change_isr, RD_SUCCESS);
-    test_dis_init (&dis, true);
-    nfc_init_Expect (&dis);
+    test_dis_init (&nfc_dis, false);
+    nfc_init_Expect (&nfc_dis);
     adv_init_Expect();
-    gatt_init_Expect (&dis, true);
+    test_dis_init (&ble_dis, true);
+    gatt_init_Expect (&ble_dis, true);
     rd_status_t err_code = app_comms_init (true);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
