@@ -14,6 +14,7 @@
 #include "ruuvi_task_gatt.h"
 #include "ruuvi_task_nfc.h"
 #include <stdio.h>
+#include <string.h>
 
 /**
  * @addtogroup app_comms
