@@ -237,6 +237,56 @@ static void store_block_expect (const uint8_t record_idx, const bool block_flash
     }
 }
 
+static void store_block_expect_nomem (const uint8_t record_idx)
+{
+    rt_flash_free_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                   RD_SUCCESS);
+    const bool block_flash = false;
+
+    if (IGNORE_RECORD_IDX == record_idx)
+    {
+        rt_flash_free_IgnoreArg_record_id();
+    }
+
+    rt_flash_busy_ExpectAndReturn (block_flash);
+
+    if (block_flash)
+    {
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
+
+    rt_flash_gc_run_ExpectAndReturn (RD_SUCCESS);
+    rt_flash_busy_ExpectAndReturn (block_flash);
+
+    if (block_flash)
+    {
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
+
+    rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                    &m_log_input_block, sizeof (m_log_input_block),
+                                    RD_ERROR_NO_MEM);
+
+    if (IGNORE_RECORD_IDX == record_idx)
+    {
+        rt_flash_store_IgnoreArg_record_id();
+    }
+
+    rt_flash_busy_ExpectAndReturn (block_flash);
+
+    if (block_flash)
+    {
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
+
+    store_block_expect (record_idx + 1, false);
+}
+
 /**
  * @brief Initialize logging.
  *
@@ -466,6 +516,51 @@ void test_app_log_process_fill_blocks (void)
         err_code |= app_log_process (&sample);
     }
 
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_log_process_nomem_block (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_last_sample_ms = 0;
+    float samples[4] = {0}; //!< number of fields to mock-store.
+    rd_sensor_data_t sample =
+    {
+        .timestamp_ms = 1U,
+        .fields = {
+            .datas.temperature_c = 1,
+            .datas.humidity_rh = 1,
+            .datas.pressure_pa = 1,
+            .datas.voltage_v = 1
+        },
+        .valid = {
+            .datas.temperature_c = 1,
+            .datas.humidity_rh = 1,
+            .datas.pressure_pa = 1,
+            .datas.voltage_v = 1
+        },
+        .data = samples
+    };
+    uint8_t record_idx = 0;
+    m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
+
+    for (size_t ii = 0; ii < STORED_FIELDS; ii++)
+    {
+        rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    }
+
+#       if RL_COMPRESS_ENABLED
+    rl_compress_ExpectAndReturn (NULL,
+                                 m_log_input_block.storage,
+                                 sizeof (m_log_input_block.storage),
+                                 &m_compress_state,
+                                 RL_COMPRESS_END);
+    rl_compress_IgnoreArg_data();
+#       else
+    m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
+#       endif
+    store_block_expect_nomem (record_idx);
+    err_code = app_log_process (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
