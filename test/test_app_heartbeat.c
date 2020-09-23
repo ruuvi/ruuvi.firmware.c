@@ -23,6 +23,7 @@
 
 static unsigned int mock_tid = 0xAA; //!< Mock timer ID to be returned, size system int.
 static void * p_mock_tid = &mock_tid; //!< Pointer to mock ID.
+extern uint16_t m_measurement_count;
 
 void setUp (void)
 {
@@ -36,6 +37,36 @@ void tearDown (void)
 }
 
 void resetTest (void); //!< Clears test memory.
+
+static void re_5_encode_expect (void)
+{
+    app_sensor_event_count_get_ExpectAndReturn (1);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    re_5_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+}
+
+static void heartbeat_df5_all_ok_Expect (void)
+{
+    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    app_sensor_available_data_ExpectAndReturn (fields);
+    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    re_5_encode_expect ();
+    app_comms_bleadv_send_count_get_ExpectAndReturn (1);
+    rt_adv_send_data_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
+}
 
 /**
  * @brief Initializes timers for reading and sending heartbeat transmissions.
@@ -110,6 +141,7 @@ void test_app_heartbeat_start (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_timer_id_t * p_heart_timer = get_heart_timer();
+    heartbeat_df5_all_ok_Expect();
     ri_timer_start_ExpectAndReturn (*p_heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL,
                                     RD_SUCCESS);
     err_code |= app_heartbeat_start();
@@ -134,36 +166,9 @@ void test_app_heartbeat_stop_notinit (void)
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
 }
 
-extern uint16_t m_measurement_count;
-
-static void re_5_encode_expect (void)
-{
-    app_sensor_event_count_get_ExpectAndReturn (1);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    re_5_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
-}
-
 void test_heartbeat_df5_all_ok (void)
 {
-    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    re_5_encode_expect ();
-    app_comms_bleadv_send_count_get_ExpectAndReturn (1);
-    rt_adv_send_data_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
-    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    heartbeat_df5_all_ok_Expect();
     heartbeat (NULL, 0);
 }
 
