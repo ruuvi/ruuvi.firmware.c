@@ -31,14 +31,20 @@ void tearDown (void)
 {
 }
 
-void test_button_handler_factory_reset (void)
+void test_factory_reset (void)
 {
-    button_action_t action = {0};
-    action.factory_reset = 1;
     app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
     app_log_purge_flash_Expect();
     ri_power_enter_bootloader_Expect();
     ri_power_reset_Expect();
+    factory_reset (NULL, 0);
+}
+
+void test_button_handler_factory_reset (void)
+{
+    button_action_t action = {0};
+    action.factory_reset = 1;
+    ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &factory_reset, RD_SUCCESS);
     button_timer_handler_isr (&action);
 }
 

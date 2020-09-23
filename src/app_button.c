@@ -51,19 +51,30 @@ static inline void LOG (const char * const msg)
 #ifndef CEEDLING
 static
 #endif
+void factory_reset (void * p_event_data, uint16_t event_size)
+{
+    app_heartbeat_stop();
+    app_log_purge_flash();
+    // Execution stops here normally
+    ri_power_enter_bootloader();
+    // Reset on fail to enter BL
+    ri_power_reset();
+}
+
+#ifndef CEEDLING
+static
+#endif
 void button_timer_handler_isr (void * p_context)
 {
     button_action_t * p_action = (button_action_t *) p_context;
+    rd_status_t err_code = RD_SUCCESS;
 
     if (p_action->factory_reset)
     {
-        app_heartbeat_stop();
-        app_log_purge_flash();
-        // Execution stops here normally
-        ri_power_enter_bootloader();
-        // Reset on fail to enter BL
-        ri_power_reset();
+        err_code |= ri_scheduler_event_put (NULL, 0, &factory_reset);
     }
+
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
 // Find which button was pressed
