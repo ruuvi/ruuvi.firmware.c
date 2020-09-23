@@ -189,6 +189,7 @@ rd_status_t app_heartbeat_start (void)
     }
     else
     {
+        heartbeat(NULL, 0);
         err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);
     }
 
