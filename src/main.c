@@ -70,9 +70,14 @@ void setup (void)
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
     err_code |= app_led_deactivate (RB_LED_STATUS_ERROR);
-    err_code |= app_led_activate (RB_LED_STATUS_OK);
-    err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);
-    err_code |= app_led_deactivate (RB_LED_STATUS_OK);
+
+    if (RD_SUCCESS == err_code)
+    {
+        err_code |= app_led_activate (RB_LED_STATUS_OK);
+        err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);
+        err_code |= app_led_deactivate (RB_LED_STATUS_OK);
+    }
+
     err_code |= app_led_activity_set (RB_LED_ACTIVITY);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
