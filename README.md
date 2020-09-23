@@ -93,7 +93,7 @@ Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their ow
 
 # Documentation
 Document is generated with Doxygen. Run `make doxygen` to generate the docs locally, or
-browse to [Travis built docs](ruuvi.github.io/ruuvi.firmware.c)
+browse to [Travis built docs](https://ruuvi.github.io/ruuvi.firmware.c)
 
 # Changelog
 ## 3.29.0
