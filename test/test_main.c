@@ -43,7 +43,7 @@ void tearDown (void)
     semver_free (&compare);
 }
 
-void test_main (void)
+void test_main_ok (void)
 {
     // <setup>
     float motion_threshold = APP_MOTION_THRESHOLD;
@@ -68,6 +68,37 @@ void test_main (void)
     app_led_activate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
     ri_delay_ms_ExpectAndReturn (APP_SELFTEST_OK_DELAY_MS, RD_SUCCESS);
     app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    // </setup>
+    ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
+    app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
+    app_led_activity_indicate_ExpectAndReturn (true, RD_SUCCESS);
+    app_main();
+}
+
+void test_main_error (void)
+{
+    // <setup>
+    float motion_threshold = APP_MOTION_THRESHOLD;
+    ri_watchdog_init_ExpectAndReturn (APP_WDT_INTERVAL_MS, &on_wdt, RD_SUCCESS);
+    ri_yield_init_ExpectAndReturn (RD_SUCCESS);
+    ri_timer_init_ExpectAndReturn (RD_SUCCESS);
+    ri_scheduler_init_ExpectAndReturn (RD_SUCCESS);
+    rt_gpio_init_ExpectAndReturn (RD_SUCCESS);
+    ri_yield_low_power_enable_ExpectAndReturn (true, RD_SUCCESS);
+    rt_flash_init_ExpectAndReturn (RD_SUCCESS);
+    app_led_init_ExpectAndReturn (RD_SUCCESS);
+    app_led_activate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
+    app_button_init_ExpectAndReturn (RD_SUCCESS);
+    app_dc_dc_init_ExpectAndReturn (RD_SUCCESS);
+    app_sensor_init_ExpectAndReturn (RD_SUCCESS);
+    app_log_init_ExpectAndReturn (RD_SUCCESS);
+    app_sensor_acc_thr_set_ExpectWithArrayAndReturn (&motion_threshold, 1, RD_SUCCESS);
+    app_comms_init_ExpectAndReturn (true, RD_SUCCESS);
+    app_heartbeat_init_ExpectAndReturn (RD_ERROR_INTERNAL);
+    app_heartbeat_start_ExpectAndReturn (RD_ERROR_INVALID_STATE);
+    app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
