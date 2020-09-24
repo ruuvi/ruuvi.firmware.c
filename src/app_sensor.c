@@ -22,12 +22,17 @@
 #include "ruuvi_task_sensor.h"
 
 #include <string.h>
+#include <stdio.h>
 
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
 }
 
+static inline void LOGD (const char * const msg)
+{
+    ri_log (RI_LOG_LEVEL_DEBUG, msg);
+}
 /**
  * @addtogroup app_sensor
  */
@@ -891,6 +896,7 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
     // Parse start, end times.
     uint32_t current_time_s = re_std_log_current_time (raw_message);
     uint32_t start_s = re_std_log_start_time (raw_message);
+    uint32_t sent_elements = 0;
 
     // Cannot have start_s >= current_time_s
     if (current_time_s > start_s)
@@ -922,11 +928,16 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
             {
                 err_code |= app_sensor_send_data (reply_fp, raw_message,
                                                   &sample, offset_ms);
+                sent_elements++;
+                LOGD("S");
             }
             else if (RD_ERROR_NOT_FOUND == err_code)
             {
                 err_code |= app_sensor_send_eof (reply_fp, raw_message);
-                LOG ("Logged data sent\r\n");
+                char msg[128];
+                snprintf(msg, sizeof(msg), "Logged data sent: %u elements\r\n", sent_elements);
+                LOG (msg);
+                sent_elements = 0;
             }
             else
             {
