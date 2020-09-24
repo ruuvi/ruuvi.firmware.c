@@ -135,6 +135,35 @@ const app_log_element_t e_4_4 =
     .pressure_pa = 0
 };
 
+const app_log_element_t e_5_1 =
+{
+    .timestamp_s = 4000 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_5_2 =
+{
+    .timestamp_s = 4200 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_5_3 =
+{
+    .timestamp_s = 4400 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_5_4 =
+{
+    .timestamp_s = 4600 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+
 void setUp (void)
 {
     ri_log_Ignore();
@@ -944,6 +973,113 @@ void test_app_log_read_out_of_sequence_data (void)
 
     TEST_ASSERT (RD_ERROR_NOT_FOUND == err_code);
     TEST_ASSERT (17 == num_reads);
+}
+
+void test_app_log_read_rambuffer_at_end (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_data_t sample = {0};
+    app_log_read_state_t rs =
+    {
+        .oldest_element_ms = 1000 * 1000
+    };
+    app_log_record_t r1 =
+    {
+        .start_timestamp_s = 800  * 1000,
+        .end_timestamp_s   = 1600 * 1000,
+        .num_samples = 4,
+        .storage = { e_1_1, e_1_2, e_1_3, e_1_4 }
+    };
+    app_log_record_t r2 =
+    {
+        .start_timestamp_s = 1600  * 1000,
+        .end_timestamp_s   = 2400 * 1000,
+        .num_samples = 4,
+        .storage = { e_2_1, e_2_2, e_2_3, e_2_4 }
+    };
+    app_log_record_t r3 =
+    {
+        .start_timestamp_s = 2400  * 1000,
+        .end_timestamp_s   = 3200 * 1000,
+        .num_samples = 4,
+        .storage = { e_3_1, e_3_2, e_3_3, e_3_4 }
+    };
+    app_log_record_t r4 =
+    {
+        .start_timestamp_s = 3200  * 1000,
+        .end_timestamp_s   = 4000 * 1000,
+        .num_samples = 4,
+        .storage = { e_4_1, e_4_2, e_4_3, e_4_4 }
+    };
+    app_log_record_t r5 =
+    {
+        .start_timestamp_s = 4000  * 1000,
+        .end_timestamp_s   = 4800 * 1000,
+        .num_samples = 4,
+        .storage = { e_5_1, e_5_2, e_5_3, e_5_4 }
+    };
+    app_log_record_t * records[4] = {&r1, &r2, &r3, &r4};
+    memcpy(&m_log_input_block, &r5, sizeof(app_log_record_t));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U),
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r3, sizeof (r3));
+    sample_read_expect (&sample, & (records[2]->storage[0]));
+    sample_read_expect (&sample, & (records[2]->storage[1]));
+    sample_read_expect (&sample, & (records[2]->storage[2]));
+    sample_read_expect (&sample, & (records[2]->storage[3]));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 1U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r4, sizeof (r4));
+    sample_read_expect (&sample, & (records[3]->storage[0]));
+    sample_read_expect (&sample, & (records[3]->storage[1]));
+    sample_read_expect (&sample, & (records[3]->storage[2]));
+    sample_read_expect (&sample, & (records[3]->storage[3]));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 2U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r1, sizeof (r1));
+    sample_read_expect (&sample, & (records[0]->storage[0]));
+    sample_read_expect (&sample, & (records[0]->storage[1]));
+    sample_read_expect (&sample, & (records[0]->storage[2]));
+    sample_read_expect (&sample, & (records[0]->storage[3]));
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + 3U,
+                                   &m_log_output_block, sizeof (m_log_output_block),
+                                   RD_SUCCESS);
+    rt_flash_load_ReturnMemThruPtr_message (&r2, sizeof (r2));
+    sample_read_expect (&sample, & (records[1]->storage[0]));
+    sample_read_expect (&sample, & (records[1]->storage[1]));
+    sample_read_expect (&sample, & (records[1]->storage[2]));
+    sample_read_expect (&sample, & (records[1]->storage[3]));
+
+    for (size_t ii = 4; ii < APP_FLASH_LOG_DATA_RECORDS_NUM; ii++)
+    {
+        rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                       (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + ii,
+                                       &m_log_output_block, sizeof (m_log_output_block),
+                                       RD_ERROR_NOT_FOUND);
+    }
+
+    sample_read_expect (&sample, & (r5.storage[0]));
+    sample_read_expect (&sample, & (r5.storage[1]));
+    sample_read_expect (&sample, & (r5.storage[2]));
+    sample_read_expect (&sample, & (r5.storage[3]));
+
+    uint8_t num_reads = 0;
+
+    while (RD_SUCCESS == err_code)
+    {
+        err_code |= app_log_read (&sample, &rs);
+        num_reads++;
+    }
+
+    TEST_ASSERT (RD_ERROR_NOT_FOUND == err_code);
+    TEST_ASSERT (21 == num_reads);
 }
 
 void test_app_log_purge_flash (void)
