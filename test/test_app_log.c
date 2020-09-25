@@ -1019,7 +1019,7 @@ void test_app_log_read_rambuffer_at_end (void)
         .storage = { e_5_1, e_5_2, e_5_3, e_5_4 }
     };
     app_log_record_t * records[4] = {&r1, &r2, &r3, &r4};
-    memcpy(&m_log_input_block, &r5, sizeof(app_log_record_t));
+    memcpy (&m_log_input_block, &r5, sizeof (app_log_record_t));
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U),
                                    &m_log_output_block, sizeof (m_log_output_block),
@@ -1069,7 +1069,6 @@ void test_app_log_read_rambuffer_at_end (void)
     sample_read_expect (&sample, & (r5.storage[1]));
     sample_read_expect (&sample, & (r5.storage[2]));
     sample_read_expect (&sample, & (r5.storage[3]));
-
     uint8_t num_reads = 0;
 
     while (RD_SUCCESS == err_code)

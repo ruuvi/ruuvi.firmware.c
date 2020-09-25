@@ -58,15 +58,15 @@ static void print_output_block_stats (const app_log_read_state_t * const p_rs)
 {
 #if 0
     char msg[128] = {0};
-    snprintf(msg, sizeof(msg), "Block IDX: %u\r\n", p_rs->page_idx);
-    LOG(msg);
-    snprintf(msg, sizeof(msg), "Block start: %u\r\n", m_log_output_block.start_timestamp_s);
-    LOG(msg);
-    snprintf(msg, sizeof(msg), "Block end: %u\r\n", m_log_output_block.end_timestamp_s);
-    LOG(msg);
-    snprintf(msg, sizeof(msg), "Block samples: %u\r\n", m_log_output_block.num_samples);
-    LOG(msg);
-    ri_delay_ms(10);
+    snprintf (msg, sizeof (msg), "Block IDX: %u\r\n", p_rs->page_idx);
+    LOG (msg);
+    snprintf (msg, sizeof (msg), "Block start: %u\r\n", m_log_output_block.start_timestamp_s);
+    LOG (msg);
+    snprintf (msg, sizeof (msg), "Block end: %u\r\n", m_log_output_block.end_timestamp_s);
+    LOG (msg);
+    snprintf (msg, sizeof (msg), "Block samples: %u\r\n", m_log_output_block.num_samples);
+    LOG (msg);
+    ri_delay_ms (10);
 #endif
 }
 
@@ -220,7 +220,7 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
         err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + p_rs->page_idx,
                                    &m_log_output_block, sizeof (m_log_output_block));
-        print_output_block_stats(p_rs);
+        print_output_block_stats (p_rs);
         p_rs->page_idx++;
     }
     else if ( (APP_FLASH_LOG_DATA_RECORDS_NUM > p_rs->page_idx)
@@ -230,7 +230,7 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
         err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + p_rs->page_idx,
                                    &m_log_output_block, sizeof (m_log_output_block));
-        print_output_block_stats(p_rs);
+        print_output_block_stats (p_rs);
         p_rs->page_idx++;
         p_rs->element_idx = 0;
     }
@@ -238,10 +238,9 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
               && (p_rs->element_idx >= m_log_output_block.num_samples))
     {
         memcpy (&m_log_output_block, &m_log_input_block, sizeof (m_log_output_block));
-        print_output_block_stats(p_rs);
+        print_output_block_stats (p_rs);
         p_rs->page_idx++;
         p_rs->element_idx = 0;
-        
     }
     else
     {
@@ -253,7 +252,7 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
     {
         memset (&m_log_output_block, 0, sizeof (m_log_output_block));
     }
-    
+
     return err_code;
 }
 
@@ -289,7 +288,7 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
 
     // Last memory block is the current RAM buffer, so we have valid data
     // when APP_FLASH_LOG_DATA_RECORDS_NUM + 1 == p_rs->page_idx
-    if ((APP_FLASH_LOG_DATA_RECORDS_NUM + 1) < p_rs->page_idx)
+    if ( (APP_FLASH_LOG_DATA_RECORDS_NUM + 1) < p_rs->page_idx)
     {
         err_code |= RD_ERROR_NOT_FOUND;
     }

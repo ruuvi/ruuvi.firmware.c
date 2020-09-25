@@ -929,13 +929,13 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
                 err_code |= app_sensor_send_data (reply_fp, raw_message,
                                                   &sample, offset_ms);
                 sent_elements++;
-                LOGD("S");
+                LOGD ("S");
             }
             else if (RD_ERROR_NOT_FOUND == err_code)
             {
                 err_code |= app_sensor_send_eof (reply_fp, raw_message);
                 char msg[128];
-                snprintf(msg, sizeof(msg), "Logged data sent: %lu elements\r\n", sent_elements);
+                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", sent_elements);
                 LOG (msg);
                 sent_elements = 0;
             }
