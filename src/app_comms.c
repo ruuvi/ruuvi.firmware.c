@@ -7,8 +7,10 @@
 #include "ruuvi_endpoints.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
+#include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_timer.h"
+#include "ruuvi_interface_yield.h"
 #include "ruuvi_task_advertisement.h"
 #include "ruuvi_task_communication.h"
 #include "ruuvi_task_gatt.h"
@@ -31,6 +33,9 @@
  * TODO
  * @endcode
  */
+
+/** @brief Set to long enough to handle existing queue, then as short as possible. */
+#define BLOCKING_COMM_TIMEOUT_MS (2000U) 
 
 #if APP_COMMS_BIDIR_ENABLED
 #ifndef CEEDLING
@@ -512,6 +517,29 @@ rd_status_t app_comms_ble_uninit (void)
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_adv_uninit();
     err_code |= rt_gatt_uninit();
+    return err_code;
+}
+
+rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,
+        ri_comm_message_t * const msg)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint64_t now = ri_rtc_millis();
+
+    do
+    {
+        err_code = reply_fp (msg);
+
+        if (RD_ERROR_NO_MEM == err_code)
+        {
+            ri_yield();
+        }
+        if (ri_rtc_millis() > (now + BLOCKING_COMM_TIMEOUT_MS))
+        {
+            err_code |= RD_ERROR_TIMEOUT;
+        }
+    } while (RD_ERROR_NO_MEM == err_code);
+
     return err_code;
 }
 /** @} */

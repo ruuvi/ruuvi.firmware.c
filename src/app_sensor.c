@@ -1,4 +1,5 @@
 #include "app_config.h"
+#include "app_comms.h"
 #include "app_log.h"
 #include "app_sensor.h"
 #include "ruuvi_boards.h"
@@ -52,7 +53,6 @@ static inline void LOGD (const char * const msg)
  * @endcode
  */
 #define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
-#define APP_SENSOR_COMM_TIMEOUT_MS (2000U) //!< Timeout for comms.
 
 #ifndef CEEDLING
 static
@@ -735,48 +735,7 @@ static rd_status_t app_sensor_encode_log (uint8_t * const buffer,
     return err_code;
 }
 
-/**
- * @brief Blocking send message function.
- *
- * Calls reply_fp with given data, and if reply_fp returns ERR_NO_MEM
- * yields and retries. Has optional timeout. Function will return once
- * message has been queued to driver buffer, not necessarily sent.
- *
- * @param[in] reply_fp Function pointer to use to send the data.
- * @param[in] msg Message to send.
- * @param[in] timeout_ms Number of milliseconds until timeout. 0 to disable.
- * @retval RD_SUCCESS Message was queued to TX buffer.
- * @retval RD_ERROR_TIMEOUT Message was queued to TX buffer.
- * @return Error code from driver, such as RD_ERROR_INVALID_STATE.
- *
- * @note Timeout requires RTC and some process which brings thread out
- * of yield.
- */
-static rd_status_t app_sensor_blocking_send (const ri_comm_xfer_fp_t reply_fp,
-        ri_comm_message_t * const msg,
-        const uint32_t timeout_ms)
-{
-    rd_status_t err_code = RD_SUCCESS;
-    const uint64_t now = ri_rtc_millis();
 
-    do
-    {
-        err_code = reply_fp (msg);
-
-        if (RD_ERROR_NO_MEM == err_code)
-        {
-            ri_yield();
-        }
-
-        if ( (0 != timeout_ms)
-                && (ri_rtc_millis() > (now + timeout_ms)))
-        {
-            err_code |= RD_ERROR_TIMEOUT;
-        }
-    } while (RD_ERROR_NO_MEM == err_code);
-
-    return err_code;
-}
 
 /**
  * if valid data in sample
@@ -801,7 +760,7 @@ static rd_status_t send_field (const ri_comm_xfer_fp_t reply_fp,
         msg.repeat_count = 1;
         msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
         msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
-        err_code |= app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
+        err_code |= app_comms_blocking_send (reply_fp, &msg);
     }
 
     return err_code;
@@ -864,7 +823,7 @@ static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,
     msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];
     msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;
     memset (&msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);
-    app_sensor_blocking_send (reply_fp, &msg, APP_SENSOR_COMM_TIMEOUT_MS);
+    app_comms_blocking_send (reply_fp, &msg);
     return err_code;
 }
 

@@ -3,6 +3,7 @@
 #include "app_config.h"
 #include "app_sensor.h"
 
+#include "mock_app_comms.h"
 #include "mock_app_log.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_driver_sensor.h"
@@ -632,10 +633,11 @@ static void app_sensor_encode_log_Expect (const uint8_t source)
     re_log_write_data_IgnoreArg_data();
 }
 
-static void app_sensor_blocking_send_Expect()
+static void app_sensor_blocking_send_Expect(const ri_comm_xfer_fp_t reply_fp)
 {
-    ri_rtc_millis_ExpectAndReturn (0);
-    ri_rtc_millis_ExpectAndReturn (0);
+    app_comms_blocking_send_ExpectAndReturn(reply_fp, NULL,
+                                            RD_SUCCESS);
+    app_comms_blocking_send_IgnoreArg_msg();
     m_expect_sends++;
 }
 
@@ -657,13 +659,13 @@ static void app_sensor_send_data_Expect (const ri_comm_xfer_fp_t reply_fp,
         rd_sensor_field_type_ExpectAndReturn (NULL, ii, types[ii]);
         rd_sensor_field_type_IgnoreArg_target();
         app_sensor_encode_log_Expect (sources[ii]);
-        app_sensor_blocking_send_Expect();
+        app_sensor_blocking_send_Expect(reply_fp);
     }
 }
 
-static void app_sensor_send_eof_Expect ()
+static void app_sensor_send_eof_Expect (const ri_comm_xfer_fp_t reply_fp)
 {
-    app_sensor_blocking_send_Expect ();
+    app_sensor_blocking_send_Expect (reply_fp);
 }
 
 static void app_sensor_log_read_Expect (const ri_comm_xfer_fp_t reply_fp,
@@ -689,10 +691,10 @@ static void app_sensor_log_read_Expect (const ri_comm_xfer_fp_t reply_fp,
                                  types, current_time_s * 1000);
 }
 
-static void app_sensor_log_read_eof_Expect ()
+static void app_sensor_log_read_eof_Expect (const ri_comm_xfer_fp_t reply_fp)
 {
     app_log_read_ExpectAnyArgsAndReturn (RD_ERROR_NOT_FOUND);
-    app_sensor_send_eof_Expect ();
+    app_sensor_send_eof_Expect (reply_fp);
 }
 
 void test_app_sensor_handle_accx (void)
@@ -707,7 +709,7 @@ void test_app_sensor_handle_accx (void)
     const uint8_t sources[1] = { RE_STANDARD_DESTINATION_ACCELERATION_X };
     const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_X_FIELD.datas};
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
-    app_sensor_log_read_eof_Expect ();
+    app_sensor_log_read_eof_Expect (&dummy_comm);
     err_code |= app_sensor_handle (&dummy_comm,
                                    raw_message,
                                    sizeof (raw_message));
@@ -727,7 +729,7 @@ void test_app_sensor_handle_accy (void)
     const uint8_t sources[1] = { RE_STANDARD_DESTINATION_ACCELERATION_Y };
     const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_Y_FIELD.datas};
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
-    app_sensor_log_read_eof_Expect ();
+    app_sensor_log_read_eof_Expect (&dummy_comm);
     err_code |= app_sensor_handle (&dummy_comm,
                                    raw_message,
                                    sizeof (raw_message));
@@ -747,7 +749,7 @@ void test_app_sensor_handle_accz (void)
     const uint8_t sources[1] = { RE_STANDARD_DESTINATION_ACCELERATION_Z };
     const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_ACC_Z_FIELD.datas};
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
-    app_sensor_log_read_eof_Expect ();
+    app_sensor_log_read_eof_Expect (&dummy_comm);
     err_code |= app_sensor_handle (&dummy_comm,
                                    raw_message,
                                    sizeof (raw_message));
@@ -782,7 +784,7 @@ void test_app_sensor_handle_accxyz (void)
         RD_SENSOR_ACC_Z_FIELD.datas
     };
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
-    app_sensor_log_read_eof_Expect ();
+    app_sensor_log_read_eof_Expect (&dummy_comm);
     err_code |= app_sensor_handle (&dummy_comm,
                                    raw_message,
                                    sizeof (raw_message));
@@ -811,7 +813,7 @@ void test_app_sensor_handle_humidity (void)
         RD_SENSOR_HUMI_FIELD.datas,
     };
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
-    app_sensor_log_read_eof_Expect ();
+    app_sensor_log_read_eof_Expect (&dummy_comm);
     err_code |= app_sensor_handle (&dummy_comm,
                                    raw_message,
                                    sizeof (raw_message));
@@ -840,7 +842,7 @@ void test_app_sensor_handle_pressure (void)
         RD_SENSOR_PRES_FIELD.datas,
     };
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
-    app_sensor_log_read_eof_Expect ();
+    app_sensor_log_read_eof_Expect (&dummy_comm);
     err_code |= app_sensor_handle (&dummy_comm,
                                    raw_message,
                                    sizeof (raw_message));
@@ -869,7 +871,7 @@ void test_app_sensor_handle_temperature (void)
         RD_SENSOR_TEMP_FIELD.datas,
     };
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
-    app_sensor_log_read_eof_Expect ();
+    app_sensor_log_read_eof_Expect (&dummy_comm);
     err_code |= app_sensor_handle (&dummy_comm,
                                    raw_message,
                                    sizeof (raw_message));
