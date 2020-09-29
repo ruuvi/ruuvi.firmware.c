@@ -10,8 +10,10 @@
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_interface_communication_ble_advertising.h"
 #include "mock_ruuvi_interface_communication_radio.h"
+#include "mock_ruuvi_interface_rtc.h"
 #include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_interface_timer.h"
+#include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_task_advertisement.h"
 #include "mock_ruuvi_task_communication.h"
 #include "mock_ruuvi_task_gatt.h"
@@ -22,6 +24,8 @@ extern mode_changes_t m_mode_ops;
 extern ri_timer_id_t m_comm_timer;
 extern bool m_config_enabled_on_curr_conn;
 extern bool m_config_enabled_on_next_conn;
+static uint32_t m_expect_sends = 0;
+static uint32_t m_dummy_timeouts = 0;
 
 void setUp (void)
 {
@@ -29,10 +33,28 @@ void setUp (void)
     m_config_enabled_on_curr_conn = false;
     m_config_enabled_on_next_conn = false;
     m_mode_ops.switch_to_normal = false;
+    m_expect_sends = 0;
+    m_dummy_timeouts = 0;
 }
 
 void tearDown (void)
 {
+}
+
+
+
+static rd_status_t dummy_comm (ri_comm_message_t * const msg)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    if (0 < m_dummy_timeouts)
+    {
+        m_dummy_timeouts--;
+        err_code = RD_ERROR_NO_MEM;
+    }
+
+    m_expect_sends++;
+    return err_code;
 }
 
 static void RD_ERROR_CHECK_EXPECT (rd_status_t err_code, rd_status_t fatal)
@@ -316,4 +338,54 @@ void test_app_comm_configurable_gatt_after_nfc (void)
     test_handle_gatt_connected ();
     TEST_ASSERT (m_config_enabled_on_curr_conn);
     TEST_ASSERT (!m_mode_ops.switch_to_normal);
+}
+
+void test_app_comms_blocking_send_ok (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_rtc_millis_ExpectAndReturn (1000);
+    ri_rtc_millis_ExpectAndReturn (2000);
+    // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
+    err_code = app_comms_blocking_send (&dummy_comm,
+                                        NULL);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (1 == m_expect_sends);
+}
+
+void test_app_comms_blocking_send_no_mem_once (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_dummy_timeouts = 1;
+    ri_rtc_millis_ExpectAndReturn (1000);
+    ri_rtc_millis_ExpectAndReturn (1000);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
+    ri_rtc_millis_ExpectAndReturn (1500);
+    // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
+    err_code = app_comms_blocking_send (&dummy_comm,
+                                        NULL);
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (2 == m_expect_sends);
+}
+
+void test_app_comms_blocking_send_timeout (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_dummy_timeouts = 10;
+    ri_rtc_millis_ExpectAndReturn (1000);
+    ri_rtc_millis_ExpectAndReturn (1000);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
+    ri_rtc_millis_ExpectAndReturn (1500);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
+    ri_rtc_millis_ExpectAndReturn (2000);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
+    ri_rtc_millis_ExpectAndReturn (2500);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
+    ri_rtc_millis_ExpectAndReturn (3000);
+    ri_yield_ExpectAndReturn (RD_SUCCESS);
+    ri_rtc_millis_ExpectAndReturn (3500);
+    // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
+    err_code = app_comms_blocking_send (&dummy_comm,
+                                        NULL);
+    TEST_ASSERT ( (RD_ERROR_TIMEOUT | RD_ERROR_NO_MEM) == err_code);
+    TEST_ASSERT (5 == m_expect_sends);
 }

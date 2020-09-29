@@ -265,7 +265,13 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
 {
     rd_status_t err_code = RD_SUCCESS;
 
-    if (p_rs->element_idx < m_log_output_block.num_samples)
+    // Last memory block is the current RAM buffer, so we have valid data
+    // when APP_FLASH_LOG_DATA_RECORDS_NUM + 1 == p_rs->page_idx
+    if ( (APP_FLASH_LOG_DATA_RECORDS_NUM + 1) < p_rs->page_idx)
+    {
+        err_code |= RD_ERROR_NOT_FOUND;
+    }
+    else if (p_rs->element_idx < m_log_output_block.num_samples)
     {
         const app_log_element_t * const p_el = &m_log_output_block.storage[p_rs->element_idx];
         rd_sensor_data_set (sample, RD_SENSOR_TEMP_FIELD, p_el->temperature_c);
@@ -273,10 +279,6 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
         rd_sensor_data_set (sample, RD_SENSOR_PRES_FIELD, p_el->pressure_pa);
         sample->timestamp_ms = (uint64_t) (p_el->timestamp_s) * 1000U;
         p_rs->element_idx++;
-    }
-    else if (p_rs->page_idx >= APP_FLASH_LOG_DATA_RECORDS_NUM)
-    {
-        err_code |= RD_ERROR_NOT_FOUND;
     }
     else
     {
@@ -351,7 +353,7 @@ rd_status_t app_log_config_get (app_log_config_t * const configuration)
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
                                APP_FLASH_LOG_CONFIG_RECORD,
-                               configuration, sizeof (configuration));
+                               configuration, sizeof (app_log_config_t));
     memcpy (configuration, &m_log_config, sizeof (m_log_config));
     return err_code;
 }
