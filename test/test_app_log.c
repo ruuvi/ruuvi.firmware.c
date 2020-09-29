@@ -182,6 +182,28 @@ extern uint64_t            m_last_sample_ms;
 extern rl_compress_state_t m_compress_state;
 #endif
 
+static void log_purge_Expect (void)
+{
+    for (uint8_t r_idx = 0; r_idx < APP_FLASH_LOG_DATA_RECORDS_NUM; r_idx++)
+    {
+        rd_status_t rvalue = RD_SUCCESS;
+
+        if (r_idx % 2)
+        {
+            rvalue = RD_ERROR_NOT_FOUND;
+        }
+
+        rt_flash_free_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                       (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + r_idx,
+                                       rvalue);
+        rt_flash_busy_ExpectAndReturn (true);
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
+
+    rt_flash_gc_run_ExpectAndReturn (RD_SUCCESS);
+}
+
 static void sample_process_expect (const rd_sensor_data_t * const sample)
 {
     if (APP_LOG_TEMPERATURE_ENABLED)
@@ -349,6 +371,7 @@ void test_app_log_init_nostored (void)
                                     &defaults, sizeof (defaults),
                                     RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
+    log_purge_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
@@ -373,6 +396,7 @@ void test_app_log_init_stored (void)
                                    RD_SUCCESS);
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnMemThruPtr_message (&stored, sizeof (stored));
+    log_purge_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&stored, &m_log_config, sizeof (m_log_config)));

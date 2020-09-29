@@ -105,6 +105,29 @@ static rd_status_t store_block (const app_log_record_t * const record)
     return err_code;
 }
 
+
+static rd_status_t purge_logs (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    for (uint8_t record_idx = 0; record_idx < APP_FLASH_LOG_DATA_RECORDS_NUM; record_idx++)
+    {
+        err_code |= rt_flash_free (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx);
+
+        while (rt_flash_busy())
+        {
+            ri_yield();
+        }
+    }
+
+    // It doesn't matter if there was no data to erase.
+    err_code &= ~RD_ERROR_NOT_FOUND;
+    err_code |= rt_flash_gc_run ();
+    return err_code;
+}
+
+
 rd_status_t app_log_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -133,6 +156,7 @@ rd_status_t app_log_init (void)
     if (RD_SUCCESS == err_code)
     {
         memcpy (&m_log_config, &config, sizeof (config));
+        err_code |= purge_logs();
     }
 
     return err_code;
@@ -293,8 +317,7 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
 {
     rd_status_t err_code = RD_SUCCESS;
 
-    if ( (NULL != sample)
-            && (NULL != p_rs))
+    if ( (NULL != sample) && (NULL != p_rs))
     {
         // Load new block if needed
         do
