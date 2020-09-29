@@ -92,29 +92,29 @@ void app_comms_bleadv_send_count_set (const uint8_t count);
  */
 rd_status_t app_comms_configure_next_enable (void);
 
-/** 
+/**
  * @brief Enable Bluetooth on device
  *
  * After calling this function GATT server is initialized and ready to accept connection
- * if GATT is enabled in application. Advertisements can be sent. 
+ * if GATT is enabled in application. Advertisements can be sent.
  *
  * If ble comms are initialized as secure, DFU service is disabled and serial number is not
  * readable over GATT.
  *
- * If ble comms are initialized as unsecure, DFU service is enabled and serial number is 
- * readable over GATT. 
+ * If ble comms are initialized as unsecure, DFU service is enabled and serial number is
+ * readable over GATT.
  *
  * Ble must be uninitialized to re-enter secure mode or vice versa.
  *
  * @param[in] secure True to not enable DFU service and serial number read over GATT.
  *                   False to enable DFU service and serial number read over GATT.
- */ 
+ */
 rd_status_t app_comms_ble_init (const bool secure);
 
 /**
  * @brief Uninitialize GATT.
  *
- * After calling this function advertisements cannot be sent and GATT server is disabled. 
+ * After calling this function advertisements cannot be sent and GATT server is disabled.
  */
 rd_status_t app_comms_ble_uninit (void);
 
@@ -135,7 +135,7 @@ rd_status_t app_comms_ble_uninit (void);
  * of yield.
  */
 rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,
-        ri_comm_message_t * const msg);
+                                     ri_comm_message_t * const msg);
 
 #ifdef CEEDLING
 /** Handles for unit test framework */

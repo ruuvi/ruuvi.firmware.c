@@ -35,7 +35,7 @@
  */
 
 /** @brief Set to long enough to handle existing queue, then as short as possible. */
-#define BLOCKING_COMM_TIMEOUT_MS (2000U) 
+#define BLOCKING_COMM_TIMEOUT_MS (2000U)
 
 #if APP_COMMS_BIDIR_ENABLED
 #ifndef CEEDLING
@@ -521,7 +521,7 @@ rd_status_t app_comms_ble_uninit (void)
 }
 
 rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,
-        ri_comm_message_t * const msg)
+                                     ri_comm_message_t * const msg)
 {
     rd_status_t err_code = RD_SUCCESS;
     const uint64_t now = ri_rtc_millis();
@@ -534,6 +534,7 @@ rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,
         {
             ri_yield();
         }
+
         if (ri_rtc_millis() > (now + BLOCKING_COMM_TIMEOUT_MS))
         {
             err_code |= RD_ERROR_TIMEOUT;

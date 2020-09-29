@@ -633,10 +633,10 @@ static void app_sensor_encode_log_Expect (const uint8_t source)
     re_log_write_data_IgnoreArg_data();
 }
 
-static void app_sensor_blocking_send_Expect(const ri_comm_xfer_fp_t reply_fp)
+static void app_sensor_blocking_send_Expect (const ri_comm_xfer_fp_t reply_fp)
 {
-    app_comms_blocking_send_ExpectAndReturn(reply_fp, NULL,
-                                            RD_SUCCESS);
+    app_comms_blocking_send_ExpectAndReturn (reply_fp, NULL,
+            RD_SUCCESS);
     app_comms_blocking_send_IgnoreArg_msg();
     m_expect_sends++;
 }
@@ -659,7 +659,7 @@ static void app_sensor_send_data_Expect (const ri_comm_xfer_fp_t reply_fp,
         rd_sensor_field_type_ExpectAndReturn (NULL, ii, types[ii]);
         rd_sensor_field_type_IgnoreArg_target();
         app_sensor_encode_log_Expect (sources[ii]);
-        app_sensor_blocking_send_Expect(reply_fp);
+        app_sensor_blocking_send_Expect (reply_fp);
     }
 }
 
