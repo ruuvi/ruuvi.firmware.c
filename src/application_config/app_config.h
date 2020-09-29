@@ -66,7 +66,7 @@
 
 /** @brief Enable BME280 temperature, humidity, pressure sensor */
 #ifndef APP_SENSOR_BME280_ENABLED
-#   define APP_SENSOR_BME280_ENABLED RB_ENVIRONMENTAL_BME280_PRESENT
+#   define APP_SENSOR_BME280_ENABLED 0
 #endif
 
 /** @brief Enable BME280 driver */
@@ -97,7 +97,7 @@
 
 /** @brief Enable LIS2DH12 sensor */
 #ifndef APP_SENSOR_LIS2DH12_ENABLED
-#   define APP_SENSOR_LIS2DH12_ENABLED RB_ACCELEROMETER_LIS2DH12_PRESENT
+#   define APP_SENSOR_LIS2DH12_ENABLED 0
 #endif
 
 #ifndef APP_SENSOR_LIS2DH12_DSP_FUNC
