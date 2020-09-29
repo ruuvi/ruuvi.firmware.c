@@ -524,22 +524,29 @@ rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,
                                      ri_comm_message_t * const msg)
 {
     rd_status_t err_code = RD_SUCCESS;
-    const uint64_t now = ri_rtc_millis();
+    const uint64_t start = ri_rtc_millis();
 
     do
     {
-        err_code = reply_fp (msg);
+        if (ri_rtc_millis() > (start + BLOCKING_COMM_TIMEOUT_MS))
+        {
+            err_code |= RD_ERROR_TIMEOUT;
+        }
+        else
+        {
+            err_code = RD_SUCCESS;
+        }
+
+        if (RD_SUCCESS == err_code)
+        {
+            err_code |= reply_fp (msg);
+        }
 
         if (RD_ERROR_NO_MEM == err_code)
         {
             ri_yield();
         }
-
-        if (ri_rtc_millis() > (now + BLOCKING_COMM_TIMEOUT_MS))
-        {
-            err_code |= RD_ERROR_TIMEOUT;
-        }
-    } while (RD_ERROR_NO_MEM == err_code);
+    } while ( (RD_SUCCESS != err_code) && ! (RD_ERROR_TIMEOUT & err_code));
 
     return err_code;
 }

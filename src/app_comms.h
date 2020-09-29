@@ -128,8 +128,9 @@ rd_status_t app_comms_ble_uninit (void);
  * @param[in] reply_fp Function pointer to use to send the data.
  * @param[in] msg Message to send.
  * @retval RD_SUCCESS Message was queued to TX buffer.
- * @retval RD_ERROR_TIMEOUT Message was queued to TX buffer.
- * @return Error code from driver, such as RD_ERROR_INVALID_STATE.
+ * @retval RD_ERROR_TIMEOUT Message was queued to TX buffer. Error code from
+ *                          reply_fp is also included,
+ *                          e.g. RD_ERROR_TIMEOUT | RD_ERROR_INVALID_STATE
  *
  * @note Timeout requires RTC and some process which brings thread out
  * of yield.
