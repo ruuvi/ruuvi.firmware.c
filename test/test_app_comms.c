@@ -167,6 +167,7 @@ static void app_comms_ble_init_Expect (const bool secure)
     test_dis_init (&ble_dis, secure);
     adv_init_Expect();
     gatt_init_Expect (&ble_dis, secure);
+    ri_radio_activity_callback_set_Expect (&app_sensor_vdd_measure_isr);
 }
 
 void test_app_comms_init_ok (void)
