@@ -29,6 +29,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_sensor.h"
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
@@ -214,6 +215,17 @@ rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t ri_reply_fp,
                                const uint8_t * const raw_message,
                                const uint16_t data_len);
 
+
+/**
+ * @brief Synchronize VDD measurement to radio activity.
+ *
+ * Call this function before and after radio events to notify
+ * the device that ADC should be prepared to sample the droop voltage
+ * and to take the sample after heavy loading.
+ *
+ * @param[in] evt Type of next radio event, RI_RADIO_BEFORE ot RI_RADIO_AFTER
+ */
+void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt);
 
 #ifdef RUUVI_RUN_TESTS
 void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);

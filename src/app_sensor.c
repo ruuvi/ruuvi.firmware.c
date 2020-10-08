@@ -242,11 +242,7 @@ void m_sensors_init (void)
 #endif
 }
 
-// Measure battery voltage after radio event
-#ifndef CEEDLING
-static
-#endif
-void on_radio_isr (const ri_radio_activity_evt_t evt)
+void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -460,9 +456,6 @@ rd_status_t app_sensor_init (void)
                 m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
             }
         }
-
-        // Synchronize battery measurement to radio activity.
-        ri_radio_activity_callback_set (on_radio_isr);
     }
 
     return err_code;

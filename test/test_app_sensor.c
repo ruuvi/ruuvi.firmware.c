@@ -69,7 +69,6 @@ void test_app_sensor_init_ok (void)
         rt_sensor_configure_ExpectWithArrayAndReturn (m_sensors[ii], 1, RD_SUCCESS);
     }
 
-    ri_radio_activity_callback_set_Expect (&on_radio_isr);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     m_sensors[0]->pwr_pin = pwr_0;
@@ -121,7 +120,6 @@ void test_app_sensor_init_first_time (void)
         rt_sensor_store_ExpectWithArrayAndReturn (m_sensors[ii], 1, RD_SUCCESS);
     }
 
-    ri_radio_activity_callback_set_Expect (&on_radio_isr);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -141,7 +139,6 @@ void test_app_sensor_init_not_found (void)
         rt_sensor_initialize_ExpectWithArrayAndReturn (m_sensors[ii], 1, RD_ERROR_NOT_FOUND);
     }
 
-    ri_radio_activity_callback_set_Expect (&on_radio_isr);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -166,7 +163,6 @@ void test_app_sensor_init_selftest_fail (void)
         } while (retries++ < APP_SENSOR_SELFTEST_RETRIES);
     }
 
-    ri_radio_activity_callback_set_Expect (&on_radio_isr);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_ERROR_SELFTEST == err_code);
 }
@@ -242,7 +238,7 @@ void test_app_sensor_on_radio_before_ok (void)
     static uint64_t time = 1ULL;
     ri_rtc_millis_ExpectAndReturn (time);
     rt_adc_vdd_prepare_ExpectWithArrayAndReturn (&configuration, 1, RD_SUCCESS);
-    on_radio_isr (RI_RADIO_BEFORE);
+    app_sensor_vdd_measure_isr (RI_RADIO_BEFORE);
 }
 
 void test_app_sensor_on_radio_after_ok (void)
@@ -252,7 +248,7 @@ void test_app_sensor_on_radio_after_ok (void)
     rt_adc_is_init_ExpectAndReturn (true);
     ri_rtc_millis_ExpectAndReturn (time);
     rt_adc_vdd_sample_ExpectAndReturn (RD_SUCCESS);
-    on_radio_isr (RI_RADIO_AFTER);
+    app_sensor_vdd_measure_isr (RI_RADIO_AFTER);
 }
 
 /**
