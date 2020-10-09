@@ -21,10 +21,10 @@
  */
 
 // Submodule requirements
-#define RUUVI_BOARDS_REQ "0.8.1"
-#define RUUVI_DRIVERS_REQ "0.3.3"
-#define RUUVI_ENDPOINTS_REQ "0.2.0"
-#define RUUVI_LIBRARIES_REQ "0.3.1"
+#define RUUVI_BOARDS_REQ "3.4.0"
+#define RUUVI_DRIVERS_REQ "3.4.0"
+#define RUUVI_ENDPOINTS_REQ "3.0.0"
+#define RUUVI_LIBRARIES_REQ "3.0.0"
 
 #define APP_SELFTEST_OK_DELAY_MS (1000U) //!< time to show "ok" led.
 
