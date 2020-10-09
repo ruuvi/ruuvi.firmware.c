@@ -385,10 +385,13 @@ static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis, const bool secure
         err_code |= rt_com_get_id_str (p_dis->deviceid, sizeof (p_dis->deviceid));
     }
 
-    name_idx = snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
+    name_idx =  snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
+    name_idx += snprintf (p_dis->fw_version + name_idx,
+                          sizeof (p_dis->fw_version) - name_idx,
+                          APP_FW_VERSION);
     snprintf (p_dis->fw_version + name_idx,
               sizeof (p_dis->fw_version) - name_idx,
-              APP_FW_VERSION);
+              APP_FW_VARIANT);
     snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "Check PCB");
     snprintf (p_dis->manufacturer, sizeof (p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf (p_dis->model, sizeof (p_dis->model), RB_MODEL_STRING);

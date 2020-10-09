@@ -14,11 +14,15 @@
  * @brief name for Device Information Service.
  */
 #ifndef APP_FW_NAME
-#define APP_FW_NAME "Ruuvi FW "
+#define APP_FW_NAME "Ruuvi FW-"
 #endif
 
 #ifndef APP_FW_VERSION
-#define APP_FW_VERSION "-devel"
+#define APP_FW_VERSION "v0.0.1"
+#endif
+
+#ifndef APP_FW_VARIANT
+#define APP_FW_VARIANT ""
 #endif
 
 /** @brief Communicate sensor data at this interval. 1285 matches Apple guideline. */
