@@ -107,6 +107,9 @@ NFC_SOURCES= \
   $(SDK_ROOT)/components/nfc/platform/nfc_platform.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_nfct.c
 
+NFC_T4T_FPU_BIN= \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/t4t_lib/nfc_t4t_lib_gcc.a
+
 RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
@@ -205,6 +208,8 @@ RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/app_log.c \
   $(PROJ_DIR)/app_power.c \
   $(PROJ_DIR)/app_sensor.c
+
+
 
 
 COMMON_SOURCES= \

@@ -20,7 +20,7 @@ INC_FOLDERS += ${COMMON_INCLUDES}
 
 # Libraries common to all targets
 LIB_FILES += \
- $(SDK_ROOT)/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a \
+ $(NFC_T4T_FPU_BIN) \
  $(SDK_ROOT)/external/nrf_oberon/lib/cortex-m4/hard-float/liboberon_2.0.7.a
 
 # Optimization flags
