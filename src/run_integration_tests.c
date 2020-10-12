@@ -47,6 +47,8 @@
 void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
 #endif
 
+#define LOG_PRINT_DELAY_MS (10U)
+
 void on_integration_test_wdt (void)
 {
 }
@@ -54,7 +56,7 @@ void on_integration_test_wdt (void)
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
-    ri_delay_ms (1); // Avoid overflowing log buffer.
+    ri_delay_ms (LOG_PRINT_DELAY_MS); // Avoid overflowing log buffer.
 }
 
 /** @brief Print test open JSON to console */
@@ -174,6 +176,7 @@ void integration_tests_run (void)
     LOG ("\"libraries\": {\r\n");
     library_integration_tests_run();
     LOG ("},\r\n");
+    ri_delay_ms (10);
     LOG ("\"drivers\": {\r\n");
     driver_integration_tests_run();
     LOG ("}\r\n");

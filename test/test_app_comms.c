@@ -66,7 +66,6 @@ static void RD_ERROR_CHECK_EXPECT (rd_status_t err_code, rd_status_t fatal)
 
 static void test_dis_init (ri_comm_dis_init_t * const p_dis, const bool secure)
 {
-    size_t name_idx = 0;
     memset (p_dis, 0, sizeof (ri_comm_dis_init_t));
     rt_com_get_mac_str_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_com_get_mac_str_ReturnArrayThruPtr_mac_str ("AA:BB:CC:DD:EE:FF", 18);
@@ -79,10 +78,7 @@ static void test_dis_init (ri_comm_dis_init_t * const p_dis, const bool secure)
         snprintf (p_dis->deviceid, sizeof (p_dis->deviceid), "00:11:22:33:44:55:66:77");
     }
 
-    name_idx = snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), APP_FW_NAME);
-    snprintf (p_dis->fw_version + name_idx,
-              sizeof (p_dis->fw_version) - name_idx,
-              APP_FW_VERSION);
+    snprintf (p_dis->fw_version, sizeof (p_dis->fw_version), "Ruuvi FW v0.0.1+default");
     snprintf (p_dis->hw_version, sizeof (p_dis->hw_version), "Check PCB");
     snprintf (p_dis->manufacturer, sizeof (p_dis->manufacturer), RB_MANUFACTURER_STRING);
     snprintf (p_dis->model, sizeof (p_dis->model), RB_MODEL_STRING);
