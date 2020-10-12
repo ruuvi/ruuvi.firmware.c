@@ -47,6 +47,8 @@
 void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
 #endif
 
+#define LOG_PRINT_DELAY_MS (10U)
+
 void on_integration_test_wdt (void)
 {
 }
@@ -54,7 +56,7 @@ void on_integration_test_wdt (void)
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
-    ri_delay_ms (1); // Avoid overflowing log buffer.
+    ri_delay_ms (LOG_PRINT_DELAY_MS); // Avoid overflowing log buffer.
 }
 
 /** @brief Print test open JSON to console */
@@ -128,34 +130,22 @@ static void integration_test_sensors (void)
 static void driver_integration_tests_run (void)
 {
     ri_flash_run_integration_test (&LOG);
-    ri_delay_ms (10);
     integration_test_power();
-    ri_delay_ms (10);
     ri_timer_integration_test_run (&LOG);
-    ri_delay_ms (10);
     ri_scheduler_run_integration_test (&LOG);
-    ri_delay_ms (10);
     ri_watchdog_feed();
     integration_test_sensors();
-    ri_delay_ms (10);
     ri_communication_radio_run_integration_test (&LOG);
-    ri_delay_ms (10);
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_1MBPS);
-    ri_delay_ms (10);
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_2MBPS);
-    ri_delay_ms (10);
     ri_watchdog_feed();
     ri_communication_ble_gatt_run_integration_test (&LOG, RI_RADIO_BLE_1MBPS);
-    ri_delay_ms (10);
     ri_watchdog_feed();
     ri_communication_ble_gatt_run_integration_test (&LOG, RI_RADIO_BLE_2MBPS);
-    ri_delay_ms (10);
 #ifdef S140
     ri_communication_ble_advertising_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
-    ri_delay_ms (10);
     ri_watchdog_feed();
     ri_communication_ble_gatt_run_integration_test (&LOG, RI_RADIO_BLE_125KBPS);
-    ri_delay_ms (10);
 #endif
 
     if ( (RI_GPIO_ID_UNUSED != RB_GPIO_TEST_INPUT)
@@ -163,19 +153,14 @@ static void driver_integration_tests_run (void)
     {
         ri_communication_uart_run_integration_test (&LOG, RB_GPIO_TEST_INPUT,
                 RB_GPIO_TEST_OUTPUT);
-        ri_delay_ms (10);
         ri_gpio_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
-        ri_delay_ms (10);
         ri_gpio_interrupt_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
-        ri_delay_ms (10);
         ri_gpio_pwm_run_integration_test (&LOG, RB_GPIO_TEST_INPUT, RB_GPIO_TEST_OUTPUT);
-        ri_delay_ms (10);
     }
 
 #if RB_NFC_INTERNAL_INSTALLED
     ri_watchdog_feed();
     ri_communication_nfc_run_integration_test (&LOG);
-    ri_delay_ms (10);
 #endif
 }
 
