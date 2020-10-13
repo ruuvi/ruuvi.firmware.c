@@ -1,6 +1,14 @@
+# Device under test on devkit, run SDK update + integration tests on this.
 export RUUVITAG_B_DEVKIT_SN=682971638
-export RUUVITAG_B_PPK_SN=682951642
+
+# Power profiler kit
+export RUUVITAG_B_PPK_SN=682788633
+
+# SDK12.3 / Ruuvi FW 2.5.9 bootloader name
 export RUUVITAG_B_DEVKIT_BLNAME="RuuviBoot"
+
+# BLE name of DUT on devkit
 export RUUVITAG_B_DEVKIT_APPNAME="Ruuvi\ 3A7A"
+
 # On mobile phone
 export FIRMWARE_PATH=Android/data/no.nordicsemi.android.mcp/files/Test

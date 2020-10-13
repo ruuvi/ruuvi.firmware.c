@@ -1,35 +1,39 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 source .test_env
-SDK_UPDATE="ruuvitag_b_armgcc_ruuvifw_test_v3.28.13_sdk12.3_to_15.3_dfu.zip"
-APP_UPDATE="ruuvitag_b_armgcc_ruuvifw_test_v3.28.13_dfu_app.zip"
+# Tag on this commit
+TAG=$(git describe --tags --exact-match)
+echo "Testing ${TAG}"
+RELEASE_URL="https://github.com/ruuvi/ruuvi.firmware.c/releases/download"
 RESULT_FILE="test_sdk_update_result.txt" 
 TEST_FILE="test_sdk_update.xml"
+BOARD="ruuvitag_b"
+FW_NAME="armgcc_ruuvifw"
+TEST_VARIANT="${BOARD}_${FW_NAME}_test_${TAG}_full.hex"
+APP_VARIANT="${BOARD}_${FW_NAME}_default_${TAG}_dfu_app.zip"
+SDK_VARIANT="${BOARD}_${FW_NAME}_default_${TAG}_sdk12.3_to_15.3_dfu.zip"
+
+rm *dfu_app.zip*
+rm *dfu.zip*
+rm *full.hex*
+
+
+wget ${RELEASE_URL}/${TAG}/${TEST_VARIANT}
+wget ${RELEASE_URL}/${TAG}/${APP_VARIANT}
+wget ${RELEASE_URL}/${TAG}/${SDK_VARIANT}
 
 fetch_result () {
   adb pull "/sdcard/${FIRMWARE_PATH}/${RESULT_FILE}" ${RESULT_FILE} #> /dev/null
 }
 
-if [ -f $SDK_UPDATE ]; then
-   echo "Found sdk update package." > /dev/null
-else
-   wget https://github.com/ruuvi/ruuvi.firmware.c/releases/download/v3.28.13/ruuvitag_b_armgcc_ruuvifw_test_v3.28.13_sdk12.3_to_15.3_dfu.zip
-fi
-
-if [ -f $APP_UPDATE ]; then
-   echo "Found app update fw." > /dev/null
-else
-   wget https://github.com/ruuvi/ruuvi.firmware.c/releases/download/v3.28.13/ruuvitag_b_armgcc_ruuvifw_test_v3.28.13_dfu_app.zip
-fi
-
-adb push ${SDK_UPDATE} "/sdcard/${FIRMWARE_PATH}/${SDK_UPDATE}"
-adb push ${APP_UPDATE} "/sdcard/${FIRMWARE_PATH}/${APP_UPDATE}"
+adb push ${SDK_VARIANT} "/sdcard/${FIRMWARE_PATH}/${SDK_VARIANT}"
+adb push ${APP_VARIANT} "/sdcard/${FIRMWARE_PATH}/${APP_VARIANT}"
 adb push ${TEST_FILE} "/sdcard/${FIRMWARE_PATH}/${TEST_FILE}" #> /dev/null
 adb shell rm "/sdcard/${FIRMWARE_PATH}/${RESULT_FILE}" #> /dev/null
 rm ${RESULT_FILE}
 adb shell am start-foreground-service -a no.nordicsemi.android.action.START_TEST \
-    -e FIRMWARE_PATH "/${FIRMWARE_PATH}" -e SDK_UPDATE ${SDK_UPDATE} \
-    -e APP_UPDATE ${APP_UPDATE} \
+    -e FIRMWARE_PATH "/${FIRMWARE_PATH}" -e SDK_UPDATE ${SDK_VARIANT} \
+    -e APP_UPDATE ${APP_VARIANT} \
     -e RUUVITAG_B_DEVKIT_APPNAME ${RUUVITAG_B_DEVKIT_APPNAME} \
     -e RUUVITAG_B_DEVKIT_BLNAME ${RUUVITAG_B_DEVKIT_BLNAME} \
     -e no.nordicsemi.android.test.extra.EXTRA_FILE_PATH "/sdcard/${FIRMWARE_PATH}/${TEST_FILE}" #> /dev/null

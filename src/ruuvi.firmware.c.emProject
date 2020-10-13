@@ -155,11 +155,11 @@
     <folder Name="nRF_NFC">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/record/nfc_ndef_record.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_rec.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/text/nfc_text_rec.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/platform/nfc_platform.c" />
+      <file file_name="ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/t4t_lib/nfc_t4t_lib_gcc.a" />
     </folder>
     <folder Name="nRF_SoftDevice">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/softdevice/common/nrf_sdh.c" />
@@ -406,7 +406,6 @@
     <folder Name="nRF_NFC">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/record/nfc_ndef_record.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_rec.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/text/nfc_text_rec.c" />
@@ -650,7 +649,6 @@
     <folder Name="nRF_NFC">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/record/nfc_ndef_record.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_rec.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/text/nfc_text_rec.c" />
@@ -901,7 +899,6 @@
     <folder Name="nRF_NFC">
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/message/nfc_ndef_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/generic/record/nfc_ndef_record.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/t4t_lib/nfc_t4t_lib_gcc.a" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_msg.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/uri/nfc_uri_rec.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/components/nfc/ndef/text/nfc_text_rec.c" />
