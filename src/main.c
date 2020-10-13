@@ -40,6 +40,21 @@ void on_wdt (void)
 }
 #endif
 
+#ifndef CEEDLING
+static
+#endif
+void app_on_error (const rd_status_t error,
+                   const bool fatal,
+                   const char * file,
+                   const int line)
+{
+    // TODO: store error source to flash.
+    if(fatal)
+    {
+        ri_power_reset();
+    }
+}
+
 /**
  * @brief setup MCU peripherals and board peripherals.
  *
@@ -79,6 +94,7 @@ void setup (void)
     }
 
     err_code |= app_led_activity_set (RB_LED_ACTIVITY);
+    rd_error_cb_set(&app_on_error);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 

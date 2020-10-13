@@ -22,7 +22,7 @@
 
 // Submodule requirements
 #define RUUVI_BOARDS_REQ "3.4.0"
-#define RUUVI_DRIVERS_REQ "3.4.1"
+#define RUUVI_DRIVERS_REQ "3.4.2"
 #define RUUVI_ENDPOINTS_REQ "3.0.0"
 #define RUUVI_LIBRARIES_REQ "3.0.0"
 
@@ -30,6 +30,10 @@
 
 #ifdef CEEDLING
 void on_wdt (void);
+void app_on_error (const rd_status_t error,
+                   const bool fatal,
+                   const char * file,
+                   const int line);
 void setup (void);
 int app_main (void);
 #define LOOP_FOREVER 0 //!< Ceedling run exits

@@ -20,6 +20,7 @@
 #include "mock_ruuvi_task_flash.h"
 #include "mock_ruuvi_interface_gpio.h"
 #include "mock_ruuvi_interface_log.h"
+#include "mock_ruuvi_interface_power.h"
 #include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_interface_timer.h"
 #include "mock_ruuvi_interface_yield.h"
@@ -41,6 +42,25 @@ void tearDown (void)
     // Free allocated memory when we're done
     semver_free (&current);
     semver_free (&compare);
+}
+
+void test_app_on_error_fatal(void)
+{
+    char file[] = "main.h";
+    ri_power_reset_Expect();
+    app_on_error (RD_ERROR_INVALID_STATE,
+                   true,
+                   file,
+                   7);
+}
+
+void test_app_on_error_nonfatal(void)
+{
+    char file[] = "main.h";
+    app_on_error (RD_ERROR_INVALID_STATE,
+                   false,
+                   file,
+                   7);
 }
 
 void test_main_ok (void)
@@ -69,6 +89,7 @@ void test_main_ok (void)
     ri_delay_ms_ExpectAndReturn (APP_SELFTEST_OK_DELAY_MS, RD_SUCCESS);
     app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    rd_error_cb_set_Expect(&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
@@ -100,6 +121,7 @@ void test_main_error (void)
     app_heartbeat_start_ExpectAndReturn (RD_ERROR_INVALID_STATE);
     app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    rd_error_cb_set_Expect(&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
