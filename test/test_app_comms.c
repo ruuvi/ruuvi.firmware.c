@@ -156,13 +156,11 @@ static void app_comms_ble_uninit_Expect (void)
     rt_gatt_uninit_ExpectAndReturn (RD_SUCCESS);
 }
 
-static void app_comms_ble_init_Expect (const bool secure)
+static void app_comms_ble_init_Expect (const bool secure, ri_comm_dis_init_t * p_dis)
 {
-    static ri_comm_dis_init_t ble_dis;
-    memset (&ble_dis, 0, sizeof (ble_dis));
-    test_dis_init (&ble_dis, secure);
+    test_dis_init (p_dis, secure);
     adv_init_Expect();
-    gatt_init_Expect (&ble_dis, secure);
+    gatt_init_Expect (p_dis, secure);
     ri_radio_activity_callback_set_Expect (&app_sensor_vdd_measure_isr);
 }
 
@@ -187,15 +185,19 @@ void test_app_comms_init_ok (void)
 
 static void app_comms_configure_next_disable_Expect (void)
 {
+    static ri_comm_dis_init_t ble_dis;
+    memset (&ble_dis, 0, sizeof (ble_dis));
     app_comms_ble_uninit_Expect();
-    app_comms_ble_init_Expect (true);
+    app_comms_ble_init_Expect (true, &ble_dis);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
 }
 
 static void app_comms_configure_next_enable_Expect (void)
 {
+    static ri_comm_dis_init_t ble_dis;
+    memset (&ble_dis, 0, sizeof (ble_dis));
     app_comms_ble_uninit_Expect();
-    app_comms_ble_init_Expect (false);
+    app_comms_ble_init_Expect (false, &ble_dis);
     app_led_activity_set_ExpectAndReturn (RB_LED_CONFIG_ENABLED, RD_SUCCESS);
     ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
     ri_timer_start_ExpectAndReturn (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops,
@@ -204,8 +206,10 @@ static void app_comms_configure_next_enable_Expect (void)
 
 static void connection_cleanup_Expect (void)
 {
+    static ri_comm_dis_init_t ble_dis;
+    memset (&ble_dis, 0, sizeof (ble_dis));
     app_comms_ble_uninit_Expect();
-    app_comms_ble_init_Expect (true);
+    app_comms_ble_init_Expect (true, &ble_dis);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
 }
 
@@ -335,9 +339,11 @@ void test_handle_config_disable_connected (void)
 
 void test_handle_config_disable_not_connected (void)
 {
+    static ri_comm_dis_init_t ble_dis;
+    memset (&ble_dis, 0, sizeof (ble_dis));
     rt_gatt_nus_is_connected_ExpectAndReturn (false);
     app_comms_ble_uninit_Expect();
-    app_comms_ble_init_Expect (true);
+    app_comms_ble_init_Expect (true, &ble_dis);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     handle_config_disable (NULL, 0);
 }
