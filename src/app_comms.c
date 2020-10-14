@@ -225,6 +225,7 @@ static void config_cleanup_on_disconnect (void)
     rd_status_t err_code = RD_SUCCESS;
     m_config_enabled_on_curr_conn = false;
     err_code |= enable_config_on_next_conn (false);
+    m_mode_ops.disable_config = 0; // No need to disable config again.
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
