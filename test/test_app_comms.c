@@ -158,7 +158,7 @@ static void app_comms_ble_uninit_Expect (void)
 
 static void app_comms_ble_init_Expect (const bool secure)
 {
-    static ri_comm_dis_init_t ble_dis = {0};
+    static ri_comm_dis_init_t ble_dis;
     memset (&ble_dis, 0, sizeof (ble_dis));
     test_dis_init (&ble_dis, secure);
     adv_init_Expect();
@@ -168,8 +168,10 @@ static void app_comms_ble_init_Expect (const bool secure)
 
 void test_app_comms_init_ok (void)
 {
-    ri_comm_dis_init_t ble_dis = {0};
-    ri_comm_dis_init_t nfc_dis = {0};
+    ri_comm_dis_init_t ble_dis;
+    ri_comm_dis_init_t nfc_dis;
+    memset (&ble_dis, 0, sizeof (ri_comm_dis_init_t));
+    memset (&nfc_dis, 0, sizeof (ri_comm_dis_init_t));
     // Allow switchover to extended / 2 MBPS comms.
     ri_radio_init_ExpectAndReturn (APP_MODULATION, RD_SUCCESS);
     ri_timer_create_ExpectAndReturn (&m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,
