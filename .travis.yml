@@ -1,7 +1,9 @@
 language: c
 
 os: linux
-dist: trusty
+dist: focal
+
+
 # Use full depth for SonarCLoud
 git:
   depth: false 

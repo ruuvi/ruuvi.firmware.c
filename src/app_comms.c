@@ -45,7 +45,7 @@ bool m_config_enabled_on_curr_conn; //!< This connection has config enabled.
 #ifndef CEEDLING
 static
 #endif
-bool m_config_enabled_on_next_conn;    //!< Next connection has config enabled.
+bool m_config_enabled_on_next_conn; //!< Next connection has config enabled.
 #endif
 
 #ifndef CEEDLING
@@ -90,6 +90,9 @@ static rd_status_t timed_switch_to_normal_mode (void)
     return err_code;
 }
 
+/**
+ * @brief Start a timer for changing mode of communications.
+ */
 static rd_status_t prepare_mode_change (const mode_changes_t * p_change)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -124,46 +127,6 @@ static uint8_t initial_adv_send_count (void)
 }
 
 #if APP_COMMS_BIDIR_ENABLED
-/**
- * @brief Allow configuration commands on next connection.
- *
- * @param[in] enable True to enable configuration on connection, false to disable.
- */
-static rd_status_t enable_config_on_next_conn (const bool enable)
-{
-    m_config_enabled_on_next_conn = enable;
-    return RD_SUCCESS;
-}
-
-/**
- * @brief Enable configuration on this connection if appropriate.
- *
- * This function should be called on connection established interrupt.
- * After calling this function, next connection will not be configurable
- * unless @ref enable_config_on_next_conn is called with true.
- *
- * @retval RD_SUCCESS Always.
- */
-static rd_status_t config_setup_on_this_conn (void)
-{
-    m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;
-    m_config_enabled_on_next_conn = false;
-    m_mode_ops.switch_to_normal = 0;
-    return RD_SUCCESS;
-}
-
-/**
- * @brief Cleanup connection configuration.
- *
- * This function should be called on connection lost interrupt.
- *
- * @retval RD_SUCCESS Always.
- */
-static rd_status_t config_conn_end (void)
-{
-    m_config_enabled_on_curr_conn = false;
-    return RD_SUCCESS;
-}
 
 static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
                           size_t data_len)
@@ -215,6 +178,56 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 
+/**
+ * @brief Allow configuration commands on next connection.
+ *
+ * Has side effect of disconnecting current GATT connecction due to need to re-init
+ * GATT services.
+ *
+ * @param[in] enable True to enable configuration on connection, false to disable.
+ */
+static rd_status_t enable_config_on_next_conn (const bool enable)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Kicks out current connection.
+    err_code |= app_comms_ble_uninit();
+    err_code |= app_comms_ble_init (!enable);
+    m_config_enabled_on_next_conn = enable;
+
+    if (enable)
+    {
+        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+    }
+    else
+    {
+        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Configures this connection, call this in on_connected handler.
+ */
+static void config_setup_on_this_conn (void)
+{
+    m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;
+    m_config_enabled_on_next_conn = false;
+}
+
+
+/**
+ * @brief Cleans up configuration related to closing connection, call this
+ * in on_disconnected handler
+ */
+static void config_cleanup_on_disconnect (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_config_enabled_on_curr_conn = false;
+    err_code |= enable_config_on_next_conn (false);
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
+}
+
 #if APP_GATT_ENABLED
 
 #ifndef CEEDLING
@@ -225,18 +238,24 @@ void handle_gatt_data (void * p_data, uint16_t data_len)
     handle_comms (&rt_gatt_send_asynchronous, p_data, data_len);
 }
 
+/**
+ * @brief Disable advertising for GATT connection and setup current connection.
+ */
 #ifndef CEEDLING
 static
 #endif
 void handle_gatt_connected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
+    // Disables advertising for GATT, does not kick current connetion out.
     rt_gatt_disable ();
     config_setup_on_this_conn ();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
-/** @brief Callback when GATT is connected" */
+/**
+ * @brief Callback when GATT is connected
+ */
 #ifndef CEEDLING
 static
 #endif
@@ -245,6 +264,8 @@ void on_gatt_connected_isr (void * p_data, size_t data_len)
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,
                                         &handle_gatt_connected);
+    // Configuration will be disabled on disconnection, no need to trigger timer action.
+    m_mode_ops.disable_config = 0;
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -254,10 +275,7 @@ static
 void handle_gatt_disconnected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= config_conn_end();
-    err_code |= app_led_activity_set (RB_LED_ACTIVITY);
-    err_code |= app_comms_ble_uninit();
-    err_code |= app_comms_ble_init (true);
+    config_cleanup_on_disconnect();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -307,7 +325,10 @@ static
 void handle_nfc_connected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    // No action needed
+    // Kick BLE connection to not allow it to configure tag
+    app_comms_ble_uninit();
+    m_config_enabled_on_next_conn = true;
+    config_setup_on_this_conn();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -317,7 +338,6 @@ static
 void on_nfc_connected_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    config_setup_on_this_conn();
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_nfc_connected);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -328,7 +348,7 @@ static
 void handle_nfc_disconnected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= config_conn_end();
+    config_cleanup_on_disconnect();
     err_code |= app_comms_configure_next_enable();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -349,15 +369,30 @@ void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 rd_status_t app_comms_configure_next_enable (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= app_comms_ble_uninit();
-    err_code |= app_comms_ble_init (false);
     m_mode_ops.disable_config = 1;
+    err_code |= enable_config_on_next_conn (true);
     err_code |= ri_timer_stop (m_comm_timer);
     err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
-    m_config_enabled_on_next_conn = true;
-    err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
     return err_code;
 }
+
+#ifndef CEEDLING
+static
+#endif
+void handle_config_disable (void * p_data, uint16_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+
+    // Do not kick out current connection, disconnect handler
+    // will disable config.
+    if (!rt_gatt_nus_is_connected())
+    {
+        err_code |= enable_config_on_next_conn (false);
+    }
+
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
+}
+
 #else
 rd_status_t app_comms_configure_next_enable (void)
 {
@@ -427,8 +462,7 @@ void comm_mode_change_isr (void * const p_context)
 
     if (p_change->disable_config)
     {
-        enable_config_on_next_conn (false);
-        app_led_activity_set (RB_LED_ACTIVITY);
+        ri_scheduler_event_put (NULL, 0, &handle_config_disable);
         p_change->disable_config = 0;
     }
 

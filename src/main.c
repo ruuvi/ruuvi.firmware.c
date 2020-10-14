@@ -49,7 +49,7 @@ void app_on_error (const rd_status_t error,
                    const int line)
 {
     // TODO: store error source to flash.
-    if(fatal)
+    if (fatal)
     {
         ri_power_reset();
     }
@@ -94,7 +94,7 @@ void setup (void)
     }
 
     err_code |= app_led_activity_set (RB_LED_ACTIVITY);
-    rd_error_cb_set(&app_on_error);
+    rd_error_cb_set (&app_on_error);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 

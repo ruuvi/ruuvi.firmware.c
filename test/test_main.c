@@ -44,23 +44,23 @@ void tearDown (void)
     semver_free (&compare);
 }
 
-void test_app_on_error_fatal(void)
+void test_app_on_error_fatal (void)
 {
     char file[] = "main.h";
     ri_power_reset_Expect();
     app_on_error (RD_ERROR_INVALID_STATE,
-                   true,
-                   file,
-                   7);
+                  true,
+                  file,
+                  7);
 }
 
-void test_app_on_error_nonfatal(void)
+void test_app_on_error_nonfatal (void)
 {
     char file[] = "main.h";
     app_on_error (RD_ERROR_INVALID_STATE,
-                   false,
-                   file,
-                   7);
+                  false,
+                  file,
+                  7);
 }
 
 void test_main_ok (void)
@@ -89,7 +89,7 @@ void test_main_ok (void)
     ri_delay_ms_ExpectAndReturn (APP_SELFTEST_OK_DELAY_MS, RD_SUCCESS);
     app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
-    rd_error_cb_set_Expect(&app_on_error);
+    rd_error_cb_set_Expect (&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
@@ -121,7 +121,7 @@ void test_main_error (void)
     app_heartbeat_start_ExpectAndReturn (RD_ERROR_INVALID_STATE);
     app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
-    rd_error_cb_set_Expect(&app_on_error);
+    rd_error_cb_set_Expect (&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
