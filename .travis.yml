@@ -1,16 +1,16 @@
 language: c
 
 os: linux
+language: python
 dist: trusty
+
+python:
+  - "3.7"
+
+
 # Use full depth for SonarCLoud
 git:
   depth: false 
-
-addons:
-  apt:
-    packages:
-      - "python3"
-      - "python3-pip"
 
 before_install:
   - wget -q -O - https://files.viva64.com/etc/pubkey.txt | sudo apt-key add -
