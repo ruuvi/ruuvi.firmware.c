@@ -187,10 +187,10 @@ static void app_comms_configure_next_enable_Expect (void)
 {
     app_comms_ble_uninit_Expect();
     app_comms_ble_init_Expect (false);
+    app_led_activity_set_ExpectAndReturn (RB_LED_CONFIG_ENABLED, RD_SUCCESS);
     ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
     ri_timer_start_ExpectAndReturn (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops,
                                     RD_SUCCESS);
-    app_led_activity_set_ExpectAndReturn (RB_LED_CONFIG_ENABLED, RD_SUCCESS);
 }
 
 void test_app_comms_configure_next_enable_ok (void)
@@ -215,22 +215,24 @@ void test_handle_gatt_connected (void)
     rt_gatt_disable_ExpectAndReturn (RD_SUCCESS);
     handle_gatt_connected (NULL, 0);
     TEST_ASSERT (!m_config_enabled_on_next_conn);
-    TEST_ASSERT (!m_mode_ops.switch_to_normal);
 }
 
 void test_on_gatt_connected_isr (void)
 {
+    m_mode_ops.disable_config = 1;
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &handle_gatt_connected, RD_SUCCESS);
     on_gatt_connected_isr (NULL, 0);
+    TEST_ASSERT (!m_mode_ops.disable_config);
 }
 
 void test_handle_gatt_disconnected (void)
 {
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     app_comms_ble_uninit_Expect();
     app_comms_ble_init_Expect (true);
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     handle_gatt_disconnected (NULL, 0);
     TEST_ASSERT (!m_config_enabled_on_curr_conn);
+    TEST_ASSERT (!m_config_enabled_on_next_conn);
 }
 
 void test_on_gatt_disconnected_isr (void)
@@ -306,9 +308,24 @@ void test_comm_mode_change_isr_disable_config (void)
 {
     mode_changes_t mode = {0};
     mode.disable_config = 1;
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &handle_config_disable, RD_SUCCESS);
     comm_mode_change_isr (&mode);
     TEST_ASSERT (0 == mode.disable_config);
+}
+
+void test_handle_config_disable_connected (void)
+{
+    rt_gatt_nus_is_connected_ExpectAndReturn (true);
+    handle_config_disable (NULL, 0);
+}
+
+void test_handle_config_disable_not_connected (void)
+{
+    rt_gatt_nus_is_connected_ExpectAndReturn (false);
+    app_comms_ble_uninit_Expect();
+    app_comms_ble_init_Expect (true);
+    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    handle_config_disable (NULL, 0);
 }
 
 void test_handle_nfc_connected (void)
@@ -334,7 +351,7 @@ void test_app_comm_configurable_gatt_after_nfc (void)
     on_gatt_connected_isr (NULL, 0);
     test_handle_gatt_connected ();
     TEST_ASSERT (m_config_enabled_on_curr_conn);
-    TEST_ASSERT (!m_mode_ops.switch_to_normal);
+    TEST_ASSERT (!m_mode_ops.disable_config);
 }
 
 void test_app_comms_blocking_send_ok (void)
