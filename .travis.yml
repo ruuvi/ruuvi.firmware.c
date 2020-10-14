@@ -1,11 +1,7 @@
 language: c
 
 os: linux
-language: python
-dist: trusty
-
-python:
-  - "3.7"
+dist: focal
 
 
 # Use full depth for SonarCLoud
@@ -17,7 +13,7 @@ before_install:
   - sudo wget https://files.viva64.com/etc/viva64.list -O /etc/apt/sources.list.d/viva64.list
 
 install:
-  - sudo pip3 install gcovr
+  - sudo pip install gcovr
   - sudo apt-get update -qq && sudo apt-get install --assume-yes --quiet gcc-multilib && sudo apt-get install -qq
   - sudo apt-get install -qq pvs-studio 
   - sudo apt-get install -qq doxygen 
