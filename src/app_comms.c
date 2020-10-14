@@ -325,7 +325,10 @@ static
 void handle_nfc_connected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    // No action needed
+    // Kick BLE connection to not allow it to configure tag
+    app_comms_ble_uninit();
+    m_config_enabled_on_next_conn = true;
+    config_setup_on_this_conn();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -335,7 +338,6 @@ static
 void on_nfc_connected_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-    config_setup_on_this_conn();
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_nfc_connected);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -346,6 +348,7 @@ static
 void handle_nfc_disconnected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
+    config_cleanup_on_disconnect();
     err_code |= app_comms_configure_next_enable();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
