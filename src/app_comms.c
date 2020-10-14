@@ -213,6 +213,7 @@ static void config_setup_on_this_conn (void)
 {
     m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;
     m_config_enabled_on_next_conn = false;
+    m_mode_ops.disable_config = 0;
 }
 
 

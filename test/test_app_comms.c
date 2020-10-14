@@ -251,7 +251,7 @@ void test_handle_gatt_disconnected (void)
     handle_gatt_disconnected (NULL, 0);
     TEST_ASSERT (!m_config_enabled_on_curr_conn);
     TEST_ASSERT (!m_config_enabled_on_next_conn);
-    TEST_ASSERT(!m_mode_ops.disable_config);
+    TEST_ASSERT (!m_mode_ops.disable_config);
 }
 
 void test_on_gatt_disconnected_isr (void)
@@ -361,7 +361,7 @@ void test_handle_nfc_disconnected (void)
     connection_cleanup_Expect();
     app_comms_configure_next_enable_Expect();
     handle_nfc_disconnected (NULL, 0);
-    TEST_ASSERT(!m_mode_ops.disable_config);
+    TEST_ASSERT (m_mode_ops.disable_config);
 }
 
 void test_app_comm_configurable_gatt_after_nfc (void)
