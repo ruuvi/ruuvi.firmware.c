@@ -213,6 +213,7 @@ static void config_setup_on_this_conn (void)
 {
     m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;
     m_config_enabled_on_next_conn = false;
+    m_mode_ops.disable_config = 0;
 }
 
 
@@ -225,6 +226,7 @@ static void config_cleanup_on_disconnect (void)
     rd_status_t err_code = RD_SUCCESS;
     m_config_enabled_on_curr_conn = false;
     err_code |= enable_config_on_next_conn (false);
+    m_mode_ops.disable_config = 0; // No need to disable config again.
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
