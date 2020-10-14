@@ -106,56 +106,6 @@ static rd_status_t prepare_mode_change (const mode_changes_t * p_change)
 }
 
 /**
- * @brief Allow configuration commands on next connection.
- *
- * Has side effect of disconnecting current GATT connecction due to need to re-init
- * GATT services.
- *
- * @param[in] enable True to enable configuration on connection, false to disable.
- */
-static rd_status_t enable_config_on_next_conn (const bool enable)
-{
-    rd_status_t err_code = RD_SUCCESS;
-    // Kicks out current connection.
-    err_code |= app_comms_ble_uninit();
-    err_code |= app_comms_ble_init (!enable);
-    m_config_enabled_on_next_conn = enable;
-
-    if (enable)
-    {
-        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
-    }
-    else
-    {
-        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
-    }
-
-    return err_code;
-}
-
-/**
- * @brief Configures this connection, call this in on_connected handler.
- */
-static void config_setup_on_this_conn (void)
-{
-    m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;
-    m_config_enabled_on_next_conn = false;
-}
-
-
-/**
- * @brief Cleans up configuration related to closing connection, call this
- * in on_disconnected handler
- */
-static void config_cleanup_on_disconnect (void)
-{
-    rd_status_t err_code = RD_SUCCESS;
-    m_config_enabled_on_curr_conn = false;
-    err_code |= enable_config_on_next_conn (false);
-    RD_ERROR_CHECK (err_code, RD_SUCCESS);
-}
-
-/**
  * @brief Calculate how many times advertisements must be repeated
  *        to send at the initial fast rate.
  */
@@ -226,6 +176,56 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
     }
 
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+}
+
+/**
+ * @brief Allow configuration commands on next connection.
+ *
+ * Has side effect of disconnecting current GATT connecction due to need to re-init
+ * GATT services.
+ *
+ * @param[in] enable True to enable configuration on connection, false to disable.
+ */
+static rd_status_t enable_config_on_next_conn (const bool enable)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    // Kicks out current connection.
+    err_code |= app_comms_ble_uninit();
+    err_code |= app_comms_ble_init (!enable);
+    m_config_enabled_on_next_conn = enable;
+
+    if (enable)
+    {
+        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+    }
+    else
+    {
+        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
+    }
+
+    return err_code;
+}
+
+/**
+ * @brief Configures this connection, call this in on_connected handler.
+ */
+static void config_setup_on_this_conn (void)
+{
+    m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;
+    m_config_enabled_on_next_conn = false;
+}
+
+
+/**
+ * @brief Cleans up configuration related to closing connection, call this
+ * in on_disconnected handler
+ */
+static void config_cleanup_on_disconnect (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_config_enabled_on_curr_conn = false;
+    err_code |= enable_config_on_next_conn (false);
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
 #if APP_GATT_ENABLED
