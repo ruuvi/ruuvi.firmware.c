@@ -399,7 +399,7 @@ void test_app_comms_blocking_send_no_mem_once (void)
     ri_rtc_millis_ExpectAndReturn (1000);
     ri_rtc_millis_ExpectAndReturn (1000);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    ri_rtc_millis_ExpectAndReturn (1500);
+    ri_rtc_millis_ExpectAndReturn (4000);
     // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
     err_code = app_comms_blocking_send (&dummy_comm,
                                         NULL);
@@ -422,7 +422,7 @@ void test_app_comms_blocking_send_timeout (void)
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     ri_rtc_millis_ExpectAndReturn (3000);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    ri_rtc_millis_ExpectAndReturn (3500);
+    ri_rtc_millis_ExpectAndReturn (5500);
     // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
     err_code = app_comms_blocking_send (&dummy_comm,
                                         NULL);

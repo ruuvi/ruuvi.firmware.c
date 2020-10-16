@@ -105,7 +105,7 @@ NFC_SOURCES= \
   $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_msg.c \
   $(SDK_ROOT)/components/nfc/ndef/uri/nfc_uri_rec.c \
   $(SDK_ROOT)/components/nfc/platform/nfc_platform.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_nfct.c
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_nfct.c
 
 NFC_T4T_FPU_BIN= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/t4t_lib/nfc_t4t_lib_gcc.a

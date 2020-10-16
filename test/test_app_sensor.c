@@ -671,18 +671,30 @@ static void app_sensor_log_read_Expect (const ri_comm_xfer_fp_t reply_fp,
                                         const rd_sensor_data_bitfield_t * const types,
                                         const uint8_t * const raw_message)
 {
-    uint32_t current_time_s = (1000 * 1000 * 1000);
-    rd_sensor_data_t sample = {0};
+    uint32_t current_time_s = (1000U * 3600U);
+    // 100 hours of data requested
+    uint32_t start_time_s = (900U * 3600U);
+    // 200 hours of uptime
+    uint32_t system_time_ms = (200 * 3600U * 1000U);
+    static rd_sensor_data_t sample = {0};
+    static app_log_read_state_t rs = 
+    {
+        .oldest_element_ms = (100U * 3600U * 1000U),
+        .element_idx = 0,
+        .page_idx = 0
+    };
     sample.fields = fields;
     float data[fieldcount];
     sample.data = data;
+    sample.timestamp_ms = rs.oldest_element_ms;
     rd_sensor_data_fieldcount_ExpectAndReturn (NULL, fieldcount);
     rd_sensor_data_fieldcount_IgnoreArg_target();
     re_std_log_current_time_ExpectAndReturn (raw_message, current_time_s);
-    re_std_log_start_time_ExpectAndReturn (raw_message, (0));
-    ri_rtc_millis_ExpectAndReturn (0);
-    app_log_read_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    // Assuming tests are run on 64-bit system
+    re_std_log_start_time_ExpectAndReturn (raw_message, start_time_s);
+    ri_rtc_millis_ExpectAndReturn (system_time_ms);
+
+    app_log_read_ExpectWithArrayAndReturn (&sample, 1, &rs, 1, RD_SUCCESS);
+    // Assuming tests are run on 64-bit system, time doesn't overflow.
     app_sensor_send_data_Expect (reply_fp, raw_message, &sample, fieldcount, sources,
                                  types, current_time_s * 1000);
 }

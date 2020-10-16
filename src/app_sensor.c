@@ -841,7 +841,7 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
 {
     rd_status_t err_code = RD_SUCCESS;
     rd_sensor_data_t sample = {0};
-    app_log_read_state_t rs = {0};
+    
     sample.fields = fields;
     float data[rd_sensor_data_fieldcount (&sample)];
     sample.data = data;
@@ -849,24 +849,36 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
     uint32_t current_time_s = re_std_log_current_time (raw_message);
     uint32_t start_s = re_std_log_start_time (raw_message);
     uint32_t sent_elements = 0;
+    const uint64_t system_time_ms = ri_rtc_millis();
 
     // Cannot have start_s >= current_time_s
     if (current_time_s > start_s)
     {
         // Parse offset to system clock - flows over in 68 years.
         LOG ("Sending logged data\r\n");
-        int32_t system_time_s = (int32_t) (ri_rtc_millis() / 1000U);
+        int32_t system_time_s = (int32_t) (system_time_ms/ 1000U);
         int64_t offset_ms = ( (int64_t) current_time_s - (int64_t) system_time_s) *
                             (int64_t) 1000;
+        int64_t time_diff_ms = (current_time_s - start_s) * 1000U;
 
-        if (offset_ms > sample.timestamp_ms)
+        // First sample to send in real time
+        sample.timestamp_ms = (start_s * 1000U);
+        // Offset sample time to system clock.
+        if (time_diff_ms > system_time_ms)
         {
             sample.timestamp_ms = 0;
         }
         else
         {
-            sample.timestamp_ms -= offset_ms;
+            sample.timestamp_ms = system_time_ms - time_diff_ms;
         }
+
+        app_log_read_state_t rs = 
+        {
+            .oldest_element_ms = sample.timestamp_ms,
+            .element_idx = 0,
+            .page_idx = 0
+        };
 
         while (RD_SUCCESS == err_code)
         {
