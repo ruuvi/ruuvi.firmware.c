@@ -273,6 +273,7 @@ static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
     while ( (p_rs->oldest_element_ms > ts)
             && (p_rs->element_idx < m_log_output_block.num_samples))
     {
+        ts = m_log_output_block.storage[p_rs->element_idx].timestamp_s * 1000U;
         p_rs->element_idx++;
     }
 

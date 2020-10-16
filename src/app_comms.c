@@ -35,7 +35,7 @@
  */
 
 /** @brief Set to long enough to handle existing queue, then as short as possible. */
-#define BLOCKING_COMM_TIMEOUT_MS (2000U)
+#define BLOCKING_COMM_TIMEOUT_MS (4000U)
 
 #if APP_COMMS_BIDIR_ENABLED
 #ifndef CEEDLING
