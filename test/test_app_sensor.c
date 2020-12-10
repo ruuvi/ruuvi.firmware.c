@@ -4,6 +4,7 @@
 #include "app_sensor.h"
 
 #include "mock_app_comms.h"
+#include "mock_app_heartbeat.h"
 #include "mock_app_log.h"
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_driver_sensor.h"
@@ -677,7 +678,7 @@ static void app_sensor_log_read_Expect (const ri_comm_xfer_fp_t reply_fp,
     // 200 hours of uptime
     uint32_t system_time_ms = (200 * 3600U * 1000U);
     static rd_sensor_data_t sample = {0};
-    static app_log_read_state_t rs = 
+    static app_log_read_state_t rs =
     {
         .oldest_element_ms = (100U * 3600U * 1000U),
         .element_idx = 0,
@@ -692,8 +693,8 @@ static void app_sensor_log_read_Expect (const ri_comm_xfer_fp_t reply_fp,
     re_std_log_current_time_ExpectAndReturn (raw_message, current_time_s);
     re_std_log_start_time_ExpectAndReturn (raw_message, start_time_s);
     ri_rtc_millis_ExpectAndReturn (system_time_ms);
-
     app_log_read_ExpectWithArrayAndReturn (&sample, 1, &rs, 1, RD_SUCCESS);
+    app_heartbeat_overdue_ExpectAndReturn (false);
     // Assuming tests are run on 64-bit system, time doesn't overflow.
     app_sensor_send_data_Expect (reply_fp, raw_message, &sample, fieldcount, sources,
                                  types, current_time_s * 1000);

@@ -15,6 +15,7 @@
 #include "ruuvi_endpoint_5.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
+#include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_timer.h"
 #include "ruuvi_interface_watchdog.h"
@@ -29,6 +30,8 @@ static ri_timer_id_t heart_timer; //!< Timer for updating data.
 static
 #endif
 uint16_t m_measurement_count; //!< Increment on new samples.
+
+static uint64_t last_heartbeat_timestamp_ms;
 
 static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
                                 ri_comm_message_t * const msg)
@@ -138,6 +141,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     if (heartbeat_ok)
     {
         ri_watchdog_feed();
+        last_heartbeat_timestamp_ms = ri_rtc_millis();
     }
 
     err_code = app_log_process (&data);
@@ -210,6 +214,12 @@ rd_status_t app_heartbeat_stop (void)
     }
 
     return err_code;
+}
+
+bool app_heartbeat_overdue (void)
+{
+    return ri_rtc_millis() > (last_heartbeat_timestamp_ms +
+                              APP_HEARTBEAT_OVERDUE_INTERVAL_MS);
 }
 
 #ifdef CEEDLING

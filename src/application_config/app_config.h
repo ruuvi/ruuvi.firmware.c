@@ -29,9 +29,13 @@
 /** @brief enable nRF15 SDK implementation of drivers */
 #define RUUVI_NRF5_SDK15_ENABLED (1U)
 
+#ifndef APP_HEARTBEAT_OVERDUE_INTERVAL_MS
+#   define APP_HEARTBEAT_OVERDUE_INTERVAL_MS (5U * 60U * 1000U)
+#endif
+
 /** @brief If watchdog is not fed at this interval or faster, reboot */
 #ifndef APP_WDT_INTERVAL_MS
-#   define APP_WDT_INTERVAL_MS (2U*60U*1000U)
+#   define APP_WDT_INTERVAL_MS (APP_HEARTBEAT_OVERDUE_INTERVAL_MS + (1U*60U*1000U))
 #endif
 
 /** @brief Enable sensor tasks */
