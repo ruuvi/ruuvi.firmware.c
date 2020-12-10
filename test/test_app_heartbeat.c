@@ -25,6 +25,7 @@
 static unsigned int mock_tid = 0xAA; //!< Mock timer ID to be returned, size system int.
 static void * p_mock_tid = &mock_tid; //!< Pointer to mock ID.
 extern uint16_t m_measurement_count;
+static uint64_t next_rtc_sim = 1;
 
 void setUp (void)
 {
@@ -66,7 +67,7 @@ static void heartbeat_df5_all_ok_Expect (void)
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
-    ri_rtc_millis_ExpectAndReturn (1);
+    ri_rtc_millis_ExpectAndReturn (next_rtc_sim);
     app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
 }
 
@@ -248,4 +249,20 @@ void test_heartbeat_df5_measurement_cnt_rollover (void)
     }
 
     TEST_ASSERT (0 == m_measurement_count);
+}
+
+void test_app_heartbeat_overdue_no (void)
+{
+    next_rtc_sim = 1;
+    test_heartbeat_df5_all_ok();
+    ri_rtc_millis_ExpectAndReturn(APP_HEARTBEAT_OVERDUE_INTERVAL_MS - 1);
+    TEST_ASSERT(!app_heartbeat_overdue());
+}
+
+void test_app_heartbeat_overdue_yes (void)
+{
+    next_rtc_sim = 1;
+    test_heartbeat_df5_all_ok();
+    ri_rtc_millis_ExpectAndReturn(APP_HEARTBEAT_OVERDUE_INTERVAL_MS);
+    TEST_ASSERT(!app_heartbeat_overdue());
 }
