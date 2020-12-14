@@ -255,14 +255,14 @@ void test_app_heartbeat_overdue_no (void)
 {
     next_rtc_sim = 1;
     test_heartbeat_df5_all_ok();
-    ri_rtc_millis_ExpectAndReturn(APP_HEARTBEAT_OVERDUE_INTERVAL_MS - 1);
-    TEST_ASSERT(!app_heartbeat_overdue());
+    ri_rtc_millis_ExpectAndReturn (APP_HEARTBEAT_OVERDUE_INTERVAL_MS - 1);
+    TEST_ASSERT (!app_heartbeat_overdue());
 }
 
 void test_app_heartbeat_overdue_yes (void)
 {
     next_rtc_sim = 1;
     test_heartbeat_df5_all_ok();
-    ri_rtc_millis_ExpectAndReturn(APP_HEARTBEAT_OVERDUE_INTERVAL_MS);
-    TEST_ASSERT(!app_heartbeat_overdue());
+    ri_rtc_millis_ExpectAndReturn (APP_HEARTBEAT_OVERDUE_INTERVAL_MS);
+    TEST_ASSERT (!app_heartbeat_overdue());
 }
