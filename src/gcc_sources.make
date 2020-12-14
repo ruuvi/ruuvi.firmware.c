@@ -42,7 +42,6 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_init.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_rng.c \
   $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
-  $(SDK_ROOT)/components/libraries/fds/fds.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_sd.c \
   $(SDK_ROOT)/components/libraries/memobj/nrf_memobj.c \
@@ -163,6 +162,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu_bonded.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/ble_dfu_unbonded.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/fds.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrf_ble_scan.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c/nrfx_wdt.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/scheduler/ruuvi_nrf5_sdk15_scheduler.c \
@@ -254,7 +254,6 @@ COMMON_INCLUDES= \
   $(SDK_ROOT)/components/libraries/log \
   $(SDK_ROOT)/components/libraries/memobj \
   $(SDK_ROOT)/components/libraries/experimental_section_vars \
-  $(SDK_ROOT)/components/libraries/fds \
   $(SDK_ROOT)/components/libraries/pwr_mgmt \
   $(SDK_ROOT)/components/libraries/queue/ \
   $(SDK_ROOT)/components/libraries/scheduler \
