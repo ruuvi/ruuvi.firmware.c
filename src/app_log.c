@@ -142,9 +142,9 @@ rd_status_t app_log_init (void)
             .datas.pressure_pa = APP_LOG_PRESSURE_ENABLED
         }
     };
-    err_code |= RD_ERROR_NOT_FOUND; /*rt_flash_load (APP_FLASH_LOG_FILE,
-                               APP_FLASH_LOG_CONFIG_RECORD,
-                               &config, sizeof (config));*/
+    err_code = rt_flash_load (APP_FLASH_LOG_FILE,
+                              APP_FLASH_LOG_CONFIG_RECORD,
+                              &config, sizeof (config));
 
     if (RD_ERROR_NOT_FOUND == err_code)
     {
