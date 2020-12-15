@@ -209,9 +209,6 @@ RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/app_power.c \
   $(PROJ_DIR)/app_sensor.c
 
-
-
-
 COMMON_SOURCES= \
   $(RUUVI_LIB_SOURCES) \
   $(RUUVI_PRJ_SOURCES) \
@@ -322,14 +319,15 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/watchdog \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/yield \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/timer \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/ruuvi.nrf_sdk15_3_overrides.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks \
   $(PROJ_DIR)/ruuvi.endpoints.c/src \
-  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
   $(PROJ_DIR)/ruuvi.libraries.c/src \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/include \
-  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/ \
+  $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/liblzf-3.6 \
   $(PROJ_DIR)/ruuvi.libraries.c/src/integration_tests 
 
