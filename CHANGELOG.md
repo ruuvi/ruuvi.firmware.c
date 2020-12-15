@@ -1,4 +1,12 @@
 # Changelog
+## 3.29.3
+ - Fix factory reset not erasing entire flash storage of app.
+ - Fix GATT connection loss during log read causing a reboot + log erase. 
+ - Increase release watchdog to 6 minutes (was 2).
+
+## 3.29.2
+ - Internal test version.
+
 ## 3.29.1 
  - Remove slave latency to fix race condition when iOS switches to 2 MBit/s PHY
  - Add +3% offset to BME280

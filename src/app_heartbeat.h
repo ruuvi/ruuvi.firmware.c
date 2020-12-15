@@ -54,6 +54,14 @@ rd_status_t app_heartbeat_start (void);
  */
 rd_status_t app_heartbeat_stop (void);
 
+/**
+ * @brief Check if hearbeats have been paused for too long.
+ *
+ * @return True if current time is more than APP_HEARTBEAT_OVERDUE_INTERVAL_MS since last heartbeat.
+ */
+bool app_heartbeat_overdue (void);
+
+
 #ifdef CEEDLING
 #include "ruuvi_interface_timer.h"
 ri_timer_id_t * get_heart_timer (void);
