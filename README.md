@@ -70,10 +70,16 @@ The report can be found under _build/artifacts/gcov_.
 Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
 
 # Usage
-Compile and flash the project to your board using SES. Instructions on how to use a bootloader will be added later on.
-The project is not yet in a useful state for any practical purpose other than learning. 
-
+Compile and flash the project to your board using SES if you're developing. 
 Note: You should erase your board entirely in case there is a bootloader from a previous firmware.
+
+If you're building binaries for distribution, you can and should use the make script to generate binaries.
+This way you can be certain to have a repeatable build process. The makefile takes tag name of current git commit
+and names the binaries with the tag. The version information also gets compiled into binaries. 
+If you have tagged the version as `v3.99.1` the outputs will be named `$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension`.
+For example `ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex`. 
+
+Tags should be valid semantic versions, starting with `v` and posssibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`.
 
 # How to contribute
 Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code on RuuviTag?
