@@ -42,17 +42,39 @@ void resetTest (void); //!< Clears test memory.
 
 static void re_5_encode_expect (void)
 {
+    static uint64_t address = 0x0000AABBCCDDEEFF;
+    static int8_t power = 4;
+    static float voltage = 2.5F;
+    static re_5_data_t data =
+    {
+        .accelerationx_g   = 0.0F,
+        .accelerationy_g   = 0.0F,
+        .accelerationz_g   = 0.0F,
+        .humidity_rh       = 0.0F,
+        .pressure_pa       = 0.0F,
+        .temperature_c     = 0.0F,
+        .address           = 0x0000AABBCCDDEEFF,
+        .tx_power          = 4,
+        .battery_v         = 2.5F,
+        .measurement_count = 0,
+        .movement_count    = 1
+    };
+    data.measurement_count = m_measurement_count;
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     app_sensor_event_count_get_ExpectAndReturn (1);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
-    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_radio_address_get_ReturnThruPtr_address (&address);
     ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_adv_tx_power_get_ReturnThruPtr_dbm (&power);
     rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    re_5_encode_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    re_5_encode_ExpectWithArrayAndReturn (NULL, 0, &data, 1, RD_SUCCESS);
+    re_5_encode_IgnoreArg_buffer();
 }
 
 static void heartbeat_df5_all_ok_Expect (void)
