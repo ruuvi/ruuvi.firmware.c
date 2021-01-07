@@ -67,8 +67,14 @@ static rd_status_t store_block (const app_log_record_t * const record)
         // It's not a problem if there wasn't old block to erase.
         if (RD_SUCCESS == err_code)
         {
-            LOG ("LOG: Erasing old block\r\n");
+           LOG ("LOG: overwriting old record # %d\r\n", record_idx);
         }
+        else    
+        {    
+            LOG ("LOG: creating    new record # %d\r\n, record+idx);
+        }
+
+
 
         err_code &= ~RD_ERROR_NOT_FOUND;
 
