@@ -71,7 +71,7 @@ static rd_status_t store_block (const app_log_record_t * const record)
         }
         else    
         {    
-            LOG ("LOG: creating    new record # %d\r\n", record+idx);
+            LOG ("LOG: creating   new record # %d\r\n", record+idx);
         }
 
 
