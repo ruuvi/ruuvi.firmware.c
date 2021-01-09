@@ -19,19 +19,12 @@ Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for detail
 # Setting up
 
 ## Prerequisites
-
 gcc
-
 [gcc-arm-none-eabi-7-2018-q2-update](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/7-2018-q2-update) CHeck that nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc  Makefile.posix or Makefile.windows points to it.
-
 git
-
 python 3.7 or later and [pip package manager](https://pypi.org/project/pip/)
-
 [Nordic mergehex](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) merge 2 or 3 (not 4) .hex files into one.
-
 [Nordic nrfutil](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) Creates DeviceFirmwareUpdate zip file from hex
-
 [Nordic nRFconnect](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-desktop) for your desktop or phone to upload DFU to the Ruuvi and a means to transfer the DFU zip file to you phone.
 
 A computer or phone with a bluetooth radio to receive advertisments from the ruuvi. See [Dealing with the data](https://github.com/ruuvi/ruuvitag_fw/wiki/Dealing-with-the-data)
@@ -39,20 +32,14 @@ A computer or phone with a bluetooth radio to receive advertisments from the ruu
 ### Suggested 
 
  [Ruuvi Dev kit board](https://shop.ruuvi.com/product/devkit/) and a USB power & data cable.
- 
  [Nordic nrfjprog](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools) Erase, write and read from Nordic nRF5 System On Chip
- 
  [Segger j-link](https://www.segger.com/downloads/jlink) package incluing j-link and JLinkRTTClient
  
 ### Optional
  [Ceedling](http://www.throwtheswitch.org/ceedling) Needs Ruby and gcc
- 
  [PVS-Studio Analyzer](https://www.viva64.com/en/pvs-studio/) Purchase
- 
  [astyle](https://sourceforge.net/projects/astyle/files/)
- 
  [Travis](https://www.travis-ci.com)
- 
  [doxygen](https://www.doxygen.nl/index.html)
 
 ## SDK 15.3
