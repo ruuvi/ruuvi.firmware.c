@@ -24,7 +24,7 @@ If you're working on multiple nRF projects, you can (and should) use softlinking
 Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project. If any of the submodules has a changed remote, you'll need to run `git submodule sync --recursive` and again `git submodule update --init --recursive` to update the modules from new remotes. 
 
 ## Toolchain
-ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use Segger Embedded Studio for developing. You can make the project and all variants by runnning "make" at top level of this repository. 
+ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use Segger Embedded Studio for developing. You can make the project and a single variant by runnning "make variantName" at top level of this repository. 
  
 Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
 and following Getting Started plugin instructions.
@@ -75,7 +75,7 @@ Travis will fail the build if unit test fails and Gcov results will get pushed t
 Compile and flash the project to your board using Segger Embedded Studio if you're developing. 
 Note: You should erase your board entirely in case there is a bootloader from a previous firmware.
 
-If you're building binaries for distribution, you can and should use THE make script to generate binaries.
+If you're building binaries for distribution, you can and should use the provided make script to generate binaries.
 This way you can be certain to have a repeatable build process. The makefile takes tag name of current git commit
 and names the binaries with the tag. The version information also gets compiled into binaries. 
 If you have tagged the version as `v3.99.1` the outputs will be named `$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension`.
