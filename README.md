@@ -1,4 +1,4 @@
-This repository was taken for an post 3.29.3 snapshot on 12/19/20
+This repository was taken for a post 3.29.3 snapshot on 12/19/20
 
 # ruuvi.firmware.c
 [![Build Status](https://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c+-+deploy)](https://jenkins.ruuvi.com/job/ruuvi.firmware.c%20-%20deploy/)
@@ -16,24 +16,45 @@ Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and ext
 Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason.  
 
 # Setting up
+
+## Prerequisites
+### gcc
+### [gcc-arm-none-eabi-7-2018-q2-update](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/7-2018-q2-update) CHeck that nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc  Makefile.posix or Makefile.windows points to it.
+### git
+### python 3.7 or later and [pip package manager](https://pypi.org/project/pip/)
+### [Nordic mergehex](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) merge 2 or 3 (not 4) .hex files into one.
+### [Nordic nrfutil](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) Creates DeviceFirmwareUpdate zip file from hex
+### [Nordic nRFconnect](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-desktop) for your desktop or phone to upload DFU to the Ruuvi and a means to transfer the DFU zip file to you phone.
+### A computer or phone with a bluetooth radio to receive advertisments from the ruuvi. See [Dealing with the data](https://github.com/ruuvi/ruuvitag_fw/wiki/Dealing-with-the-data)
+### Suggested 
+### [Ruuvi Dev kit board](https://shop.ruuvi.com/product/devkit/) and a USB power & data cable.
+### [Nordic nrfjprog](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools) Erase, write and read from Nordic nRF5 System On Chip
+### [Segger j-link](https://www.segger.com/downloads/jlink) package incluing j-link and JLinkRTTClient
+### Optional
+### [Ceedling](http://www.throwtheswitch.org/ceedling) Needs Ruby and gcc
+### [PVS-Studio Analyzer](https://www.viva64.com/en/pvs-studio/) Purchase
+### [astyle](https://sourceforge.net/projects/astyle/files/)
+### [Travis](https://www.travis-ci.com)
+### [doxygen](https://www.doxygen.nl/index.html)
+
 ## SDK 15.3
-Download [Nordic SDK15.3](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) and install it at the project root.
-If you're working on multiple nRF projects, you can (and should) use softlinking instead.
+Download [Nordic SDK15.3](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) (.8GB)and install it at the project root.
+If you're working on multiple nRF projects, use soft linking to have only one copy.
 
 ## Submodules
-Run `git submodule update --init --recursive`. This will search for and install the other git repositories referenced by this project. If any of the submodules has a changed remote, you'll need to run `git submodule sync --recursive` and again `git submodule update --init --recursive` to update the modules from new remotes. 
+Run `git submodule sync --recursive` and `git submodule update --init --recursive` to update the modules from new remotes. 
 
 ## Toolchain
-ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended to use Segger Embedded Studio for developing. You can make the project and a single variant by runnning "make variantName" at top level of this repository. 
+ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended that you use Segger Embedded Studio for developing. You can make the project and a single variant by runnning "make variantName" (for example "make ruuvitag_b" at top level of this repository
  
 Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
 and following Getting Started plugin instructions.
 
-Start SES and open `ruuvi_ruuvi.firmware.c.emProject` at root level, each of the target boards is in their own project.
+Start SES and open `ruuvi_ruuvi.firmware.c.emProject` at root level. Each of the target boards is in their own project.
 
 ## Code style
 Code is formatted with [Artistic Style](http://astyle.sourceforge.net). 
-Run `astyle --project=.astylerc ./target_file`. To format the entire project,
+Run `astyle --project=.astylerc ./target_file`. To format the entire project:
 ```
 astyle --project=.astylerc "src/main.c"
 astyle --project=.astylerc --recursive "src/application_config/*.h"
@@ -52,7 +73,7 @@ Obtain license and software from [Viva64](https://www.viva64.com/en/pvs-studio/)
 
 Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml. 
 
-This results into hundreds of warnings, it is up to you to filter the data you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
+This produces hundreds of warnings, you need to filter the warnings you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
 
 ### Sonar scan
 Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c).
@@ -72,10 +93,10 @@ The report can be found under _build/artifacts/gcov_.
 Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
 
 # Usage
-Compile and flash the project to your board using Segger Embedded Studio if you're developing. 
+Compile and flash the project to your board using Segger Embedded Studio. 
 Note: You should erase your board entirely in case there is a bootloader from a previous firmware.
 
-If you're building binaries for distribution, you can and should use the provided make script to generate binaries.
+If you're building binaries for distribution, use the provided make script to generate binaries.
 This way you can be certain to have a repeatable build process. The makefile takes tag name of current git commit
 and names the binaries with the tag. The version information also gets compiled into binaries. 
 If you have tagged the version as `v3.99.1` the outputs will be named `$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension`.
@@ -84,7 +105,7 @@ For example `ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex`.
 Tags should be valid semantic versions, starting with `v` and posssibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`.
 
 # How to contribute
-Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code on RuuviTag?
+Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?
 Is the structure of the project sensible to you? 
 
 If you want to assist in the project maintenance by fixing some issues _doxygen.error_ is
