@@ -10,18 +10,18 @@
 #include "ruuvi_task_flash.h"
 #if RT_FLASH_ENABLED
 
-static inline void LOG (const char * const msg)
+static inline void LOG (const char *const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
 }
 
-static inline void LOGD (const char * const msg)
+static inline void LOGD (const char *const msg)
 {
     ri_log (RI_LOG_LEVEL_DEBUG, msg);
 }
 
 
-/**
+/*
  * @addtogroup app_log
  */
 /** @{ */
@@ -52,7 +52,7 @@ static
 #endif
 uint64_t m_last_sample_ms; //!< Timestamp of last processed sample.
 
-static rd_status_t store_block (const app_log_record_t * const record)
+static rd_status_t store_block (const app_log_record_t *const record)
 {
     static uint8_t record_idx = 0;
     uint8_t num_tries = 0;
@@ -170,7 +170,7 @@ rd_status_t app_log_init (void)
     return err_code;
 }
 
-rd_status_t app_log_process (const rd_sensor_data_t * const sample)
+rd_status_t app_log_process (const rd_sensor_data_t *const sample)
 {
     rd_status_t err_code = RD_SUCCESS;
     uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000U);
@@ -223,7 +223,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
  * Can also copy input block to
  * output block if there's no more stored blocks in flash.
  */
-static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
+static rd_status_t app_log_read_load_block (app_log_read_state_t *const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -273,7 +273,7 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
  * @retval RD_SUCCESS p_rs points to a valid element
  * @retval RD_ERROR_NOT_FOUND if block doesn't have a valid element.
  */
-static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
+static rd_status_t app_log_read_fast_forward (app_log_read_state_t *const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
     uint64_t ts = m_log_output_block.storage[p_rs->element_idx].timestamp_s * 1000U;
@@ -293,8 +293,8 @@ static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
     return err_code;
 }
 
-static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
-        app_log_read_state_t * const p_rs)
+static rd_status_t app_log_read_populate (rd_sensor_data_t *const sample,
+        app_log_read_state_t *const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -321,8 +321,8 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
     return err_code;
 }
 
-rd_status_t app_log_read (rd_sensor_data_t * const sample,
-                          app_log_read_state_t * const p_rs)
+rd_status_t app_log_read (rd_sensor_data_t *const sample,
+                          app_log_read_state_t *const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -356,7 +356,7 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
     return err_code;
 }
 
-rd_status_t app_log_config_set (const app_log_config_t * const configuration)
+rd_status_t app_log_config_set (const app_log_config_t *const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -380,7 +380,7 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
     return err_code;
 }
 
-rd_status_t app_log_config_get (app_log_config_t * const configuration)
+rd_status_t app_log_config_get (app_log_config_t *const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
@@ -401,20 +401,20 @@ rd_status_t app_log_init (void)
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_process (const rd_sensor_data_t * const sample)
+rd_status_t app_log_process (const rd_sensor_data_t *const sample)
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_config_get (app_log_config_t * const configuration)
+rd_status_t app_log_config_get (app_log_config_t *const configuration)
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_config_set (const app_log_config_t * const configuration)
+rd_status_t app_log_config_set (const app_log_config_t *const configuration)
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_read (rd_sensor_data_t * const sample,
-                          app_log_read_state_t * const p_read_state)
+rd_status_t app_log_read (rd_sensor_data_t *const sample,
+                          app_log_read_state_t *const p_read_state)
 {
     return RD_ERROR_NOT_FOUND;
 }
