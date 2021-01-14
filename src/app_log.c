@@ -21,7 +21,7 @@ static inline void LOGD (const char *const msg)
 }
 
 
-/*
+/**
  * @addtogroup app_log
  */
 /** @{ */
