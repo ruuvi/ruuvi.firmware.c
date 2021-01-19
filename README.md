@@ -22,6 +22,7 @@ Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for detail
 * gcc
 * [gcc-arm-none-eabi-7-2018-q2-update](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/7-2018-q2-update) CHeck that nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc  Makefile.posix or Makefile.windows points to it.
 * git
+* on Mac OS xcrun at: /Library/Developer/CommandLineTools/usr     &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp; > &nbsp;xcode-select --install
 * python 3.7 or later and [pip package manager](https://pypi.org/project/pip/)
 * [Nordic mergehex](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) merge 2 or 3 (not 4) .hex files into one.
 * [Nordic nrfutil](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) Creates DeviceFirmwareUpdate zip file from hex
