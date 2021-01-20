@@ -19,28 +19,24 @@ Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for detail
 # Setting up
 
 ## Prerequisites
-* gcc
-* [gcc-arm-none-eabi-7-2018-q2-update](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/7-2018-q2-update) CHeck that nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc  Makefile.posix or Makefile.windows points to it.
+* [gcc-arm-none-eabi-7-2018-q2-update](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/7-2018-q2-update) Check that nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc  Makefile.posix or Makefile.windows points to it.
 * git
-* on Mac OS xcrun at: /Library/Developer/CommandLineTools/usr     &nbsp; &nbsp;   &nbsp; &nbsp; &nbsp; > &nbsp;xcode-select --install
 * python 3.7 or later and [pip package manager](https://pypi.org/project/pip/)
 * [Nordic mergehex](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) merge 2 or 3 (not 4) .hex files into one.
 * [Nordic nrfutil](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrfutil%2FUG%2Fnrfutil%2Fnrfutil_intro.html) Creates DeviceFirmwareUpdate zip file from hex
+* [Nordic Command Line Tools](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools/Download)
 * [Nordic nRFconnect](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-desktop) for your desktop or phone to upload DFU to the Ruuvi and a means to transfer the DFU zip file to you phone.
-
 * A computer or phone with a bluetooth radio to receive advertisments from the ruuvi. See [Dealing with the data](https://github.com/ruuvi/ruuvitag_fw/wiki/Dealing-with-the-data)
+* on Mac OS [XCode](https://wilsonmar.github.io/xcode/)
 
 ### Suggested 
-
 * [Ruuvi Dev kit board](https://shop.ruuvi.com/product/devkit/) and a USB power & data cable.
-* [Nordic nrfjprog](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools) Erase, write and read from Nordic nRF5 System On Chip
- * [Segger j-link](https://www.segger.com/downloads/jlink) package incluing j-link and JLinkRTTClient
+* Or any other SWD programmer and a cable matching your target board. 
  
-### Optional
-* [Ceedling](http://www.throwtheswitch.org/ceedling) Needs Ruby and gcc
-* [PVS-Studio Analyzer](https://www.viva64.com/en/pvs-studio/) Purchase
+### To run makefiles locally, e.g. before making Pull Requests
+* [Ceedling](http://www.throwtheswitch.org/ceedling)
+* [PVS-Studio Analyzer](https://www.viva64.com/en/pvs-studio/) 
 * [astyle](https://sourceforge.net/projects/astyle/files/)
-* [Travis](https://www.travis-ci.com)
 * [doxygen](https://www.doxygen.nl/index.html)
 
 ## SDK 15.3
@@ -60,18 +56,10 @@ Start SES and open `ruuvi_ruuvi.firmware.c.emProject` at root level. Each of the
 
 ## Code style
 Code is formatted with [Artistic Style](http://astyle.sourceforge.net). 
-Run `astyle --project=.astylerc ./target_file`. To format the entire project:
-```
-astyle --project=.astylerc "src/main.c"
-astyle --project=.astylerc --recursive "src/application_config/*.h"
-astyle --project=.astylerc --recursive "src/tasks/*.c"
-astyle --project=.astylerc --recursive "src/tasks/*.h"
-astyle --project=.astylerc --recursive "src/tests/*.c"
-astyle --project=.astylerc --recursive "src/tests/*.h"
-```
+Run `make astyle`.
 
 ## Static analysis
-The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html) is a link to generated report which gets pushed to GitHub.
+The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html) is a link to generated report.
 
 
 ### PVS
@@ -108,7 +96,7 @@ and names the binaries with the tag. The version information also gets compiled 
 If you have tagged the version as `v3.99.1` the outputs will be named `$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension`.
 For example `ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex`. 
 
-Tags should be valid semantic versions, starting with `v` and posssibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`.
+Tags should be valid semantic versions, starting with `v` and possibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`.
 
 # How to contribute
 Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?
