@@ -157,6 +157,36 @@
 #   define RI_SHTCX_ENABLED APP_SENSOR_SHTCX_ENABLED
 #endif
 
+/** @brief Enable DPS310 sensor */
+#ifndef APP_SENSOR_DPS310_ENABLED
+#   define APP_SENSOR_DPS310_ENABLED RB_ENVIRONMENTAL_DPS310_PRESENT
+#   define RI_DPS310_SPI_ENABLED (1U)
+#endif
+
+#ifndef APP_SENSOR_DPS310_DSP_FUNC
+#   define APP_SENSOR_DPS310_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, LAST and OVERSAMPLING supported.
+#endif
+#ifndef APP_SENSOR_DPS310_DSP_PARAM
+#   define APP_SENSOR_DPS310_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#endif
+#ifndef APP_SENSOR_DPS310_MODE
+#   define APP_SENSOR_DPS310_MODE RD_SENSOR_CFG_CONTINUOUS //!< Run in background
+#endif
+#ifndef APP_SENSOR_DPS310_RESOLUTION
+#   define APP_SENSOR_DPS310_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
+#endif
+#ifndef APP_SENSOR_DPS310_SAMPLERATE
+#   define APP_SENSOR_DPS310_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< 1 Hz by default
+#endif
+#ifndef APP_SENSOR_DPS310_SCALE
+#   define APP_SENSOR_DPS310_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
+#endif
+
+/** @brief Enable DPSX driver */
+#ifndef RI_DPS310_ENABLED
+#   define RI_DPS310_ENABLED APP_SENSOR_DPS310_ENABLED
+#endif
+
 /** @brief Enable atomic operations */
 #ifndef RI_ATOMIC_ENABLED
 #   define RI_ATOMIC_ENABLED (1U)
@@ -245,6 +275,7 @@
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
+#define APP_FLASH_SENSOR_DPS310_RECORD   (0x31U)
 
 #define APP_FLASH_LOG_FILE (0xF0U)
 #define APP_FLASH_LOG_CONFIG_RECORD      (0x01U)

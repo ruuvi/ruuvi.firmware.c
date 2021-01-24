@@ -114,6 +114,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1/shtc1.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/ruuvi.dps310.c/src/dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_driver_sensor_test.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_driver_test.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_interface_communication_ble_advertising_test.c \
@@ -133,6 +134,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_adc_ntc.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_adc_photo.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_shtcx.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_bme280.c \
@@ -140,6 +142,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log/ruuvi_interface_log.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/adc/ruuvi_nrf5_sdk15_adc_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/atomic/ruuvi_nrf5_sdk15_atomic.c \
@@ -300,6 +303,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/sht-common \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1 \
+  $(PROJ_DIR)/ruuvi.drivers.c/ruuvi.dps310.c/src \
   $(PROJ_DIR)/ruuvi.drivers.c/src \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/acceleration \

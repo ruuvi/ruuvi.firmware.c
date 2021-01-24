@@ -12,6 +12,7 @@
 #include "ruuvi_interface_gpio_interrupt.h"
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_bme280.h"
+#include "ruuvi_interface_dps310.h"
 #include "ruuvi_interface_lis2dh12.h"
 #include "ruuvi_interface_adc_ntc.h"
 #include "ruuvi_interface_adc_photo.h"
@@ -177,6 +178,31 @@ static rt_sensor_ctx_t shtcx =
 };
 #endif
 
+#if APP_SENSOR_DPS310_ENABLED
+static rt_sensor_ctx_t dps310 =
+{
+    .sensor = {0},
+    .init = &ri_dps310_init,
+    .configuration =
+    {
+        .dsp_function  = APP_SENSOR_DPS310_DSP_FUNC,
+        .dsp_parameter = APP_SENSOR_DPS310_DSP_PARAM,
+        .mode          = APP_SENSOR_DPS310_MODE,
+        .resolution    = APP_SENSOR_DPS310_RESOLUTION,
+        .samplerate    = APP_SENSOR_DPS310_SAMPLERATE,
+        .scale         = APP_SENSOR_DPS310_SCALE
+    },
+    .nvm_file = APP_FLASH_SENSOR_FILE,
+    .nvm_record = APP_FLASH_SENSOR_DPS310_RECORD,
+    .bus = RD_BUS_SPI,
+    .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,
+    .pwr_pin = RI_GPIO_ID_UNUSED,
+    .pwr_on  = RI_GPIO_HIGH,
+    .fifo_pin = RI_GPIO_ID_UNUSED,
+    .level_pin = RI_GPIO_ID_UNUSED
+};
+#endif
+
 #if APP_SENSOR_PHOTO_ENABLED
 static rt_sensor_ctx_t photo =
 {
@@ -222,6 +248,9 @@ void m_sensors_init (void)
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     m_sensors[SHTCX_INDEX] = &shtcx;
+#endif
+#if APP_SENSOR_DPS310_ENABLED
+    m_sensors[DPS310_INDEX] = &dps310;
 #endif
 #if APP_SENSOR_BME280_ENABLED
     m_sensors[BME280_INDEX] = &bme280;
