@@ -18,6 +18,7 @@
 #include "mock_ruuvi_interface_adc_ntc.h"
 #include "mock_ruuvi_interface_adc_photo.h"
 #include "mock_ruuvi_interface_bme280.h"
+#include "mock_ruuvi_interface_dps310.h"
 #include "mock_ruuvi_interface_lis2dh12.h"
 #include "mock_ruuvi_interface_shtcx.h"
 #include "mock_ruuvi_interface_tmp117.h"
@@ -76,6 +77,11 @@ void test_app_sensor_init_ok (void)
     m_sensors[0]->pwr_on = act_0;
 }
 
+static const rd_sensor_data_fields_t fields_dps =
+{
+    .datas.temperature_c = 1,
+    .datas.pressure_pa = 1
+};
 static const rd_sensor_data_fields_t fields_bme =
 {
     .datas.temperature_c = 1,
@@ -89,9 +95,10 @@ static const rd_sensor_data_fields_t fields_lis =
     .datas.acceleration_y_g = 1,
     .datas.acceleration_z_g = 1
 };
-static const rd_sensor_data_fields_t fields_photo =
+static const rd_sensor_data_fields_t fields_shtcx =
 {
-    .datas.luminosity = 1
+    .datas.temperature_c = 1,
+    .datas.humidity_rh = 1
 };
 static const rd_sensor_data_fields_t fields_expected =
 {
@@ -194,10 +201,10 @@ void test_app_sensor_uninit_ok (void)
 {
     rd_status_t err_code;
     // Emulate power pin for one sensor
-    ri_gpio_id_t    pwr_1 = m_sensors[1]->pwr_pin;
-    ri_gpio_state_t act_1 = m_sensors[1]->pwr_on;
-    m_sensors[1]->pwr_pin = 1;
-    m_sensors[1]->pwr_on = 1;
+    ri_gpio_id_t    pwr_1 = m_sensors[LIS2DH12_INDEX]->pwr_pin;
+    ri_gpio_state_t act_1 = m_sensors[LIS2DH12_INDEX]->pwr_on;
+    m_sensors[LIS2DH12_INDEX]->pwr_pin = 1;
+    m_sensors[LIS2DH12_INDEX]->pwr_on = 1;
     rd_sensor_is_init_ExpectAnyArgsAndReturn (false);
 
     for (size_t ii = 1; ii < SENSOR_COUNT; ii++)
@@ -221,8 +228,8 @@ void test_app_sensor_uninit_ok (void)
     ri_radio_activity_callback_set_Expect (NULL);
     err_code = app_sensor_uninit();
     TEST_ASSERT (RD_SUCCESS == err_code);
-    m_sensors[1]->pwr_pin = pwr_1;
-    m_sensors[1]->pwr_on = act_1;
+    m_sensors[LIS2DH12_INDEX]->pwr_pin = pwr_1;
+    m_sensors[LIS2DH12_INDEX]->pwr_on = act_1;
 }
 
 void test_app_sensor_on_radio_before_ok (void)
@@ -267,14 +274,15 @@ void test_app_sensor_available_data (void)
     {
         for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
         {
-            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < 2));
+            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < SENSOR_COUNT));
         }
 
         rd_sensor_data_fields_t fields_found = {0};
         // Mock provided data
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[2]->sensor.provides = fields_photo;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
+        m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         fields_found = app_sensor_available_data();
         TEST_ASSERT (!memcmp (&fields_found.bitfield, &fields_expected.bitfield,
                               sizeof (fields_expected.bitfield)));
@@ -295,16 +303,20 @@ static rd_status_t mock_data_get (rd_sensor_data_t * const data)
 {
     switch (data_get_calls++)
     {
-        case 0:
+        case BME280_INDEX:
             data->valid.bitfield |= (data->fields.bitfield & fields_bme.bitfield);
             break;
 
-        case 1:
+        case LIS2DH12_INDEX:
             data->valid.bitfield |= (data->fields.bitfield & fields_lis.bitfield);
             break;
 
-        case 2:
-            data->valid.bitfield |= (data->fields.bitfield & fields_photo.bitfield);
+        case SHTCX_INDEX:
+            data->valid.bitfield |= (data->fields.bitfield & fields_shtcx.bitfield);
+            break;
+
+        case DPS310_INDEX:
+            data->valid.bitfield |= (data->fields.bitfield & fields_dps.bitfield);
             break;
 
         default:
@@ -318,10 +330,11 @@ void test_app_sensor_get (void)
 {
     rd_sensor_data_t data = {0};
     data.fields.bitfield |= fields_expected.bitfield;
-    rd_sensor_data_fp dg_0 = m_sensors[0]->sensor.data_get;
-    m_sensors[0]->sensor.data_get = &mock_data_get;
-    m_sensors[1]->sensor.data_get = &mock_data_get;
-    m_sensors[2]->sensor.data_get = &mock_data_get;
+    rd_sensor_data_fp dg_0 = m_sensors[BME280_INDEX]->sensor.data_get;
+    m_sensors[BME280_INDEX]->sensor.data_get = &mock_data_get;
+    m_sensors[LIS2DH12_INDEX]->sensor.data_get = &mock_data_get;
+    m_sensors[SHTCX_INDEX]->sensor.data_get = &mock_data_get;
+    m_sensors[DPS310_INDEX]->sensor.data_get = &mock_data_get;
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
@@ -332,7 +345,7 @@ void test_app_sensor_get (void)
     app_sensor_get (&data);
     TEST_ASSERT (!memcmp (&data.valid.bitfield, &fields_expected.bitfield,
                           sizeof (fields_expected.bitfield)));
-    m_sensors[0]->sensor.data_get = dg_0;
+    m_sensors[BME280_INDEX]->sensor.data_get = dg_0;
 }
 
 /**
@@ -352,17 +365,18 @@ void test_app_sensor_find_provider_ok (void)
 {
     if (SENSOR_COUNT > 3)
     {
-        for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
+        for (size_t ii = 0; ii <= SHTCX_INDEX; ii++)
         {
-            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < 3));
+            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < SENSOR_COUNT));
         }
 
         // Mock provided data
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[2]->sensor.provides = fields_photo;
-        const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_photo);
-        TEST_ASSERT (p_sensor == & (m_sensors[2]->sensor));
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
+        const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_shtcx);
+        TEST_ASSERT (p_sensor == & (m_sensors[SHTCX_INDEX]->sensor));
     }
 }
 
@@ -370,9 +384,9 @@ void test_app_sensor_find_provider_overlap (void)
 {
     if (SENSOR_COUNT > 3)
     {
-        for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
+        for (size_t ii = 0; ii <= SHTCX_INDEX; ii++)
         {
-            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < 3));
+            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < SENSOR_COUNT));
         }
 
         // Mock provided data
@@ -380,11 +394,12 @@ void test_app_sensor_find_provider_overlap (void)
         {
             .datas.temperature_c = 1
         };
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[2]->sensor.provides = fields_photo;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
+        m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
-        TEST_ASSERT (p_sensor == & (m_sensors[0]->sensor));
+        TEST_ASSERT (p_sensor == & (m_sensors[SHTCX_INDEX]->sensor));
     }
 }
 
@@ -392,9 +407,9 @@ void test_app_sensor_find_provider_empty (void)
 {
     if (SENSOR_COUNT > 3)
     {
-        for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
+        for (size_t ii = 0; ii < 1; ii++)
         {
-            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii));
+            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), true);
         }
 
         // Mock provided data
@@ -402,11 +417,12 @@ void test_app_sensor_find_provider_empty (void)
         {
             0
         };
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[2]->sensor.provides = fields_photo;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
+        m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
-        TEST_ASSERT (p_sensor == & (m_sensors[1]->sensor));
+        TEST_ASSERT (p_sensor == & (m_sensors[SHTCX_INDEX]->sensor));
     }
 }
 
@@ -416,7 +432,7 @@ void test_app_sensor_find_provider_no_valid (void)
     {
         for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
         {
-            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < 3));
+            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < SENSOR_COUNT));
         }
 
         // Mock provided data
@@ -425,9 +441,10 @@ void test_app_sensor_find_provider_no_valid (void)
             .datas.temperature_c = 1,
             .datas.luminosity = 1
         };
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[2]->sensor.provides = fields_photo;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
+        m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
         TEST_ASSERT (p_sensor == NULL);
     }
@@ -437,21 +454,18 @@ void test_app_sensor_find_provider_null (void)
 {
     if (SENSOR_COUNT > 3)
     {
-        for (size_t ii = 1; ii < SENSOR_COUNT; ii++)
-        {
-            rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < 2));
-        }
-
+        rd_sensor_is_init_ExpectAndReturn (& (m_sensors[LIS2DH12_INDEX]->sensor), (true));
         // Mock provided data
         rd_sensor_data_fields_t fields_wanted =
         {
             .datas.temperature_c = 1,
         };
-        m_sensors[0] = NULL;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[2]->sensor.provides = fields_photo;
+        m_sensors[DPS310_INDEX] = NULL;
+        m_sensors[BME280_INDEX] = NULL;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[SHTCX_INDEX] = NULL;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
-        TEST_ASSERT (p_sensor == & (m_sensors[1]->sensor));
+        TEST_ASSERT (p_sensor == & (m_sensors[LIS2DH12_INDEX]->sensor));
     }
 }
 
@@ -496,15 +510,15 @@ void test_app_sensor_acc_thr_set_ok (void)
 {
     if (SENSOR_COUNT > 2U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
-        for (size_t ii = 0U; ii < 2U; ii++)
+        for (size_t ii = 0U; ii <= LIS2DH12_INDEX; ii++)
         {
             rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), true);
         }
 
         // Mock provided data
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[1]->sensor.level_interrupt_set = &mock_level_interrupt_set;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[LIS2DH12_INDEX]->sensor.level_interrupt_set = &mock_level_interrupt_set;
         level_interrupt_set_enabled = 0U;
         float ths = 0.1F;
         ri_gpio_interrupt_enable_ExpectAndReturn (RB_INT_LEVEL_PIN,
@@ -522,15 +536,15 @@ void test_app_sensor_acc_thr_set_disable (void)
 {
     if (SENSOR_COUNT > 2U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
-        for (size_t ii = 0U; ii < 2U; ii++)
+        for (size_t ii = 0U; ii <= LIS2DH12_INDEX; ii++)
         {
             rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), true);
         }
 
         // Mock provided data
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[1]->sensor.level_interrupt_set = &mock_level_interrupt_set;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[LIS2DH12_INDEX]->sensor.level_interrupt_set = &mock_level_interrupt_set;
         level_interrupt_set_disabled = 0U;
         ri_gpio_interrupt_disable_ExpectAndReturn (RB_INT_LEVEL_PIN,
                 RD_SUCCESS);
@@ -544,16 +558,16 @@ void test_app_sensor_acc_thr_set_no_provider (void)
 {
     if (SENSOR_COUNT > 3U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
-        for (size_t ii = 0U; ii < 3U; ii++)
+        for (size_t ii = 0U; ii < SENSOR_COUNT; ii++)
         {
             rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), true);
         }
 
         // Mock provided data
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_photo;
-        m_sensors[2]->sensor.provides = fields_photo;
-        m_sensors[1]->sensor.level_interrupt_set = &mock_level_interrupt_set;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_shtcx;
+        m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
+        m_sensors[LIS2DH12_INDEX]->sensor.level_interrupt_set = &mock_level_interrupt_set;
         level_interrupt_set_enabled = 0U;
         float ths = 0.1F;
         rd_status_t err_code = app_sensor_acc_thr_set (&ths);
@@ -566,16 +580,16 @@ void test_app_sensor_acc_thr_set_null_interrupt_set (void)
 {
     if (SENSOR_COUNT > 3U && (RI_GPIO_ID_UNUSED != RB_INT_LEVEL_PIN))
     {
-        for (size_t ii = 0U; ii < 3U; ii++)
+        for (size_t ii = 0U; ii < SENSOR_COUNT; ii++)
         {
             rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), true);
         }
 
         // Mock provided data
-        m_sensors[0]->sensor.provides = fields_bme;
-        m_sensors[1]->sensor.provides = fields_lis;
-        m_sensors[2]->sensor.provides = fields_photo;
-        m_sensors[1]->sensor.level_interrupt_set = NULL;
+        m_sensors[BME280_INDEX]->sensor.provides = fields_bme;
+        m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
+        m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
+        m_sensors[LIS2DH12_INDEX]->sensor.level_interrupt_set = NULL;
         level_interrupt_set_enabled = 0U;
         float ths = 0.1F;
         rd_status_t err_code = app_sensor_acc_thr_set (&ths);

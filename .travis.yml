@@ -39,6 +39,7 @@ script:
   - make astyle
   - git diff --exit-code --diff-filter=d --color
   - build-wrapper-linux-x86-64 --out-dir bw-output make all
+  - ceedling clobber
   - ceedling test:all
   - ceedling gcov:all utils:gcov
   - gcov  -b -c build/gcov/out/*.gcno

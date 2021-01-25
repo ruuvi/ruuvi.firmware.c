@@ -42,6 +42,9 @@ enum
 #if APP_SENSOR_SHTCX_ENABLED
     SHTCX_INDEX,
 #endif
+#if APP_SENSOR_DPS310_ENABLED
+    DPS310_INDEX,
+#endif
 #if APP_SENSOR_BME280_ENABLED
     BME280_INDEX,
 #endif
@@ -65,6 +68,41 @@ enum
 
 #ifdef CEEDLING
 void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
+#endif
+
+#if APP_SENSOR_BME280_ENABLED
+#   if RB_ENVIRONMENTAL_BME280_SPI_USE
+#       define BME_BUS RD_BUS_SPI
+#       define BME_HANDLE RB_SPI_SS_ENVIRONMENTAL_PIN
+#   elif RB_ENVIRONMENTAL_BME280_I2C_USE
+#       define BME_BUS RD_BUS_I2C
+#       define BME_HANDLE RB_BME280_I2C_ADDRESS
+#   else
+#       error "No bus defined for BME280"
+#   endif
+
+#   define APP_SENSOR_BME280_DEFAULT_CFG                \
+{                                                       \
+    .sensor = {0},                                      \
+    .init = &ri_bme280_init,                            \
+    .configuration =                                    \
+    {                                                   \
+        .dsp_function  = APP_SENSOR_BME280_DSP_FUNC,    \
+        .dsp_parameter = APP_SENSOR_BME280_DSP_PARAM,   \
+        .mode          = APP_SENSOR_BME280_MODE,        \
+        .resolution    = APP_SENSOR_BME280_RESOLUTION,  \
+        .samplerate    = APP_SENSOR_BME280_SAMPLERATE,  \
+        .scale         = APP_SENSOR_BME280_SCALE        \
+    },                                                  \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                  \
+    .nvm_record = APP_FLASH_SENSOR_BME280_RECORD,       \
+    .bus = BME_BUS,                                     \
+    .handle = BME_HANDLE,                               \
+    .pwr_pin = RI_GPIO_ID_UNUSED,                       \
+    .pwr_on  = RI_GPIO_HIGH,                            \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                      \
+    .level_pin = RI_GPIO_ID_UNUSED                      \
+}
 #endif
 
 /**
