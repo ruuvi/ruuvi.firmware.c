@@ -80,35 +80,7 @@ typedef rd_status_t (*sensor_op) (const ri_comm_xfer_fp_t reply_fp,
                                   const uint8_t * const raw_message);
 
 #if APP_SENSOR_BME280_ENABLED
-static rt_sensor_ctx_t bme280 =
-{
-    .sensor = {0},
-    .init = &ri_bme280_init,
-    .configuration =
-    {
-        .dsp_function  = APP_SENSOR_BME280_DSP_FUNC,
-        .dsp_parameter = APP_SENSOR_BME280_DSP_PARAM,
-        .mode          = APP_SENSOR_BME280_MODE,
-        .resolution    = APP_SENSOR_BME280_RESOLUTION,
-        .samplerate    = APP_SENSOR_BME280_SAMPLERATE,
-        .scale         = APP_SENSOR_BME280_SCALE
-    },
-    .nvm_file = APP_FLASH_SENSOR_FILE,
-    .nvm_record = APP_FLASH_SENSOR_BME280_RECORD,
-#if RB_ENVIRONMENTAL_BME280_SPI_USE
-    .bus = RD_BUS_SPI,
-    .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,
-#elif RB_ENVIRONMENTAL_BME280_I2C_USE
-    .bus = RD_BUS_I2C,
-    .handle = RB_BME280_I2C_ADDRESS,
-#else
-#   error "No bus defined for BME280"
-#endif
-    .pwr_pin = RI_GPIO_ID_UNUSED,
-    .pwr_on  = RI_GPIO_HIGH,
-    .fifo_pin = RI_GPIO_ID_UNUSED,
-    .level_pin = RI_GPIO_ID_UNUSED
-};
+static rt_sensor_ctx_t bme280 = APP_SENSOR_BME280_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_LIS2DH12_ENABLED
