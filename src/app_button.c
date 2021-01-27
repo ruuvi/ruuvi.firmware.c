@@ -159,18 +159,11 @@ void on_button_1_press_isr (const ri_gpio_evt_t evt)
 #ifndef CEEDLING
 static
 #endif
-void on_button_2_press (const ri_gpio_evt_t evt)
+void on_button_2_press_isr (const ri_gpio_evt_t evt)
 {
-    ri_gpio_slope_t activation = get_activation (evt);
-
-    if (activation == evt.slope)
-    {
-        LOG ("Button 2 pressed\r\n");
-    }
-    else
-    {
-        LOG ("Button 2 released\r\n");
-    }
+    rd_status_t err_code = ri_scheduler_event_put (&evt, sizeof (ri_gpio_evt_t),
+                           &button_handler);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 #endif
 
@@ -178,18 +171,11 @@ void on_button_2_press (const ri_gpio_evt_t evt)
 #ifndef CEEDLING
 static
 #endif
-void on_button_3_press (const ri_gpio_evt_t evt)
+void on_button_3_press_isr (const ri_gpio_evt_t evt)
 {
-    ri_gpio_slope_t activation = get_activation (evt);
-
-    if (activation == evt.slope)
-    {
-        LOG ("Button 3 pressed\r\n");
-    }
-    else
-    {
-        LOG ("Button 3 released\r\n");
-    }
+    rd_status_t err_code = ri_scheduler_event_put (&evt, sizeof (ri_gpio_evt_t),
+                           &button_handler);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 #endif
 
@@ -197,18 +183,11 @@ void on_button_3_press (const ri_gpio_evt_t evt)
 #ifndef CEEDLING
 static
 #endif
-void on_button_4_press (const ri_gpio_evt_t evt)
+void on_button_4_press_isr (const ri_gpio_evt_t evt)
 {
-    ri_gpio_slope_t activation = get_activation (evt);
-
-    if (activation == evt.slope)
-    {
-        LOG ("Button 4 pressed\r\n");
-    }
-    else
-    {
-        LOG ("Button 4 released\r\n");
-    }
+    rd_status_t err_code = ri_scheduler_event_put (&evt, sizeof (ri_gpio_evt_t),
+                           &button_handler);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 #endif
 
