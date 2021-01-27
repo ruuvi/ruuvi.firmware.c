@@ -1,5 +1,3 @@
-This repository was taken for a post 3.29.3 snapshot on 12/19/20
-
 # ruuvi.firmware.c
 Current git repository status:
 [![Build Status](https://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c+-+deploy)](https://jenkins.ruuvi.com/job/ruuvi.firmware.c%20-%20deploy/)
