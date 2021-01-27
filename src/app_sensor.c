@@ -93,28 +93,7 @@ static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_SHTCX_ENABLED
-static rt_sensor_ctx_t shtcx =
-{
-    .sensor = {0},
-    .init = &ri_shtcx_init,
-    .configuration =
-    {
-        .dsp_function = APP_SENSOR_SHTCX_DSP_FUNC,
-        .dsp_parameter = APP_SENSOR_SHTCX_DSP_PARAM,
-        .mode = APP_SENSOR_SHTCX_MODE,
-        .resolution = APP_SENSOR_SHTCX_RESOLUTION,
-        .samplerate = APP_SENSOR_SHTCX_SAMPLERATE,
-        .scale = APP_SENSOR_SHTCX_SCALE
-    },
-    .nvm_file = APP_FLASH_SENSOR_FILE,
-    .nvm_record = APP_FLASH_SENSOR_SHTCX_RECORD,
-    .bus = RD_BUS_I2C,
-    .handle = RB_SHTCX_I2C_ADDRESS,
-    .pwr_pin = RI_GPIO_ID_UNUSED,
-    .pwr_on = RI_GPIO_HIGH,
-    .fifo_pin = RI_GPIO_ID_UNUSED,
-    .level_pin = RI_GPIO_ID_UNUSED
-};
+static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_DPS310_ENABLED
