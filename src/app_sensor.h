@@ -193,6 +193,40 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
   }
 #endif
 
+#if APP_SENSOR_PHOTO_ENABLED
+#define APP_SENSOR_PHOTO_DEFAULT_CFG             \
+  {                                              \
+    .sensor = {0},                               \
+    .init = &ri_adc_photo_init,                  \
+    .configuration = {0},                        \
+    .nvm_file = APP_FLASH_SENSOR_FILE,           \
+    .nvm_record = APP_FLASH_SENSOR_PHOTO_RECORD, \
+    .bus = RD_BUS_NONE,                          \
+    .handle = RB_PHOTO_ADC,                      \
+    .pwr_pin = RB_PHOTO_PWR_PIN,                 \
+    .pwr_on = RB_PHOTO_ACTIVE,                   \
+    .fifo_pin = RI_GPIO_ID_UNUSED,               \
+    .level_pin = RI_GPIO_ID_UNUSED               \
+  }
+#endif
+
+#if APP_SENSOR_NTC_ENABLED
+#define APP_SENSOR_NTC_DEFAULT_CFG             \
+  {                                            \
+    .sensor = {0},                             \
+    .init = &ri_adc_ntc_init,                  \
+    .configuration = {0},                      \
+    .nvm_file = APP_FLASH_SENSOR_FILE,         \
+    .nvm_record = APP_FLASH_SENSOR_NTC_RECORD, \
+    .bus = RD_BUS_NONE,                        \
+    .handle = RB_NTC_ADC,                      \
+    .pwr_pin = RB_NTC_PWR_PIN,                 \
+    .pwr_on = RB_NTC_ACTIVE,                   \
+    .fifo_pin = RI_GPIO_ID_UNUSED,             \
+    .level_pin = RI_GPIO_ID_UNUSED             \
+  }
+#endif
+
 /**
  * @brief Initialize sensors into default mode or to a mode stored to flash.
  *
