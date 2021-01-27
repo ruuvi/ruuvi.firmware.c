@@ -1,6 +1,6 @@
+#include "app_config.h"
 #include "app_sensor.h"
 #include "app_comms.h"
-#include "app_config.h"
 #include "app_heartbeat.h"
 #include "app_log.h"
 #include "ruuvi_boards.h"
