@@ -97,28 +97,7 @@ static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_DPS310_ENABLED
-static rt_sensor_ctx_t dps310 =
-{
-    .sensor = {0},
-    .init = &ri_dps310_init,
-    .configuration =
-    {
-        .dsp_function = APP_SENSOR_DPS310_DSP_FUNC,
-        .dsp_parameter = APP_SENSOR_DPS310_DSP_PARAM,
-        .mode = APP_SENSOR_DPS310_MODE,
-        .resolution = APP_SENSOR_DPS310_RESOLUTION,
-        .samplerate = APP_SENSOR_DPS310_SAMPLERATE,
-        .scale = APP_SENSOR_DPS310_SCALE
-    },
-    .nvm_file = APP_FLASH_SENSOR_FILE,
-    .nvm_record = APP_FLASH_SENSOR_DPS310_RECORD,
-    .bus = RD_BUS_SPI,
-    .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,
-    .pwr_pin = RI_GPIO_ID_UNUSED,
-    .pwr_on = RI_GPIO_HIGH,
-    .fifo_pin = RI_GPIO_ID_UNUSED,
-    .level_pin = RI_GPIO_ID_UNUSED
-};
+static rt_sensor_ctx_t dps310 = APP_SENSOR_DPS310_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_PHOTO_ENABLED

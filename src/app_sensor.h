@@ -169,6 +169,30 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
   }
 #endif
 
+#if APP_SENSOR_DPS310_ENABLED
+#define APP_SENSOR_DPS310_DEFAULT_CFG                     \
+  {                                                       \
+    .sensor = {0},                                        \
+    .init = &ri_dps310_init,                              \
+    .configuration =                                      \
+        {                                                 \
+            .dsp_function = APP_SENSOR_DPS310_DSP_FUNC,   \
+            .dsp_parameter = APP_SENSOR_DPS310_DSP_PARAM, \
+            .mode = APP_SENSOR_DPS310_MODE,               \
+            .resolution = APP_SENSOR_DPS310_RESOLUTION,   \
+            .samplerate = APP_SENSOR_DPS310_SAMPLERATE,   \
+            .scale = APP_SENSOR_DPS310_SCALE},            \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                    \
+    .nvm_record = APP_FLASH_SENSOR_DPS310_RECORD,         \
+    .bus = RD_BUS_SPI,                                    \
+    .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,                \
+    .pwr_pin = RI_GPIO_ID_UNUSED,                         \
+    .pwr_on = RI_GPIO_HIGH,                               \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                        \
+    .level_pin = RI_GPIO_ID_UNUSED                        \
+  }
+#endif
+
 /**
  * @brief Initialize sensors into default mode or to a mode stored to flash.
  *
