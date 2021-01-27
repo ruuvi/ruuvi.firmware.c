@@ -1,21 +1,21 @@
-#include "app_config.h"
+#include "app_sensor.h"
 #include "app_comms.h"
+#include "app_config.h"
 #include "app_heartbeat.h"
 #include "app_log.h"
-#include "app_sensor.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_endpoints.h"
+#include "ruuvi_interface_adc_ntc.h"
+#include "ruuvi_interface_adc_photo.h"
+#include "ruuvi_interface_bme280.h"
 #include "ruuvi_interface_communication_radio.h"
+#include "ruuvi_interface_dps310.h"
 #include "ruuvi_interface_gpio.h"
 #include "ruuvi_interface_gpio_interrupt.h"
 #include "ruuvi_interface_i2c.h"
-#include "ruuvi_interface_bme280.h"
-#include "ruuvi_interface_dps310.h"
 #include "ruuvi_interface_lis2dh12.h"
-#include "ruuvi_interface_adc_ntc.h"
-#include "ruuvi_interface_adc_photo.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
@@ -24,8 +24,8 @@
 #include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
 
-#include <string.h>
 #include <stdio.h>
+#include <string.h>
 
 static inline void LOG (const char * const msg)
 {
@@ -60,8 +60,9 @@ static inline void LOGD (const char * const msg)
 static
 #endif
 rt_sensor_ctx_t * m_sensors[SENSOR_COUNT]; //!< Sensor APIs.
-static uint64_t vdd_update_time;           //!< timestamp of VDD update.
-static uint32_t m_event_counter;           //!< Number of events registered in app_sensor.
+static uint64_t vdd_update_time;              //!< timestamp of VDD update.
+static uint32_t
+m_event_counter;              //!< Number of events registered in app_sensor.
 
 /**
  * @brief Sensor operation, such as read or configure.
@@ -84,45 +85,11 @@ static rt_sensor_ctx_t bme280 = APP_SENSOR_BME280_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_LIS2DH12_ENABLED
-static rt_sensor_ctx_t lis2dh12 =
-{
-    .sensor = {0},
-    .init = &ri_lis2dh12_init,
-    .configuration =
-    {
-        .dsp_function  = APP_SENSOR_LIS2DH12_DSP_FUNC,
-        .dsp_parameter = APP_SENSOR_LIS2DH12_DSP_PARAM,
-        .mode          = APP_SENSOR_LIS2DH12_MODE,
-        .resolution    = APP_SENSOR_LIS2DH12_RESOLUTION,
-        .samplerate    = APP_SENSOR_LIS2DH12_SAMPLERATE,
-        .scale         = APP_SENSOR_LIS2DH12_SCALE
-    },
-    .nvm_file = APP_FLASH_SENSOR_FILE,
-    .nvm_record = APP_FLASH_SENSOR_LIS2DH12_RECORD,
-    .bus = RD_BUS_SPI,
-    .handle = RB_SPI_SS_ACCELEROMETER_PIN,
-    .pwr_pin = RI_GPIO_ID_UNUSED,
-    .pwr_on  = RI_GPIO_HIGH,
-    .fifo_pin = RB_INT_FIFO_PIN,
-    .level_pin = RB_INT_LEVEL_PIN
-};
+static rt_sensor_ctx_t lis2dh12 = APP_SENSOR_LIS2DH12_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_LIS2DW12_ENABLED
-static rt_sensor_ctx_t lis2dw12 =
-{
-    .sensor = {0},
-    .init = ri_lis2dw12_init,
-    .configuration = {0},
-    .nvm_file = APPLICATION_FLASH_SENSOR_FILE,
-    .nvm_record = APPLICATION_FLASH_SENSOR_LIS2DW12_RECORD,
-    .bus = RD_BUS_SPI,
-    .handle = RB_SPI_SS_ACCELEROMETER_PIN,
-    .pwr_pin = RI_GPIO_ID_UNUSED,
-    .pwr_on  = RI_GPIO_HIGH,
-    .fifo_pin = RB_INT_ACC1_PIN,
-    .level_pin = RB_INT_ACC2_PIN
-};
+static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_SHTCX_ENABLED
@@ -132,19 +99,19 @@ static rt_sensor_ctx_t shtcx =
     .init = &ri_shtcx_init,
     .configuration =
     {
-        .dsp_function  = APP_SENSOR_SHTCX_DSP_FUNC,
+        .dsp_function = APP_SENSOR_SHTCX_DSP_FUNC,
         .dsp_parameter = APP_SENSOR_SHTCX_DSP_PARAM,
-        .mode          = APP_SENSOR_SHTCX_MODE,
-        .resolution    = APP_SENSOR_SHTCX_RESOLUTION,
-        .samplerate    = APP_SENSOR_SHTCX_SAMPLERATE,
-        .scale         = APP_SENSOR_SHTCX_SCALE
+        .mode = APP_SENSOR_SHTCX_MODE,
+        .resolution = APP_SENSOR_SHTCX_RESOLUTION,
+        .samplerate = APP_SENSOR_SHTCX_SAMPLERATE,
+        .scale = APP_SENSOR_SHTCX_SCALE
     },
     .nvm_file = APP_FLASH_SENSOR_FILE,
     .nvm_record = APP_FLASH_SENSOR_SHTCX_RECORD,
     .bus = RD_BUS_I2C,
     .handle = RB_SHTCX_I2C_ADDRESS,
     .pwr_pin = RI_GPIO_ID_UNUSED,
-    .pwr_on  = RI_GPIO_HIGH,
+    .pwr_on = RI_GPIO_HIGH,
     .fifo_pin = RI_GPIO_ID_UNUSED,
     .level_pin = RI_GPIO_ID_UNUSED
 };
@@ -157,19 +124,19 @@ static rt_sensor_ctx_t dps310 =
     .init = &ri_dps310_init,
     .configuration =
     {
-        .dsp_function  = APP_SENSOR_DPS310_DSP_FUNC,
+        .dsp_function = APP_SENSOR_DPS310_DSP_FUNC,
         .dsp_parameter = APP_SENSOR_DPS310_DSP_PARAM,
-        .mode          = APP_SENSOR_DPS310_MODE,
-        .resolution    = APP_SENSOR_DPS310_RESOLUTION,
-        .samplerate    = APP_SENSOR_DPS310_SAMPLERATE,
-        .scale         = APP_SENSOR_DPS310_SCALE
+        .mode = APP_SENSOR_DPS310_MODE,
+        .resolution = APP_SENSOR_DPS310_RESOLUTION,
+        .samplerate = APP_SENSOR_DPS310_SAMPLERATE,
+        .scale = APP_SENSOR_DPS310_SCALE
     },
     .nvm_file = APP_FLASH_SENSOR_FILE,
     .nvm_record = APP_FLASH_SENSOR_DPS310_RECORD,
     .bus = RD_BUS_SPI,
     .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,
     .pwr_pin = RI_GPIO_ID_UNUSED,
-    .pwr_on  = RI_GPIO_HIGH,
+    .pwr_on = RI_GPIO_HIGH,
     .fifo_pin = RI_GPIO_ID_UNUSED,
     .level_pin = RI_GPIO_ID_UNUSED
 };
@@ -213,7 +180,8 @@ static rt_sensor_ctx_t ntc =
 #ifndef CEEDLING
 static
 #endif
-void m_sensors_init (void)
+void
+m_sensors_init (void)
 {
 #if APP_SENSOR_TMP117_ENABLED
     m_sensors[TMP117_INDEX] = tmp117;
@@ -237,7 +205,7 @@ void m_sensors_init (void)
     m_sensors[ENV_MCU_INDEX] = env_mcu;
 #endif
 #if APP_SENSOR_LIS2DH12_ENABLED
-    m_sensors[ LIS2DH12_INDEX] = &lis2dh12;
+    m_sensors[LIS2DH12_INDEX] = &lis2dh12;
 #endif
 #if APP_SENSOR_LIS2DW12_ENABLED
     m_sensors[LIS2DW12_INDEX] = lis2dw12;
@@ -254,12 +222,12 @@ void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt)
         {
             rd_sensor_configuration_t configuration =
             {
-                .dsp_function  = RD_SENSOR_CFG_DEFAULT,
+                .dsp_function = RD_SENSOR_CFG_DEFAULT,
                 .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
-                .mode          = RD_SENSOR_CFG_SINGLE,
-                .resolution    = RD_SENSOR_CFG_DEFAULT,
-                .samplerate    = RD_SENSOR_CFG_DEFAULT,
-                .scale         = RD_SENSOR_CFG_DEFAULT
+                .mode = RD_SENSOR_CFG_SINGLE,
+                .resolution = RD_SENSOR_CFG_DEFAULT,
+                .samplerate = RD_SENSOR_CFG_DEFAULT,
+                .scale = RD_SENSOR_CFG_DEFAULT
             };
             err_code |= rt_adc_vdd_prepare (&configuration);
             RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
@@ -280,7 +248,8 @@ void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt)
 #ifndef CEEDLING
 static
 #endif
-void on_accelerometer_isr (const ri_gpio_evt_t event)
+void
+on_accelerometer_isr (const ri_gpio_evt_t event)
 {
     if (RI_GPIO_SLOPE_LOTOHI == event.slope)
     {
@@ -382,7 +351,7 @@ static rd_status_t app_sensor_buses_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_spi_uninit();
-    err_code |= ri_i2c_uninit ();
+    err_code |= ri_i2c_uninit();
     return err_code;
 }
 
@@ -392,7 +361,6 @@ static void app_sensor_rtc_init (void)
     (void) ri_rtc_init();
     rd_sensor_timestamp_function_set (&ri_rtc_millis);
 }
-
 
 static void app_sensor_rtc_uninit (void)
 {
@@ -495,8 +463,7 @@ rd_sensor_data_fields_t app_sensor_available_data (void)
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
-        if ( (NULL != m_sensors[ii])
-                && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
+        if ( (NULL != m_sensors[ii]) && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
         {
             available.bitfield |= m_sensors[ii]->sensor.provides.bitfield;
         }
@@ -511,8 +478,7 @@ rd_status_t app_sensor_get (rd_sensor_data_t * const data)
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
-        if ( (NULL != m_sensors[ii])
-                && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
+        if ( (NULL != m_sensors[ii]) && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
         {
             err_code |= m_sensors[ii]->sensor.data_get (data);
         }
@@ -527,8 +493,7 @@ rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data)
 
     for (size_t ii = 0; (ii < SENSOR_COUNT) && (NULL == provider); ii++)
     {
-        if ( (NULL != m_sensors[ii])
-                && rd_sensor_is_init (& (m_sensors[ii]->sensor))
+        if ( (NULL != m_sensors[ii]) && rd_sensor_is_init (& (m_sensors[ii]->sensor))
                 && (! (~ (m_sensors[ii]->sensor.provides.bitfield) & data.bitfield)))
         {
             provider = & (m_sensors[ii]->sensor);
@@ -547,7 +512,6 @@ uint32_t app_sensor_event_count_get (void)
 {
     return m_event_counter;
 }
-
 
 rd_status_t app_sensor_acc_thr_set (float * const threshold_g)
 {
@@ -677,15 +641,42 @@ static uint8_t rd2re_fields (const rd_sensor_data_bitfield_t fields)
     // here for robustness.
     uint8_t header_value = 0;
 
-    if (fields.acceleration_x_g) { header_value = RE_ACC_X; }
-    else if (fields.acceleration_y_g) { header_value = RE_ACC_Y; }
-    else if (fields.acceleration_z_g) { header_value = RE_ACC_Z; }
-    else if (fields.gyro_x_dps) { header_value = RE_GYR_X; }
-    else if (fields.gyro_y_dps) { header_value = RE_GYR_Y; }
-    else if (fields.gyro_z_dps) { header_value = RE_GYR_Z; }
-    else if (fields.humidity_rh) { header_value = RE_ENV_HUMI; }
-    else if (fields.pressure_pa) { header_value = RE_ENV_PRES; }
-    else if (fields.temperature_c) { header_value = RE_ENV_TEMP; }
+    if (fields.acceleration_x_g)
+    {
+        header_value = RE_ACC_X;
+    }
+    else if (fields.acceleration_y_g)
+    {
+        header_value = RE_ACC_Y;
+    }
+    else if (fields.acceleration_z_g)
+    {
+        header_value = RE_ACC_Z;
+    }
+    else if (fields.gyro_x_dps)
+    {
+        header_value = RE_GYR_X;
+    }
+    else if (fields.gyro_y_dps)
+    {
+        header_value = RE_GYR_Y;
+    }
+    else if (fields.gyro_z_dps)
+    {
+        header_value = RE_GYR_Z;
+    }
+    else if (fields.humidity_rh)
+    {
+        header_value = RE_ENV_HUMI;
+    }
+    else if (fields.pressure_pa)
+    {
+        header_value = RE_ENV_PRES;
+    }
+    else if (fields.temperature_c)
+    {
+        header_value = RE_ENV_TEMP;
+    }
     else
     {
         // No action needed
@@ -729,8 +720,6 @@ static rd_status_t app_sensor_encode_log (uint8_t * const buffer,
 
     return err_code;
 }
-
-
 
 /**
  * if valid data in sample
