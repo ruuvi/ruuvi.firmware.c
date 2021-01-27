@@ -355,7 +355,6 @@
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_twi.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/hal/nrf_nvmc.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_twi.c" />
-      <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_nfct.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_timer.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/integration/nrfx/legacy/nrf_drv_uart.c" />
       <file file_name="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/drivers/src/nrfx_uart.c" />
