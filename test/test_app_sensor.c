@@ -937,7 +937,7 @@ void test_app_sensor_handle_gyroxyz (void)
     {
         RD_SENSOR_GYR_X_FIELD.datas,
         RD_SENSOR_GYR_Y_FIELD.datas,
-        RD_SENSOR_GYR_Z_FIELD_FIELD.datas
+        RD_SENSOR_GYR_Z_FIELD.datas
     };
     app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
     app_sensor_log_read_eof_Expect (&dummy_comm);
