@@ -1,5 +1,9 @@
 #!/bin/bash
 cd "$(dirname "$0")"
+if [ ! `which adb` ]
+then  echo " -- get  adb ( Android Debug Bridge )  https://developer.android.com/studio/releases/platform-tools          and try again " 
+exit 9
+fi
 source .test_env
 # Tag on this commit
 TAG=$(git describe --tags --exact-match)
@@ -17,6 +21,13 @@ rm *dfu_app.zip*
 rm *dfu.zip*
 rm *full.hex*
 
+pwd
+echo  Will  get:
+echo "${TAG}/"
+echo "          ${TEST_VARIANT}"
+echo "          ${APP_VARIANT}"
+echo "          ${SDK_VARIANT}                      from github  OK?"
+read ans
 
 wget ${RELEASE_URL}/${TAG}/${TEST_VARIANT}
 wget ${RELEASE_URL}/${TAG}/${APP_VARIANT}
