@@ -21,14 +21,6 @@ rm *dfu_app.zip*
 rm *dfu.zip*
 rm *full.hex*
 
-pwd
-# echo  Will  get:
-# echo "${TAG}/"
-# echo "          ${TEST_VARIANT}"
-# echo "          ${APP_VARIANT}"
-# echo "          ${SDK_VARIANT}                      from github  OK?"
-# read ans
-
 wget ${RELEASE_URL}/${TAG}/${TEST_VARIANT}
 wget ${RELEASE_URL}/${TAG}/${APP_VARIANT}
 wget ${RELEASE_URL}/${TAG}/${SDK_VARIANT}
