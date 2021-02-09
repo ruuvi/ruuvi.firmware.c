@@ -137,7 +137,7 @@ static void gatt_init_Expect (ri_comm_dis_init_t * p_dis, const bool secure)
     rt_gatt_set_on_connected_isr_Expect (&on_gatt_connected_isr);
     rt_gatt_set_on_disconn_isr_Expect (&on_gatt_disconnected_isr);
     rt_gatt_set_on_received_isr_Expect (&on_gatt_data_isr);
-    rt_gatt_enable_ExpectAndReturn (RD_SUCCESS);
+    rt_gatt_adv_enable_ExpectAndReturn (RD_SUCCESS);
 #endif
 }
 
@@ -232,7 +232,7 @@ void test_app_comms_init_timer_fail (void)
 
 void test_handle_gatt_connected (void)
 {
-    rt_gatt_disable_ExpectAndReturn (RD_SUCCESS);
+    rt_gatt_adv_disable_ExpectAndReturn (RD_SUCCESS);
     handle_gatt_connected (NULL, 0);
     TEST_ASSERT (!m_config_enabled_on_next_conn);
 }
