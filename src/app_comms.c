@@ -250,7 +250,7 @@ void handle_gatt_connected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     // Disables advertising for GATT, does not kick current connetion out.
-    rt_gatt_disable ();
+    rt_gatt_adv_disable ();
     config_setup_on_this_conn ();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -511,7 +511,7 @@ static rd_status_t gatt_init (const ri_comm_dis_init_t * const p_dis, const bool
     rt_gatt_set_on_connected_isr (&on_gatt_connected_isr);
     rt_gatt_set_on_disconn_isr (&on_gatt_disconnected_isr);
     rt_gatt_set_on_received_isr (&on_gatt_data_isr);
-    err_code |= rt_gatt_enable();
+    err_code |= rt_gatt_adv_enable();
 #endif
     return err_code;
 }
