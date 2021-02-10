@@ -396,4 +396,4 @@ void on_radio_isr (const ri_radio_activity_evt_t evt);
 void on_accelerometer_isr (const ri_gpio_evt_t event);
 #endif
 
-#endif // APP_SENSOR_H
+#endif
