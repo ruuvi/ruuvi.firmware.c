@@ -853,6 +853,101 @@ void test_app_sensor_handle_accxyz (void)
     TEST_ASSERT ( (fieldcount + 1) == m_expect_sends);
 }
 
+void test_app_sensor_handle_gyrox (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_GYRATION_X;
+    rd_sensor_data_fields_t fields = { .datas.gyro_x_dps = 1 };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] = { RE_STANDARD_DESTINATION_GYRATION_X };
+    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_GYR_X_FIELD.datas};
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect (&dummy_comm);
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (2 == m_expect_sends);
+}
+
+void test_app_sensor_handle_gyroy (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_GYRATION_Y;
+    rd_sensor_data_fields_t fields = { .datas.gyro_y_dps = 1 };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] = { RE_STANDARD_DESTINATION_GYRATION_Y };
+    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_GYR_Y_FIELD.datas};
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect (&dummy_comm);
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (2 == m_expect_sends);
+}
+
+void test_app_sensor_handle_gyroz (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_GYRATION_Z;
+    rd_sensor_data_fields_t fields = { .datas.gyro_z_dps = 1 };
+    const uint8_t fieldcount = 1;
+    const uint8_t sources[1] = { RE_STANDARD_DESTINATION_GYRATION_Z };
+    const rd_sensor_data_bitfield_t types[1] = {RD_SENSOR_GYR_Z_FIELD.datas};
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect (&dummy_comm);
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (2 == m_expect_sends);
+}
+
+void test_app_sensor_handle_gyroxyz (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_expect_sends = 0;
+    uint8_t raw_message[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    raw_message[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_READ;
+    raw_message[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_GYRATION;
+    rd_sensor_data_fields_t fields =
+    {
+        .datas.gyro_x_dps = 1,
+        .datas.gyro_y_dps = 1,
+        .datas.gyro_z_dps = 1
+    };
+    const uint8_t fieldcount = 3;
+    const uint8_t sources[3] =
+    {
+        RE_STANDARD_DESTINATION_GYRATION_X,
+        RE_STANDARD_DESTINATION_GYRATION_Y,
+        RE_STANDARD_DESTINATION_GYRATION_Z,
+    };
+    const rd_sensor_data_bitfield_t types[3] =
+    {
+        RD_SENSOR_GYR_X_FIELD.datas,
+        RD_SENSOR_GYR_Y_FIELD.datas,
+        RD_SENSOR_GYR_Z_FIELD.datas
+    };
+    app_sensor_log_read_Expect (&dummy_comm, fields, fieldcount, sources, types, raw_message);
+    app_sensor_log_read_eof_Expect (&dummy_comm);
+    err_code |= app_sensor_handle (&dummy_comm,
+                                   raw_message,
+                                   sizeof (raw_message));
+    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT ( (fieldcount + 1) == m_expect_sends);
+}
+
 void test_app_sensor_handle_humidity (void)
 {
     rd_status_t err_code = RD_SUCCESS;
