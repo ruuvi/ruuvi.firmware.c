@@ -235,7 +235,7 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .init = &ri_environmental_mcu_init,           \
     .configuration = {0},                         \
     .nvm_file = APP_FLASH_SENSOR_FILE,            \
-    .nvm_record = APP_FLASH_SENSOR_NTC_RECORD,    \
+    .nvm_record = APP_FLASH_SENSOR_ENVI_RECORD,   \
     .bus = RD_BUS_NONE,                           \
     .handle = RD_BUS_NONE,                        \
     .pwr_pin = RI_GPIO_ID_UNUSED,                 \
