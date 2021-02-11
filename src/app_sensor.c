@@ -108,6 +108,10 @@ static rt_sensor_ctx_t photo = APP_SENSOR_PHOTO_DEFAULT_CFG;
 static rt_sensor_ctx_t ntc = APP_SENSOR_NTC_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+static rt_sensor_ctx_t env_mcu = APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG;
+#endif
+
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
 static
@@ -133,8 +137,8 @@ m_sensors_init (void)
 #if APP_SENSOR_PHOTO_ENABLED
     m_sensors[PHOTO_INDEX] = &photo;
 #endif
-#if APP_SENSOR_MCU_ENABLED
-    m_sensors[ENV_MCU_INDEX] = env_mcu;
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+    m_sensors[ENV_MCU_INDEX] = &env_mcu;
 #endif
 #if APP_SENSOR_LIS2DH12_ENABLED
     m_sensors[LIS2DH12_INDEX] = &lis2dh12;
@@ -832,7 +836,7 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
             {
                 err_code |= app_sensor_send_eof (reply_fp, raw_message);
                 char msg[128];
-                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", sent_elements);
+                snprintf (msg, sizeof (msg), "Logged data sent: %d elements\r\n", sent_elements);
                 LOG (msg);
                 sent_elements = 0;
             }
