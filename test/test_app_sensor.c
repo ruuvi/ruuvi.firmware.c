@@ -19,6 +19,7 @@
 #include "mock_ruuvi_interface_adc_photo.h"
 #include "mock_ruuvi_interface_bme280.h"
 #include "mock_ruuvi_interface_dps310.h"
+#include "mock_ruuvi_interface_environmental_mcu.h"
 #include "mock_ruuvi_interface_lis2dh12.h"
 #include "mock_ruuvi_interface_shtcx.h"
 #include "mock_ruuvi_interface_tmp117.h"
