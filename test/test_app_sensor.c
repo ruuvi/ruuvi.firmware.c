@@ -19,6 +19,7 @@
 #include "mock_ruuvi_interface_adc_photo.h"
 #include "mock_ruuvi_interface_bme280.h"
 #include "mock_ruuvi_interface_dps310.h"
+#include "mock_ruuvi_interface_environmental_mcu.h"
 #include "mock_ruuvi_interface_lis2dh12.h"
 #include "mock_ruuvi_interface_shtcx.h"
 #include "mock_ruuvi_interface_tmp117.h"
@@ -99,6 +100,10 @@ static const rd_sensor_data_fields_t fields_shtcx =
 {
     .datas.temperature_c = 1,
     .datas.humidity_rh = 1
+};
+static const rd_sensor_data_fields_t fields_envi_mcu =
+{
+    .datas.temperature_c = 1
 };
 static const rd_sensor_data_fields_t fields_expected =
 {
@@ -283,6 +288,7 @@ void test_app_sensor_available_data (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
+        m_sensors[ENV_MCU_INDEX]->sensor.provides = fields_dps;
         fields_found = app_sensor_available_data();
         TEST_ASSERT (!memcmp (&fields_found.bitfield, &fields_expected.bitfield,
                               sizeof (fields_expected.bitfield)));
@@ -319,6 +325,9 @@ static rd_status_t mock_data_get (rd_sensor_data_t * const data)
             data->valid.bitfield |= (data->fields.bitfield & fields_dps.bitfield);
             break;
 
+        case ENV_MCU_INDEX:
+            data->valid.bitfield |= (data->fields.bitfield & fields_envi_mcu.bitfield);
+
         default:
             break;
     }
@@ -335,6 +344,7 @@ void test_app_sensor_get (void)
     m_sensors[LIS2DH12_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[SHTCX_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[DPS310_INDEX]->sensor.data_get = &mock_data_get;
+    m_sensors[ENV_MCU_INDEX]->sensor.data_get = &mock_data_get;
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
@@ -464,6 +474,7 @@ void test_app_sensor_find_provider_null (void)
         m_sensors[BME280_INDEX] = NULL;
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX] = NULL;
+        m_sensors[ENV_MCU_INDEX] = NULL;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
         TEST_ASSERT (p_sensor == & (m_sensors[LIS2DH12_INDEX]->sensor));
     }

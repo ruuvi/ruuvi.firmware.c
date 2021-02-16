@@ -31,6 +31,7 @@
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_sensor.h"
+#include "ruuvi_interface_environmental_mcu.h"
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
 
@@ -54,7 +55,7 @@ enum
 #if APP_SENSOR_PHOTO_ENABLED
     PHOTO_INDEX,
 #endif
-#if APP_SENSOR_MCU_ENABLED
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
     ENV_MCU_INDEX,
 #endif
 #if APP_SENSOR_LIS2DH12_ENABLED
@@ -224,6 +225,23 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_on = RB_NTC_ACTIVE,                   \
     .fifo_pin = RI_GPIO_ID_UNUSED,             \
     .level_pin = RI_GPIO_ID_UNUSED             \
+  }
+#endif
+
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+#define APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG  \
+  {                                               \
+    .sensor = {0},                                \
+    .init = &ri_environmental_mcu_init,           \
+    .configuration = {0},                         \
+    .nvm_file = APP_FLASH_SENSOR_FILE,            \
+    .nvm_record = APP_FLASH_SENSOR_ENVI_RECORD,   \
+    .bus = RD_BUS_NONE,                           \
+    .handle = RD_BUS_NONE,                        \
+    .pwr_pin = RI_GPIO_ID_UNUSED,                 \
+    .pwr_on = RI_GPIO_LOW,                        \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                \
+    .level_pin = RI_GPIO_ID_UNUSED                \
   }
 #endif
 
