@@ -54,7 +54,6 @@ static inline void LOGD (const char * const msg)
  * TODO
  * @endcode
  */
-#define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
 
 #ifndef CEEDLING
 static
@@ -267,6 +266,7 @@ static rd_status_t app_sensor_buses_init (void)
     {
         .sda = RB_I2C_SDA_PIN,
         .scl = RB_I2C_SCL_PIN,
+        .bus_pwr = RB_I2C_BUS_POWER_PIN,
         .frequency = rb_to_ri_i2c_freq (RB_I2C_FREQ)
     };
 
