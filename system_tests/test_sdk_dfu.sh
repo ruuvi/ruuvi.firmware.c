@@ -1,5 +1,9 @@
 #!/bin/bash
 cd "$(dirname "$0")"
+if [ ! `which adb` ]
+then  echo " -- get  adb ( Android Debug Bridge )  https://developer.android.com/studio/releases/platform-tools          and try again " 
+exit 9
+fi
 source .test_env
 # Tag on this commit
 TAG=$(git describe --tags --exact-match)
@@ -16,7 +20,6 @@ SDK_VARIANT="${BOARD}_${FW_NAME}_default_${TAG}_sdk12.3_to_15.3_dfu.zip"
 rm *dfu_app.zip*
 rm *dfu.zip*
 rm *full.hex*
-
 
 wget ${RELEASE_URL}/${TAG}/${TEST_VARIANT}
 wget ${RELEASE_URL}/${TAG}/${APP_VARIANT}
