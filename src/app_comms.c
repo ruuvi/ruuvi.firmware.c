@@ -536,6 +536,7 @@ rd_status_t app_comms_init (const bool secure)
         err_code |= adv_init();
         err_code |= dis_init (&dis, secure);
         err_code |= gatt_init (&dis, secure);
+        ri_radio_activity_callback_set (&app_sensor_vdd_measure_isr);
     }
 
     return err_code;
