@@ -179,6 +179,7 @@ void test_app_comms_init_ok (void)
     adv_init_Expect();
     test_dis_init (&ble_dis, true);
     gatt_init_Expect (&ble_dis, true);
+    ri_radio_activity_callback_set_Expect (&app_sensor_vdd_measure_isr);
     rd_status_t err_code = app_comms_init (true);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
