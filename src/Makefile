@@ -4,7 +4,7 @@ TAG := $(shell git describe --tags --exact-match)
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
 BOARDS = ruuvitag_b kaarle kalervo keijo
-VARIANTS = default longlife longmem test
+VARIANTS = default test
 
 .PHONY: all sync ${BOARDS} analysis publish clean 
 
