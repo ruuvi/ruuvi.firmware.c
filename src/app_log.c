@@ -62,7 +62,6 @@ static rd_status_t store_block (const app_log_record_t * const record)
     do
     {
         uint8_t record_slot = (record_idx + num_tries) % APP_FLASH_LOG_DATA_RECORDS_NUM;
-
         uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_slot;
         err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);
 
@@ -106,12 +105,13 @@ static rd_status_t store_block (const app_log_record_t * const record)
         RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
         // Erase another block and try again if there was error.
         num_tries++;
-        
     } while ( (RD_SUCCESS != err_code) && (num_tries < APP_FLASH_LOG_DATA_RECORDS_NUM));
-    if(RD_SUCCESS == err_code)
+
+    if (RD_SUCCESS == err_code)
     {
-    record_idx++;
+        record_idx++;
     }
+
     memset (&m_log_input_block, 0, sizeof (m_log_input_block));
     m_log_input_block.start_timestamp_s = end_timestamp;
     return err_code;
