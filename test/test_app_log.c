@@ -547,7 +547,7 @@ void test_app_log_process_fill_blocks (void)
 
     for (size_t ii = 0; ii < APP_FLASH_LOG_DATA_RECORDS_NUM * 2; ii++)
     {
-        for (size_t ii = 0; ii < STORED_FIELDS; ii++)
+        for (size_t jj = 0; jj < STORED_FIELDS; jj++)
         {
             rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
         }
@@ -562,9 +562,10 @@ void test_app_log_process_fill_blocks (void)
 #       else
         m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
 #       endif
-        store_block_expect (record_idx, ii % 2);
+        bool store_fail = (ii) % 2;
+        store_block_expect (record_idx, store_fail);
+        record_idx ++;
         sample.timestamp_ms += (m_log_config.interval_s * 1001U);
-        record_idx++;
         record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
         err_code |= app_log_process (&sample);
     }

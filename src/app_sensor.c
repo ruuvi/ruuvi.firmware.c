@@ -54,7 +54,6 @@ static inline void LOGD (const char * const msg)
  * TODO
  * @endcode
  */
-#define APP_SENSOR_HANDLE_UNUSED (0xFFU) //!< Mark sensor unavailable with this handle.
 
 #ifndef CEEDLING
 static
@@ -108,6 +107,10 @@ static rt_sensor_ctx_t photo = APP_SENSOR_PHOTO_DEFAULT_CFG;
 static rt_sensor_ctx_t ntc = APP_SENSOR_NTC_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+static rt_sensor_ctx_t env_mcu = APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG;
+#endif
+
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
 static
@@ -133,8 +136,8 @@ m_sensors_init (void)
 #if APP_SENSOR_PHOTO_ENABLED
     m_sensors[PHOTO_INDEX] = &photo;
 #endif
-#if APP_SENSOR_MCU_ENABLED
-    m_sensors[ENV_MCU_INDEX] = env_mcu;
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+    m_sensors[ENV_MCU_INDEX] = &env_mcu;
 #endif
 #if APP_SENSOR_LIS2DH12_ENABLED
     m_sensors[LIS2DH12_INDEX] = &lis2dh12;
@@ -263,6 +266,7 @@ static rd_status_t app_sensor_buses_init (void)
     {
         .sda = RB_I2C_SDA_PIN,
         .scl = RB_I2C_SCL_PIN,
+        .bus_pwr = RB_I2C_BUS_POWER_PIN,
         .frequency = rb_to_ri_i2c_freq (RB_I2C_FREQ)
     };
 

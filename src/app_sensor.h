@@ -31,8 +31,10 @@
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_sensor.h"
+#include "ruuvi_interface_environmental_mcu.h"
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
+#define APP_SENSOR_HANDLE_UNUSED    RD_HANDLE_UNUSED
 
 enum
 {
@@ -54,7 +56,7 @@ enum
 #if APP_SENSOR_PHOTO_ENABLED
     PHOTO_INDEX,
 #endif
-#if APP_SENSOR_MCU_ENABLED
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
     ENV_MCU_INDEX,
 #endif
 #if APP_SENSOR_LIS2DH12_ENABLED
@@ -97,7 +99,7 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .nvm_record = APP_FLASH_SENSOR_BME280_RECORD,         \
     .bus = BME_BUS,                                       \
     .handle = BME_HANDLE,                                 \
-    .pwr_pin = RI_GPIO_ID_UNUSED,                         \
+    .pwr_pin = RB_BME280_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
     .level_pin = RI_GPIO_ID_UNUSED                        \
@@ -121,7 +123,7 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .nvm_record = APP_FLASH_SENSOR_LIS2DH12_RECORD,         \
     .bus = RD_BUS_SPI,                                      \
     .handle = RB_SPI_SS_ACCELEROMETER_PIN,                  \
-    .pwr_pin = RI_GPIO_ID_UNUSED,                           \
+    .pwr_pin = RB_LIS2DH12_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                                 \
     .fifo_pin = RB_INT_FIFO_PIN,                            \
     .level_pin = RB_INT_LEVEL_PIN                           \
@@ -162,7 +164,7 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .nvm_record = APP_FLASH_SENSOR_SHTCX_RECORD,         \
     .bus = RD_BUS_I2C,                                   \
     .handle = RB_SHTCX_I2C_ADDRESS,                      \
-    .pwr_pin = RI_GPIO_ID_UNUSED,                        \
+    .pwr_pin = RB_SHTCX_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                              \
     .fifo_pin = RI_GPIO_ID_UNUSED,                       \
     .level_pin = RI_GPIO_ID_UNUSED                       \
@@ -186,7 +188,7 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .nvm_record = APP_FLASH_SENSOR_DPS310_RECORD,         \
     .bus = RD_BUS_SPI,                                    \
     .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,                \
-    .pwr_pin = RI_GPIO_ID_UNUSED,                         \
+    .pwr_pin = RB_DPS310_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
     .level_pin = RI_GPIO_ID_UNUSED                        \
@@ -224,6 +226,23 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_on = RB_NTC_ACTIVE,                   \
     .fifo_pin = RI_GPIO_ID_UNUSED,             \
     .level_pin = RI_GPIO_ID_UNUSED             \
+  }
+#endif
+
+#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+#define APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG  \
+  {                                               \
+    .sensor = {0},                                \
+    .init = &ri_environmental_mcu_init,           \
+    .configuration = {0},                         \
+    .nvm_file = APP_FLASH_SENSOR_FILE,            \
+    .nvm_record = APP_FLASH_SENSOR_ENVI_RECORD,   \
+    .bus = RD_BUS_NONE,                           \
+    .handle = RD_BUS_NONE,                        \
+    .pwr_pin = RI_GPIO_ID_UNUSED,                 \
+    .pwr_on = RI_GPIO_LOW,                        \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                \
+    .level_pin = RI_GPIO_ID_UNUSED                \
   }
 #endif
 

@@ -238,7 +238,7 @@ TAG := $(shell git describe --tags --exact-match)
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),$(TAG),$(COMMIT))
 
-.PHONY: clean doxygen
+.PHONY: astyle clean doxygen
 
 all: clean doxygen $(SOURCES) $(EXECUTABLE) 
 

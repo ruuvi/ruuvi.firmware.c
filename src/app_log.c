@@ -61,20 +61,21 @@ static rd_status_t store_block (const app_log_record_t * const record)
 
     do
     {
-        err_code = rt_flash_free (APP_FLASH_LOG_FILE,
-                                  (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx);
+        uint8_t record_slot = (record_idx + num_tries) % APP_FLASH_LOG_DATA_RECORDS_NUM;
+        uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_slot;
+        err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);
 
         // It's not a problem if there wasn't old block to erase.
         if (RD_SUCCESS == err_code)
         {
             char msg[128];
-            snprintf (msg, sizeof (msg), "store_block:freed old record #%d\r\n", record_idx);
+            snprintf (msg, sizeof (msg), "store_block:freed old record #%d\r\n", target_record);
             LOG (msg);
         }
         else
         {
             char msg[128];
-            snprintf (msg, sizeof (msg), "store_block:creating new record #%d\r\n", record_idx);
+            snprintf (msg, sizeof (msg), "store_block:creating new record #%d\r\n", target_record);
             LOG (msg);
         }
 
@@ -93,7 +94,7 @@ static rd_status_t store_block (const app_log_record_t * const record)
         }
 
         err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
-                                    (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                    target_record,
                                     &m_log_input_block, sizeof (m_log_input_block));
 
         while (rt_flash_busy())
@@ -104,9 +105,12 @@ static rd_status_t store_block (const app_log_record_t * const record)
         RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
         // Erase another block and try again if there was error.
         num_tries++;
-        record_idx++;
-        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
     } while ( (RD_SUCCESS != err_code) && (num_tries < APP_FLASH_LOG_DATA_RECORDS_NUM));
+
+    if (RD_SUCCESS == err_code)
+    {
+        record_idx++;
+    }
 
     memset (&m_log_input_block, 0, sizeof (m_log_input_block));
     m_log_input_block.start_timestamp_s = end_timestamp;
