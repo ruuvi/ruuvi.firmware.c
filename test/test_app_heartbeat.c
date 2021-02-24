@@ -3,6 +3,7 @@
 #include "app_config.h"
 #include "app_heartbeat.h"
 #include "mock_app_comms.h"
+#include "mock_app_led.h"
 #include "mock_app_log.h"
 #include "mock_app_sensor.h"
 #include "mock_ruuvi_driver_error.h"
