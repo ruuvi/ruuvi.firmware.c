@@ -29,6 +29,8 @@
 #include "ruuvi_task_flash.h"
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
+#include "nrf52.h"
+static inline void LOG   (const char *const msg) { ri_log (RI_LOG_LEVEL_INFO,    msg);}
 
 #if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
@@ -104,6 +106,16 @@ int app_main (void)
 int main (void)
 #endif
 {
+     ri_log_init (APP_LOG_LEVEL); // Logging
+    char     lmsg[80];
+    snprintf(lmsg, sizeof(lmsg),
+       "\r\n\n "        // example:ae747e8
+    "Ruuvi Main APP_FW:" APP_FW_VERSION " compiled_on:%s at %s; MAC:%4X%08lX  \r\n",
+                                                    __DATE__, __TIME__, // example:Feb 19 2021  15:46:46
+                            (uint16_t)( 0xC000 | (NRF_FICR->DEVICEADDR[1] & 0x0000FFFF)),
+                                                                NRF_FICR->DEVICEADDR[0]);
+    LOG(lmsg);
+  
 #   if RUUVI_RUN_TESTS
     integration_tests_run();
 #   endif
