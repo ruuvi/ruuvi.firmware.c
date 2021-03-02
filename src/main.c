@@ -30,7 +30,7 @@
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
 
-static inline void LOG   (const char *const msg) { ri_log (RI_LOG_LEVEL_INFO,    msg);}
+static inline void LOG (const char *const msg) { ri_log (RI_LOG_LEVEL_INFO, msg);}                                            // *NOPAD*
 
 #if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
@@ -106,12 +106,12 @@ int app_main (void)
 int main (void)
 #endif
 {
-     ri_log_init (APP_LOG_LEVEL); // Logging
+    ri_log_init (APP_LOG_LEVEL); // Logging
     char     lmsg[80];
     snprintf(lmsg, sizeof(lmsg),
-       "\r\n\n "        // example:ae747e8
-    "Ruuvi Main APP_FW:" APP_FW_VERSION " compiled_on:%s at %s  \r\n",
-                                                    __DATE__, __TIME__); // example:Feb 19 2021  15:46:46
+             "\r\n\n "        // example:ae747e8
+             "Ruuvi Main APP_FW:" APP_FW_VERSION " compiled_on:%s at %s  \r\n",
+             __DATE__, __TIME__); // example:Feb 19 2021  15:46:46
     LOG(lmsg);
   
 #   if RUUVI_RUN_TESTS
