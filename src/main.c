@@ -108,11 +108,11 @@ int main (void)
 {
     ri_log_init (APP_LOG_LEVEL); // Logging
     char     lmsg[80];
-    snprintf (lmsg, sizeof(lmsg),
+    snprintf (lmsg, sizeof (lmsg),
               "\r\n\n "        // example:ae747e8
               "Ruuvi Main APP_FW:" APP_FW_VERSION " compiled_on:%s at %s  \r\n",
               __DATE__, __TIME__); // example:Feb 19 2021  15:46:46
-    LOG(lmsg);
+    LOG (lmsg);
 #   if RUUVI_RUN_TESTS
     integration_tests_run();
 #   endif
