@@ -54,14 +54,12 @@ jobs:
     # Runs a single command using the runners shell
     - name: Install Ceedling
       run: gem install ceedling
-
-    - name: Run unit tests
-      run: |
-        ceedling test:all
+        
 
     # Runs a set of commands using the runners shell
     - name: Run Sonar scanner
       run: |
+        ceedling test:all
         export SONAR_SCANNER_OPTS="-server"
         sonar-scanner \
           -Dsonar.organization=ruuvi \
@@ -70,5 +68,4 @@ jobs:
           -Dsonar.cfamily.build-wrapper-output=bw-output \
           -Dsonar.cfamily.gcov.reportsPath=. \
           -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-          -X
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
