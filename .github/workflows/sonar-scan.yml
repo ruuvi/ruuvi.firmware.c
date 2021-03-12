@@ -46,6 +46,19 @@ jobs:
     - name: Compile project
       run: build-wrapper-linux-x86-64 --out-dir bw-output make sonar
 
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6
+
+    # Runs a single command using the runners shell
+    - name: Install Ceedling
+      run: gem install ceedling
+
+    - name: Run unit tests
+      run: |
+        ceedling test:all
+
     # Runs a set of commands using the runners shell
     - name: Run Sonar scanner
       run: |
@@ -55,6 +68,7 @@ jobs:
           -Dsonar.projectKey=ruuvi_ruuvi.firmware.c \
           -Dsonar.sources=./src \
           -Dsonar.cfamily.build-wrapper-output=bw-output \
+          -Dsonar.cfamily.gcov.reportsPath=. \
           -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
           -X
