@@ -5,6 +5,7 @@
 #include "ruuvi_interface_gpio_interrupt.h"
 #include "ruuvi_interface_log.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 /**
  * @addtogroup main
