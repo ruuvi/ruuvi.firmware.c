@@ -232,6 +232,7 @@ OBJECTS=$(SOURCES:.c=.o)
 IOBJECTS=$(SOURCES:.c=.o.PVS-Studio.i)
 POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
 EXECUTABLE=ruuvifw
+SONAR=firmware_analysis
 
 # Tag on this commit
 TAG := $(shell git describe --tags --exact-match)
