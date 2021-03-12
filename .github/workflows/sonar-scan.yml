@@ -52,14 +52,18 @@ jobs:
         ruby-version: 2.6
 
     # Runs a single command using the runners shell
-    - name: Install Ceedling
-      run: gem install ceedling
+    - name: Install Ceedling and GCovr
+      run: |
+        gem install ceedling
+        sudo pip install gcovr
         
 
     # Runs a set of commands using the runners shell
     - name: Run Sonar scanner
       run: |
         ceedling test:all
+        ceedling gcov:all utils:gcov
+        gcov  -b -c build/gcov/out/*.gcno
         export SONAR_SCANNER_OPTS="-server"
         sonar-scanner \
           -Dsonar.organization=ruuvi \
