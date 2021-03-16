@@ -226,11 +226,13 @@ DFLAGS=
 INCLUDES=${COMMON_INCLUDES}
 INCLUDES+=nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/headers
 INC_PARAMS=$(foreach d, $(INCLUDES), -I$d)
+ANALYSIS=$(SOURCES:.c=.a)
 SOURCES=${RUUVI_PRJ_SOURCES}
 OBJECTS=$(SOURCES:.c=.o)
 IOBJECTS=$(SOURCES:.c=.o.PVS-Studio.i)
 POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
 EXECUTABLE=ruuvifw
+SONAR=firmware_analysis
 
 # Tag on this commit
 TAG := $(shell git describe --tags --exact-match)
@@ -238,13 +240,16 @@ TAG := $(shell git describe --tags --exact-match)
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),$(TAG),$(COMMIT))
 
-.PHONY: astyle clean doxygen
+.PHONY: astyle clean doxygen sonar pvs
 
-all: clean doxygen $(SOURCES) $(EXECUTABLE) 
+all: clean doxygen pvs $(SOURCES) $(EXECUTABLE) 
+
+pvs: $(SOURCES) $(EXECUTABLE) 
 
 $(EXECUTABLE): $(OBJECTS)
 # Converting
 	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
+	plog-converter -a 'GA:1;OP:1;CS:1;MISRA:1' -t errorfile $(POBJECTS) -o ./pvs.error
 
 .c.o:
 # Build
@@ -254,12 +259,12 @@ $(EXECUTABLE): $(OBJECTS)
 # Analysis
 	pvs-studio --cfg $(PVS_CFG) --source-file $< --i-file $@.PVS-Studio.i --output-file $@.PVS-Studio.log
 
-clean:
-	rm -f $(OBJECTS) $(IOBJECTS) $(POBJECTS) 
-	rm -rf $(PVS_LOG)/fullhtml
-	rm -rf $(DOXYGEN_DIR)/html
-	rm -rf $(DOXYGEN_DIR)/latex
-	rm -f *.gcov
+sonar: $(SOURCES) $(SONAR) 
+$(SONAR): $(ANALYSIS)
+
+.c.a:
+# Build
+	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) -o $@
 
 doxygen:
 	export PROJECT_VERSION=$(VERSION) 
@@ -272,3 +277,10 @@ astyle:
 	astyle --project=".astylerc" "src/main.c" "src/main.h" \
 	                  "src/app_*.c" "src/app_*.h" \
 	                  "src/run_integration_tests.c" "src/run_integration_tests.h" 
+
+clean:
+	rm -f $(OBJECTS) $(IOBJECTS) $(POBJECTS) 
+	rm -rf $(PVS_LOG)/fullhtml
+	rm -rf $(DOXYGEN_DIR)/html
+	rm -rf $(DOXYGEN_DIR)/latex
+	rm -f *.gcov

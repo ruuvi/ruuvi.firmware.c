@@ -1,6 +1,7 @@
 # Changelog
 ## 3.30.0
  - Add support for DPS310 pressure/temperature sensor
+ - Fix log rotation drifing which caused gaps in data
 
 ## 3.29.3
  - Fix factory reset not erasing entire flash storage of app.
