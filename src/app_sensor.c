@@ -83,6 +83,10 @@ typedef rd_status_t (*sensor_op) (const ri_comm_xfer_fp_t reply_fp,
 static rt_sensor_ctx_t bme280 = APP_SENSOR_BME280_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_DPS310_ENABLED
+static rt_sensor_ctx_t dps310 = APP_SENSOR_DPS310_DEFAULT_CFG;
+#endif
+
 #if APP_SENSOR_LIS2DH12_ENABLED
 static rt_sensor_ctx_t lis2dh12 = APP_SENSOR_LIS2DH12_DEFAULT_CFG;
 #endif
@@ -95,8 +99,8 @@ static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;
 static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 #endif
 
-#if APP_SENSOR_DPS310_ENABLED
-static rt_sensor_ctx_t dps310 = APP_SENSOR_DPS310_DEFAULT_CFG;
+#if APP_SENSOR_TMP117_ENABLED
+static rt_sensor_ctx_t tmp117 = APP_SENSOR_TMP117_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_PHOTO_ENABLED
@@ -119,7 +123,7 @@ void
 m_sensors_init (void)
 {
 #if APP_SENSOR_TMP117_ENABLED
-    m_sensors[TMP117_INDEX] = tmp117;
+    m_sensors[TMP117_INDEX] = &tmp117;
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     m_sensors[SHTCX_INDEX] = &shtcx;
