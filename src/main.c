@@ -122,9 +122,9 @@ int main (void)
     {
         ri_scheduler_execute();
         // Sleep - woken up on event
-        app_led_activity_indicate (false);
+        // Do not indicate activity here to conserve power.
+        // Sensor reads take ~20ms, having led on for that time is expensive.
         ri_yield();
-        app_led_activity_indicate (true);
         // Prevent loop being optimized away
         __asm__ ("");
     } while (LOOP_FOREVER);

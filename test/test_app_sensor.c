@@ -106,6 +106,10 @@ static const rd_sensor_data_fields_t fields_envi_mcu =
 {
     .datas.temperature_c = 1
 };
+static const rd_sensor_data_fields_t fields_tmp117 =
+{
+    .datas.temperature_c = 1
+};
 static const rd_sensor_data_fields_t fields_expected =
 {
     .datas.temperature_c = 1,
@@ -314,7 +318,8 @@ void test_app_sensor_available_data (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
-        m_sensors[ENV_MCU_INDEX]->sensor.provides = fields_dps;
+        m_sensors[ENV_MCU_INDEX]->sensor.provides = fields_envi_mcu;
+        m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
         fields_found = app_sensor_available_data();
         TEST_ASSERT (!memcmp (&fields_found.bitfield, &fields_expected.bitfield,
                               sizeof (fields_expected.bitfield)));
@@ -354,6 +359,9 @@ static rd_status_t mock_data_get (rd_sensor_data_t * const data)
         case ENV_MCU_INDEX:
             data->valid.bitfield |= (data->fields.bitfield & fields_envi_mcu.bitfield);
 
+        case TMP117_INDEX:
+            data->valid.bitfield |= (data->fields.bitfield & fields_tmp117.bitfield);
+
         default:
             break;
     }
@@ -365,12 +373,12 @@ void test_app_sensor_get (void)
 {
     rd_sensor_data_t data = {0};
     data.fields.bitfield |= fields_expected.bitfield;
-    rd_sensor_data_fp dg_0 = m_sensors[BME280_INDEX]->sensor.data_get;
     m_sensors[BME280_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[LIS2DH12_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[SHTCX_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[DPS310_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[ENV_MCU_INDEX]->sensor.data_get = &mock_data_get;
+    m_sensors[TMP117_INDEX]->sensor.data_get = &mock_data_get;
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
@@ -381,7 +389,6 @@ void test_app_sensor_get (void)
     app_sensor_get (&data);
     TEST_ASSERT (!memcmp (&data.valid.bitfield, &fields_expected.bitfield,
                           sizeof (fields_expected.bitfield)));
-    m_sensors[BME280_INDEX]->sensor.data_get = dg_0;
 }
 
 /**
@@ -420,7 +427,7 @@ void test_app_sensor_find_provider_overlap (void)
 {
     if (SENSOR_COUNT > 3)
     {
-        for (size_t ii = 0; ii <= SHTCX_INDEX; ii++)
+        for (size_t ii = 0; ii <= TMP117_INDEX; ii++)
         {
             rd_sensor_is_init_ExpectAndReturn (& (m_sensors[ii]->sensor), (ii < SENSOR_COUNT));
         }
@@ -434,8 +441,9 @@ void test_app_sensor_find_provider_overlap (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
+        m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
-        TEST_ASSERT (p_sensor == & (m_sensors[SHTCX_INDEX]->sensor));
+        TEST_ASSERT (p_sensor == & (m_sensors[TMP117_INDEX]->sensor));
     }
 }
 
@@ -457,8 +465,9 @@ void test_app_sensor_find_provider_empty (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
+        m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
-        TEST_ASSERT (p_sensor == & (m_sensors[SHTCX_INDEX]->sensor));
+        TEST_ASSERT (p_sensor == & (m_sensors[TMP117_INDEX]->sensor));
     }
 }
 
@@ -501,6 +510,7 @@ void test_app_sensor_find_provider_null (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX] = NULL;
         m_sensors[ENV_MCU_INDEX] = NULL;
+        m_sensors[TMP117_INDEX] = NULL;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
         TEST_ASSERT (p_sensor == & (m_sensors[LIS2DH12_INDEX]->sensor));
     }

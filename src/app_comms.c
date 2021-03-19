@@ -6,6 +6,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_endpoints.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
@@ -456,7 +457,8 @@ void comm_mode_change_isr (void * const p_context)
 
     if (p_change->switch_to_normal)
     {
-        app_comms_bleadv_send_count_set (1);
+        app_comms_bleadv_send_count_set (APP_NUM_REPEATS);
+        ri_adv_tx_interval_set (1285U);
         p_change->switch_to_normal = 0;
     }
 
