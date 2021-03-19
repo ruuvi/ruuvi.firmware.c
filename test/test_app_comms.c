@@ -313,6 +313,7 @@ void test_bleadv_repeat_count_set_get (void)
     TEST_ASSERT (count == check);
 }
 
+#if 0
 void test_comm_mode_change_isr_switch_to_normal (void)
 {
     mode_changes_t mode = {0};
@@ -323,6 +324,7 @@ void test_comm_mode_change_isr_switch_to_normal (void)
     TEST_ASSERT (0 == mode.switch_to_normal);
     TEST_ASSERT (1 == adv_repeat);
 }
+#endif
 
 void test_comm_mode_change_isr_disable_config (void)
 {

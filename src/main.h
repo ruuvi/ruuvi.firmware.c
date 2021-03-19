@@ -23,7 +23,7 @@
 
 // Submodule requirements
 #define RUUVI_BOARDS_REQ "3.6.0"
-#define RUUVI_DRIVERS_REQ "3.5.0"
+#define RUUVI_DRIVERS_REQ "3.7.0"
 #define RUUVI_ENDPOINTS_REQ "3.0.0"
 #define RUUVI_LIBRARIES_REQ "3.0.0"
 
