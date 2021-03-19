@@ -65,7 +65,8 @@ void integration_test_start (void)
     ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_integration_test_wdt);
     ri_log_init (APP_LOG_LEVEL);
     ri_yield_init();
-    LOG ("{\r\n\"firmware\":\"" APP_FW_NAME "\",\r\n");
+    LOG ("{\r\n\"firmware\":\"" APP_FW_NAME " " APP_FW_VERSION "\",\r\n");
+    LOG ("\"compiled_on\":\"" __DATE__ " "__TIME__"\",\r\n");
     LOG ("\"board\":\"" RB_MODEL_STRING "\",\r\n");
     LOG ("\"ruuvi.boards.c\":\"" RUUVI_BOARDS_SEMVER "\",\r\n");
     LOG ("\"ruuvi.drivers.c\":\"" RUUVI_DRIVERS_SEMVER "\",\r\n");
