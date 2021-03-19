@@ -75,7 +75,7 @@ void integration_test_start (void)
 /** @brief Print test close JSON to console */
 void integration_test_stop (void)
 {
-    LOG ("}");
+    LOG ("}\r\n");
     ri_yield_uninit();
 }
 
