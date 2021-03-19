@@ -458,7 +458,7 @@ void comm_mode_change_isr (void * const p_context)
     if (p_change->switch_to_normal)
     {
         app_comms_bleadv_send_count_set (APP_NUM_REPEATS);
-        ri_adv_tx_interval_set (1285U);
+        ri_adv_tx_interval_set (APP_BLE_INTERVAL_MS);
         p_change->switch_to_normal = 0;
     }
 

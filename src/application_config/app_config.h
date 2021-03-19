@@ -183,7 +183,9 @@
 /** @brief Enable DPS310 sensor */
 #ifndef APP_SENSOR_DPS310_ENABLED
 #   define APP_SENSOR_DPS310_ENABLED RB_ENVIRONMENTAL_DPS310_PRESENT
-#   define RI_DPS310_SPI_ENABLED (1U)
+#   ifndef RI_DPS310_SPI_ENABLED
+#       define RI_DPS310_SPI_ENABLED (1U)
+#   endif
 #endif
 
 #ifndef APP_SENSOR_DPS310_DSP_FUNC
