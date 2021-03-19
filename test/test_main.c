@@ -91,7 +91,7 @@ void test_main_ok (void)
     app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     rd_error_cb_set_Expect (&app_on_error);
     // </setup>
-    ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS); 
+    ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     app_main();
 }
