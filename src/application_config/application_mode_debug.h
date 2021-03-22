@@ -7,22 +7,14 @@
 #define APP_WDT_INTERVAL_MS (10U*60U*1000U)
 
 /** @brief Communicate sensor data at this interval. 221 matches Apple guideline. */
-#ifndef APP_BLE_INTERVAL_MS
-#   define APP_BLE_INTERVAL_MS (221U)
-#endif
+#define APP_BLE_INTERVAL_MS (221U)
 
 /** @brief repeat same data N times in advertisement, reduce sensor reads. */
-#ifndef APP_NUM_REPEATS
-#   define APP_NUM_REPEATS 4
-#endif
+#define APP_NUM_REPEATS 4
 
 /** @brief Communicate sensor data at this interval. 221 matches Apple guideline. */
-#ifndef APP_HEARTBEAT_INTERVAL_MS
-#   define APP_HEARTBEAT_INTERVAL_MS (APP_BLE_INTERVAL_MS * APP_NUM_REPEATS)
-#endif
+#define APP_HEARTBEAT_INTERVAL_MS (APP_BLE_INTERVAL_MS * APP_NUM_REPEATS)
 
-#ifndef APP_LOG_INTERVAL_S
-#   define APP_LOG_INTERVAL_S (1U) //!< Gets limited to heartbeat rate.
-#endif
+#define APP_LOG_INTERVAL_S (1U) //!< Gets limited to heartbeat rate.
 
 #endif
