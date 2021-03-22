@@ -30,8 +30,6 @@
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
 
-static inline void LOG (const char *const msg) { ri_log (RI_LOG_LEVEL_INFO, msg);}                                            // *NOPAD*
-
 #if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
 static
