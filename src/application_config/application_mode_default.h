@@ -32,7 +32,7 @@
 
 /** @brief repeat same data N times in advertisement, reduce sensor reads. */
 #ifndef APP_NUM_REPEATS
-#   define APP_NUM_REPEATS 5
+#   define APP_NUM_REPEATS 2
 #endif
 
 /** @brief Refresh sensor data at this interval.*/

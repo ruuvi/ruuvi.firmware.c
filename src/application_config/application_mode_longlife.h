@@ -1,0 +1,12 @@
+#ifndef APPLICATION_MODE_DEBUG_H
+#define APPLICATION_MODE_DEBUG_H
+
+#define APP_FW_VARIANT "+longlife"
+
+#define APP_BLE_INTERVAL_MS (1285U * 5)
+
+#define APP_NUM_REPEATS 5
+
+#define APP_LOG_INTERVAL_S (15U * 60U)
+
+#endif

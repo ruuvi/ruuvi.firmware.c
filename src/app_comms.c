@@ -112,14 +112,14 @@ static rd_status_t prepare_mode_change (const mode_changes_t * p_change)
  */
 static uint8_t initial_adv_send_count (void)
 {
-    uint8_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
+    uint16_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
 
     if (0 == num_sends) //-V547
     {
         num_sends = 1;
     }
 
-    if (APP_COMM_ADV_REPEAT_FOREVER == num_sends) //-V547
+    if (APP_COMM_ADV_REPEAT_FOREVER <= num_sends) //-V547
     {
         num_sends = APP_COMM_ADV_REPEAT_FOREVER - 1;
     }
