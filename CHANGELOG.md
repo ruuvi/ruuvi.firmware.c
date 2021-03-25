@@ -1,5 +1,9 @@
 # Changelog
 ## 3.30.0
+ - Fix Kalervo support
+ - Configure measurement and broadcast interval separately
+ - Add GPIO-sensor power support
+ - Add support for TMP117 temperature sensor
  - Add support for DPS310 pressure/temperature sensor
  - Fix log rotation drifing which caused gaps in data
 
