@@ -111,6 +111,8 @@ rd_status_t app_comms_configure_next_enable (void);
  */
 rd_status_t app_comms_ble_init (const bool secure);
 
+rd_status_t app_comms_ble_adv_init (const bool secure);
+
 /**
  * @brief Uninitialize GATT.
  *

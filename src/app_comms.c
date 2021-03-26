@@ -251,6 +251,7 @@ void handle_gatt_connected (void * p_data, uint16_t data_len)
     rd_status_t err_code = RD_SUCCESS;
     // Disables advertising for GATT, does not kick current connetion out.
     rt_gatt_adv_disable ();
+    app_comms_ble_adv_init (false);
     config_setup_on_this_conn ();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -549,6 +550,16 @@ rd_status_t app_comms_ble_init (const bool secure)
     err_code |= dis_init (&dis, secure);
     err_code |= adv_init();
     err_code |= gatt_init (&dis, secure);
+    ri_radio_activity_callback_set (&app_sensor_vdd_measure_isr);
+    return err_code;
+}
+
+rd_status_t app_comms_ble_adv_init (const bool secure)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    ri_comm_dis_init_t dis = {0};
+    err_code |= dis_init (&dis, secure);
+    err_code |= adv_init();
     ri_radio_activity_callback_set (&app_sensor_vdd_measure_isr);
     return err_code;
 }
