@@ -26,8 +26,18 @@
 #endif
 
 /** @brief Communicate sensor data at this interval. 1285 matches Apple guideline. */
+#ifndef APP_BLE_INTERVAL_MS
+#   define APP_BLE_INTERVAL_MS (1285U)
+#endif
+
+/** @brief repeat same data N times in advertisement, reduce sensor reads. */
+#ifndef APP_NUM_REPEATS
+#   define APP_NUM_REPEATS 2
+#endif
+
+/** @brief Refresh sensor data at this interval.*/
 #ifndef APP_HEARTBEAT_INTERVAL_MS
-#   define APP_HEARTBEAT_INTERVAL_MS (1285U)
+#   define APP_HEARTBEAT_INTERVAL_MS (APP_BLE_INTERVAL_MS * APP_NUM_REPEATS)
 #endif
 
 /** @brief Resample battery voltage at this interval */

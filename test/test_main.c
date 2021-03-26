@@ -92,9 +92,7 @@ void test_main_ok (void)
     rd_error_cb_set_Expect (&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (true, RD_SUCCESS);
     app_main();
 }
 
@@ -124,9 +122,7 @@ void test_main_error (void)
     rd_error_cb_set_Expect (&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (true, RD_SUCCESS);
     app_main();
 }
 
