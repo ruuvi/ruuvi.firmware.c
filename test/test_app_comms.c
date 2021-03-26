@@ -150,6 +150,12 @@ static void nfc_init_Expect (ri_comm_dis_init_t * p_dis)
 #endif
 }
 
+static void app_comms_ble_adv_init_Expect (void)
+{
+    adv_init_Expect();
+    ri_radio_activity_callback_set_Expect (&app_sensor_vdd_measure_isr);
+}
+
 static void app_comms_ble_uninit_Expect (void)
 {
     rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
@@ -234,6 +240,7 @@ void test_app_comms_init_timer_fail (void)
 void test_handle_gatt_connected (void)
 {
     rt_gatt_adv_disable_ExpectAndReturn (RD_SUCCESS);
+    app_comms_ble_adv_init_Expect();
     handle_gatt_connected (NULL, 0);
     TEST_ASSERT (!m_config_enabled_on_next_conn);
 }

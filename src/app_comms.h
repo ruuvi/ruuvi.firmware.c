@@ -111,7 +111,12 @@ rd_status_t app_comms_configure_next_enable (void);
  */
 rd_status_t app_comms_ble_init (const bool secure);
 
-rd_status_t app_comms_ble_adv_init (const bool secure);
+/**
+ * @brief Enable Bluetooth advertising on device
+ *
+ * Calling this function will re-enable BLE advertising during activated GATT connection.
+ */
+rd_status_t app_comms_ble_adv_init (void);
 
 /**
  * @brief Uninitialize GATT.
