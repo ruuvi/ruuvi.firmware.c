@@ -1,3 +1,11 @@
+#  @file  targets/ruuvitag_b/Makefile
+# @author Otso Jousimaa <otso@ojousima.net>
+# @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+# @brief
+# Set up directory names and
+# Finally include Makefile.common and build all targets
+# @date 2021-03-30 add PRETTY=1 so Makefile.common shows percent progress
+#
 PROJECT_NAME     := ruuvitag_b_s132
 TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
@@ -127,6 +135,7 @@ help:
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 
 
+PRETTY=1
 include $(TEMPLATE_PATH)/Makefile.common
 
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
