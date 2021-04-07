@@ -52,6 +52,11 @@ static
 #endif
 uint64_t m_last_sample_ms; //!< Timestamp of last processed sample.
 
+#ifndef CEEDLING
+static
+#endif
+uint32_t m_boot_count = 0;
+
 static rd_status_t store_block (const app_log_record_t * const record)
 {
     static uint8_t record_idx = 0;
@@ -139,6 +144,28 @@ static rd_status_t purge_logs (void)
     return err_code;
 }
 
+static rd_status_t app_log_read_boot_count (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+                               &m_boot_count, sizeof (uint32_t));
+
+    if (RD_ERROR_NOT_FOUND == err_code)
+    {
+        err_code |= rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+                                    &m_boot_count, sizeof (uint32_t));
+        err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+                                   &m_boot_count, sizeof (uint32_t));
+    }
+
+    m_boot_count++;
+    err_code |= rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+                                &m_boot_count, sizeof (uint32_t));
+    char msg[128];
+    snprintf (msg, sizeof (msg), "LOG: Boot count: %d\r\n", m_boot_count);
+    LOG (msg);
+}
+
 
 rd_status_t app_log_init (void)
 {
@@ -171,6 +198,7 @@ rd_status_t app_log_init (void)
         err_code |= purge_logs();
     }
 
+    err_code |= app_log_read_boot_count();
     return err_code;
 }
 

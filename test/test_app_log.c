@@ -178,6 +178,7 @@ extern app_log_record_t    m_log_input_block;
 extern app_log_record_t    m_log_output_block;
 extern app_log_config_t    m_log_config;
 extern uint64_t            m_last_sample_ms;
+extern uint32_t            m_boot_count;
 #if RL_COMPRESS_ENABLED
 extern rl_compress_state_t m_compress_state;
 #endif
@@ -202,6 +203,16 @@ static void log_purge_Expect (void)
     }
 
     rt_flash_gc_run_ExpectAndReturn (RD_SUCCESS);
+}
+
+static void log_boot_count_Expect (void)
+{ 
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+                                   &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
+    rt_flash_load_IgnoreArg_message();
+    rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+                                    &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
+    rt_flash_store_IgnoreArg_message();
 }
 
 static void sample_process_expect (const rd_sensor_data_t * const sample)
@@ -372,6 +383,7 @@ void test_app_log_init_nostored (void)
                                     RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
     log_purge_Expect();
+    log_boot_count_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
@@ -397,6 +409,7 @@ void test_app_log_init_stored (void)
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnMemThruPtr_message (&stored, sizeof (stored));
     log_purge_Expect();
+    log_boot_count_Expect();    
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&stored, &m_log_config, sizeof (m_log_config)));
@@ -412,6 +425,7 @@ void test_app_log_init_noflash (void)
                                    &defaults, sizeof (defaults),
                                    RD_ERROR_INVALID_STATE);
     rt_flash_load_IgnoreArg_message();
+    log_boot_count_Expect();    
     err_code |= app_log_init();
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
