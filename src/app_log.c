@@ -165,7 +165,7 @@ rd_status_t app_log_read_boot_count (void)
     err_code |= rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                 &m_boot_count, sizeof (uint32_t));
     char msg[128];
-    snprintf (msg, sizeof (msg), "LOG: Boot count: %ld\r\n", m_boot_count);
+    snprintf (msg, sizeof (msg), "LOG: Boot count: %d\r\n", m_boot_count);
     LOG (msg);
     return err_code;
 }
