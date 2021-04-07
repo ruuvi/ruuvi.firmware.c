@@ -178,7 +178,7 @@ extern app_log_record_t    m_log_input_block;
 extern app_log_record_t    m_log_output_block;
 extern app_log_config_t    m_log_config;
 extern uint64_t            m_last_sample_ms;
-extern uint32_t            m_boot_count;
+extern uint16_t            m_boot_count;
 #if RL_COMPRESS_ENABLED
 extern rl_compress_state_t m_compress_state;
 #endif

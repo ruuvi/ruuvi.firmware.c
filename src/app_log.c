@@ -55,7 +55,7 @@ uint64_t m_last_sample_ms; //!< Timestamp of last processed sample.
 #ifndef CEEDLING
 static
 #endif
-uint32_t m_boot_count = 0;
+uint16_t m_boot_count = 0;
 
 static rd_status_t store_block (const app_log_record_t * const record)
 {
