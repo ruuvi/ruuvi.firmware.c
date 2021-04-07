@@ -144,7 +144,10 @@ static rd_status_t purge_logs (void)
     return err_code;
 }
 
-static rd_status_t app_log_read_boot_count (void)
+#ifndef CEEDLING
+static
+#endif
+rd_status_t app_log_read_boot_count (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
@@ -162,9 +165,9 @@ static rd_status_t app_log_read_boot_count (void)
     err_code |= rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                 &m_boot_count, sizeof (uint32_t));
     char msg[128];
-    snprintf (msg, sizeof (msg), "LOG: Boot count: %d\r\n", m_boot_count);
+    snprintf (msg, sizeof (msg), "LOG: Boot count: %ld\r\n", m_boot_count);
     LOG (msg);
-    return  err_code;
+    return err_code;
 }
 
 
