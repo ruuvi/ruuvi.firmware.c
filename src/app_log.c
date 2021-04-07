@@ -164,6 +164,7 @@ static rd_status_t app_log_read_boot_count (void)
     char msg[128];
     snprintf (msg, sizeof (msg), "LOG: Boot count: %d\r\n", m_boot_count);
     LOG (msg);
+    return  err_code;
 }
 
 
