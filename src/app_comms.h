@@ -112,6 +112,17 @@ rd_status_t app_comms_configure_next_enable (void);
 rd_status_t app_comms_ble_init (const bool secure);
 
 /**
+ * @brief Enable Bluetooth advertising on device
+ *
+ * Calling this function will re-enable BLE advertising during activated GATT connection.
+ *
+ * @retval RD_SUCCESS on success.
+ * @retval RD_ERROR_INVALID_STATE if advertising is already initialized.
+ * @retval RD_ERROR_INVALID_PARAM if rt_adv_init()'s constant parameter is invalid. Not initialized.
+ */
+rd_status_t app_comms_ble_adv_init (void);
+
+/**
  * @brief Uninitialize GATT.
  *
  * After calling this function advertisements cannot be sent and GATT server is disabled.

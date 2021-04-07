@@ -32,6 +32,7 @@
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_sensor.h"
 #include "ruuvi_interface_environmental_mcu.h"
+#include "ruuvi_interface_tmp117.h"
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
 #define APP_SENSOR_HANDLE_UNUSED    RD_HANDLE_UNUSED
@@ -106,6 +107,30 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
   }
 #endif
 
+#if APP_SENSOR_DPS310_ENABLED
+#define APP_SENSOR_DPS310_DEFAULT_CFG                     \
+  {                                                       \
+    .sensor = {0},                                        \
+    .init = &ri_dps310_init,                              \
+    .configuration =                                      \
+        {                                                 \
+            .dsp_function = APP_SENSOR_DPS310_DSP_FUNC,   \
+            .dsp_parameter = APP_SENSOR_DPS310_DSP_PARAM, \
+            .mode = APP_SENSOR_DPS310_MODE,               \
+            .resolution = APP_SENSOR_DPS310_RESOLUTION,   \
+            .samplerate = APP_SENSOR_DPS310_SAMPLERATE,   \
+            .scale = APP_SENSOR_DPS310_SCALE},            \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                    \
+    .nvm_record = APP_FLASH_SENSOR_DPS310_RECORD,         \
+    .bus = RD_BUS_SPI,                                    \
+    .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,                \
+    .pwr_pin = RB_DPS310_SENSOR_POWER_PIN,                \
+    .pwr_on = RI_GPIO_HIGH,                               \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                        \
+    .level_pin = RI_GPIO_ID_UNUSED                        \
+  }
+#endif
+
 #if APP_SENSOR_LIS2DH12_ENABLED
 #define APP_SENSOR_LIS2DH12_DEFAULT_CFG                     \
   {                                                         \
@@ -171,27 +196,27 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
   }
 #endif
 
-#if APP_SENSOR_DPS310_ENABLED
-#define APP_SENSOR_DPS310_DEFAULT_CFG                     \
-  {                                                       \
-    .sensor = {0},                                        \
-    .init = &ri_dps310_init,                              \
-    .configuration =                                      \
-        {                                                 \
-            .dsp_function = APP_SENSOR_DPS310_DSP_FUNC,   \
-            .dsp_parameter = APP_SENSOR_DPS310_DSP_PARAM, \
-            .mode = APP_SENSOR_DPS310_MODE,               \
-            .resolution = APP_SENSOR_DPS310_RESOLUTION,   \
-            .samplerate = APP_SENSOR_DPS310_SAMPLERATE,   \
-            .scale = APP_SENSOR_DPS310_SCALE},            \
-    .nvm_file = APP_FLASH_SENSOR_FILE,                    \
-    .nvm_record = APP_FLASH_SENSOR_DPS310_RECORD,         \
-    .bus = RD_BUS_SPI,                                    \
-    .handle = RB_SPI_SS_ENVIRONMENTAL_PIN,                \
-    .pwr_pin = RB_DPS310_SENSOR_POWER_PIN,                \
-    .pwr_on = RI_GPIO_HIGH,                               \
-    .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+#if APP_SENSOR_TMP117_ENABLED
+#define APP_SENSOR_TMP117_DEFAULT_CFG                     \
+  {                                                      \
+    .sensor = {0},                                       \
+    .init = &ri_tmp117_init,                              \
+    .configuration =                                     \
+        {                                                \
+            .dsp_function = APP_SENSOR_TMP117_DSP_FUNC,   \
+            .dsp_parameter = APP_SENSOR_TMP117_DSP_PARAM, \
+            .mode = APP_SENSOR_TMP117_MODE,               \
+            .resolution = APP_SENSOR_TMP117_RESOLUTION,   \
+            .samplerate = APP_SENSOR_TMP117_SAMPLERATE,   \
+            .scale = APP_SENSOR_TMP117_SCALE},            \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                   \
+    .nvm_record = APP_FLASH_SENSOR_TMP117_RECORD,         \
+    .bus = RD_BUS_I2C,                                   \
+    .handle = RB_TMP117_I2C_ADDRESS,                      \
+    .pwr_pin = RB_TMP117_SENSOR_POWER_PIN,                \
+    .pwr_on = RI_GPIO_HIGH,                              \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                       \
+    .level_pin = RI_GPIO_ID_UNUSED                       \
   }
 #endif
 

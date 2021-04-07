@@ -71,5 +71,8 @@ jobs:
           -Dsonar.sources=./src \
           -Dsonar.cfamily.build-wrapper-output=bw-output \
           -Dsonar.cfamily.gcov.reportsPath=. \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.host.url=https://sonarcloud.io
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

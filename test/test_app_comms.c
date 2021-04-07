@@ -150,6 +150,12 @@ static void nfc_init_Expect (ri_comm_dis_init_t * p_dis)
 #endif
 }
 
+static void app_comms_ble_adv_init_Expect (void)
+{
+    adv_init_Expect();
+    ri_radio_activity_callback_set_Expect (&app_sensor_vdd_measure_isr);
+}
+
 static void app_comms_ble_uninit_Expect (void)
 {
     rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
@@ -182,15 +188,6 @@ void test_app_comms_init_ok (void)
     ri_radio_activity_callback_set_Expect (&app_sensor_vdd_measure_isr);
     rd_status_t err_code = app_comms_init (true);
     TEST_ASSERT (RD_SUCCESS == err_code);
-}
-
-static void app_comms_configure_next_disable_Expect (void)
-{
-    static ri_comm_dis_init_t ble_dis;
-    memset (&ble_dis, 0, sizeof (ble_dis));
-    app_comms_ble_uninit_Expect();
-    app_comms_ble_init_Expect (true, &ble_dis);
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
 }
 
 static void app_comms_configure_next_enable_Expect (void)
@@ -234,6 +231,7 @@ void test_app_comms_init_timer_fail (void)
 void test_handle_gatt_connected (void)
 {
     rt_gatt_adv_disable_ExpectAndReturn (RD_SUCCESS);
+    app_comms_ble_adv_init_Expect();
     handle_gatt_connected (NULL, 0);
     TEST_ASSERT (!m_config_enabled_on_next_conn);
 }
@@ -307,7 +305,7 @@ void test_handle_gatt_short_data (void)
 
 void test_bleadv_repeat_count_set_get (void)
 {
-    const uint8_t count = 5;
+    const uint8_t count = APP_NUM_REPEATS;
     app_comms_bleadv_send_count_set (count);
     uint8_t check = app_comms_bleadv_send_count_get();
     TEST_ASSERT (count == check);
@@ -317,11 +315,12 @@ void test_comm_mode_change_isr_switch_to_normal (void)
 {
     mode_changes_t mode = {0};
     mode.switch_to_normal = 1;
-    app_comms_bleadv_send_count_set (5);
+    app_comms_bleadv_send_count_set (APP_NUM_REPEATS);
+    ri_adv_tx_interval_set_ExpectAndReturn (APP_BLE_INTERVAL_MS, RD_SUCCESS);
     comm_mode_change_isr (&mode);
     uint8_t adv_repeat = app_comms_bleadv_send_count_get();
     TEST_ASSERT (0 == mode.switch_to_normal);
-    TEST_ASSERT (1 == adv_repeat);
+    TEST_ASSERT (APP_NUM_REPEATS == adv_repeat);
 }
 
 void test_comm_mode_change_isr_disable_config (void)
