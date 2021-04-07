@@ -23,13 +23,13 @@ jobs:
     - name: Checkout submodules
       uses: textbook/git-checkout-submodule-action@2.1.1
 
+    # Install Doxygen
+    - name: Install Doxygen
+      run: sudo apt-get install -qq doxygen 
 
-    # Generate Dox
-    - name: Generate dox 
-      uses: mattnotmitt/doxygen-action@v1
-        with:
-          working-directory: '.'
-          doxyfile-path: 'Doxyfile'
+    # Generate doxygen
+    - name: Generate docs
+      run: doxygen
 
     # Error if doxygen.error has content
     - name: Check documentation has no errors
