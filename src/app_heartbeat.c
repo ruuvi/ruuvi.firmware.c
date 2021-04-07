@@ -8,6 +8,7 @@
 #include "app_config.h"
 #include "app_comms.h"
 #include "app_heartbeat.h"
+#include "app_led.h"
 #include "app_log.h"
 #include "app_sensor.h"
 #include "ruuvi_driver_error.h"
@@ -100,6 +101,8 @@ void heartbeat (void * p_event, uint16_t event_size)
     float data_values[rd_sensor_data_fieldcount (&data)];
     data.data = data_values;
     app_sensor_get (&data);
+    // Sensor read takes a long while, indicate activity once data is read.
+    app_led_activity_indicate (true);
     encode_to_5 (&data, &msg);
 
     if (RE_5_INVALID_SEQUENCE == ++m_measurement_count)
@@ -141,6 +144,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     }
 
     err_code = app_log_process (&data);
+    app_led_activity_indicate (false);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 
