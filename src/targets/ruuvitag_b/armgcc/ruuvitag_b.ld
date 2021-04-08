@@ -24,18 +24,12 @@ MEMORY
   uicr_bootloader_start_address (r) : ORIGIN = 0x00000FF8, LENGTH =     0x4     /* contains 75000 */
   uicr_mbr_params_page          (r) : ORIGIN = 0x00000FFC, LENGTH =     0x4     /* contains 7E000 */
   FLASH                        (rx) : ORIGIN = 0x00026000, LENGTH = 0x4F000     /*     26000 ..    75000  */
-/*       kaarle                                                       52000                               */
-/*       keijo                                                         A000                               */
-/*       kalervo                                                       A000                               */
 /* includes   storage_flash                         60000             15000                               */
   mbr_params_page               (r) : ORIGIN = 0x0007E000, LENGTH =  0x1000     /*     7E000 ..    7F000  */
   bootloader_settings_page      (r) : ORIGIN = 0x0007F000, LENGTH =  0x1000     /*     7F000 ..    80000  */
 
   RAM                         (rwx) : ORIGIN = 0x20002450, LENGTH =  0xDBB0     /*  20002450 .. 20010000  */
 }
-/* RAM   kaarle                                      2450              DBB0                               */
-/* RAM   keijo                                       2D58              32A8 12KB                          */
-/* RAM   kalervo                                     2D58              32A8 12KB                          */
 
 
 SECTIONS
