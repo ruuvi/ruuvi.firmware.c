@@ -155,10 +155,10 @@ rd_status_t app_log_read_boot_count (void)
 
     if (RD_ERROR_NOT_FOUND == err_code)
     {
-        err_code |= rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                                    &m_boot_count, sizeof (uint32_t));
-        err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+        err_code = rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                    &m_boot_count, sizeof (uint32_t));
+        err_code = rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
+                                  &m_boot_count, sizeof (uint32_t));
     }
 
     m_boot_count++;
