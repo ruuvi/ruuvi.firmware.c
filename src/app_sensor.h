@@ -435,8 +435,8 @@ void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt);
  * Call this function during initialization process to take a VDD sample
  * for the first heartbeat message.
  *
- * @param[out] RD_SUCCESS on success
- * @param[out] RD_ERROR_INVALID_STATE if ADC is not prepared
+ * @retval RD_SUCCESS on success
+ * @retval RD_ERROR_INVALID_STATE if ADC is not prepared
  */
 rd_status_t app_sensor_vdd_sample (void);
 
