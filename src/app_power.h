@@ -7,7 +7,7 @@
  */
 /*@{*/
 /**
- * @defgroup app_power
+ * @defgroup app_power Power configuration
  * @brief Enable regulators, reset and enter bootloader functions.
  *
  */
