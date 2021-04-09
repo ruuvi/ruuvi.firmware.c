@@ -1,4 +1,7 @@
 # Changelog
+## 3.30.1 (in progress)
+ * Fix VDD sampling for the first data broadcast
+
 ## 3.30.0
  - Fix Kalervo support
  - Configure measurement and broadcast interval separately
