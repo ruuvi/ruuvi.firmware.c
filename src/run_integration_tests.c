@@ -36,7 +36,7 @@
 /** @{ */
 
 /**
- * @file run_integration_test.h
+ * \@file run_integration_test.h
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2020-02-03
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
@@ -184,4 +184,4 @@ void integration_tests_run (void)
     integration_test_stop();
 }
 
-/*@}*/
+/** @}*/

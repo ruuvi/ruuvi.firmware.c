@@ -13,7 +13,7 @@
  * @defgroup app_config Application configuration
  * @brief Configure application enabled modules and parameters.
  */
-/** @ }*/
+/** @}*/
 /**
  * @addtogroup SDK15
  */
@@ -440,5 +440,5 @@
 #   define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
 #endif
 
-/*@}*/
+/** @}*/
 #endif
