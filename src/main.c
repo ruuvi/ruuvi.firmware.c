@@ -29,6 +29,7 @@
 #include "ruuvi_task_flash.h"
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
+#include "ruuvi_task_adc.h"
 
 #if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
@@ -82,6 +83,7 @@ void setup (void)
     // Allow fail on boards which do not have accelerometer.
     (void) app_sensor_acc_thr_set (&motion_threshold);
     err_code |= app_comms_init (APP_LOCKED_AT_BOOT);
+    err_code |= app_sensor_vdd_sample();
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
     err_code |= app_led_deactivate (RB_LED_STATUS_ERROR);
