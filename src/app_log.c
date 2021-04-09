@@ -460,5 +460,3 @@ void app_log_purge_flash (void)
     return;
 }
 #endif
-
-/** @} */

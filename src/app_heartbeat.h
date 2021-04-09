@@ -4,7 +4,7 @@
 /**
  * @file app_heartbeat.h
  * @author Otso Jousimaa <otso@ojousima.net>
- * @data 2020-06-12
+ * @date 2020-06-12
  * @copyright Ruuvi Innovations Ltd, License BSD-3-Clause.
  *
  * Read and transmit latest sensor data via any means possible,
