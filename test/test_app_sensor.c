@@ -1110,3 +1110,21 @@ void test_app_sensor_handle_temperature_timeout (void)
     TEST_ASSERT (RD_ERROR_TIMEOUT == err_code);
     TEST_ASSERT (1 == m_expect_sends);
 }
+
+void test_app_sensor_vdd_sample_ok (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    static rd_sensor_configuration_t configuration =
+    {
+        .dsp_function  = RD_SENSOR_CFG_DEFAULT,
+        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
+        .mode          = RD_SENSOR_CFG_SINGLE,
+        .resolution    = RD_SENSOR_CFG_DEFAULT,
+        .samplerate    = RD_SENSOR_CFG_DEFAULT,
+        .scale         = RD_SENSOR_CFG_DEFAULT
+    };
+    rt_adc_vdd_prepare_ExpectWithArrayAndReturn (&configuration, 1, RD_SUCCESS);
+    rt_adc_vdd_sample_ExpectAndReturn (RD_SUCCESS);
+    err_code |= app_sensor_vdd_sample();
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
