@@ -429,6 +429,17 @@ rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t ri_reply_fp,
  */
 void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt);
 
+/**
+ * @brief Prepare VDD and take a sample
+ *
+ * Call this function during initialization process to take a VDD sample
+ * for the first heartbeat message.
+ *
+ * @param[out] RD_SUCCESS on success
+ * @param[out] RD_ERROR_INVALID_STATE if ADC is not prepared
+ */
+rd_status_t app_sensor_vdd_sample (void);
+
 #ifdef RUUVI_RUN_TESTS
 void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
 #endif
