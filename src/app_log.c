@@ -416,7 +416,6 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 
     memset (&m_log_input_block, 0, sizeof (m_log_input_block));
     m_log_input_block.start_timestamp_s = end_timestamp;
-
     return err_code;
 }
 
