@@ -33,6 +33,10 @@ rd_status_t app_heartbeat_init (void);
 /**
  * @brief (Re)starts app heartbeats.
  *
+ * The hearbeat must be call to begin "Feed" the Watchdog. The "Fed" interval is
+ * defined by APP_WDT_INTERVAL_MS in main. The board will reset if not fed with
+ * predefined time interval.
+ *
  * Calling this while heartbeats are ongoing has no effect.
  *
  * @retval RD_SUCCESS on success
