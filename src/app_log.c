@@ -57,11 +57,11 @@ static
 #endif
 uint16_t m_boot_count = 0;
 
-static rd_status_t store_block (const app_log_record_t * const record)
+static rd_status_t store_block (app_log_record_t * record)
 {
     static uint8_t record_idx = 0;
     uint8_t num_tries = 0;
-    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
+    uint32_t end_timestamp = record->end_timestamp_s;
     rd_status_t err_code = RD_SUCCESS;
 
     do
@@ -100,7 +100,7 @@ static rd_status_t store_block (const app_log_record_t * const record)
 
         err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
                                     target_record,
-                                    &m_log_input_block, sizeof (m_log_input_block));
+                                    &record, sizeof (record));
 
         while (rt_flash_busy())
         {
@@ -117,8 +117,8 @@ static rd_status_t store_block (const app_log_record_t * const record)
         record_idx++;
     }
 
-    memset (&m_log_input_block, 0, sizeof (m_log_input_block));
-    m_log_input_block.start_timestamp_s = end_timestamp;
+    memset (&record, 0, sizeof (record));
+    record->start_timestamp_s = end_timestamp;
     return err_code;
 }
 
