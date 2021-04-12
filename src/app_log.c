@@ -409,7 +409,8 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 
         if (RD_SUCCESS == err_code)
         {
-            store_block (&m_log_input_block);
+            err_code |= store_block (&m_log_input_block);
+            RD_ERROR_CHECK (err_code, RD_SUCCESS);
             memcpy (&m_log_config, configuration, sizeof (m_log_config));
         }
     }
