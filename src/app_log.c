@@ -238,6 +238,8 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
             LOG ("LOG: Storing block\r\n");
             err_code |= store_block (&m_log_input_block);
             RD_ERROR_CHECK (err_code, RD_SUCCESS);
+            memset (&m_log_input_block, 0, sizeof (m_log_input_block));
+            m_log_input_block.start_timestamp_s = end_timestamp;
         }
 
         m_last_sample_ms = sample->timestamp_ms;
@@ -248,8 +250,6 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         // No action needed.
     }
 
-    memset (&m_log_input_block, 0, sizeof (m_log_input_block));
-    m_log_input_block.start_timestamp_s = end_timestamp;
     return err_code;
 }
 
@@ -411,12 +411,12 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
         {
             err_code |= store_block (&m_log_input_block);
             RD_ERROR_CHECK (err_code, RD_SUCCESS);
+            memset (&m_log_input_block, 0, sizeof (m_log_input_block));
+            m_log_input_block.start_timestamp_s = end_timestamp;
             memcpy (&m_log_config, configuration, sizeof (m_log_config));
         }
     }
 
-    memset (&m_log_input_block, 0, sizeof (m_log_input_block));
-    m_log_input_block.start_timestamp_s = end_timestamp;
     return err_code;
 }
 
