@@ -57,11 +57,10 @@ static
 #endif
 uint16_t m_boot_count = 0;
 
-static rd_status_t store_block (const app_log_record_t * const record)
+static rd_status_t store_block (const app_log_record_t * const p_record)
 {
     static uint8_t record_idx = 0;
     uint8_t num_tries = 0;
-    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
     rd_status_t err_code = RD_SUCCESS;
 
     do
@@ -100,7 +99,7 @@ static rd_status_t store_block (const app_log_record_t * const record)
 
         err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
                                     target_record,
-                                    &m_log_input_block, sizeof (m_log_input_block));
+                                    p_record, sizeof (app_log_record_t));
 
         while (rt_flash_busy())
         {
@@ -117,8 +116,6 @@ static rd_status_t store_block (const app_log_record_t * const record)
         record_idx++;
     }
 
-    memset (&m_log_input_block, 0, sizeof (m_log_input_block));
-    m_log_input_block.start_timestamp_s = end_timestamp;
     return err_code;
 }
 
@@ -210,6 +207,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
 {
     rd_status_t err_code = RD_SUCCESS;
     uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000U);
+    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
     LOGD ("LOG: Sample received\r\n");
 
     // Always store first sample.
@@ -240,6 +238,8 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
             LOG ("LOG: Storing block\r\n");
             err_code |= store_block (&m_log_input_block);
             RD_ERROR_CHECK (err_code, RD_SUCCESS);
+            memset (&m_log_input_block, 0, sizeof (m_log_input_block));
+            m_log_input_block.start_timestamp_s = end_timestamp;
         }
 
         m_last_sample_ms = sample->timestamp_ms;
@@ -395,6 +395,7 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
 rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
+    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
 
     if (NULL == configuration)
     {
@@ -408,7 +409,10 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 
         if (RD_SUCCESS == err_code)
         {
-            store_block (&m_log_input_block);
+            err_code |= store_block (&m_log_input_block);
+            RD_ERROR_CHECK (err_code, RD_SUCCESS);
+            memset (&m_log_input_block, 0, sizeof (m_log_input_block));
+            m_log_input_block.start_timestamp_s = end_timestamp;
             memcpy (&m_log_config, configuration, sizeof (m_log_config));
         }
     }
