@@ -94,15 +94,15 @@ $(document).ready(function(){initNavTree('application__mode__debug_8h_source.htm
 <div class="line"><a name="l00006"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#acba659841b897024f7d12dafd1fd706b">    6</a></span>&#160;<span class="preprocessor">#define APP_LOG_LEVEL RI_LOG_LEVEL_INFO</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#a25d771b6d2f753e677805a4177cdaaa1">    7</a></span>&#160;<span class="preprocessor">#define APP_WDT_INTERVAL_MS (10U*60U*1000U)</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#ifndef APP_HEARTBEAT_INTERVAL_MS</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#ae7994934fcc6741becb832312d68e85d">   10</a></span>&#160;<span class="preprocessor">#   define APP_HEARTBEAT_INTERVAL_MS (221U)</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#ifndef APP_LOG_INTERVAL_S</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#a6198c2c5512397bc756c6c52e2040024">   14</a></span>&#160;<span class="preprocessor">#   define APP_LOG_INTERVAL_S (1U) </span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#acae055215ff5841164bcca40d0c452f6">   10</a></span>&#160;<span class="preprocessor">#define APP_BLE_INTERVAL_MS (221U)</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#a28bedd4bce29ef889597992be82a48f6">   13</a></span>&#160;<span class="preprocessor">#define APP_NUM_REPEATS 4</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#ae7994934fcc6741becb832312d68e85d">   16</a></span>&#160;<span class="preprocessor">#define APP_HEARTBEAT_INTERVAL_MS (APP_BLE_INTERVAL_MS * APP_NUM_REPEATS)</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="application__mode__debug_8h.html#a6198c2c5512397bc756c6c52e2040024">   18</a></span>&#160;<span class="preprocessor">#define APP_LOG_INTERVAL_S (1U) </span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span> </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#endif</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

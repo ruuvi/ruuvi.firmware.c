@@ -10,5 +10,6 @@ var app__sensor_8c =
     [ "app_sensor_handle", "group__app__sensor.html#ga4851fad1622b44aae8b0b59c58e3221d", null ],
     [ "app_sensor_init", "group__app__sensor.html#ga4ca51982d7d6e78a95417f4b741f4e40", null ],
     [ "app_sensor_uninit", "group__app__sensor.html#ga29ed20edf53d81b3771d5836091ff71e", null ],
-    [ "app_sensor_vdd_measure_isr", "group__app__sensor.html#gab130b521ae992c645e83e8231de77783", null ]
+    [ "app_sensor_vdd_measure_isr", "group__app__sensor.html#gab130b521ae992c645e83e8231de77783", null ],
+    [ "app_sensor_vdd_sample", "group__app__sensor.html#ga2642e4561032bf7dc329d9cc41e904f0", null ]
 ];

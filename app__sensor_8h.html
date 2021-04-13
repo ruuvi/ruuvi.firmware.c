@@ -97,6 +97,7 @@ $(document).ready(function(){initNavTree('app__sensor_8h.html',''); initResizabl
 <code>#include &quot;ruuvi_interface_communication_radio.h&quot;</code><br />
 <code>#include &quot;ruuvi_task_sensor.h&quot;</code><br />
 <code>#include &quot;ruuvi_interface_environmental_mcu.h&quot;</code><br />
+<code>#include &quot;ruuvi_interface_tmp117.h&quot;</code><br />
 </div>
 <p><a href="app__sensor_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -149,6 +150,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gab130b521ae992c645e83e8231de77783"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__sensor.html#gab130b521ae992c645e83e8231de77783">app_sensor_vdd_measure_isr</a> (const ri_radio_activity_evt_t evt)</td></tr>
 <tr class="memdesc:gab130b521ae992c645e83e8231de77783"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronize VDD measurement to radio activity.  <a href="group__app__sensor.html#gab130b521ae992c645e83e8231de77783">More...</a><br /></td></tr>
 <tr class="separator:gab130b521ae992c645e83e8231de77783"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2642e4561032bf7dc329d9cc41e904f0"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__sensor.html#ga2642e4561032bf7dc329d9cc41e904f0">app_sensor_vdd_sample</a> (void)</td></tr>
+<tr class="memdesc:ga2642e4561032bf7dc329d9cc41e904f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare VDD and take a sample.  <a href="group__app__sensor.html#ga2642e4561032bf7dc329d9cc41e904f0">More...</a><br /></td></tr>
+<tr class="separator:ga2642e4561032bf7dc329d9cc41e904f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>Otso Jousimaa <a href="#" onclick="location.href='mai'+'lto:'+'ots'+'o@'+'ojo'+'us'+'ima'+'.n'+'et'; return false;">otso@<span style="display: none;">.nosp@m.</span>ojou<span style="display: none;">.nosp@m.</span>sima.<span style="display: none;">.nosp@m.</span>net</a> </dd></dl>

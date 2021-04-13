@@ -1,0 +1,182 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>main.c</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">/**</a>
+<a name="ln2"> * @defgroup main Program main</a>
+<a name="ln3"> *</a>
+<a name="ln4"> */</a>
+<a name="ln5">/** @{ */</a>
+<a name="ln6">/**</a>
+<a name="ln7"> * @file main.c</a>
+<a name="ln8"> * @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
+<a name="ln9"> * @date 2020-07-13</a>
+<a name="ln10"> * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
+<a name="ln11"> */</a>
+<a name="ln12">#include &quot;app_config.h&quot;</a>
+<a name="ln13">#include &quot;app_button.h&quot;</a>
+<a name="ln14">#include &quot;app_comms.h&quot;</a>
+<a name="ln15">#include &quot;app_heartbeat.h&quot;</a>
+<a name="ln16">#include &quot;app_led.h&quot;</a>
+<a name="ln17">#include &quot;app_log.h&quot;</a>
+<a name="ln18">#include &quot;app_power.h&quot;</a>
+<a name="ln19">#include &quot;app_sensor.h&quot;</a>
+<a name="ln20">#include &quot;main.h&quot;</a>
+<a name="ln21">#include &quot;run_integration_tests.h&quot;</a>
+<a name="ln22">#include &quot;ruuvi_interface_log.h&quot;</a>
+<a name="ln23">#include &quot;ruuvi_interface_power.h&quot;</a>
+<a name="ln24">#include &quot;ruuvi_interface_scheduler.h&quot;</a>
+<a name="ln25">#include &quot;ruuvi_interface_timer.h&quot;</a>
+<a name="ln26">#include &quot;ruuvi_interface_watchdog.h&quot;</a>
+<a name="ln27">#include &quot;ruuvi_interface_yield.h&quot;</a>
+<a name="ln28">#include &quot;ruuvi_task_button.h&quot;</a>
+<a name="ln29">#include &quot;ruuvi_task_flash.h&quot;</a>
+<a name="ln30">#include &quot;ruuvi_task_gpio.h&quot;</a>
+<a name="ln31">#include &quot;ruuvi_task_led.h&quot;</a>
+<a name="ln32">#include &quot;ruuvi_task_adc.h&quot;</a>
+<a name="ln33"> </a>
+<a name="ln34">#if (!RUUVI_RUN_TESTS)</a>
+<a name="ln35">#ifndef CEEDLING</a>
+<a name="ln36">static</a>
+<a name="ln37">#endif</a>
+<a name="ln38">void on_wdt (void)</a>
+<a name="ln39">{</a>
+<a name="ln40">    // Store cause of reset to flash - TODO</a>
+<a name="ln41">}</a>
+<a name="ln42">#endif</a>
+<a name="ln43"> </a>
+<a name="ln44">#ifndef CEEDLING</a>
+<a name="ln45">static</a>
+<a name="ln46">#endif</a>
+<a name="ln47">void app_on_error (const rd_status_t error,</a>
+<a name="ln48">                   const bool fatal,</a>
+<a name="ln49">                   const char * file,</a>
+<a name="ln50">                   const int line)</a>
+<a name="ln51">{</a>
+<a name="ln52">    // TODO: store error source to flash.</a>
+<a name="ln53">    if (fatal)</a>
+<a name="ln54">    {</a>
+<a name="ln55">        ri_power_reset();</a>
+<a name="ln56">    }</a>
+<a name="ln57">}</a>
+<a name="ln58"> </a>
+<a name="ln59">/**</a>
+<a name="ln60"> * @brief setup MCU peripherals and board peripherals.</a>
+<a name="ln61"> *</a>
+<a name="ln62"> */</a>
+<a name="ln63">void setup (void)</a>
+<a name="ln64">{</a>
+<a name="ln65">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln66">    float motion_threshold = APP_MOTION_THRESHOLD;</a>
+<a name="ln67">#   if (!RUUVI_RUN_TESTS)</a>
+<a name="ln68">    err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &amp;on_wdt);</a>
+<a name="ln69">    err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.</a>
+<a name="ln70">#   endif</a>
+<a name="ln71">    err_code |= ri_yield_init();</a>
+<a name="ln72">    err_code |= ri_timer_init();</a>
+<a name="ln73">    err_code |= ri_scheduler_init();</a>
+<a name="ln74">    err_code |= rt_gpio_init();</a>
+<a name="ln75">    err_code |= ri_yield_low_power_enable (true);</a>
+<a name="ln76">    err_code |= rt_flash_init();</a>
+<a name="ln77">    err_code |= app_led_init();</a>
+<a name="ln78">    err_code |= app_led_activate (RB_LED_STATUS_ERROR);</a>
+<a name="ln79">    err_code |= app_button_init();</a>
+<a name="ln80">    err_code |= app_dc_dc_init();</a>
+<a name="ln81">    err_code |= app_sensor_init();</a>
+<a name="ln82">    err_code |= app_log_init();</a>
+<a name="ln83">    // Allow fail on boards which do not have accelerometer.</a>
+<a name="ln84">    (void) app_sensor_acc_thr_set (&amp;motion_threshold);</a>
+<a name="ln85">    err_code |= app_comms_init (APP_LOCKED_AT_BOOT);</a>
+<a name="ln86">    err_code |= app_sensor_vdd_sample();</a>
+<a name="ln87">    err_code |= app_heartbeat_init();</a>
+<a name="ln88">    err_code |= app_heartbeat_start();</a>
+<a name="ln89">    err_code |= app_led_deactivate (RB_LED_STATUS_ERROR);</a>
+<a name="ln90"> </a>
+<a name="ln91">    if (RD_SUCCESS == err_code)</a>
+<a name="ln92">    {</a>
+<a name="ln93">        err_code |= app_led_activate (RB_LED_STATUS_OK);</a>
+<a name="ln94">        err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);</a>
+<a name="ln95">        err_code |= app_led_deactivate (RB_LED_STATUS_OK);</a>
+<a name="ln96">    }</a>
+<a name="ln97"> </a>
+<a name="ln98">    err_code |= app_led_activity_set (RB_LED_ACTIVITY);</a>
+<a name="ln99">    rd_error_cb_set (&amp;app_on_error);</a>
+<a name="ln100">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln101">}</a>
+<a name="ln102"> </a>
+<a name="ln103">#ifdef  CEEDLING</a>
+<a name="ln104">int app_main (void)</a>
+<a name="ln105">#else</a>
+<a name="ln106">int main (void)</a>
+<a name="ln107">#endif</a>
+<a name="ln108">{</a>
+<a name="ln109">#   if RUUVI_RUN_TESTS</a>
+<a name="ln110">    integration_tests_run();</a>
+<a name="ln111">#   endif</a>
+<a name="ln112">    setup();</a>
+<a name="ln113"> </a>
+<a name="ln114">    do</a>
+<a name="ln115">    {</a>
+<a name="ln116">        ri_scheduler_execute();</a>
+<a name="ln117">        // Sleep - woken up on event</a>
+<a name="ln118">        // Do not indicate activity here to conserve power.</a>
+<a name="ln119">        // Sensor reads take ~20ms, having led on for that time is expensive.</a>
+<a name="ln120">        ri_yield();</a>
+<a name="ln121">        // Prevent loop being optimized away</a>
+<a name="ln122">        __asm__ (&quot;&quot;);</a>
+<a name="ln123">    } while (LOOP_FOREVER);</a>
+<a name="ln124"> </a>
+<a name="ln125">    // Intentionally non-reachable code unless unit testing.</a>
+<a name="ln126">    return -1;</a>
+<a name="ln127">}</a>
+<a name="ln128"> </a>
+<a name="ln129">/** @} */</a>
+
+</code></pre>
+<div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'error'.</p></div>
+<div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'file'.</p></div>
+<div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'line'.</p></div>
+<div class="balloon" rel="78"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="89"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="93"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="95"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="98"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>

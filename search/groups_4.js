@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['program_20main_347',['Program main',['../group__main.html',1,'']]]
+  ['power_20configuration_363',['Power configuration',['../group__app__power.html',1,'']]],
+  ['program_20main_364',['Program main',['../group__main.html',1,'']]]
 ];

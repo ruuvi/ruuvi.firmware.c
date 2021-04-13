@@ -6,6 +6,7 @@ var group__app__comms =
     [ "APP_COMM_ADV_REPEAT_FOREVER", "group__app__comms.html#gae691154ba72e79a6084f222fb66ad5c8", null ],
     [ "APP_FAST_ADV_TIME_MS", "group__app__comms.html#gab97f4a761e61232106a2c303123937e8", null ],
     [ "BLOCKING_COMM_TIMEOUT_MS", "group__app__comms.html#ga28a6a58e483c8d843d391955e8c45823", null ],
+    [ "app_comms_ble_adv_init", "group__app__comms.html#ga51cd8dd182881fffb4bcd3685efd5452", null ],
     [ "app_comms_ble_init", "group__app__comms.html#ga646b738f8c7047c63f1f0e3b9eb7e534", null ],
     [ "app_comms_ble_uninit", "group__app__comms.html#ga16aa163f983d508c973c9ac60b5f9f78", null ],
     [ "app_comms_bleadv_send_count_get", "group__app__comms.html#gadf9324a5b1ef552828868dc315c51709", null ],

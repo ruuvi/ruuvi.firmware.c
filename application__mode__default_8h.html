@@ -100,8 +100,14 @@ Macros</h2></td></tr>
 <tr class="separator:a71eb63bb1b50095239691efa80769e72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab112cf8d9e1546fe79159d1b8c32f2e3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="application__mode__default_8h.html#ab112cf8d9e1546fe79159d1b8c32f2e3">APP_FW_VARIANT</a>&#160;&#160;&#160;&quot;+default&quot;</td></tr>
 <tr class="separator:ab112cf8d9e1546fe79159d1b8c32f2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae7994934fcc6741becb832312d68e85d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="application__mode__default_8h.html#ae7994934fcc6741becb832312d68e85d">APP_HEARTBEAT_INTERVAL_MS</a>&#160;&#160;&#160;(1285U)</td></tr>
-<tr class="memdesc:ae7994934fcc6741becb832312d68e85d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Communicate sensor data at this interval. 1285 matches Apple guideline.  <a href="application__mode__default_8h.html#ae7994934fcc6741becb832312d68e85d">More...</a><br /></td></tr>
+<tr class="memitem:acae055215ff5841164bcca40d0c452f6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="application__mode__default_8h.html#acae055215ff5841164bcca40d0c452f6">APP_BLE_INTERVAL_MS</a>&#160;&#160;&#160;(1285U)</td></tr>
+<tr class="memdesc:acae055215ff5841164bcca40d0c452f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Communicate sensor data at this interval. 1285 matches Apple guideline.  <a href="application__mode__default_8h.html#acae055215ff5841164bcca40d0c452f6">More...</a><br /></td></tr>
+<tr class="separator:acae055215ff5841164bcca40d0c452f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28bedd4bce29ef889597992be82a48f6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="application__mode__default_8h.html#a28bedd4bce29ef889597992be82a48f6">APP_NUM_REPEATS</a>&#160;&#160;&#160;2</td></tr>
+<tr class="memdesc:a28bedd4bce29ef889597992be82a48f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">repeat same data N times in advertisement, reduce sensor reads.  <a href="application__mode__default_8h.html#a28bedd4bce29ef889597992be82a48f6">More...</a><br /></td></tr>
+<tr class="separator:a28bedd4bce29ef889597992be82a48f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7994934fcc6741becb832312d68e85d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="application__mode__default_8h.html#ae7994934fcc6741becb832312d68e85d">APP_HEARTBEAT_INTERVAL_MS</a>&#160;&#160;&#160;(<a class="el" href="application__mode__longlife_8h.html#acae055215ff5841164bcca40d0c452f6">APP_BLE_INTERVAL_MS</a> * <a class="el" href="application__mode__longlife_8h.html#a28bedd4bce29ef889597992be82a48f6">APP_NUM_REPEATS</a>)</td></tr>
+<tr class="memdesc:ae7994934fcc6741becb832312d68e85d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Refresh sensor data at this interval.  <a href="application__mode__default_8h.html#ae7994934fcc6741becb832312d68e85d">More...</a><br /></td></tr>
 <tr class="separator:ae7994934fcc6741becb832312d68e85d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bf1693841f771e881c13a86114bf8de"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="application__mode__default_8h.html#a3bf1693841f771e881c13a86114bf8de">APP_BATTERY_SAMPLE_MS</a>&#160;&#160;&#160;(60ULL*1000ULL)</td></tr>
 <tr class="memdesc:a3bf1693841f771e881c13a86114bf8de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resample battery voltage at this interval.  <a href="application__mode__default_8h.html#a3bf1693841f771e881c13a86114bf8de">More...</a><br /></td></tr>
@@ -139,7 +145,25 @@ Macros</h2></td></tr>
 
 <p>Resample battery voltage at this interval. </p>
 
-<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00035">35</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00045">45</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+
+</div>
+</div>
+<a id="acae055215ff5841164bcca40d0c452f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acae055215ff5841164bcca40d0c452f6">&#9670;&nbsp;</a></span>APP_BLE_INTERVAL_MS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define APP_BLE_INTERVAL_MS&#160;&#160;&#160;(1285U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Communicate sensor data at this interval. 1285 matches Apple guideline. </p>
+
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00030">30</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
 
 </div>
 </div>
@@ -157,7 +181,7 @@ Macros</h2></td></tr>
 
 <p>Time to long press of a button. </p>
 
-<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00040">40</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00050">50</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
 
 </div>
 </div>
@@ -175,7 +199,7 @@ Macros</h2></td></tr>
 
 <p>Configuration mode disabled on this timeout. </p>
 
-<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00045">45</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00055">55</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
 
 </div>
 </div>
@@ -236,14 +260,14 @@ Macros</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define APP_HEARTBEAT_INTERVAL_MS&#160;&#160;&#160;(1285U)</td>
+          <td class="memname">#define APP_HEARTBEAT_INTERVAL_MS&#160;&#160;&#160;(<a class="el" href="application__mode__longlife_8h.html#acae055215ff5841164bcca40d0c452f6">APP_BLE_INTERVAL_MS</a> * <a class="el" href="application__mode__longlife_8h.html#a28bedd4bce29ef889597992be82a48f6">APP_NUM_REPEATS</a>)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Communicate sensor data at this interval. 1285 matches Apple guideline. </p>
+<p>Refresh sensor data at this interval. </p>
 
-<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00030">30</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00040">40</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
 
 </div>
 </div>
@@ -259,7 +283,7 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00053">53</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00063">63</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
 
 </div>
 </div>
@@ -275,7 +299,25 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00049">49</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00059">59</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
+
+</div>
+</div>
+<a id="a28bedd4bce29ef889597992be82a48f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28bedd4bce29ef889597992be82a48f6">&#9670;&nbsp;</a></span>APP_NUM_REPEATS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define APP_NUM_REPEATS&#160;&#160;&#160;2</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>repeat same data N times in advertisement, reduce sensor reads. </p>
+
+<p class="definition">Definition at line <a class="el" href="application__mode__default_8h_source.html#l00035">35</a> of file <a class="el" href="application__mode__default_8h_source.html">application_mode_default.h</a>.</p>
 
 </div>
 </div>

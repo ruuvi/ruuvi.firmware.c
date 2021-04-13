@@ -91,6 +91,11 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>APP_BATTERY_SAMPLE_MS
 : <a class="el" href="application__mode__default_8h.html#a3bf1693841f771e881c13a86114bf8de">application_mode_default.h</a>
 </li>
+<li>APP_BLE_INTERVAL_MS
+: <a class="el" href="application__mode__default_8h.html#acae055215ff5841164bcca40d0c452f6">application_mode_default.h</a>
+, <a class="el" href="application__mode__longlife_8h.html#acae055215ff5841164bcca40d0c452f6">application_mode_longlife.h</a>
+, <a class="el" href="application__mode__debug_8h.html#acae055215ff5841164bcca40d0c452f6">application_mode_debug.h</a>
+</li>
 <li>app_button_init()
 : <a class="el" href="group__app__button.html#gac95bed5758bf6c73e2cd8029397cabd3">app_button.c</a>
 , <a class="el" href="group__app__button.html#gac95bed5758bf6c73e2cd8029397cabd3">app_button.h</a>
@@ -106,6 +111,9 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 </li>
 <li>APP_COMMS_BIDIR_ENABLED
 : <a class="el" href="group___s_d_k15.html#gae3f4ac87ea584a2f20fc740f5679da61">app_config.h</a>
+</li>
+<li>app_comms_ble_adv_init()
+: <a class="el" href="group__app__comms.html#ga51cd8dd182881fffb4bcd3685efd5452">app_comms.c</a>
 </li>
 <li>app_comms_ble_init()
 : <a class="el" href="group__app__comms.html#ga646b738f8c7047c63f1f0e3b9eb7e534">app_comms.c</a>
@@ -132,11 +140,14 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 : <a class="el" href="application__mode__default_8h.html#a2259e052a2506e3ae914435ed7e952a0">application_mode_default.h</a>
 </li>
 <li>app_dc_dc_init()
-: <a class="el" href="app__power_8c.html#a03f65454c667265b967dafb1865b5727">app_power.c</a>
-, <a class="el" href="app__power_8h.html#a03f65454c667265b967dafb1865b5727">app_power.h</a>
+: <a class="el" href="group__app.html#ga03f65454c667265b967dafb1865b5727">app_power.c</a>
+, <a class="el" href="group__app.html#ga03f65454c667265b967dafb1865b5727">app_power.h</a>
 </li>
 <li>APP_FAST_ADV_TIME_MS
 : <a class="el" href="group__app__comms.html#gab97f4a761e61232106a2c303123937e8">app_comms.h</a>
+</li>
+<li>APP_FLASH_LOG_BOOT_COUNTER_RECORD
+: <a class="el" href="group___s_d_k15.html#gacf2255f784f3313dfb30142a20fea6b4">app_config.h</a>
 </li>
 <li>APP_FLASH_LOG_CONFIG_RECORD
 : <a class="el" href="group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8">app_config.h</a>
@@ -177,12 +188,16 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>APP_FLASH_SENSOR_SHTCX_RECORD
 : <a class="el" href="group___s_d_k15.html#ga184618eae0771a6809632edf433d5945">app_config.h</a>
 </li>
+<li>APP_FLASH_SENSOR_TMP117_RECORD
+: <a class="el" href="group___s_d_k15.html#gaff0527657d77db54348457e37cbf02db">app_config.h</a>
+</li>
 <li>APP_FW_NAME
 : <a class="el" href="application__mode__default_8h.html#af0b3d65827c9965bcea7defc3c1528b9">application_mode_default.h</a>
 </li>
 <li>APP_FW_VARIANT
 : <a class="el" href="application__mode__debug_8h.html#ab112cf8d9e1546fe79159d1b8c32f2e3">application_mode_debug.h</a>
 , <a class="el" href="application__mode__default_8h.html#ab112cf8d9e1546fe79159d1b8c32f2e3">application_mode_default.h</a>
+, <a class="el" href="application__mode__longlife_8h.html#ab112cf8d9e1546fe79159d1b8c32f2e3">application_mode_longlife.h</a>
 </li>
 <li>APP_FW_VERSION
 : <a class="el" href="application__mode__default_8h.html#a71eb63bb1b50095239691efa80769e72">application_mode_default.h</a>
@@ -235,8 +250,8 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 : <a class="el" href="application__mode__default_8h.html#a531b31859ed758eaff01c4d9046a72a7">application_mode_default.h</a>
 </li>
 <li>app_log_config_get()
-: <a class="el" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log.c</a>
-, <a class="el" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log.h</a>
+: <a class="el" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log.h</a>
+, <a class="el" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log.c</a>
 </li>
 <li>app_log_config_set()
 : <a class="el" href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">app_log.c</a>
@@ -252,6 +267,7 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>APP_LOG_INTERVAL_S
 : <a class="el" href="group___s_d_k15.html#ga6198c2c5512397bc756c6c52e2040024">app_config.h</a>
 , <a class="el" href="application__mode__debug_8h.html#a6198c2c5512397bc756c6c52e2040024">application_mode_debug.h</a>
+, <a class="el" href="application__mode__longlife_8h.html#a6198c2c5512397bc756c6c52e2040024">application_mode_longlife.h</a>
 </li>
 <li>APP_LOG_LEVEL
 : <a class="el" href="group___s_d_k15.html#gacba659841b897024f7d12dafd1fd706b">app_config.h</a>
@@ -267,8 +283,8 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 : <a class="el" href="group___s_d_k15.html#ga7d5ce0a2293dabc4b0a957e57cbfa8a5">app_config.h</a>
 </li>
 <li>app_log_process()
-: <a class="el" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log.c</a>
-, <a class="el" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log.h</a>
+: <a class="el" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log.h</a>
+, <a class="el" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log.c</a>
 </li>
 <li>app_log_purge_flash()
 : <a class="el" href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log.c</a>
@@ -289,6 +305,11 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 </li>
 <li>APP_NFC_ENABLED
 : <a class="el" href="group___s_d_k15.html#gaf05c249ec7480800802fc147080fa99f">app_config.h</a>
+</li>
+<li>APP_NUM_REPEATS
+: <a class="el" href="application__mode__debug_8h.html#a28bedd4bce29ef889597992be82a48f6">application_mode_debug.h</a>
+, <a class="el" href="application__mode__default_8h.html#a28bedd4bce29ef889597992be82a48f6">application_mode_default.h</a>
+, <a class="el" href="application__mode__longlife_8h.html#a28bedd4bce29ef889597992be82a48f6">application_mode_longlife.h</a>
 </li>
 <li>APP_SELFTEST_OK_DELAY_MS
 : <a class="el" href="main_8h.html#af5a5662b0addd9448b22094c663fecd7">main.h</a>
@@ -422,8 +443,26 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>APP_SENSOR_SHTCX_SCALE
 : <a class="el" href="group___s_d_k15.html#ga68a4de6c7b8f4041bd234c7c0022de9f">app_config.h</a>
 </li>
+<li>APP_SENSOR_TMP117_DSP_FUNC
+: <a class="el" href="group___s_d_k15.html#ga3b6972768df7820c27787a4ada04c1ae">app_config.h</a>
+</li>
+<li>APP_SENSOR_TMP117_DSP_PARAM
+: <a class="el" href="group___s_d_k15.html#ga36f22193742bd001e20246ba34e67997">app_config.h</a>
+</li>
 <li>APP_SENSOR_TMP117_ENABLED
 : <a class="el" href="group___s_d_k15.html#ga04483306f85efb4daf9095194454709c">app_config.h</a>
+</li>
+<li>APP_SENSOR_TMP117_MODE
+: <a class="el" href="group___s_d_k15.html#ga95af9f86bf511194fb929cf1245878fe">app_config.h</a>
+</li>
+<li>APP_SENSOR_TMP117_RESOLUTION
+: <a class="el" href="group___s_d_k15.html#ga3780d2d9d504059d36d3f654a0d3b798">app_config.h</a>
+</li>
+<li>APP_SENSOR_TMP117_SAMPLERATE
+: <a class="el" href="group___s_d_k15.html#gacf49e8c9f978807a2d46251bd6c7e3b1">app_config.h</a>
+</li>
+<li>APP_SENSOR_TMP117_SCALE
+: <a class="el" href="group___s_d_k15.html#ga158490bf402ea6d9201ba05318424004">app_config.h</a>
 </li>
 <li>app_sensor_uninit()
 : <a class="el" href="group__app__sensor.html#ga29ed20edf53d81b3771d5836091ff71e">app_sensor.c</a>
@@ -431,218 +470,12 @@ $(document).ready(function(){initNavTree('globals.html',''); initResizable(); })
 <li>app_sensor_vdd_measure_isr()
 : <a class="el" href="group__app__sensor.html#gab130b521ae992c645e83e8231de77783">app_sensor.c</a>
 </li>
+<li>app_sensor_vdd_sample()
+: <a class="el" href="group__app__sensor.html#ga2642e4561032bf7dc329d9cc41e904f0">app_sensor.c</a>
+</li>
 <li>APP_WDT_INTERVAL_MS
 : <a class="el" href="group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1">app_config.h</a>
 , <a class="el" href="application__mode__debug_8h.html#a25d771b6d2f753e677805a4177cdaaa1">application_mode_debug.h</a>
-</li>
-</ul>
-
-
-<h3><a id="index_b"></a>- b -</h3><ul>
-<li>BLOCKING_COMM_TIMEOUT_MS
-: <a class="el" href="group__app__comms.html#ga28a6a58e483c8d843d391955e8c45823">app_comms.c</a>
-</li>
-</ul>
-
-
-<h3><a id="index_i"></a>- i -</h3><ul>
-<li>integration_test_start()
-: <a class="el" href="group__integration__test.html#ga68db7211f0d7f7a88fededc6546406a3">run_integration_tests.c</a>
-</li>
-<li>integration_test_stop()
-: <a class="el" href="group__integration__test.html#gace54e1d62959b1ac1b8399d44c8dc756">run_integration_tests.c</a>
-</li>
-<li>integration_tests_run()
-: <a class="el" href="group__integration__test.html#ga6b0a6b67d34b0a6b83aa2a2a792d708b">run_integration_tests.c</a>
-, <a class="el" href="group__integration__test.html#ga6b0a6b67d34b0a6b83aa2a2a792d708b">run_integration_tests.h</a>
-</li>
-</ul>
-
-
-<h3><a id="index_l"></a>- l -</h3><ul>
-<li>LOG_PRINT_DELAY_MS
-: <a class="el" href="group__integration__test.html#ga18c932c8b56c71f33964f44185c9e496">run_integration_tests.c</a>
-</li>
-<li>LOOP_FOREVER
-: <a class="el" href="main_8h.html#abb4360b563449b775f80a2d36f20e5bf">main.h</a>
-</li>
-</ul>
-
-
-<h3><a id="index_m"></a>- m -</h3><ul>
-<li>main()
-: <a class="el" href="group__main.html#ga840291bc02cba5474a4cb46a9b9566fe">main.c</a>
-</li>
-</ul>
-
-
-<h3><a id="index_n"></a>- n -</h3><ul>
-<li>NRF5_SDK15_CONFIGURED
-: <a class="el" href="nrf5__sdk15__app__config_8h.html#a78d2fe783ce2c2843dd058adef0f5584">nrf5_sdk15_app_config.h</a>
-</li>
-</ul>
-
-
-<h3><a id="index_o"></a>- o -</h3><ul>
-<li>on_integration_test_wdt()
-: <a class="el" href="group__integration__test.html#ga672f6ff604931f7783154259ba2fa709">run_integration_tests.c</a>
-</li>
-</ul>
-
-
-<h3><a id="index_r"></a>- r -</h3><ul>
-<li>RI_ADC_ENABLED
-: <a class="el" href="group___s_d_k15.html#gabc3ae583cd5b18ae10397acae5bf3e68">app_config.h</a>
-</li>
-<li>RI_ADC_NTC_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga6b7de40913f80b6163eba5c0df8a6913">app_config.h</a>
-</li>
-<li>RI_ADC_PHOTO_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga1a0b62d55a9671baadd0b53b9d2a657d">app_config.h</a>
-</li>
-<li>RI_ATOMIC_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga6bd483b699e1ff36b6c3b374e6876ccd">app_config.h</a>
-</li>
-<li>RI_BME280_ENABLED
-: <a class="el" href="group___s_d_k15.html#gade28ed24c83aeb15c586dc4fb1335290">app_config.h</a>
-</li>
-<li>RI_BME280_I2C_ENABLED
-: <a class="el" href="group___s_d_k15.html#gafbbecb05a6343f99b161a324c225e594">app_config.h</a>
-</li>
-<li>RI_BME280_SPI_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga2960466363a1b30d6ba549f8d75e2cb2">app_config.h</a>
-</li>
-<li>RI_COMM_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga765244b315909a38656f3a02a474c8b5">app_config.h</a>
-</li>
-<li>RI_DPS310_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga214d47181fba09e64199eef8bacb4e7e">app_config.h</a>
-</li>
-<li>RI_DPS310_SPI_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga9f40d84b3be7227706b9907b07958417">app_config.h</a>
-</li>
-<li>RI_FLASH_ENABLED
-: <a class="el" href="group___s_d_k15.html#gac412e53c991413132764c910f258808a">app_config.h</a>
-</li>
-<li>RI_GPIO_ENABLED
-: <a class="el" href="group___s_d_k15.html#gaed1c08818345fe2aca4dd61eec424ec7">app_config.h</a>
-</li>
-<li>RI_I2C_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga4b8b8a6eb72d8f75d9378ded1646d064">app_config.h</a>
-</li>
-<li>RI_LIS2DH12_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga438e218324684a3e78879d24638bceb0">app_config.h</a>
-</li>
-<li>RI_LOG_ENABLED
-: <a class="el" href="group___s_d_k15.html#gab55b9376f1e8e8ee5205a96b20f796ae">app_config.h</a>
-, <a class="el" href="application__mode__debug_8h.html#ab55b9376f1e8e8ee5205a96b20f796ae">application_mode_debug.h</a>
-</li>
-<li>RI_POWER_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga74bd398921e84b59d8f78b351abc53ac">app_config.h</a>
-</li>
-<li>RI_RADIO_ENABLED
-: <a class="el" href="group___s_d_k15.html#gaff4c6a340dde754b8408783aaf91b59c">app_config.h</a>
-</li>
-<li>RI_RTC_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga5374b4425435c043ebc58b3fbab952f7">app_config.h</a>
-</li>
-<li>RI_SCHEDULER_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga4ed255c18352a3d8a9fbeb38ed9854bd">app_config.h</a>
-</li>
-<li>RI_SHTCX_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga2b83343acccea92093f9043d587b57fa">app_config.h</a>
-</li>
-<li>RI_SPI_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga2a9af2fb5ca438027fb57ef19e6245e4">app_config.h</a>
-</li>
-<li>RI_TIMER_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga5ce3f6fbc1410e1a60baa4901e2f9109">app_config.h</a>
-</li>
-<li>RI_WATCHDOG_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga2402dcb401292bed0f9999e8101d1f97">app_config.h</a>
-</li>
-<li>RI_YIELD_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga820e587dde6a72c3e76bcfe387e4ff0d">app_config.h</a>
-</li>
-<li>RT_ADC_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga3322f841dbb56f6529886c1fa26a71c6">app_config.h</a>
-</li>
-<li>RT_ADV_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga32245aad226d413cecd9fd837ad45d88">app_config.h</a>
-</li>
-<li>RT_BUTTON_ENABLED
-: <a class="el" href="group___s_d_k15.html#gaf7734ccdd66a80d4b45d31ca1c55ced6">app_config.h</a>
-</li>
-<li>RT_COMMUNICATION_ENABLED
-: <a class="el" href="group___s_d_k15.html#gaaa6c6f15d699d1d4841e5dce7dd0e2c9">app_config.h</a>
-</li>
-<li>RT_FLASH_ENABLED
-: <a class="el" href="group___s_d_k15.html#gaa0d4d7764ffddf32adfb6e2083446517">app_config.h</a>
-</li>
-<li>RT_GATT_ENABLED
-: <a class="el" href="group___s_d_k15.html#gaf927cfc1fe95803ae622bc67897f6264">app_config.h</a>
-</li>
-<li>RT_GPIO_ENABLED
-: <a class="el" href="group___s_d_k15.html#gab041a09b0cfc52541091304900d9973c">app_config.h</a>
-</li>
-<li>RT_GPIO_INT_TABLE_SIZE
-: <a class="el" href="group___s_d_k15.html#gaaa94f501b6d2c84d1a8f2dad2426abf9">app_config.h</a>
-</li>
-<li>RT_LED_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga5fbb54def6a099ddc83097cb61fb6bbe">app_config.h</a>
-</li>
-<li>RT_MAX_LED_CFG
-: <a class="el" href="group___s_d_k15.html#ga82f9ffedbd37d9fded0b6416c6da081c">app_config.h</a>
-</li>
-<li>RT_NFC_ENABLED
-: <a class="el" href="group___s_d_k15.html#gaf8d470cb34b7e22e5f03e0febfc6ec60">app_config.h</a>
-</li>
-<li>RT_SENSOR_ENABLED
-: <a class="el" href="group___s_d_k15.html#gae99c783515a2855670970a379bfde222">app_config.h</a>
-</li>
-<li>RUUVI_BOARDS_REQ
-: <a class="el" href="main_8h.html#a957f979cde525669684a85720a9f429c">main.h</a>
-</li>
-<li>RUUVI_DRIVERS_REQ
-: <a class="el" href="main_8h.html#af79c550ca33616f29e40be11210f818c">main.h</a>
-</li>
-<li>RUUVI_ENDPOINTS_REQ
-: <a class="el" href="main_8h.html#a9fc4cf891e140eb07b1bb280963c5134">main.h</a>
-</li>
-<li>RUUVI_LIBRARIES_REQ
-: <a class="el" href="main_8h.html#a1aaa0ab143124f92cc96ee880025ede0">main.h</a>
-</li>
-<li>RUUVI_NRF5_SDK15_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga440ba3f12d133ce32de100b4c324c8ec">app_config.h</a>
-</li>
-<li>RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED
-: <a class="el" href="group___s_d_k15.html#ga7314a7262cc925ddaa2252da8e88776f">app_config.h</a>
-</li>
-</ul>
-
-
-<h3><a id="index_s"></a>- s -</h3><ul>
-<li>SENSOR_COUNT
-: <a class="el" href="group__app__sensor.html#gga06fc87d81c62e9abb8790b6e5713c55baa63fba570fa766597e039da3a69a991b">app_sensor.h</a>
-</li>
-<li>sensor_op
-: <a class="el" href="group__app__sensor.html#ga11a16c0ee195b19f5f73ef0d41ba0c3f">app_sensor.c</a>
-</li>
-<li>setup()
-: <a class="el" href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">main.c</a>
-</li>
-<li>STORAGE_BLOCK_SIZE
-: <a class="el" href="group__app__log.html#ga6aa1d7b80c152cc5a9014bc6e7095379">app_log.h</a>
-</li>
-<li>STORAGE_RECORD_HEADER_SIZE
-: <a class="el" href="group__app__log.html#ga8c9eff61a3677c2f46e7b85c15d15f01">app_log.h</a>
-</li>
-</ul>
-
-
-<h3><a id="index_u"></a>- u -</h3><ul>
-<li>U8_MASK
-: <a class="el" href="app__heartbeat_8c.html#a8d66e51d0177814a2ccdfce4d3a8c67b">app_heartbeat.c</a>
 </li>
 </ul>
 </div><!-- contents -->

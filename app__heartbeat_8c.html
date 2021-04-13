@@ -92,6 +92,7 @@ $(document).ready(function(){initNavTree('app__heartbeat_8c.html',''); initResiz
 <div class="textblock"><code>#include &quot;<a class="el" href="app__config_8h_source.html">app_config.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__comms_8h_source.html">app_comms.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__heartbeat_8h_source.html">app_heartbeat.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="app__led_8h_source.html">app_led.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__log_8h_source.html">app_log.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__sensor_8h_source.html">app_sensor.h</a>&quot;</code><br />
 <code>#include &quot;ruuvi_driver_error.h&quot;</code><br />
@@ -149,7 +150,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00027">27</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00028">28</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>
@@ -182,7 +183,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00160">160</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00164">164</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>
@@ -205,7 +206,7 @@ Functions</h2></td></tr>
 <p>Check if hearbeats have been paused for too long. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if current time is more than APP_HEARTBEAT_OVERDUE_INTERVAL_MS since last heartbeat. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00215">215</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00219">219</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>
@@ -226,6 +227,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>(Re)starts app heartbeats. </p>
+<p>The hearbeat must be call to begin "Feed" the Watchdog. The "Fed" interval is defined by APP_WDT_INTERVAL_MS in main. The board will reset if not fed with predefined time interval.</p>
 <p>Calling this while heartbeats are ongoing has no effect.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
@@ -235,7 +237,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00182">182</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00186">186</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>
@@ -266,7 +268,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00199">199</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00203">203</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>

@@ -109,7 +109,8 @@ Functions</h2></td></tr>
 <tr class="separator:a1fd4172af5dee1b2cfe06840a3b208ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><dl class="section author"><dt>Author</dt><dd>Otso Jousimaa <a href="#" onclick="location.href='mai'+'lto:'+'ots'+'o@'+'ojo'+'us'+'ima'+'.n'+'et'; return false;">otso@<span style="display: none;">.nosp@m.</span>ojou<span style="display: none;">.nosp@m.</span>sima.<span style="display: none;">.nosp@m.</span>net</a> @data 2020-06-12 </dd></dl>
+<div class="textblock"><dl class="section author"><dt>Author</dt><dd>Otso Jousimaa <a href="#" onclick="location.href='mai'+'lto:'+'ots'+'o@'+'ojo'+'us'+'ima'+'.n'+'et'; return false;">otso@<span style="display: none;">.nosp@m.</span>ojou<span style="display: none;">.nosp@m.</span>sima.<span style="display: none;">.nosp@m.</span>net</a> </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2020-06-12 </dd></dl>
 <dl class="section copyright"><dt>Copyright</dt><dd>Ruuvi Innovations Ltd, License BSD-3-Clause.</dd></dl>
 <p>Read and transmit latest sensor data via any means possible, such as BLE advertisements, BLE Gatt, NFC. </p>
 
@@ -143,7 +144,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00160">160</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00164">164</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>
@@ -166,7 +167,7 @@ Functions</h2></td></tr>
 <p>Check if hearbeats have been paused for too long. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if current time is more than APP_HEARTBEAT_OVERDUE_INTERVAL_MS since last heartbeat. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00215">215</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00219">219</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>
@@ -187,6 +188,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>(Re)starts app heartbeats. </p>
+<p>The hearbeat must be call to begin "Feed" the Watchdog. The "Fed" interval is defined by APP_WDT_INTERVAL_MS in main. The board will reset if not fed with predefined time interval.</p>
 <p>Calling this while heartbeats are ongoing has no effect.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
@@ -196,7 +198,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00182">182</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00186">186</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>
@@ -227,7 +229,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00199">199</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__heartbeat_8c_source.html#l00203">203</a> of file <a class="el" href="app__heartbeat_8c_source.html">app_heartbeat.c</a>.</p>
 
 </div>
 </div>

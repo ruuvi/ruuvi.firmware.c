@@ -94,27 +94,27 @@ $(document).ready(function(){initNavTree('app__heartbeat_8h_source.html',''); in
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;rd_status_t <a class="code" href="app__heartbeat_8h.html#a076a04b2dd4533bfaf3e3aec2940f558">app_heartbeat_init</a> (<span class="keywordtype">void</span>);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;rd_status_t <a class="code" href="app__heartbeat_8h.html#a6a199fc870f7d66078873a5ac7fd13b2">app_heartbeat_start</a> (<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;rd_status_t <a class="code" href="app__heartbeat_8h.html#a1240fd08840324544b6ab45c20c19f87">app_heartbeat_stop</a> (<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="app__heartbeat_8h.html#a1fd4172af5dee1b2cfe06840a3b208ac">app_heartbeat_overdue</a> (<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#ifdef CEEDLING</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#include &quot;ruuvi_interface_timer.h&quot;</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;ri_timer_id_t * get_heart_timer (<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keywordtype">void</span> schedule_heartbeat_isr (<span class="keywordtype">void</span> * <span class="keyword">const</span> p_context);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">void</span> heartbeat (<span class="keywordtype">void</span> * p_event, uint16_t event_size);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor">#endif // APP_HEARTBEAT_H</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;rd_status_t <a class="code" href="app__heartbeat_8h.html#a6a199fc870f7d66078873a5ac7fd13b2">app_heartbeat_start</a> (<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;rd_status_t <a class="code" href="app__heartbeat_8h.html#a1240fd08840324544b6ab45c20c19f87">app_heartbeat_stop</a> (<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="app__heartbeat_8h.html#a1fd4172af5dee1b2cfe06840a3b208ac">app_heartbeat_overdue</a> (<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#ifdef CEEDLING</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#include &quot;ruuvi_interface_timer.h&quot;</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;ri_timer_id_t * get_heart_timer (<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keywordtype">void</span> schedule_heartbeat_isr (<span class="keywordtype">void</span> * <span class="keyword">const</span> p_context);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">void</span> heartbeat (<span class="keywordtype">void</span> * p_event, uint16_t event_size);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif // APP_HEARTBEAT_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
-<div class="ttc" id="aapp__heartbeat_8h_html_a6a199fc870f7d66078873a5ac7fd13b2"><div class="ttname"><a href="app__heartbeat_8h.html#a6a199fc870f7d66078873a5ac7fd13b2">app_heartbeat_start</a></div><div class="ttdeci">rd_status_t app_heartbeat_start(void)</div><div class="ttdoc">(Re)starts app heartbeats.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00182">app_heartbeat.c:182</a></div></div>
-<div class="ttc" id="aapp__heartbeat_8h_html_a1240fd08840324544b6ab45c20c19f87"><div class="ttname"><a href="app__heartbeat_8h.html#a1240fd08840324544b6ab45c20c19f87">app_heartbeat_stop</a></div><div class="ttdeci">rd_status_t app_heartbeat_stop(void)</div><div class="ttdoc">Stops app heartbeats.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00199">app_heartbeat.c:199</a></div></div>
-<div class="ttc" id="aapp__heartbeat_8h_html_a1fd4172af5dee1b2cfe06840a3b208ac"><div class="ttname"><a href="app__heartbeat_8h.html#a1fd4172af5dee1b2cfe06840a3b208ac">app_heartbeat_overdue</a></div><div class="ttdeci">bool app_heartbeat_overdue(void)</div><div class="ttdoc">Check if hearbeats have been paused for too long.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00215">app_heartbeat.c:215</a></div></div>
-<div class="ttc" id="aapp__heartbeat_8h_html_a076a04b2dd4533bfaf3e3aec2940f558"><div class="ttname"><a href="app__heartbeat_8h.html#a076a04b2dd4533bfaf3e3aec2940f558">app_heartbeat_init</a></div><div class="ttdeci">rd_status_t app_heartbeat_init(void)</div><div class="ttdoc">Initializes timers for reading and sending heartbeat transmissions.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00160">app_heartbeat.c:160</a></div></div>
+<div class="ttc" id="aapp__heartbeat_8h_html_a6a199fc870f7d66078873a5ac7fd13b2"><div class="ttname"><a href="app__heartbeat_8h.html#a6a199fc870f7d66078873a5ac7fd13b2">app_heartbeat_start</a></div><div class="ttdeci">rd_status_t app_heartbeat_start(void)</div><div class="ttdoc">(Re)starts app heartbeats.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00186">app_heartbeat.c:186</a></div></div>
+<div class="ttc" id="aapp__heartbeat_8h_html_a1240fd08840324544b6ab45c20c19f87"><div class="ttname"><a href="app__heartbeat_8h.html#a1240fd08840324544b6ab45c20c19f87">app_heartbeat_stop</a></div><div class="ttdeci">rd_status_t app_heartbeat_stop(void)</div><div class="ttdoc">Stops app heartbeats.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00203">app_heartbeat.c:203</a></div></div>
+<div class="ttc" id="aapp__heartbeat_8h_html_a1fd4172af5dee1b2cfe06840a3b208ac"><div class="ttname"><a href="app__heartbeat_8h.html#a1fd4172af5dee1b2cfe06840a3b208ac">app_heartbeat_overdue</a></div><div class="ttdeci">bool app_heartbeat_overdue(void)</div><div class="ttdoc">Check if hearbeats have been paused for too long.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00219">app_heartbeat.c:219</a></div></div>
+<div class="ttc" id="aapp__heartbeat_8h_html_a076a04b2dd4533bfaf3e3aec2940f558"><div class="ttname"><a href="app__heartbeat_8h.html#a076a04b2dd4533bfaf3e3aec2940f558">app_heartbeat_init</a></div><div class="ttdeci">rd_status_t app_heartbeat_init(void)</div><div class="ttdoc">Initializes timers for reading and sending heartbeat transmissions.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00164">app_heartbeat.c:164</a></div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

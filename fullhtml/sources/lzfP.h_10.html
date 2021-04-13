@@ -1,0 +1,231 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>lzfP.h</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">/*</a>
+<a name="ln2"> * Copyright (c) 2000-2007 Marc Alexander Lehmann &lt;schmorp@schmorp.de&gt;</a>
+<a name="ln3"> *</a>
+<a name="ln4"> * Redistribution and use in source and binary forms, with or without modifica-</a>
+<a name="ln5"> * tion, are permitted provided that the following conditions are met:</a>
+<a name="ln6"> *</a>
+<a name="ln7"> *   1.  Redistributions of source code must retain the above copyright notice,</a>
+<a name="ln8"> *       this list of conditions and the following disclaimer.</a>
+<a name="ln9"> *</a>
+<a name="ln10"> *   2.  Redistributions in binary form must reproduce the above copyright</a>
+<a name="ln11"> *       notice, this list of conditions and the following disclaimer in the</a>
+<a name="ln12"> *       documentation and/or other materials provided with the distribution.</a>
+<a name="ln13"> *</a>
+<a name="ln14"> * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED</a>
+<a name="ln15"> * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MER-</a>
+<a name="ln16"> * CHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO</a>
+<a name="ln17"> * EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPE-</a>
+<a name="ln18"> * CIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,</a>
+<a name="ln19"> * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;</a>
+<a name="ln20"> * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,</a>
+<a name="ln21"> * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTH-</a>
+<a name="ln22"> * ERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</a>
+<a name="ln23"> * OF THE POSSIBILITY OF SUCH DAMAGE.</a>
+<a name="ln24"> *</a>
+<a name="ln25"> * Alternatively, the contents of this file may be used under the terms of</a>
+<a name="ln26"> * the GNU General Public License (&quot;GPL&quot;) version 2 or any later version,</a>
+<a name="ln27"> * in which case the provisions of the GPL are applicable instead of</a>
+<a name="ln28"> * the above. If you wish to allow the use of your version of this file</a>
+<a name="ln29"> * only under the terms of the GPL and not to allow others to use your</a>
+<a name="ln30"> * version of this file under the BSD license, indicate your decision</a>
+<a name="ln31"> * by deleting the provisions above and replace them with the notice</a>
+<a name="ln32"> * and other provisions required by the GPL. If you do not delete the</a>
+<a name="ln33"> * provisions above, a recipient may use your version of this file under</a>
+<a name="ln34"> * either the BSD or the GPL.</a>
+<a name="ln35"> */</a>
+<a name="ln36"> </a>
+<a name="ln37">#ifndef LZFP_h</a>
+<a name="ln38">#define LZFP_h</a>
+<a name="ln39"> </a>
+<a name="ln40">#define STANDALONE 1 /* at the moment, this is ok. */</a>
+<a name="ln41"> </a>
+<a name="ln42">#ifndef STANDALONE</a>
+<a name="ln43"># include &quot;lzf.h&quot;</a>
+<a name="ln44">#endif</a>
+<a name="ln45"> </a>
+<a name="ln46">/*</a>
+<a name="ln47"> * Size of hashtable is (1 &lt;&lt; HLOG) * sizeof (char *)</a>
+<a name="ln48"> * decompression is independent of the hash table size</a>
+<a name="ln49"> * the difference between 15 and 14 is very small</a>
+<a name="ln50"> * for small blocks (and 14 is usually a bit faster).</a>
+<a name="ln51"> * For a low-memory/faster configuration, use HLOG == 13;</a>
+<a name="ln52"> * For best compression, use 15 or 16 (or more, up to 22).</a>
+<a name="ln53"> */</a>
+<a name="ln54">#ifndef HLOG</a>
+<a name="ln55"># define HLOG 11</a>
+<a name="ln56">#endif</a>
+<a name="ln57"> </a>
+<a name="ln58">/*</a>
+<a name="ln59"> * Sacrifice very little compression quality in favour of compression speed.</a>
+<a name="ln60"> * This gives almost the same compression as the default code, and is</a>
+<a name="ln61"> * (very roughly) 15% faster. This is the preferred mode of operation.</a>
+<a name="ln62"> */</a>
+<a name="ln63">#ifndef VERY_FAST</a>
+<a name="ln64"># define VERY_FAST 1</a>
+<a name="ln65">#endif</a>
+<a name="ln66"> </a>
+<a name="ln67">/*</a>
+<a name="ln68"> * Sacrifice some more compression quality in favour of compression speed.</a>
+<a name="ln69"> * (roughly 1-2% worse compression for large blocks and</a>
+<a name="ln70"> * 9-10% for small, redundant, blocks and &gt;&gt;20% better speed in both cases)</a>
+<a name="ln71"> * In short: when in need for speed, enable this for binary data,</a>
+<a name="ln72"> * possibly disable this for text data.</a>
+<a name="ln73"> */</a>
+<a name="ln74">#ifndef ULTRA_FAST</a>
+<a name="ln75"># define ULTRA_FAST 0</a>
+<a name="ln76">#endif</a>
+<a name="ln77"> </a>
+<a name="ln78">/*</a>
+<a name="ln79"> * Unconditionally aligning does not cost very much, so do it if unsure</a>
+<a name="ln80"> */</a>
+<a name="ln81">#ifndef STRICT_ALIGN</a>
+<a name="ln82"># define STRICT_ALIGN !(defined(__i386) || defined (__amd64))</a>
+<a name="ln83">#endif</a>
+<a name="ln84"> </a>
+<a name="ln85">/*</a>
+<a name="ln86"> * You may choose to pre-set the hash table (might be faster on some</a>
+<a name="ln87"> * modern cpus and large (&gt;&gt;64k) blocks, and also makes compression</a>
+<a name="ln88"> * deterministic/repeatable when the configuration otherwise is the same).</a>
+<a name="ln89"> */</a>
+<a name="ln90">#ifndef INIT_HTAB</a>
+<a name="ln91"># define INIT_HTAB 0</a>
+<a name="ln92">#endif</a>
+<a name="ln93"> </a>
+<a name="ln94">/*</a>
+<a name="ln95"> * Avoid assigning values to errno variable? for some embedding purposes</a>
+<a name="ln96"> * (linux kernel for example), this is necessary. NOTE: this breaks</a>
+<a name="ln97"> * the documentation in lzf.h. Avoiding errno has no speed impact.</a>
+<a name="ln98"> */</a>
+<a name="ln99">#ifndef AVOID_ERRNO</a>
+<a name="ln100"># define AVOID_ERRNO 1</a>
+<a name="ln101">#endif</a>
+<a name="ln102"> </a>
+<a name="ln103">/*</a>
+<a name="ln104"> * Whether to pass the LZF_STATE variable as argument, or allocate it</a>
+<a name="ln105"> * on the stack. For small-stack environments, define this to 1.</a>
+<a name="ln106"> * NOTE: this breaks the prototype in lzf.h.</a>
+<a name="ln107"> */</a>
+<a name="ln108">#ifndef LZF_STATE_ARG</a>
+<a name="ln109"># define LZF_STATE_ARG 1</a>
+<a name="ln110">#endif</a>
+<a name="ln111"> </a>
+<a name="ln112">/*</a>
+<a name="ln113"> * Whether to add extra checks for input validity in lzf_decompress</a>
+<a name="ln114"> * and return EINVAL if the input stream has been corrupted. This</a>
+<a name="ln115"> * only shields against overflowing the input buffer and will not</a>
+<a name="ln116"> * detect most corrupted streams.</a>
+<a name="ln117"> * This check is not normally noticeable on modern hardware</a>
+<a name="ln118"> * (&lt;1% slowdown), but might slow down older cpus considerably.</a>
+<a name="ln119"> */</a>
+<a name="ln120">#ifndef CHECK_INPUT</a>
+<a name="ln121"># define CHECK_INPUT 1</a>
+<a name="ln122">#endif</a>
+<a name="ln123"> </a>
+<a name="ln124">/*</a>
+<a name="ln125"> * Whether to store pointers or offsets inside the hash table. On</a>
+<a name="ln126"> * 64 bit architetcures, pointers take up twice as much space,</a>
+<a name="ln127"> * and might also be slower. Default is to autodetect.</a>
+<a name="ln128"> */</a>
+<a name="ln129">/*#define LZF_USER_OFFSETS autodetect */</a>
+<a name="ln130"> </a>
+<a name="ln131">/*****************************************************************************/</a>
+<a name="ln132">/* nothing should be changed below */</a>
+<a name="ln133"> </a>
+<a name="ln134">#ifdef __cplusplus</a>
+<a name="ln135"># include &lt;cstring&gt;</a>
+<a name="ln136"># include &lt;climits&gt;</a>
+<a name="ln137">using namespace std;</a>
+<a name="ln138">#else</a>
+<a name="ln139"># include &lt;string.h&gt;</a>
+<a name="ln140"># include &lt;limits.h&gt;</a>
+<a name="ln141">#endif</a>
+<a name="ln142"> </a>
+<a name="ln143">#ifndef LZF_USE_OFFSETS</a>
+<a name="ln144"># if defined (WIN32)</a>
+<a name="ln145">#  define LZF_USE_OFFSETS defined(_M_X64)</a>
+<a name="ln146"># else</a>
+<a name="ln147">#  if __cplusplus &gt; 199711L</a>
+<a name="ln148">#   include &lt;cstdint&gt;</a>
+<a name="ln149">#  else</a>
+<a name="ln150">#   include &lt;stdint.h&gt;</a>
+<a name="ln151">#  endif</a>
+<a name="ln152">#  define LZF_USE_OFFSETS (UINTPTR_MAX &gt; 0xffffffffU)</a>
+<a name="ln153"># endif</a>
+<a name="ln154">#endif</a>
+<a name="ln155"> </a>
+<a name="ln156">typedef unsigned char u8;</a>
+<a name="ln157"> </a>
+<a name="ln158">#if LZF_USE_OFFSETS</a>
+<a name="ln159"># define LZF_HSLOT_BIAS ((const u8 *)in_data)</a>
+<a name="ln160">typedef unsigned int LZF_HSLOT;</a>
+<a name="ln161">#else</a>
+<a name="ln162"># define LZF_HSLOT_BIAS 0</a>
+<a name="ln163">typedef const u8 * LZF_HSLOT;</a>
+<a name="ln164">#endif</a>
+<a name="ln165"> </a>
+<a name="ln166">typedef LZF_HSLOT LZF_STATE[1 &lt;&lt; (HLOG)];</a>
+<a name="ln167"> </a>
+<a name="ln168">#if !STRICT_ALIGN</a>
+<a name="ln169">/* for unaligned accesses we need a 16 bit datatype. */</a>
+<a name="ln170"># if USHRT_MAX == 65535</a>
+<a name="ln171">typedef unsigned short u16;</a>
+<a name="ln172"># elif UINT_MAX == 65535</a>
+<a name="ln173">typedef unsigned int u16;</a>
+<a name="ln174"># else</a>
+<a name="ln175">#  undef STRICT_ALIGN</a>
+<a name="ln176">#  define STRICT_ALIGN 1</a>
+<a name="ln177"># endif</a>
+<a name="ln178">#endif</a>
+<a name="ln179"> </a>
+<a name="ln180">#if ULTRA_FAST</a>
+<a name="ln181"># undef VERY_FAST</a>
+<a name="ln182">#endif</a>
+<a name="ln183"> </a>
+<a name="ln184">#endif</a>
+<a name="ln185"> </a>
+
+</code></pre>
+<div class="balloon" rel="166"><p><span style="font-size:18px">&uarr;</span> <a href="https://www.viva64.com/en/w/v2544/" target="_blank">V2544</a> The left operand '1' of the '<<' operator should not have the essential 'signed' type.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>
