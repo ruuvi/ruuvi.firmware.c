@@ -62,13 +62,13 @@ jobs:
           fi
 
     - name: Install SSH Client 🔑
-      uses: webfactory/ssh-agent@v0.2.0
+      uses: webfactory/ssh-agent@v0.5.2
       with:
-          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     # Deploy documents
     - name: Deploy to GitHub Pages
-      uses: JamesIves/github-pages-deploy-action@3.5.5
+      uses: JamesIves/github-pages-deploy-action@4.1.1
       with:
           SSH: true
           BRANCH: gh-pages # The branch the action should deploy to.
