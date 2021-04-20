@@ -18,7 +18,7 @@
 #endif
 
 #ifndef APP_FW_VERSION
-#define APP_FW_VERSION "v0.0.1"
+#define APP_FW_VERSION "v3.30.1"
 #endif
 
 #ifndef APP_FW_VARIANT
@@ -27,7 +27,7 @@
 
 /** @brief Communicate sensor data at this interval. 1285 matches Apple guideline. */
 #ifndef APP_BLE_INTERVAL_MS
-#   define APP_BLE_INTERVAL_MS (1285U)
+#   define APP_BLE_INTERVAL_MS (9900U)
 #endif
 
 /** @brief repeat same data N times in advertisement, reduce sensor reads. */
