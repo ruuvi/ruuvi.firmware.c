@@ -64,6 +64,8 @@ The code can be checked with PVS Studio and Sonarcloud for some common errors, s
 ### PVS
 Obtain license and software from [Viva64](https://www.viva64.com/en/pvs-studio/).
 
+Installation process is described in [ruuvi.docs.com](https://docs.ruuvi.com/toolchain/pvs-studio)
+
 Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml. 
 
 This produces hundreds of warnings, you need to filter the warnings you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
