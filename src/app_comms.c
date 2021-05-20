@@ -128,7 +128,7 @@ static uint8_t initial_adv_send_count (void)
 }
 
 #if APP_COMMS_BIDIR_ENABLED
-
+#if 0
 static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
                           size_t data_len)
 {
@@ -178,7 +178,7 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
 
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
-
+#endif
 /**
  * @brief Allow configuration commands on next connection.
  *
@@ -389,10 +389,12 @@ void handle_config_disable (void * p_data, uint16_t data_len)
 
     // Do not kick out current connection, disconnect handler
     // will disable config.
+    #if 0
     if (!rt_gatt_nus_is_connected())
     {
         err_code |= enable_config_on_next_conn (false);
     }
+    #endif
 
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -568,7 +570,9 @@ rd_status_t app_comms_ble_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_adv_uninit();
+    #if 0
     err_code |= rt_gatt_uninit();
+    #endif
     return err_code;
 }
 
