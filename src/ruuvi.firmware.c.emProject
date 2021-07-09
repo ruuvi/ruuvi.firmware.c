@@ -254,6 +254,7 @@
       <file file_name="run_integration_tests.c" />
       <file file_name="run_integration_tests.h" />
     </folder>
+    <configuration Name="Debug" gcc_optimization_level="Level 2 for size" />
   </project>
   <project Name="pca10040">
     <configuration
