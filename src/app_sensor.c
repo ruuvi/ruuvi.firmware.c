@@ -914,6 +914,23 @@ rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t reply_fp,
     return err_code;
 }
 
+rd_status_t app_sensor_vdd_sample (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_configuration_t configuration =
+    {
+        .dsp_function = RD_SENSOR_CFG_DEFAULT,
+        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
+        .mode = RD_SENSOR_CFG_SINGLE,
+        .resolution = RD_SENSOR_CFG_DEFAULT,
+        .samplerate = RD_SENSOR_CFG_DEFAULT,
+        .scale = RD_SENSOR_CFG_DEFAULT
+    };
+    err_code |= rt_adc_vdd_prepare (&configuration);
+    err_code |= rt_adc_vdd_sample();
+    return err_code;
+}
+
 #ifdef RUUVI_RUN_TESTS
 void app_sensor_ctx_get (rt_sensor_ctx_t *** p_sensors, size_t * num_sensors)
 {

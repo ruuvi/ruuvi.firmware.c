@@ -13,7 +13,7 @@
  * @defgroup app_config Application configuration
  * @brief Configure application enabled modules and parameters.
  */
-/** @ }*/
+/** @}*/
 /**
  * @addtogroup SDK15
  */
@@ -316,6 +316,7 @@
 
 #define APP_FLASH_LOG_FILE (0xF0U)
 #define APP_FLASH_LOG_CONFIG_RECORD      (0x01U)
+#define APP_FLASH_LOG_BOOT_COUNTER_RECORD (0xEFU)
 #define APP_FLASH_LOG_DATA_RECORD_PREFIX (0xF0U) //!< Prefix, append with U8 number
 
 // ** Logging constants ** //
@@ -439,5 +440,5 @@
 #   define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
 #endif
 
-/*@}*/
+/** @}*/
 #endif

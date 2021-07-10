@@ -280,7 +280,7 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
  * reading rate of sensors, reading rate must be configured separately.
  *
  * @retval RD_SUCCESS on success, NOT_FOUND sensors are allowed.
- * @retavl RD_ERROR_INVALID_STATE if GPIO or GPIO interrupts are not enabled.
+ * @retval RD_ERROR_INVALID_STATE if GPIO or GPIO interrupts are not enabled.
  * @retval RD_ERROR_SELFTEST if sensor is found on the bus and fails selftest.
  */
 rd_status_t app_sensor_init (void);
@@ -429,6 +429,17 @@ rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t ri_reply_fp,
  */
 void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt);
 
+/**
+ * @brief Prepare VDD and take a sample
+ *
+ * Call this function during initialization process to take a VDD sample
+ * for the first heartbeat message.
+ *
+ * @retval RD_SUCCESS on success
+ * @retval RD_ERROR_INVALID_STATE if ADC is not prepared
+ */
+rd_status_t app_sensor_vdd_sample (void);
+
 #ifdef RUUVI_RUN_TESTS
 void app_sensor_ctx_get (rt_sensor_ctx_t *** m_sensors, size_t * num_sensors);
 #endif
@@ -441,3 +452,4 @@ void on_accelerometer_isr (const ri_gpio_evt_t event);
 #endif
 
 #endif
+/** @}*/

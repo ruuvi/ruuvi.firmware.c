@@ -4,7 +4,7 @@
 /**
  * @file app_heartbeat.h
  * @author Otso Jousimaa <otso@ojousima.net>
- * @data 2020-06-12
+ * @date 2020-06-12
  * @copyright Ruuvi Innovations Ltd, License BSD-3-Clause.
  *
  * Read and transmit latest sensor data via any means possible,
@@ -32,6 +32,10 @@ rd_status_t app_heartbeat_init (void);
 
 /**
  * @brief (Re)starts app heartbeats.
+ *
+ * The hearbeat must be call to begin "Feed" the Watchdog. The "Fed" interval is
+ * defined by APP_WDT_INTERVAL_MS in main. The board will reset if not fed with
+ * predefined time interval.
  *
  * Calling this while heartbeats are ongoing has no effect.
  *

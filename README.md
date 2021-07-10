@@ -13,7 +13,7 @@ Current git repository status:
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
-Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason.  
+Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason.  
 
 # Setting up
 
@@ -63,6 +63,8 @@ The code can be checked with PVS Studio and Sonarcloud for some common errors, s
 
 ### PVS
 Obtain license and software from [Viva64](https://www.viva64.com/en/pvs-studio/).
+
+Installation process is described in [ruuvi.docs.com](https://docs.ruuvi.com/toolchain/pvs-studio)
 
 Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml. 
 
