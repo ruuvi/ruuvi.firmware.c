@@ -51,7 +51,4 @@
     <ProgramSection alignment="8" size="__STACKSIZE__" load="No" place_from_segment_end="Yes" name=".stack"  address_symbol="__StackLimit" end_symbol="__StackTop"/>
     <ProgramSection alignment="8" size="__STACKSIZE_PROCESS__" load="No" name=".stack_process" />
   </MemorySegment>
-  <MemorySegment name="uicr_bootloader_start_address" start="0x00000FF8" size="0x4">
-    <ProgramSection alignment="4" keep="Yes" load="Yes" name=".uicr_bootloader_start_address" address_symbol="__start_uicr_bootloader_start_address" end_symbol="__stop_uicr_bootloader_start_address" start = "0x00000FF8" size="0x4" />
-  </MemorySegment>
 </Root>
