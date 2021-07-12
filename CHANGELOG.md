@@ -1,5 +1,13 @@
 # Changelog
-## 3.30.1 (in progress)
+## 3.31.0 (in progreess)
+ * Use 400 kHz I2C to save power - this breaks B7.1 with SHTC3 and 4k7 pull-up resistors. 
+   - These boards have never been delivered from Ruuvi Shop, if you have a special batch and need to support them contact sales@ruuvi.com
+ * Fix TMP117 single sample occasionally returning invalid data  
+
+## 3.30.2
+ * Fix history log rotation
+
+## 3.30.1 
  * Fix VDD sampling for the first data broadcast
 
 ## 3.30.0
