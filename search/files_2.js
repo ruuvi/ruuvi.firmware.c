@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nrf5_5fsdk15_5fapp_5fconfig_2eh_266',['nrf5_sdk15_app_config.h',['../nrf5__sdk15__app__config_8h.html',1,'']]]
+  ['nrf5_5fsdk15_5fapp_5fconfig_2eh_272',['nrf5_sdk15_app_config.h',['../nrf5__sdk15__app__config_8h.html',1,'']]]
 ];
