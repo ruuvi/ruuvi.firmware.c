@@ -189,23 +189,23 @@
 #   define RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
 #endif
 
-#ifndef APP_SENSOR_NR52_DSP_FUNC
-#   define APP_SENSOR_NR52_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
+#ifndef APP_SENSOR_NR52F_DSP_FUNC
+#   define APP_SENSOR_NRF52_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
 #endif
-#ifndef APP_SENSOR_NR52_DSP_PARAM
-#   define APP_SENSOR_NR52_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#ifndef APP_SENSOR_NRF52_DSP_PARAM
+#   define APP_SENSOR_NRF52_DSP_PARAM 1 //!< Only 1 is valid with LAST
 #endif
-#ifndef APP_SENSOR_NR52_MODE
-#   define APP_SENSOR_NR52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
+#ifndef APP_SENSOR_NRF52_MODE
+#   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
 #endif
-#ifndef APP_SENSOR_NR52_RESOLUTION
-#   define APP_SENSOR_NR52_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
+#ifndef APP_SENSOR_NRF52_RESOLUTION
+#   define APP_SENSOR_NRF52_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
 #endif
-#ifndef APP_SENSOR_NR52__SAMPLERATE
-#   define APP_SENSOR_NR52_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< NRF52 sample rate is defined by reads.
+#ifndef APP_SENSOR_NRF52_SAMPLERATE
+#   define APP_SENSOR_NRF52_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< NRF52 sample rate is defined by reads.
 #endif
-#ifndef APP_SENSOR_NR52__SCALE
-#   define APP_SENSOR_NR52_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
+#ifndef APP_SENSOR_NRF52_SCALE
+#   define APP_SENSOR_NRF52_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
 #endif
 
 
