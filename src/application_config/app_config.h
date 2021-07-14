@@ -189,11 +189,11 @@
 #   define RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
 #endif
 
-#ifndef APP_SENSOR_NR52F_DSP_FUNC
+#ifndef APP_SENSOR_NRF52_DSP_FUNC
 #   define APP_SENSOR_NRF52_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
 #endif
 #ifndef APP_SENSOR_NRF52_DSP_PARAM
-#   define APP_SENSOR_NRF52_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#   define APP_SENSOR_NRF52_DSP_PARAM (1U) //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_NRF52_MODE
 #   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
