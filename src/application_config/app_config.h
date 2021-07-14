@@ -157,28 +157,58 @@
 #endif
 
 #ifndef APP_SENSOR_TMP117_DSP_FUNC
-#   define APP_SENSOR_TMP117_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
+#   define APP_SENSOR_TMP117_DSP_FUNC RD_SENSOR_DSP_LAST //!< Do not use DSP by default
 #endif
 #ifndef APP_SENSOR_TMP117_DSP_PARAM
 #   define APP_SENSOR_TMP117_DSP_PARAM 1 //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_TMP117_MODE
-#   define APP_SENSOR_TMP117_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
+#   define APP_SENSOR_TMP117_MODE RD_SENSOR_CFG_CONTINUOUS    //!< TMP117 runs continuously internally.
 #endif
 #ifndef APP_SENSOR_TMP117_RESOLUTION
 #   define APP_SENSOR_TMP117_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
 #endif
 #ifndef APP_SENSOR_TMP117_SAMPLERATE
-#   define APP_SENSOR_TMP117_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< SHTC sample rate is defined by reads.
+#   define APP_SENSOR_TMP117_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!<  sample rate is defined by reads.
 #endif
 #ifndef APP_SENSOR_TMP117_SCALE
 #   define APP_SENSOR_TMP117_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
 #endif
 
-/** @brief Enable SHTCX driver */
+/** @brief Enable TMP117 driver */
 #ifndef RI_TMP117_ENABLED
-#   define RI_TMP117_ENABLED APP_SENSOR_SHTCX_ENABLED
+#   define RI_TMP117_ENABLED APP_SENSOR_TMP117_ENABLED
 #endif
+
+/** @brief Enable nRF52 temperature sensor */
+#ifndef APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+#   define APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED RB_ENVIRONMENTAL_MCU_PRESENT
+#endif
+
+#ifndef RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED
+#   define RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+#endif
+
+#ifndef APP_SENSOR_NRF52_DSP_FUNC
+#   define APP_SENSOR_NRF52_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
+#endif
+#ifndef APP_SENSOR_NRF52_DSP_PARAM
+#   define APP_SENSOR_NRF52_DSP_PARAM (1U) //!< Only 1 is valid with LAST
+#endif
+#ifndef APP_SENSOR_NRF52_MODE
+#   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
+#endif
+#ifndef APP_SENSOR_NRF52_RESOLUTION
+#   define APP_SENSOR_NRF52_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
+#endif
+#ifndef APP_SENSOR_NRF52_SAMPLERATE
+#   define APP_SENSOR_NRF52_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< NRF52 sample rate is defined by reads.
+#endif
+#ifndef APP_SENSOR_NRF52_SCALE
+#   define APP_SENSOR_NRF52_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
+#endif
+
+
 
 /** @brief Enable DPS310 sensor */
 #ifndef APP_SENSOR_DPS310_ENABLED
@@ -207,15 +237,8 @@
 #   define APP_SENSOR_DPS310_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
 #endif
 
-#ifndef APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
-#   define APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED RB_ENVIRONMENTAL_MCU_PRESENT
-#endif
 
-#ifndef RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED
-#   define RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
-#endif
-
-/** @brief Enable DPSX driver */
+/** @brief Enable DPS310 driver */
 #ifndef RI_DPS310_ENABLED
 #   define RI_DPS310_ENABLED APP_SENSOR_DPS310_ENABLED
 #endif
