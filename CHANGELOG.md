@@ -1,5 +1,13 @@
 # Changelog
-## 3.30.1 (in progress)
+## 3.30.3 (in progreess)
+ * Use 400 kHz I2C to save power
+ * Fix TMP117 single sample occasionally returning invalid data 
+ * Fix nRF52 not returning temperature data due to default configuration
+
+## 3.30.2
+ * Fix history log rotation
+
+## 3.30.1 
  * Fix VDD sampling for the first data broadcast
 
 ## 3.30.0
