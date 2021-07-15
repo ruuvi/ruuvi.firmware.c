@@ -36,13 +36,13 @@
   </div>
 
   <table cellpadding="0" cellspacing="0" border="0" class="infotopic">
-     <tr><th id="col_info">Date:</th><td>Wed Jul 14 16:03:15 2021</td></tr>
+     <tr><th id="col_info">Date:</th><td>Thu Jul 15 12:31:14 2021</td></tr>
      <tr><th id="col_info">PVS-Studio Version:</th><td>7.13.48133.129</td></tr>
      <tr><th id="col_info">Command Line:</th><td>plog-converter -a GA\:1,2,3\;OP\:1,2,3\;CS\:1,2,3\;MISRA\:1,2,3 -t fullhtml src/main.o.PVS-Studio.log src/run_integration_tests.o.PVS-Studio.log src/app_button.o.PVS-Studio.log src/app_comms.o.PVS-Studio.log src/app_heartbeat.o.PVS-Studio.log src/app_led.o.PVS-Studio.log src/app_log.o.PVS-Studio.log src/app_power.o.PVS-Studio.log src/app_sensor.o.PVS-Studio.log -o ./doxygen/html </td></tr>
      <tr><th id="col_info">Total Warnings (GA):</th><td>2</td></tr>
      <tr><th id="col_info">Total Warnings (OP):</th><td>1</td></tr>
      <tr><th id="col_info">Total Warnings (CS):</th><td>5</td></tr>
-     <tr><th id="col_info">Total Warnings (MISRA):</th><td>231</td></tr>
+     <tr><th id="col_info">Total Warnings (MISRA):</th><td>233</td></tr>
   </table>
   <table cellpadding="0" cellspacing="0" border="0" class="sortable" id="sorter">
     <tr>
@@ -1279,147 +1279,154 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln321">app_sensor.c:321</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln285">app_sensor.c:285</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
+      <td id="col_message">The left operand '(0)' of the '&lt;&lt;' operator should not have the essential 'signed' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln287">app_sensor.c:287</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
+      <td id="col_message">The left operand '(0)' of the '&lt;&lt;' operator should not have the essential 'signed' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln325">app_sensor.c:325</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&lt;' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln327">app_sensor.c:327</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln331">app_sensor.c:331</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '!=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln331">app_sensor.c:331</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln335">app_sensor.c:335</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'm_sensors[ii]-&gt;pwr_on' expression should not be converted from the essential 'ri_gpio_state_t' type to the essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln366">app_sensor.c:366</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln370">app_sensor.c:370</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xFFU)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln378">app_sensor.c:378</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln382">app_sensor.c:382</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&lt;' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln386">app_sensor.c:386</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln390">app_sensor.c:390</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '!=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln388">app_sensor.c:388</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln392">app_sensor.c:392</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
       <td id="col_message">The 'm_sensors[ii]-&gt;pwr_on' operand of the '!' operator should not have the essential 'ri_gpio_state_t' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln388">app_sensor.c:388</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln392">app_sensor.c:392</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2570/">V2570</td>
       <td id="col_message">Operands of the '!' operator should have bool essential type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln388">app_sensor.c:388</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln392">app_sensor.c:392</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '!m_sensors[ii]-&gt;pwr_on' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln404">app_sensor.c:404</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln408">app_sensor.c:408</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&lt;' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln419">app_sensor.c:419</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln423">app_sensor.c:423</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&lt;' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln434">app_sensor.c:434</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln438">app_sensor.c:438</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&lt;' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln437">app_sensor.c:437</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln441">app_sensor.c:441</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
       <td id="col_message">Operand of the '!' operator should have an appropriate essential type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln437">app_sensor.c:437</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln441">app_sensor.c:441</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2570/">V2570</td>
       <td id="col_message">Operands of the '!' operator should have bool essential type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln467">app_sensor.c:467</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln471">app_sensor.c:471</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
       <td id="col_message">The left operand '(0)' of the '&lt;&lt;' operator should not have the essential 'signed' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln477">app_sensor.c:477</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln481">app_sensor.c:481</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
       <td id="col_message">The left operand '(0)' of the '&lt;&lt;' operator should not have the essential 'signed' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln480">app_sensor.c:480</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln484">app_sensor.c:484</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&gt;' operator should have the same essential type. The current types are: 'signed' and 'floating'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln486">app_sensor.c:486</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln490">app_sensor.c:490</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
       <td id="col_message">The left operand '(0)' of the '&lt;&lt;' operator should not have the essential 'signed' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln509">app_sensor.c:509</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln513">app_sensor.c:513</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln510">app_sensor.c:510</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln511">app_sensor.c:511</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln514">app_sensor.c:514</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
@@ -1454,14 +1461,14 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln528">app_sensor.c:528</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln531">app_sensor.c:531</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln529">app_sensor.c:529</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln532">app_sensor.c:532</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
@@ -1496,14 +1503,14 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln546">app_sensor.c:546</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln549">app_sensor.c:549</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln547">app_sensor.c:547</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln550">app_sensor.c:550</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
@@ -1531,7 +1538,7 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln586">app_sensor.c:586</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln563">app_sensor.c:563</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
@@ -1594,133 +1601,140 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln650">app_sensor.c:650</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln622">app_sensor.c:622</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln654">app_sensor.c:654</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '!=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln684">app_sensor.c:684</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln688">app_sensor.c:688</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln685">app_sensor.c:685</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln689">app_sensor.c:689</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln719">app_sensor.c:719</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln723">app_sensor.c:723</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln719">app_sensor.c:719</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln723">app_sensor.c:723</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'sample-&gt;timestamp_ms + time_offset_ms' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln719">app_sensor.c:719</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln723">app_sensor.c:723</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln745">app_sensor.c:745</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln749">app_sensor.c:749</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln748">app_sensor.c:748</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln752">app_sensor.c:752</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0x10U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln764">app_sensor.c:764</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln768">app_sensor.c:768</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln767">app_sensor.c:767</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln771">app_sensor.c:771</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln811">app_sensor.c:811</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln815">app_sensor.c:815</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(current_time_s - start_s) * 1000U' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln816">app_sensor.c:816</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln820">app_sensor.c:820</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&gt;' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln818">app_sensor.c:818</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln822">app_sensor.c:822</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln822">app_sensor.c:822</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln826">app_sensor.c:826</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '-' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln835">app_sensor.c:835</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln839">app_sensor.c:839</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln845">app_sensor.c:845</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln849">app_sensor.c:849</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln895">app_sensor.c:895</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln899">app_sensor.c:899</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2531/">V2531</td>
       <td id="col_message">The 'raw_message[(0U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_type_t' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln898">app_sensor.c:898</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln902">app_sensor.c:902</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2531/">V2531</td>
       <td id="col_message">The 'raw_message[(2U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_op_t' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln903">app_sensor.c:903</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_sensor.c_14.html#ln907">app_sensor.c:907</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">Constant expression of the case label of the essential 'unsigned' type should not be converted to the essential 're_op_t' type of the controlling expression.</td>
