@@ -55,6 +55,12 @@ void test_app_sensor_init_ok (void)
     ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
     rd_sensor_timestamp_function_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
 
@@ -127,6 +133,12 @@ void test_app_sensor_init_first_time (void)
     ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
     rd_sensor_timestamp_function_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
 
@@ -159,6 +171,12 @@ void test_app_sensor_init_not_found (void)
     ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
     rd_sensor_timestamp_function_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
 
@@ -188,6 +206,12 @@ void test_app_sensor_init_selftest_fail (void)
     ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     ri_rtc_init_ExpectAndReturn (RD_SUCCESS);
     rd_sensor_timestamp_function_set_ExpectAnyArgsAndReturn (RD_SUCCESS);
 
