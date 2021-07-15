@@ -282,6 +282,10 @@ static rd_status_t app_sensor_buses_init (void)
     {
         err_code |= ri_spi_init (&spi_config);
         err_code |= ri_i2c_init (&i2c_config);
+        err_code |= ri_gpio_configure(RB_I2C_SDA_PIN, 
+                                      RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
+        err_code |= ri_gpio_configure(RB_I2C_SCL_PIN, 
+                                      RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
     }
 
     return err_code;
