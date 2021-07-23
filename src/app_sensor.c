@@ -346,19 +346,19 @@ rd_status_t app_sensor_init (void)
             if (RD_SUCCESS == init_code)
             {
                 // Check for a configuration in flash.
-                init_code = rt_sensor_load (m_sensors[ii]);
+                //init_code = rt_sensor_load (m_sensors[ii]);
 
                 // Configuration found, use it.
-                if (RD_SUCCESS == init_code)
-                {
+                //if (RD_SUCCESS == init_code)
+                //{
                     init_code = rt_sensor_configure (m_sensors[ii]);
-                }
+                //}
                 // Configuration not found, use defaults, store to flash.
-                else
-                {
-                    init_code = rt_sensor_configure (m_sensors[ii]);
-                    rt_sensor_store (m_sensors[ii]);
-                }
+                //else
+                //{
+                //    init_code = rt_sensor_configure (m_sensors[ii]);
+                //    rt_sensor_store (m_sensors[ii]);
+                //}
             }
             else if (RD_ERROR_SELFTEST == init_code)
             {
