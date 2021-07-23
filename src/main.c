@@ -1,14 +1,14 @@
 /**
- * @defgroup main Program main
- *
- */
-/** @{ */
-/**
  * @file main.c
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2020-07-13
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
+/**
+ * @defgroup main Program main
+ *
+ */
+/** @{ */
 #include "app_config.h"
 #include "app_button.h"
 #include "app_comms.h"
