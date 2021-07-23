@@ -1,0 +1,76 @@
+# See components/toolchain/gcc/Makefile.common which sets RM := NOT (there must be a better way
+# Tag on this commit         						DG12 don't clean and only run ruuvitag_b test 
+TAG := $(shell git describe --tags --exact-match)
+# Commit hash from git
+COMMIT := $(shell git rev-parse --short HEAD)
+VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
+BOARDS = ruuvitag_b
+VARIANTS = default test
+PRETTY=1
+
+# dont use cached results
+.PHONY: all sync ruuvitag_b analysis 
+
+#all: sync ruuvitag_b analysis
+all: ruuvitag_b 
+
+sync:
+	@echo                Only make ruuvitag_b default and test.	# do NOT remove tab characters make requires them
+	@echo                
+	@echo " ++ If git is not configured the following may report "
+	@echo " ++      fatal: No names found, cannot describe anything.   -OR-"
+	@echo " ++      fatal: Not a git repository (or any of the parent directories): "
+	@echo " ++ This is OK"
+
+	@echo Synchronizing GIT...
+	# TODO: reject if repo is not clean
+	git submodule update --init --recursive
+	git submodule sync --recursive
+	git submodule update --init --recursive
+
+ruuvitag_b:
+	@echo build FW ${VERSION} 
+	@echo Dont clean every time. 
+	@echo "Clean needed changing to/from test(i.e. DEBUG) or on header (.h change, Makefile does not know dependencies)"
+	@echo "Here are the defines from application_config/application_mode_debug.h :"
+	@grep define application_config/application_mode_debug.h |tail -n +2 #  tail skips guard define
+
+	# These MUST be recompiled since they include __DATE__ __TIME__  (-v talk, -f dont complain if not there)
+	rm -vf targets/ruuvitag_b/armgcc/_build/nrf52832_xxaa/main.c.*
+	rm -vf targets/ruuvitag_b/armgcc/_build/nrf52832_xxaa/run_integration_tests.c.*
+	rm -vf targets/ruuvitag_b/armgcc/_build/nrf52832_xxaa/ruuvi_interface_communication_nfc_test.c.*
+	rm -vf targets/ruuvitag_b/armgcc/_build/nrf52832_xxaa/ruuvi_interface_communication_ble_gatt_test.c.*
+	rm -vf targets/ruuvitag_b/armgcc/_build/nrf52832_xxaa/run_integration_tests.c.*
+
+	@echo calling targets/ruuvitag_b/armgcc which includes
+	@echo  See ../../../../firmware/nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc/Makefile.common   # see RM :=
+	#$(MAKE) -C targets/ruuvitag_b/armgcc clean #    v--- No debug
+	#$(MAKE) -C targets/ruuvitag_b/armgcc    DEBUG=-DNDEBUG                       FW_VERSION=-DAPP_FW_VERSION=${VERSION}
+	#targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_default
+
+	$(MAKE) -C targets/ruuvitag_b/armgcc clean
+    #	no map for debugging use a debugger! 	  -Og optimize for (Gdb) debugging, -g3   macro definition information.
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG RUN_TESTS=-DRUUVI_RUN_TESTS FW_VERSION=-DAPP_FW_VERSION=${VERSION} OPT="-Og -g3"
+	#(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DDEBUG                             FW_VERSION=-DAPP_FW_VERSION=${VERSION} OPT="-Og -g3"
+	targets/ruuvitag_b/armgcc/package.sh -n ruuvifw_test
+	@echo ++
+	@echo "             loadfile        targets/ruuvitag_b/armgcc/ruuvitag_b_armgcc_ruuvifw_test_       _full.hex  "
+	@echo ++
+	@alias nrfjprog='/Volumes/DATA/dgerman/Documents/computerstuff/phyweb/Nordic/nRF5x-CL-Tools_973/nrfjprog/nrfjprog'
+	@echo " nrfjprog  --reset --program ruuvitag_b_armgcc_ruuvifw_test_ae747e8_app.hex --sectorerase --verify --fast     ++  APP only"
+	#@/Volumes/DATA/dgerman/Documents/computerstuff/phyweb/Nordic/nRF5x-CL-Tools_973/nrfjprog/nrfjprog --reset
+	#@/Volumes/DATA/dgerman/Documents/computerstuff/phyweb/Nordic/nRF5x-CL-Tools_973/nrfjprog/nrfjprog \
+	#--reset --program targets/ruuvitag_b/armgcc/ruuvitag_b_armgcc_ruuvifw_test_ae747e8_app.hex \
+	#--sectorerase --verify --fast 
+	#@echo $'\e[3;10;0t \e[8;38;80t'   # set window t upper left corner 0;0 ; and make it 30 lines tall and as wide as possible for the font
+	/Applications/SEGGER/JLink/JLinkExe -Device NRF52832_XXAA -Autoconnect 1 -if SWD -Speed 4000 -CommandFile ~/bin/jlink-make.cmd
+
+analysis:
+	@echo analysis: build FW ${VERSION}
+	$(MAKE) -C targets/ruuvitag_b/armgcc DEBUG=-DNDEBUG FW_VERSION=-DAPP_FW_VERSION=${VERSION} OPT="-Og -g3" VERBOSE=1 ABSOLUTE_PATHS=1
+
+clean:
+	@echo cleaning build file
+	@echo modify ../nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc/Makefile.common with NOT rm command
+	@echo   ++ NOT $(MAKE) -C targets/ruuvitag_b/armgcc clean    Nordic  Makefile.common does the clean
+	$(MAKE) -C targets/ruuvitag_b/armgcc clean    Nordic  Makefile.common does the clean
