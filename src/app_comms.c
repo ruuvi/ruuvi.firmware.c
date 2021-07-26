@@ -87,9 +87,9 @@ static rd_status_t timed_switch_to_normal_mode (void)
     rd_status_t err_code = RD_SUCCESS;
     m_mode_ops.switch_to_normal = 1;
     err_code |= ri_timer_stop (m_comm_timer);
-    RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= ri_timer_start (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops);
-    RD_ERROR_CHECK(err_code, ~RD_ERROR_FATAL);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     return err_code;
 }
 
