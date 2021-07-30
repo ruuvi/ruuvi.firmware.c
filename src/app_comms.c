@@ -199,11 +199,11 @@ static rd_status_t enable_config_on_next_conn (const bool enable)
 
     if (enable)
     {
-        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+        app_led_configuration_signal (true);
     }
     else
     {
-        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
+        app_led_configuration_signal (false);
     }
 
     return err_code;
