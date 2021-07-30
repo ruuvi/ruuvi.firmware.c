@@ -38,8 +38,13 @@ static void state_change_process (void)
 {
     rd_status_t err_code = RD_SUCCESS;
 
+    //State: Paused
+    if (PAUSE_BIT & m_signals)
+    {
+        // No action needed
+    }
     //State: Interaction on
-    if (INTERACTION_BIT & m_signals)
+    else if (INTERACTION_BIT & m_signals)
     {
         err_code |= rt_led_write (RB_LED_BUTTON_PRESS, true);
     }
@@ -142,7 +147,15 @@ static void app_led_signal (const uint32_t signal, const bool active)
 void app_led_activity_pause (const bool pause)
 {
     RD_ERROR_CHECK (RD_WARNING_DEPRECATED, ~RD_ERROR_FATAL);
-    app_led_signal (PAUSE_BIT, pause);
+
+    if (pause)
+    {
+        m_signals |= PAUSE_BIT;
+    }
+    else
+    {
+        m_signals &= ~PAUSE_BIT;
+    }
 }
 
 /**

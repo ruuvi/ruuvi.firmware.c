@@ -10,10 +10,14 @@
 static const ri_gpio_id_t    m_led_pins[]    = RB_LEDS_LIST;
 static const ri_gpio_state_t m_leds_active[] = RB_LEDS_ACTIVE_STATE;
 extern ri_gpio_id_t m_activity_led;
+extern uint32_t m_signals;
 
 void setUp (void)
 {
     m_activity_led = RI_GPIO_ID_UNUSED;
+    m_signals = 0;
+    ri_log_Ignore();
+    ri_error_to_string_IgnoreAndReturn (0);
 }
 
 void tearDown (void)
@@ -125,4 +129,3 @@ void app_led_configuration_signal (const bool active);
  * @param[in] active True to activate signal, false to deactivate.
  */
 void app_led_interaction_signal (const bool active);
-

@@ -86,10 +86,10 @@ void setup (void)
     err_code |= app_sensor_vdd_sample();
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
-    app_led_error_signal (false);
 
     if (RD_SUCCESS == err_code)
     {
+        app_led_error_signal (false);
         app_led_activity_signal (true);
         err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);
         app_led_activity_signal (false);

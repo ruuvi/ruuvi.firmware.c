@@ -120,7 +120,7 @@ void test_button_handler_enable_config_press()
         .pin = RB_BUTTON_ENABLE_CONFIG,
         .slope = active_states[0]
     };
-    app_led_activity_pause_Expect (true);
+    app_led_interaction_signal_Expect (true);
     ri_timer_stop_ExpectAndReturn (m_button_timer, RD_SUCCESS);
     ri_timer_start_ExpectAndReturn (m_button_timer, APP_BUTTON_LONG_PRESS_TIME_MS,
                                     &m_button_action, RD_SUCCESS);
@@ -136,7 +136,7 @@ void test_button_handler_enable_config_release()
         .pin = RB_BUTTON_ENABLE_CONFIG,
         .slope = !active_states[0]
     };
-    app_led_activity_pause_Expect (false);
+    app_led_interaction_signal_Expect (false);
     ri_timer_stop_ExpectAndReturn (m_button_timer, RD_SUCCESS);
     app_comms_configure_next_enable_ExpectAndReturn (RD_SUCCESS);
     button_handler (&evt, sizeof (evt));
