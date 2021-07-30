@@ -1,5 +1,6 @@
 var app__sensor_8c =
 [
+    [ "POWERUP_DELAY_MS", "app__sensor_8c.html#a609557c87d7c45e2c10777bd9beb0891", null ],
     [ "sensor_op", "group__app__sensor.html#ga11a16c0ee195b19f5f73ef0d41ba0c3f", null ],
     [ "app_sensor_acc_thr_set", "group__app__sensor.html#ga1486749a89720d4d93ad855025f1e76d", null ],
     [ "app_sensor_available_data", "group__app__sensor.html#ga7077aa82166808259f34de69d76e936f", null ],

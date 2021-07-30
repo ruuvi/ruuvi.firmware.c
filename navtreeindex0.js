@@ -37,6 +37,7 @@ var NAVTREEINDEX0 =
 "app__power_8h.html":[3,0,0,12],
 "app__power_8h_source.html":[3,0,0,12],
 "app__sensor_8c.html":[3,0,0,13],
+"app__sensor_8c.html#a609557c87d7c45e2c10777bd9beb0891":[3,0,0,13,0],
 "app__sensor_8c_source.html":[3,0,0,13],
 "app__sensor_8h.html":[3,0,0,14],
 "app__sensor_8h_source.html":[3,0,0,14],
@@ -132,8 +133,8 @@ var NAVTREEINDEX0 =
 "group___s_d_k15.html#ga2506b07538d46341a94020a388cbbe51":[3,0,0,0,0,25],
 "group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1":[3,0,0,0,0,71],
 "group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1":[1,1,72],
-"group___s_d_k15.html#ga25f3a01ee1a6cc2114bfde56ef9e2f04":[3,0,0,0,0,42],
 "group___s_d_k15.html#ga25f3a01ee1a6cc2114bfde56ef9e2f04":[1,1,43],
+"group___s_d_k15.html#ga25f3a01ee1a6cc2114bfde56ef9e2f04":[3,0,0,0,0,42],
 "group___s_d_k15.html#ga284379f68761213c13ad9844e1725015":[3,0,0,0,0,7],
 "group___s_d_k15.html#ga284379f68761213c13ad9844e1725015":[1,1,8],
 "group___s_d_k15.html#ga2960466363a1b30d6ba549f8d75e2cb2":[3,0,0,0,0,78],
@@ -148,8 +149,8 @@ var NAVTREEINDEX0 =
 "group___s_d_k15.html#ga32245aad226d413cecd9fd837ad45d88":[1,1,99],
 "group___s_d_k15.html#ga3322f841dbb56f6529886c1fa26a71c6":[3,0,0,0,0,97],
 "group___s_d_k15.html#ga3322f841dbb56f6529886c1fa26a71c6":[1,1,98],
-"group___s_d_k15.html#ga33c15aae27be510c5c2987daaa66f82c":[3,0,0,0,0,36],
 "group___s_d_k15.html#ga33c15aae27be510c5c2987daaa66f82c":[1,1,37],
+"group___s_d_k15.html#ga33c15aae27be510c5c2987daaa66f82c":[3,0,0,0,0,36],
 "group___s_d_k15.html#ga3417a433d4de92852707187f8940b25a":[3,0,0,0,0,53],
 "group___s_d_k15.html#ga3417a433d4de92852707187f8940b25a":[1,1,54],
 "group___s_d_k15.html#ga36f22193742bd001e20246ba34e67997":[3,0,0,0,0,65],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "group___s_d_k15.html#gaafa389c3efd55eb57376023ebd947aa2":[1,1,23],
 "group___s_d_k15.html#gab041a09b0cfc52541091304900d9973c":[3,0,0,0,0,103],
 "group___s_d_k15.html#gab041a09b0cfc52541091304900d9973c":[1,1,104],
-"group___s_d_k15.html#gab55b9376f1e8e8ee5205a96b20f796ae":[3,0,0,0,0,86],
-"group___s_d_k15.html#gab55b9376f1e8e8ee5205a96b20f796ae":[1,1,87]
+"group___s_d_k15.html#gab55b9376f1e8e8ee5205a96b20f796ae":[3,0,0,0,0,86]
 };
