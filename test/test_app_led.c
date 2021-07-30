@@ -107,7 +107,18 @@ void test_app_led_activity_pause (void)
  *
  * @param[in] active True to activate signal, false to deactivate.
  */
-void app_led_activity_signal (const bool active);
+void test_app_led_activity_signal (void)
+{
+    rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
+    app_led_activity_signal (true);
+
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    app_led_activity_signal (false);
+}
 
 /**
  * @brief Set/Clear configuration indication
@@ -115,9 +126,27 @@ void app_led_activity_signal (const bool active);
  * Call this function to set / clear configurable state of the leds. app_led decides
  * action based on other signals
  *
-* @param[in] active True to activate signal, false to deactivate.
+ * @param[in] active True to activate signal, false to deactivate.
  */
-void app_led_configuration_signal (const bool active);
+
+void test_app_led_configuration_signal (void)
+{
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    app_led_configuration_signal (true);
+    rt_led_write_ExpectAndReturn (RB_LED_CONFIG_ENABLED, true, RD_SUCCESS);
+    app_led_activity_signal (true);
+
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    app_led_activity_signal (false);
+}
 
 /**
  * @brief Set/Clear interaction indication
@@ -128,4 +157,19 @@ void app_led_configuration_signal (const bool active);
  *
  * @param[in] active True to activate signal, false to deactivate.
  */
-void app_led_interaction_signal (const bool active);
+void test_app_led_interaction_signal (void)
+{
+    rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
+    app_led_interaction_signal (true);
+    rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
+    app_led_activity_signal (true);
+    rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
+    app_led_activity_signal (false);
+
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    app_led_interaction_signal (false);
+}
