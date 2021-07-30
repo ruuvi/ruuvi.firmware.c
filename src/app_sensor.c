@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define POWERUP_DELAY_MS (10U)
+
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
@@ -321,6 +323,8 @@ rd_status_t app_sensor_init (void)
     if (RD_SUCCESS == err_code)
     {
         app_sensor_rtc_init();
+        // Wait for the power lines to settle after bus powerup.
+        ri_delay_ms (POWERUP_DELAY_MS);
 
         for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
         {
@@ -333,6 +337,7 @@ rd_status_t app_sensor_init (void)
                 (void) ri_gpio_configure (m_sensors[ii]->pwr_pin,
                                           RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
                 (void) ri_gpio_write (m_sensors[ii]->pwr_pin, m_sensors[ii]->pwr_on);
+                ri_delay_ms (POWERUP_DELAY_MS);
             }
 
             // Some sensors, such as accelerometer may fail on user moving the board. Retry.
