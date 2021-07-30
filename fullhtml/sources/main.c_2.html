@@ -88,7 +88,7 @@
 <a name="ln75">    err_code |= ri_yield_low_power_enable (true);</a>
 <a name="ln76">    err_code |= rt_flash_init();</a>
 <a name="ln77">    err_code |= app_led_init();</a>
-<a name="ln78">    err_code |= app_led_activate (RB_LED_STATUS_ERROR);</a>
+<a name="ln78">    app_led_error_signal (true);</a>
 <a name="ln79">    err_code |= app_button_init();</a>
 <a name="ln80">    err_code |= app_dc_dc_init();</a>
 <a name="ln81">    err_code |= app_sensor_init();</a>
@@ -99,57 +99,51 @@
 <a name="ln86">    err_code |= app_sensor_vdd_sample();</a>
 <a name="ln87">    err_code |= app_heartbeat_init();</a>
 <a name="ln88">    err_code |= app_heartbeat_start();</a>
-<a name="ln89">    err_code |= app_led_deactivate (RB_LED_STATUS_ERROR);</a>
-<a name="ln90"> </a>
-<a name="ln91">    if (RD_SUCCESS == err_code)</a>
-<a name="ln92">    {</a>
-<a name="ln93">        err_code |= app_led_activate (RB_LED_STATUS_OK);</a>
+<a name="ln89"> </a>
+<a name="ln90">    if (RD_SUCCESS == err_code)</a>
+<a name="ln91">    {</a>
+<a name="ln92">        app_led_error_signal (false);</a>
+<a name="ln93">        app_led_activity_signal (true);</a>
 <a name="ln94">        err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);</a>
-<a name="ln95">        err_code |= app_led_deactivate (RB_LED_STATUS_OK);</a>
+<a name="ln95">        app_led_activity_signal (false);</a>
 <a name="ln96">    }</a>
 <a name="ln97"> </a>
-<a name="ln98">    err_code |= app_led_activity_set (RB_LED_ACTIVITY);</a>
-<a name="ln99">    rd_error_cb_set (&amp;app_on_error);</a>
-<a name="ln100">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln101">}</a>
-<a name="ln102"> </a>
-<a name="ln103">#ifdef  CEEDLING</a>
-<a name="ln104">int app_main (void)</a>
-<a name="ln105">#else</a>
-<a name="ln106">int main (void)</a>
-<a name="ln107">#endif</a>
-<a name="ln108">{</a>
-<a name="ln109">#   if RUUVI_RUN_TESTS</a>
-<a name="ln110">    integration_tests_run();</a>
-<a name="ln111">#   endif</a>
-<a name="ln112">    setup();</a>
-<a name="ln113"> </a>
-<a name="ln114">    do</a>
-<a name="ln115">    {</a>
-<a name="ln116">        ri_scheduler_execute();</a>
-<a name="ln117">        // Sleep - woken up on event</a>
-<a name="ln118">        // Do not indicate activity here to conserve power.</a>
-<a name="ln119">        // Sensor reads take ~20ms, having led on for that time is expensive.</a>
-<a name="ln120">        ri_yield();</a>
-<a name="ln121">        // Prevent loop being optimized away</a>
-<a name="ln122">        __asm__ (&quot;&quot;);</a>
-<a name="ln123">    } while (LOOP_FOREVER);</a>
-<a name="ln124"> </a>
-<a name="ln125">    // Intentionally non-reachable code unless unit testing.</a>
-<a name="ln126">    return -1;</a>
-<a name="ln127">}</a>
-<a name="ln128"> </a>
-<a name="ln129">/** @} */</a>
+<a name="ln98">    rd_error_cb_set (&amp;app_on_error);</a>
+<a name="ln99">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln100">}</a>
+<a name="ln101"> </a>
+<a name="ln102">#ifdef  CEEDLING</a>
+<a name="ln103">int app_main (void)</a>
+<a name="ln104">#else</a>
+<a name="ln105">int main (void)</a>
+<a name="ln106">#endif</a>
+<a name="ln107">{</a>
+<a name="ln108">#   if RUUVI_RUN_TESTS</a>
+<a name="ln109">    integration_tests_run();</a>
+<a name="ln110">#   endif</a>
+<a name="ln111">    setup();</a>
+<a name="ln112"> </a>
+<a name="ln113">    do</a>
+<a name="ln114">    {</a>
+<a name="ln115">        ri_scheduler_execute();</a>
+<a name="ln116">        // Sleep - woken up on event</a>
+<a name="ln117">        // Do not indicate activity here to conserve power.</a>
+<a name="ln118">        // Sensor reads take ~20ms, having led on for that time is expensive.</a>
+<a name="ln119">        ri_yield();</a>
+<a name="ln120">        // Prevent loop being optimized away</a>
+<a name="ln121">        __asm__ (&quot;&quot;);</a>
+<a name="ln122">    } while (LOOP_FOREVER);</a>
+<a name="ln123"> </a>
+<a name="ln124">    // Intentionally non-reachable code unless unit testing.</a>
+<a name="ln125">    return -1;</a>
+<a name="ln126">}</a>
+<a name="ln127"> </a>
+<a name="ln128">/** @} */</a>
 
 </code></pre>
 <div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'error'.</p></div>
 <div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'file'.</p></div>
 <div class="balloon" rel="45"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'line'.</p></div>
-<div class="balloon" rel="78"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="89"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="93"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="95"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="98"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

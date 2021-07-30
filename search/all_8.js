@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['nrf5_5fsdk15_5fapp_5fconfig_2eh_175',['nrf5_sdk15_app_config.h',['../nrf5__sdk15__app__config_8h.html',1,'']]],
-  ['nrf5_5fsdk15_5fconfigured_176',['NRF5_SDK15_CONFIGURED',['../nrf5__sdk15__app__config_8h.html#a78d2fe783ce2c2843dd058adef0f5584',1,'nrf5_sdk15_app_config.h']]],
-  ['num_5fsamples_177',['num_samples',['../structapp__log__record__t.html#a697044b41fae96bc51a76ff759ad08d4',1,'app_log_record_t']]],
-  ['nrf_20sdk15_20configuration_178',['nRF SDK15 Configuration',['../group___s_d_k15.html',1,'']]]
+  ['led_20control_2e_178',['Led control.',['../group__app__led.html',1,'']]],
+  ['log_5fprint_5fdelay_5fms_179',['LOG_PRINT_DELAY_MS',['../group__integration__test.html#ga18c932c8b56c71f33964f44185c9e496',1,'run_integration_tests.c']]],
+  ['loop_5fforever_180',['LOOP_FOREVER',['../main_8h.html#abb4360b563449b775f80a2d36f20e5bf',1,'main.h']]]
 ];

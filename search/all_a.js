@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['power_20configuration_182',['Power configuration',['../group__app__power.html',1,'']]],
-  ['program_20main_183',['Program main',['../group__main.html',1,'']]],
-  ['page_5fidx_184',['page_idx',['../structapp__log__read__state__t.html#a004307934628a68dda83626590eb1529',1,'app_log_read_state_t']]],
-  ['pressure_5fpa_185',['pressure_pa',['../structapp__log__element__t.html#a432a268dfe0d1f08e6527aaf3198019c',1,'app_log_element_t']]]
+  ['nrf5_5fsdk15_5fapp_5fconfig_2eh_186',['nrf5_sdk15_app_config.h',['../nrf5__sdk15__app__config_8h.html',1,'']]],
+  ['nrf5_5fsdk15_5fconfigured_187',['NRF5_SDK15_CONFIGURED',['../nrf5__sdk15__app__config_8h.html#a78d2fe783ce2c2843dd058adef0f5584',1,'nrf5_sdk15_app_config.h']]],
+  ['num_5fsamples_188',['num_samples',['../structapp__log__record__t.html#a697044b41fae96bc51a76ff759ad08d4',1,'app_log_record_t']]],
+  ['nrf_20sdk15_20configuration_189',['nRF SDK15 Configuration',['../group___s_d_k15.html',1,'']]]
 ];

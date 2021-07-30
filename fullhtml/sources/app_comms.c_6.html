@@ -212,11 +212,11 @@
 <a name="ln199"> </a>
 <a name="ln200">    if (enable)</a>
 <a name="ln201">    {</a>
-<a name="ln202">        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);</a>
+<a name="ln202">        app_led_configuration_signal (true);</a>
 <a name="ln203">    }</a>
 <a name="ln204">    else</a>
 <a name="ln205">    {</a>
-<a name="ln206">        err_code |= app_led_activity_set (RB_LED_ACTIVITY);</a>
+<a name="ln206">        app_led_configuration_signal (false);</a>
 <a name="ln207">    }</a>
 <a name="ln208"> </a>
 <a name="ln209">    return err_code;</a>
@@ -638,8 +638,6 @@
 <div class="balloon" rel="152"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(uint8_t *) p_data'.</p></div>
 <div class="balloon" rel="153"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'raw_message[(0U)]' expression should not be converted from the essential 'unsigned' type to the essential 're_type_t' type.</p></div>
 <div class="balloon" rel="173"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2519/" target="_blank">V2519</a> The 'default' label should, besides a 'break' statement, contain either a statement or a comment.</p></div>
-<div class="balloon" rel="202"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="206"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
 <div class="balloon" rel="218"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
 <div class="balloon" rel="219"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="230"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>

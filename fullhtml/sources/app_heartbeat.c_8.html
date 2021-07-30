@@ -115,7 +115,7 @@
 <a name="ln102">    data.data = data_values;</a>
 <a name="ln103">    app_sensor_get (&amp;data);</a>
 <a name="ln104">    // Sensor read takes a long while, indicate activity once data is read.</a>
-<a name="ln105">    app_led_activity_indicate (true);</a>
+<a name="ln105">    app_led_activity_signal (true);</a>
 <a name="ln106">    encode_to_5 (&amp;data, &amp;msg);</a>
 <a name="ln107"> </a>
 <a name="ln108">    if (RE_5_INVALID_SEQUENCE == ++m_measurement_count)</a>
@@ -157,7 +157,7 @@
 <a name="ln144">    }</a>
 <a name="ln145"> </a>
 <a name="ln146">    err_code = app_log_process (&amp;data);</a>
-<a name="ln147">    app_led_activity_indicate (false);</a>
+<a name="ln147">    app_led_activity_signal (false);</a>
 <a name="ln148">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
 <a name="ln149">}</a>
 <a name="ln150"> </a>

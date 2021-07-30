@@ -23,6 +23,7 @@ for the JavaScript code in this file
 var NAVTREE =
 [
   [ "ruuvi.firmware.c", "index.html", [
+    [ "Deprecated List", "deprecated.html", null ],
     [ "Modules", "modules.html", "modules" ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
@@ -37,6 +38,7 @@ var NAVTREE =
       [ "Globals", "globals.html", [
         [ "All", "globals.html", "globals_dup" ],
         [ "Functions", "globals_func.html", null ],
+        [ "Variables", "globals_vars.html", null ],
         [ "Typedefs", "globals_type.html", null ],
         [ "Enumerator", "globals_eval.html", null ],
         [ "Macros", "globals_defs.html", null ]
@@ -48,8 +50,8 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"group___s_d_k15.html#gabc3ae583cd5b18ae10397acae5bf3e68",
-"structapp__log__read__state__t.html#a84325c7d3b6841c93524615a46669f65"
+"group___s_d_k15.html#gab5f2de54e947fe2921132f465c260f47",
+"group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

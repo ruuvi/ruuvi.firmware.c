@@ -26,81 +26,221 @@
 <a name="ln13"> * @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
 <a name="ln14"> * @date 2020-09-10</a>
 <a name="ln15"> * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
-<a name="ln16"> */</a>
-<a name="ln17"> </a>
-<a name="ln18">static const uint16_t        m_led_pins[]   = RB_LEDS_LIST;</a>
-<a name="ln19">static const ri_gpio_state_t m_led_active[] = RB_LEDS_ACTIVE_STATE;</a>
+<a name="ln16"> *</a>
+<a name="ln17"> * Depriciations added on 3.30.X, can be removed earliest at 4.0.0</a>
+<a name="ln18"> */</a>
+<a name="ln19"> </a>
 <a name="ln20">#ifndef CEEDLING</a>
-<a name="ln21">static</a>
-<a name="ln22">#endif</a>
-<a name="ln23">ri_gpio_id_t m_activity_led          = RI_GPIO_ID_UNUSED;</a>
-<a name="ln24">static bool m_activity_ind_paused;</a>
+<a name="ln21">#define TESTABLE_STATIC static</a>
+<a name="ln22">#else</a>
+<a name="ln23">#define TESTABLE_STATIC</a>
+<a name="ln24">#endif</a>
 <a name="ln25"> </a>
-<a name="ln26">rd_status_t app_led_init (void)</a>
-<a name="ln27">{</a>
-<a name="ln28">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln29">    err_code |= rt_led_init (m_led_pins, m_led_active, RB_LEDS_NUMBER);</a>
-<a name="ln30">    return  err_code;</a>
-<a name="ln31">}</a>
-<a name="ln32"> </a>
-<a name="ln33">rd_status_t app_led_activate (const ri_gpio_id_t led)</a>
-<a name="ln34">{</a>
-<a name="ln35">    return rt_led_write (led, true);</a>
-<a name="ln36">}</a>
-<a name="ln37"> </a>
-<a name="ln38">rd_status_t app_led_deactivate (const ri_gpio_id_t led)</a>
-<a name="ln39">{</a>
-<a name="ln40">    return rt_led_write (led, false);</a>
-<a name="ln41">}</a>
-<a name="ln42"> </a>
-<a name="ln43">rd_status_t app_led_activity_set (const ri_gpio_id_t led)</a>
-<a name="ln44">{</a>
-<a name="ln45">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln46"> </a>
-<a name="ln47">    if (RI_GPIO_ID_UNUSED != m_activity_led)</a>
+<a name="ln26">#define ACTIVITY_BIT     (1U &lt;&lt; 0U)</a>
+<a name="ln27">#define CONFIGURABLE_BIT (1U &lt;&lt; 1U)</a>
+<a name="ln28">#define INTERACTION_BIT  (1U &lt;&lt; 2U)</a>
+<a name="ln29">#define ERROR_BIT        (1U &lt;&lt; 3U)</a>
+<a name="ln30">#define PAUSE_BIT        (1U &lt;&lt; 4U) // For backwards compatibility, do not use.</a>
+<a name="ln31"> </a>
+<a name="ln32">static const uint16_t        m_led_pins[]   = RB_LEDS_LIST;</a>
+<a name="ln33">static const ri_gpio_state_t m_led_active[] = RB_LEDS_ACTIVE_STATE;</a>
+<a name="ln34">TESTABLE_STATIC ri_gpio_id_t m_activity_led          = RI_GPIO_ID_UNUSED;</a>
+<a name="ln35">TESTABLE_STATIC uint32_t m_signals;</a>
+<a name="ln36"> </a>
+<a name="ln37">static void state_change_process (void)</a>
+<a name="ln38">{</a>
+<a name="ln39">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln40"> </a>
+<a name="ln41">    //State: Paused</a>
+<a name="ln42">    if (PAUSE_BIT &amp; m_signals)</a>
+<a name="ln43">    {</a>
+<a name="ln44">        // No action needed</a>
+<a name="ln45">    }</a>
+<a name="ln46">    //State: Interaction on</a>
+<a name="ln47">    else if (INTERACTION_BIT &amp; m_signals)</a>
 <a name="ln48">    {</a>
-<a name="ln49">        err_code |= app_led_deactivate (m_activity_led);</a>
+<a name="ln49">        err_code |= rt_led_write (RB_LED_BUTTON_PRESS, true);</a>
 <a name="ln50">    }</a>
-<a name="ln51"> </a>
-<a name="ln52">    err_code |= app_led_deactivate (led);</a>
-<a name="ln53"> </a>
-<a name="ln54">    if (RD_SUCCESS == err_code)</a>
-<a name="ln55">    {</a>
-<a name="ln56">        m_activity_led = led;</a>
-<a name="ln57">    }</a>
-<a name="ln58"> </a>
-<a name="ln59">    return err_code;</a>
-<a name="ln60">}</a>
-<a name="ln61"> </a>
-<a name="ln62">rd_status_t app_led_activity_indicate (const bool active)</a>
-<a name="ln63">{</a>
-<a name="ln64">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln65"> </a>
-<a name="ln66">    if (!m_activity_ind_paused)</a>
-<a name="ln67">    {</a>
-<a name="ln68">        if (active)</a>
-<a name="ln69">        {</a>
-<a name="ln70">            err_code |= app_led_activate (m_activity_led);</a>
-<a name="ln71">        }</a>
-<a name="ln72">        else</a>
-<a name="ln73">        {</a>
-<a name="ln74">            err_code |= app_led_deactivate (m_activity_led);</a>
-<a name="ln75">        }</a>
-<a name="ln76">    }</a>
-<a name="ln77"> </a>
-<a name="ln78">    return err_code;</a>
-<a name="ln79">}</a>
-<a name="ln80"> </a>
-<a name="ln81">void app_led_activity_pause (const bool pause)</a>
-<a name="ln82">{</a>
-<a name="ln83">    m_activity_ind_paused = pause;</a>
-<a name="ln84">}</a>
-<a name="ln85"> </a>
-<a name="ln86">/** @} */</a>
+<a name="ln51">    // State: configurable, active</a>
+<a name="ln52">    else if ( (ACTIVITY_BIT | CONFIGURABLE_BIT) == m_signals)</a>
+<a name="ln53">    {</a>
+<a name="ln54">        err_code |= rt_led_write (RB_LED_CONFIG_ENABLED, true);</a>
+<a name="ln55">    }</a>
+<a name="ln56">    // State: active, not configurable</a>
+<a name="ln57">    else if (ACTIVITY_BIT == m_signals)</a>
+<a name="ln58">    {</a>
+<a name="ln59">        err_code |= rt_led_write (RB_LED_ACTIVITY, true);</a>
+<a name="ln60">    }</a>
+<a name="ln61">    //Default: leds off</a>
+<a name="ln62">    else</a>
+<a name="ln63">    {</a>
+<a name="ln64">        for (size_t ii = 0; ii &lt; RB_LEDS_NUMBER; ii++)</a>
+<a name="ln65">        {</a>
+<a name="ln66">            err_code |= rt_led_write (m_led_pins[ii], false);</a>
+<a name="ln67">        }</a>
+<a name="ln68">    }</a>
+<a name="ln69"> </a>
+<a name="ln70">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln71">}</a>
+<a name="ln72"> </a>
+<a name="ln73"> </a>
+<a name="ln74">rd_status_t app_led_init (void)</a>
+<a name="ln75">{</a>
+<a name="ln76">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln77">    err_code |= rt_led_init (m_led_pins, m_led_active, RB_LEDS_NUMBER);</a>
+<a name="ln78">    m_signals = 0;</a>
+<a name="ln79">    return  err_code;</a>
+<a name="ln80">}</a>
+<a name="ln81"> </a>
+<a name="ln82">rd_status_t app_led_activate (const ri_gpio_id_t led)</a>
+<a name="ln83">{</a>
+<a name="ln84">    RD_ERROR_CHECK (RD_WARNING_DEPRECATED, ~RD_ERROR_FATAL);</a>
+<a name="ln85">    return rt_led_write (led, true);</a>
+<a name="ln86">}</a>
+<a name="ln87"> </a>
+<a name="ln88">rd_status_t app_led_deactivate (const ri_gpio_id_t led)</a>
+<a name="ln89">{</a>
+<a name="ln90">    RD_ERROR_CHECK (RD_WARNING_DEPRECATED, ~RD_ERROR_FATAL);</a>
+<a name="ln91">    return rt_led_write (led, false);</a>
+<a name="ln92">}</a>
+<a name="ln93"> </a>
+<a name="ln94">rd_status_t app_led_activity_set (const ri_gpio_id_t led)</a>
+<a name="ln95">{</a>
+<a name="ln96">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln97"> </a>
+<a name="ln98">    if (RI_GPIO_ID_UNUSED != m_activity_led)</a>
+<a name="ln99">    {</a>
+<a name="ln100">        err_code |= app_led_deactivate (m_activity_led);</a>
+<a name="ln101">    }</a>
+<a name="ln102"> </a>
+<a name="ln103">    err_code |= app_led_deactivate (led);</a>
+<a name="ln104"> </a>
+<a name="ln105">    if (RD_SUCCESS == err_code)</a>
+<a name="ln106">    {</a>
+<a name="ln107">        m_activity_led = led;</a>
+<a name="ln108">    }</a>
+<a name="ln109"> </a>
+<a name="ln110">    return err_code;</a>
+<a name="ln111">}</a>
+<a name="ln112"> </a>
+<a name="ln113">rd_status_t app_led_activity_indicate (const bool active)</a>
+<a name="ln114">{</a>
+<a name="ln115">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln116">    RD_ERROR_CHECK (RD_WARNING_DEPRECATED, ~RD_ERROR_FATAL);</a>
+<a name="ln117"> </a>
+<a name="ln118">    if (! (PAUSE_BIT &amp; m_signals))</a>
+<a name="ln119">    {</a>
+<a name="ln120">        if (active)</a>
+<a name="ln121">        {</a>
+<a name="ln122">            err_code |= app_led_activate (m_activity_led);</a>
+<a name="ln123">        }</a>
+<a name="ln124">        else</a>
+<a name="ln125">        {</a>
+<a name="ln126">            err_code |= app_led_deactivate (m_activity_led);</a>
+<a name="ln127">        }</a>
+<a name="ln128">    }</a>
+<a name="ln129"> </a>
+<a name="ln130">    return err_code;</a>
+<a name="ln131">}</a>
+<a name="ln132"> </a>
+<a name="ln133">static void app_led_signal (const uint32_t signal, const bool active)</a>
+<a name="ln134">{</a>
+<a name="ln135">    if (active)</a>
+<a name="ln136">    {</a>
+<a name="ln137">        m_signals |= signal;</a>
+<a name="ln138">    }</a>
+<a name="ln139">    else</a>
+<a name="ln140">    {</a>
+<a name="ln141">        m_signals &amp;= ~signal;</a>
+<a name="ln142">    }</a>
+<a name="ln143"> </a>
+<a name="ln144">    state_change_process();</a>
+<a name="ln145">}</a>
+<a name="ln146"> </a>
+<a name="ln147">void app_led_activity_pause (const bool pause)</a>
+<a name="ln148">{</a>
+<a name="ln149">    RD_ERROR_CHECK (RD_WARNING_DEPRECATED, ~RD_ERROR_FATAL);</a>
+<a name="ln150"> </a>
+<a name="ln151">    if (pause)</a>
+<a name="ln152">    {</a>
+<a name="ln153">        m_signals |= PAUSE_BIT;</a>
+<a name="ln154">    }</a>
+<a name="ln155">    else</a>
+<a name="ln156">    {</a>
+<a name="ln157">        m_signals &amp;= ~PAUSE_BIT;</a>
+<a name="ln158">    }</a>
+<a name="ln159">}</a>
+<a name="ln160"> </a>
+<a name="ln161">/**</a>
+<a name="ln162"> * @brief Set/Clear activity indication</a>
+<a name="ln163"> *</a>
+<a name="ln164"> * Call this function to set / clear activity state of the leds. app_led decides</a>
+<a name="ln165"> * action based on other signals</a>
+<a name="ln166"> *</a>
+<a name="ln167"> * @param[in] active True to activate signal, false to deactivate.</a>
+<a name="ln168"> */</a>
+<a name="ln169">void app_led_activity_signal (const bool active)</a>
+<a name="ln170">{</a>
+<a name="ln171">    app_led_signal (ACTIVITY_BIT, active);</a>
+<a name="ln172">}</a>
+<a name="ln173"> </a>
+<a name="ln174">/**</a>
+<a name="ln175"> * @brief Set/Clear configuration indication</a>
+<a name="ln176"> *</a>
+<a name="ln177"> * Call this function to set / clear configurable state of the leds. app_led decides</a>
+<a name="ln178"> * action based on other signals</a>
+<a name="ln179"> *</a>
+<a name="ln180">* @param[in] active True to activate signal, false to deactivate.</a>
+<a name="ln181"> */</a>
+<a name="ln182">void app_led_configuration_signal (const bool active)</a>
+<a name="ln183">{</a>
+<a name="ln184">    app_led_signal (CONFIGURABLE_BIT, active);</a>
+<a name="ln185">}</a>
+<a name="ln186"> </a>
+<a name="ln187"> </a>
+<a name="ln188">/**</a>
+<a name="ln189"> * @brief Set/Clear interaction indication</a>
+<a name="ln190"> *</a>
+<a name="ln191"> * Call this function to set / clear interaction state of the leds.</a>
+<a name="ln192"> * Typically this is called on button press and release.</a>
+<a name="ln193"> * App_led decides action based on other signals.</a>
+<a name="ln194"> *</a>
+<a name="ln195"> * @param[in] active True to activate signal, false to deactivate.</a>
+<a name="ln196"> */</a>
+<a name="ln197">void app_led_interaction_signal (const bool active)</a>
+<a name="ln198">{</a>
+<a name="ln199">    app_led_signal (INTERACTION_BIT, active);</a>
+<a name="ln200">}</a>
+<a name="ln201"> </a>
+<a name="ln202">/**</a>
+<a name="ln203"> * @brief Set/Clear error indication</a>
+<a name="ln204"> *</a>
+<a name="ln205"> * Call this function to set / clear error state of the leds.</a>
+<a name="ln206"> * App_led decides action based on other signals.</a>
+<a name="ln207"> *</a>
+<a name="ln208"> * @param[in] active True to activate signal, false to deactivate.</a>
+<a name="ln209"> */</a>
+<a name="ln210">void app_led_error_signal (const bool active)</a>
+<a name="ln211">{</a>
+<a name="ln212">    app_led_signal (ERROR_BIT, active);</a>
+<a name="ln213">}</a>
+<a name="ln214"> </a>
+<a name="ln215">/** @} */</a>
 
 </code></pre>
-<div class="balloon" rel="18"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="47"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="32"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="49"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="54"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="59"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="64"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="78"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="98"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="118"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The '((1U << 4U) & m_signals)' operand of the '!' operator should not have the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="118"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2570/" target="_blank">V2570</a> Operands of the '!' operator should have bool essential type.</p></div>
+<div class="balloon" rel="171"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="184"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="199"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="212"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

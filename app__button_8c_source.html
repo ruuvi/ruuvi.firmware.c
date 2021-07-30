@@ -187,7 +187,7 @@ $(document).ready(function(){initNavTree('app__button_8c_source.html',''); initR
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;        LOG (<span class="stringliteral">&quot;Config button pressed\r\n&quot;</span>);</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;        m_button_action.factory_reset = 1;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;        <span class="comment">// Disable activity led to not turn off the button indication led.</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <a class="code" href="group__app__led.html#ga647a654a5c6841d3fcf84e9df425de99">app_led_activity_pause</a> (<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;        <a class="code" href="group__app__led.html#ga0f45a7ea55cff009309ea44d491debda">app_led_interaction_signal</a> (<span class="keyword">true</span>);</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        ri_timer_stop (m_button_timer);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;        ri_timer_start (m_button_timer, <a class="code" href="application__mode__default_8h.html#a9c5ade3edb5e89d40fec5de217783d1d">APP_BUTTON_LONG_PRESS_TIME_MS</a>, &amp;m_button_action);</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    }</div>
@@ -195,7 +195,7 @@ $(document).ready(function(){initNavTree('app__button_8c_source.html',''); initR
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    {</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;        LOG (<span class="stringliteral">&quot;Config button released\r\n&quot;</span>);</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        m_button_action.factory_reset = 0;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <a class="code" href="group__app__led.html#ga647a654a5c6841d3fcf84e9df425de99">app_led_activity_pause</a> (<span class="keyword">false</span>);</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;        <a class="code" href="group__app__led.html#ga0f45a7ea55cff009309ea44d491debda">app_led_interaction_signal</a> (<span class="keyword">false</span>);</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;        (void) ri_timer_stop (m_button_timer);</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        (void) <a class="code" href="group__app__comms.html#ga8b819ebf31bea1416c510055440420d5">app_comms_configure_next_enable</a>();</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    }</div>
@@ -324,6 +324,7 @@ $(document).ready(function(){initNavTree('app__button_8c_source.html',''); initR
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160; </div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
+<div class="ttc" id="agroup__app__led_html_ga0f45a7ea55cff009309ea44d491debda"><div class="ttname"><a href="group__app__led.html#ga0f45a7ea55cff009309ea44d491debda">app_led_interaction_signal</a></div><div class="ttdeci">void app_led_interaction_signal(const bool active)</div><div class="ttdoc">Set/Clear interaction indication.</div><div class="ttdef"><b>Definition:</b> <a href="app__led_8c_source.html#l00197">app_led.c:197</a></div></div>
 <div class="ttc" id="agroup__app__log_html_ga436adedb3c8dddc9b1a8a549487b0d80"><div class="ttname"><a href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log_purge_flash</a></div><div class="ttdeci">void app_log_purge_flash(void)</div><div class="ttdoc">Purge everything stored to flash.</div><div class="ttdef"><b>Definition:</b> <a href="app__log_8c_source.html#l00463">app_log.c:463</a></div></div>
 <div class="ttc" id="aapp__comms_8h_html"><div class="ttname"><a href="app__comms_8h.html">app_comms.h</a></div></div>
 <div class="ttc" id="agroup__app__button_html_gac95bed5758bf6c73e2cd8029397cabd3"><div class="ttname"><a href="group__app__button.html#gac95bed5758bf6c73e2cd8029397cabd3">app_button_init</a></div><div class="ttdeci">rd_status_t app_button_init(void)</div><div class="ttdoc">Initialize buttons.</div><div class="ttdef"><b>Definition:</b> <a href="app__button_8c_source.html#l00254">app_button.c:254</a></div></div>
@@ -333,7 +334,6 @@ $(document).ready(function(){initNavTree('app__button_8c_source.html',''); initR
 <div class="ttc" id="agroup__app__comms_html_ga8b819ebf31bea1416c510055440420d5"><div class="ttname"><a href="group__app__comms.html#ga8b819ebf31bea1416c510055440420d5">app_comms_configure_next_enable</a></div><div class="ttdeci">rd_status_t app_comms_configure_next_enable(void)</div><div class="ttdoc">Enable security-sensitive configuration options.</div></div>
 <div class="ttc" id="aapp__heartbeat_8h_html"><div class="ttname"><a href="app__heartbeat_8h.html">app_heartbeat.h</a></div></div>
 <div class="ttc" id="aapp__led_8h_html"><div class="ttname"><a href="app__led_8h.html">app_led.h</a></div></div>
-<div class="ttc" id="agroup__app__led_html_ga647a654a5c6841d3fcf84e9df425de99"><div class="ttname"><a href="group__app__led.html#ga647a654a5c6841d3fcf84e9df425de99">app_led_activity_pause</a></div><div class="ttdeci">void app_led_activity_pause(const bool pause)</div><div class="ttdoc">Pause activity indications.</div><div class="ttdef"><b>Definition:</b> <a href="app__led_8c_source.html#l00081">app_led.c:81</a></div></div>
 <div class="ttc" id="aapp__heartbeat_8c_html_a1240fd08840324544b6ab45c20c19f87"><div class="ttname"><a href="app__heartbeat_8c.html#a1240fd08840324544b6ab45c20c19f87">app_heartbeat_stop</a></div><div class="ttdeci">rd_status_t app_heartbeat_stop(void)</div><div class="ttdoc">Stops app heartbeats.</div><div class="ttdef"><b>Definition:</b> <a href="app__heartbeat_8c_source.html#l00203">app_heartbeat.c:203</a></div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->

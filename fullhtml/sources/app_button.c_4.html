@@ -123,7 +123,7 @@
 <a name="ln110">        LOG (&quot;Config button pressed\r\n&quot;);</a>
 <a name="ln111">        m_button_action.factory_reset = 1;</a>
 <a name="ln112">        // Disable activity led to not turn off the button indication led.</a>
-<a name="ln113">        app_led_activity_pause (true);</a>
+<a name="ln113">        app_led_interaction_signal (true);</a>
 <a name="ln114">        ri_timer_stop (m_button_timer);</a>
 <a name="ln115">        ri_timer_start (m_button_timer, APP_BUTTON_LONG_PRESS_TIME_MS, &amp;m_button_action);</a>
 <a name="ln116">    }</a>
@@ -131,7 +131,7 @@
 <a name="ln118">    {</a>
 <a name="ln119">        LOG (&quot;Config button released\r\n&quot;);</a>
 <a name="ln120">        m_button_action.factory_reset = 0;</a>
-<a name="ln121">        app_led_activity_pause (false);</a>
+<a name="ln121">        app_led_interaction_signal (false);</a>
 <a name="ln122">        (void) ri_timer_stop (m_button_timer);</a>
 <a name="ln123">        (void) app_comms_configure_next_enable();</a>
 <a name="ln124">    }</a>
