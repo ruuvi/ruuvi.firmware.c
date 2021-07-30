@@ -102,7 +102,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     data.data = data_values;
     app_sensor_get (&data);
     // Sensor read takes a long while, indicate activity once data is read.
-    app_led_activity_indicate (true);
+    app_led_activity_signal (true);
     encode_to_5 (&data, &msg);
 
     if (RE_5_INVALID_SEQUENCE == ++m_measurement_count)
@@ -144,7 +144,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     }
 
     err_code = app_log_process (&data);
-    app_led_activity_indicate (false);
+    app_led_activity_signal (false);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 

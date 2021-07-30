@@ -94,3 +94,35 @@ void test_app_led_activity_pause (void)
     err_code |= app_led_activity_indicate (false);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
+
+/**
+ * @brief Set/Clear activity indication
+ *
+ * Call this function to set / clear activity state of the leds. app_led decides
+ * action based on other signals
+ *
+ * @param[in] active True to activate signal, false to deactivate.
+ */
+void app_led_activity_signal (const bool active);
+
+/**
+ * @brief Set/Clear configuration indication
+ *
+ * Call this function to set / clear configurable state of the leds. app_led decides
+ * action based on other signals
+ *
+* @param[in] active True to activate signal, false to deactivate.
+ */
+void app_led_configuration_signal (const bool active);
+
+/**
+ * @brief Set/Clear interaction indication
+ *
+ * Call this function to set / clear interaction state of the leds.
+ * Typically this is called on button press and release.
+ * App_led decides action based on other signals.
+ *
+ * @param[in] active True to activate signal, false to deactivate.
+ */
+void app_led_interaction_signal (const bool active);
+
