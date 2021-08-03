@@ -173,3 +173,17 @@ void test_app_led_interaction_signal (void)
 
     app_led_interaction_signal (false);
 }
+
+/**
+ * @brief Set/Clear error indication
+ *
+ * Call this function to set / clear error state of the leds.
+ * App_led decides action based on other signals.
+ *
+ * @param[in] active True to activate signal, false to deactivate.
+ */
+void test_app_led_error_signal (void)
+{
+    rt_led_write_ExpectAndReturn (RB_LED_STATUS_ERROR, true, RD_SUCCESS);
+    app_led_error_signal (true);
+}

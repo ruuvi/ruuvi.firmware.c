@@ -43,6 +43,11 @@ static void state_change_process (void)
     {
         // No action needed
     }
+    //State: Error on
+    else if (ERROR_BIT & m_signals)
+    {
+        err_code |= rt_led_write (RB_LED_STATUS_ERROR, true);
+    }
     //State: Interaction on
     else if (INTERACTION_BIT & m_signals)
     {
