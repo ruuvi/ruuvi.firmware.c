@@ -36,13 +36,13 @@
   </div>
 
   <table cellpadding="0" cellspacing="0" border="0" class="infotopic">
-     <tr><th id="col_info">Date:</th><td>Fri Jul 30 16:13:33 2021</td></tr>
+     <tr><th id="col_info">Date:</th><td>Tue Aug  3 12:53:12 2021</td></tr>
      <tr><th id="col_info">PVS-Studio Version:</th><td>7.13.48133.129</td></tr>
      <tr><th id="col_info">Command Line:</th><td>plog-converter -a GA\:1,2,3\;OP\:1,2,3\;CS\:1,2,3\;MISRA\:1,2,3 -t fullhtml src/main.o.PVS-Studio.log src/run_integration_tests.o.PVS-Studio.log src/app_button.o.PVS-Studio.log src/app_comms.o.PVS-Studio.log src/app_heartbeat.o.PVS-Studio.log src/app_led.o.PVS-Studio.log src/app_log.o.PVS-Studio.log src/app_power.o.PVS-Studio.log src/app_sensor.o.PVS-Studio.log -o ./doxygen/html </td></tr>
      <tr><th id="col_info">Total Warnings (GA):</th><td>2</td></tr>
      <tr><th id="col_info">Total Warnings (OP):</th><td>1</td></tr>
      <tr><th id="col_info">Total Warnings (CS):</th><td>5</td></tr>
-     <tr><th id="col_info">Total Warnings (MISRA):</th><td>237</td></tr>
+     <tr><th id="col_info">Total Warnings (MISRA):</th><td>238</td></tr>
   </table>
   <table cellpadding="0" cellspacing="0" border="0" class="sortable" id="sorter">
     <tr>
@@ -854,61 +854,68 @@
       <td id="col_group">MISRA</td>
       <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln64">app_led.c:64</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
+      <td id="col_message">The left operand '(0)' of the '&lt;&lt;' operator should not have the essential 'signed' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln69">app_led.c:69</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '&lt;' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln78">app_led.c:78</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln83">app_led.c:83</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln98">app_led.c:98</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln103">app_led.c:103</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '!=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln118">app_led.c:118</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln123">app_led.c:123</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2544/">V2544</td>
       <td id="col_message">The '((1U &lt;&lt; 4U) &amp; m_signals)' operand of the '!' operator should not have the essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln118">app_led.c:118</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln123">app_led.c:123</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2570/">V2570</td>
       <td id="col_message">Operands of the '!' operator should have bool essential type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln171">app_led.c:171</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln176">app_led.c:176</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln184">app_led.c:184</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln189">app_led.c:189</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln199">app_led.c:199</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln204">app_led.c:204</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln212">app_led.c:212</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_led.c_9.html#ln217">app_led.c:217</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'active' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</td>
