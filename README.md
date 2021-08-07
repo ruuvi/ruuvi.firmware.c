@@ -1,5 +1,6 @@
 # ruuvi.firmware.c
 Current git repository status:
+
 [![Build Status](https://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c+-+deploy)](https://jenkins.ruuvi.com/job/ruuvi.firmware.c%20-%20deploy/)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
@@ -12,7 +13,7 @@ Current git repository status:
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
-Under development, please follow [Ruuvi Blog](https://blog.ruuvi.com) for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason.  
+Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason.  
 
 # Setting up
 
@@ -63,6 +64,8 @@ The code can be checked with PVS Studio and Sonarcloud for some common errors, s
 ### PVS
 Obtain license and software from [Viva64](https://www.viva64.com/en/pvs-studio/).
 
+Installation process is described in [ruuvi.docs.com](https://docs.ruuvi.com/toolchain/pvs-studio)
+
 Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml. 
 
 This produces hundreds of warnings, you need to filter the warnings you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
@@ -85,6 +88,11 @@ The report can be found under _build/artifacts/gcov_.
 Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
 
 # Usage
+## Flashing
+You can flash a RuuviTag several ways:
+* nRF52 DevKit and [RuuviTag Development Shield](https://lab.ruuvi.com/devshield/). 
+* nRF52 DevKit and [TC2030-CTX-NL 6-pin Cable](https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors)
+
 Compile and flash the project to your board using Segger Embedded Studio. 
 Note: You should erase your board entirely in case there is a bootloader from a previous firmware.
 
@@ -95,6 +103,21 @@ If you have tagged the version as `v3.99.1` the outputs will be named `$BOARD_ar
 For example `ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex`. 
 
 Tags should be valid semantic versions, starting with `v` and possibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`.
+
+## SES - Segger Embedded Studio
+Open the project in SES from `File -> Open Solution -> ruuvi.firmware.c.emProject`.
+In the Project Explorer select the correct project according to the appropriate tag name.
+Additionally select the Build Configuration: `Debug`, `Long Life` or `Release`.   
+Build the project by navigating to `Build -> Build <project name>` or press the F7 key. 
+On succesfull build, navigate to `Debug -> Go` or press the F5 key.
+RuuviTag wil be erased and flashed with the freshly compiled application.
+
+## nRF Command Line Tools
+Navigate to `ruuvi.firmware.c/src/targets/<board name>/armgcc`.
+Run `make` to compile the application, which is stored inside `_build` folder.
+Run `./package.sh` script to generate the complete firmware.
+To flash the tag, run `nrfjprog -e && nrfjprog --program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex && nrfjprog -r`.
+The tag flash will be erased and overwritten with the fresh built application.
 
 # How to contribute
 Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?
