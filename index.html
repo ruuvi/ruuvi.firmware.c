@@ -142,9 +142,19 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <h2>Unit test continuous integration</h2>
 <p>Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.</p>
 <h1>Usage</h1>
+<h2>Flashing</h2>
+<p>You can flash a RuuviTag several ways:</p><ul>
+<li>nRF52 DevKit and <a href="https://lab.ruuvi.com/devshield/">RuuviTag Development Shield</a>.</li>
+<li>nRF52 DevKit and <a href="https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors">TC2030-CTX-NL 6-pin Cable</a></li>
+</ul>
 <p>Compile and flash the project to your board using Segger Embedded Studio. Note: You should erase your board entirely in case there is a bootloader from a previous firmware.</p>
 <p>If you're building binaries for distribution, use the provided make script to generate binaries. This way you can be certain to have a repeatable build process. The makefile takes tag name of current git commit and names the binaries with the tag. The version information also gets compiled into binaries. If you have tagged the version as <code>v3.99.1</code> the outputs will be named <code>$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension</code>. For example <code>ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex</code>.</p>
 <p>Tags should be valid semantic versions, starting with <code>v</code> and possibly having pre-release information such as <code>-rc2</code>. Do not add build information such as <code>+TestFW</code>.</p>
+<h2>SES - Segger Embedded Studio</h2>
+<p>Open the project in SES from <code>File -&gt; Open Solution -&gt; ruuvi.firmware.c.emProject</code>. In the Project Explorer select the correct project according to the appropriate tag name. Additionally select the Build Configuration: <code>Debug</code>, <code>Long Life</code> or <code>Release</code>. <br  />
+ Build the project by navigating to <code>Build -&gt; Build &lt;project name&gt;</code> or press the F7 key. On succesfull build, navigate to <code>Debug -&gt; Go</code> or press the F5 key. RuuviTag wil be erased and flashed with the freshly compiled application.</p>
+<h2>nRF Command Line Tools</h2>
+<p>Navigate to <code>ruuvi.firmware.c/src/targets/&lt;board name&gt;/armgcc</code>. Run <code>make</code> to compile the application, which is stored inside <code>_build</code> folder. Run <code>./package.sh</code> script to generate the complete firmware. To flash the tag, run <code>nrfjprog -e &amp;&amp; nrfjprog --program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex &amp;&amp; nrfjprog -r</code>. The tag flash will be erased and overwritten with the fresh built application.</p>
 <h1>How to contribute</h1>
 <p>Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag? Is the structure of the project sensible to you?</p>
 <p>If you want to assist in the project maintenance by fixing some issues <em>doxygen.error</em> is a good place to look for code which needs better commenting. Project badges at the top of the readme point to issues which range from trivial clarifications to complex refactoring.</p>
