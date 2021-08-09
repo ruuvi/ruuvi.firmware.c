@@ -5,6 +5,7 @@
 #include "ruuvi_interface_gpio_interrupt.h"
 #include "ruuvi_interface_log.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 /**
  * @addtogroup main
@@ -21,8 +22,8 @@
  */
 
 // Submodule requirements
-#define RUUVI_BOARDS_REQ "3.6.0"
-#define RUUVI_DRIVERS_REQ "3.5.0"
+#define RUUVI_BOARDS_REQ "3.7.1"
+#define RUUVI_DRIVERS_REQ "3.9.0"
 #define RUUVI_ENDPOINTS_REQ "3.0.0"
 #define RUUVI_LIBRARIES_REQ "3.0.0"
 

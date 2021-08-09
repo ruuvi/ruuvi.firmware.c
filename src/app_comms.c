@@ -6,6 +6,7 @@
 #include "ruuvi_boards.h"
 #include "ruuvi_endpoints.h"
 #include "ruuvi_interface_communication.h"
+#include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
@@ -86,7 +87,9 @@ static rd_status_t timed_switch_to_normal_mode (void)
     rd_status_t err_code = RD_SUCCESS;
     m_mode_ops.switch_to_normal = 1;
     err_code |= ri_timer_stop (m_comm_timer);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= ri_timer_start (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     return err_code;
 }
 
@@ -111,14 +114,14 @@ static rd_status_t prepare_mode_change (const mode_changes_t * p_change)
  */
 static uint8_t initial_adv_send_count (void)
 {
-    uint8_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
+    uint16_t num_sends = (APP_HEARTBEAT_INTERVAL_MS / 100U);
 
-    if (0 == num_sends)
+    if (0 == num_sends) //-V547
     {
         num_sends = 1;
     }
 
-    if (APP_COMM_ADV_REPEAT_FOREVER == num_sends)
+    if (APP_COMM_ADV_REPEAT_FOREVER <= num_sends) //-V547
     {
         num_sends = APP_COMM_ADV_REPEAT_FOREVER - 1;
     }
@@ -196,11 +199,11 @@ static rd_status_t enable_config_on_next_conn (const bool enable)
 
     if (enable)
     {
-        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+        app_led_configuration_signal (true);
     }
     else
     {
-        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
+        app_led_configuration_signal (false);
     }
 
     return err_code;
@@ -250,7 +253,9 @@ void handle_gatt_connected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     // Disables advertising for GATT, does not kick current connetion out.
-    rt_gatt_adv_disable ();
+    err_code |= rt_gatt_adv_disable ();
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
+    err_code |= app_comms_ble_adv_init ();
     config_setup_on_this_conn ();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -456,7 +461,8 @@ void comm_mode_change_isr (void * const p_context)
 
     if (p_change->switch_to_normal)
     {
-        app_comms_bleadv_send_count_set (1);
+        app_comms_bleadv_send_count_set (APP_NUM_REPEATS);
+        ri_adv_tx_interval_set (APP_BLE_INTERVAL_MS);
         p_change->switch_to_normal = 0;
     }
 
@@ -485,10 +491,13 @@ static rd_status_t adv_init (void)
     adv_settings.channels = channels;
     adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;
     err_code |= rt_adv_init (&adv_settings);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     app_comms_bleadv_send_count_set (initial_adv_send_count());
     m_mode_ops.switch_to_normal = 1;
-    prepare_mode_change (&m_mode_ops);
+    err_code |= prepare_mode_change (&m_mode_ops);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 #endif
     return err_code;
 }
@@ -547,9 +556,21 @@ rd_status_t app_comms_ble_init (const bool secure)
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_dis_init_t dis = {0};
     err_code |= dis_init (&dis, secure);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= adv_init();
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= gatt_init (&dis, secure);
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     ri_radio_activity_callback_set (&app_sensor_vdd_measure_isr);
+    return err_code;
+}
+
+rd_status_t app_comms_ble_adv_init (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= rt_adv_uninit();
+    err_code |= adv_init();
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     return err_code;
 }
 

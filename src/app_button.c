@@ -110,8 +110,7 @@ static void handle_enable_config_button (const bool activated)
         LOG ("Config button pressed\r\n");
         m_button_action.factory_reset = 1;
         // Disable activity led to not turn off the button indication led.
-        app_led_activity_pause (true);
-        app_led_activate (RB_LED_BUTTON_PRESS);
+        app_led_interaction_signal (true);
         ri_timer_stop (m_button_timer);
         ri_timer_start (m_button_timer, APP_BUTTON_LONG_PRESS_TIME_MS, &m_button_action);
     }
@@ -119,8 +118,7 @@ static void handle_enable_config_button (const bool activated)
     {
         LOG ("Config button released\r\n");
         m_button_action.factory_reset = 0;
-        app_led_deactivate (RB_LED_BUTTON_PRESS);
-        app_led_activity_pause (false);
+        app_led_interaction_signal (false);
         (void) ri_timer_stop (m_button_timer);
         (void) app_comms_configure_next_enable();
     }

@@ -27,6 +27,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#define POWERUP_DELAY_MS (10U)
+
 static inline void LOG (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
@@ -83,6 +85,10 @@ typedef rd_status_t (*sensor_op) (const ri_comm_xfer_fp_t reply_fp,
 static rt_sensor_ctx_t bme280 = APP_SENSOR_BME280_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_DPS310_ENABLED
+static rt_sensor_ctx_t dps310 = APP_SENSOR_DPS310_DEFAULT_CFG;
+#endif
+
 #if APP_SENSOR_LIS2DH12_ENABLED
 static rt_sensor_ctx_t lis2dh12 = APP_SENSOR_LIS2DH12_DEFAULT_CFG;
 #endif
@@ -95,8 +101,8 @@ static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;
 static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 #endif
 
-#if APP_SENSOR_DPS310_ENABLED
-static rt_sensor_ctx_t dps310 = APP_SENSOR_DPS310_DEFAULT_CFG;
+#if APP_SENSOR_TMP117_ENABLED
+static rt_sensor_ctx_t tmp117 = APP_SENSOR_TMP117_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_PHOTO_ENABLED
@@ -119,7 +125,7 @@ void
 m_sensors_init (void)
 {
 #if APP_SENSOR_TMP117_ENABLED
-    m_sensors[TMP117_INDEX] = tmp117;
+    m_sensors[TMP117_INDEX] = &tmp117;
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     m_sensors[SHTCX_INDEX] = &shtcx;
@@ -278,6 +284,10 @@ static rd_status_t app_sensor_buses_init (void)
     {
         err_code |= ri_spi_init (&spi_config);
         err_code |= ri_i2c_init (&i2c_config);
+        err_code |= ri_gpio_configure (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
+        err_code |= ri_gpio_configure (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
     }
 
     return err_code;
@@ -313,6 +323,8 @@ rd_status_t app_sensor_init (void)
     if (RD_SUCCESS == err_code)
     {
         app_sensor_rtc_init();
+        // Wait for the power lines to settle after bus powerup.
+        ri_delay_ms (POWERUP_DELAY_MS);
 
         for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
         {
@@ -325,6 +337,7 @@ rd_status_t app_sensor_init (void)
                 (void) ri_gpio_configure (m_sensors[ii]->pwr_pin,
                                           RI_GPIO_MODE_OUTPUT_HIGHDRIVE);
                 (void) ri_gpio_write (m_sensors[ii]->pwr_pin, m_sensors[ii]->pwr_on);
+                ri_delay_ms (POWERUP_DELAY_MS);
             }
 
             // Some sensors, such as accelerometer may fail on user moving the board. Retry.
@@ -836,7 +849,7 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
             {
                 err_code |= app_sensor_send_eof (reply_fp, raw_message);
                 char msg[128];
-                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", sent_elements);
+                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", sent_elements); //-V576
                 LOG (msg);
                 sent_elements = 0;
             }
@@ -907,6 +920,23 @@ rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t reply_fp,
         }
     }
 
+    return err_code;
+}
+
+rd_status_t app_sensor_vdd_sample (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    rd_sensor_configuration_t configuration =
+    {
+        .dsp_function = RD_SENSOR_CFG_DEFAULT,
+        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,
+        .mode = RD_SENSOR_CFG_SINGLE,
+        .resolution = RD_SENSOR_CFG_DEFAULT,
+        .samplerate = RD_SENSOR_CFG_DEFAULT,
+        .scale = RD_SENSOR_CFG_DEFAULT
+    };
+    err_code |= rt_adc_vdd_prepare (&configuration);
+    err_code |= rt_adc_vdd_sample();
     return err_code;
 }
 

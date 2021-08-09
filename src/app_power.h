@@ -5,9 +5,9 @@
 /**
  * @addtogroup app
  */
-/*@{*/
+/** @{ */
 /**
- * @defgroup app_power
+ * @defgroup app_power Power configuration
  * @brief Enable regulators, reset and enter bootloader functions.
  *
  */
@@ -32,5 +32,7 @@
  * @retval RD_SUCCESS if regulators were initialized.
  */
 rd_status_t app_dc_dc_init (void);
+
+/** @} */
 
 #endif // APP_POWER_H

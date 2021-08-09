@@ -29,6 +29,7 @@
 #include "ruuvi_task_flash.h"
 #include "ruuvi_task_gpio.h"
 #include "ruuvi_task_led.h"
+#include "ruuvi_task_adc.h"
 
 #if (!RUUVI_RUN_TESTS)
 #ifndef CEEDLING
@@ -74,7 +75,7 @@ void setup (void)
     err_code |= ri_yield_low_power_enable (true);
     err_code |= rt_flash_init();
     err_code |= app_led_init();
-    err_code |= app_led_activate (RB_LED_STATUS_ERROR);
+    app_led_error_signal (true);
     err_code |= app_button_init();
     err_code |= app_dc_dc_init();
     err_code |= app_sensor_init();
@@ -82,18 +83,18 @@ void setup (void)
     // Allow fail on boards which do not have accelerometer.
     (void) app_sensor_acc_thr_set (&motion_threshold);
     err_code |= app_comms_init (APP_LOCKED_AT_BOOT);
+    err_code |= app_sensor_vdd_sample();
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
-    err_code |= app_led_deactivate (RB_LED_STATUS_ERROR);
 
     if (RD_SUCCESS == err_code)
     {
-        err_code |= app_led_activate (RB_LED_STATUS_OK);
+        app_led_error_signal (false);
+        app_led_activity_signal (true);
         err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);
-        err_code |= app_led_deactivate (RB_LED_STATUS_OK);
+        app_led_activity_signal (false);
     }
 
-    err_code |= app_led_activity_set (RB_LED_ACTIVITY);
     rd_error_cb_set (&app_on_error);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
@@ -113,9 +114,9 @@ int main (void)
     {
         ri_scheduler_execute();
         // Sleep - woken up on event
-        app_led_activity_indicate (false);
+        // Do not indicate activity here to conserve power.
+        // Sensor reads take ~20ms, having led on for that time is expensive.
         ri_yield();
-        app_led_activity_indicate (true);
         // Prevent loop being optimized away
         __asm__ ("");
     } while (LOOP_FOREVER);

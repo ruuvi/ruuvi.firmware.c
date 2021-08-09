@@ -36,7 +36,7 @@
 /** @{ */
 
 /**
- * @file run_integration_test.h
+ * \@file run_integration_test.h
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2020-02-03
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
@@ -65,7 +65,8 @@ void integration_test_start (void)
     ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_integration_test_wdt);
     ri_log_init (APP_LOG_LEVEL);
     ri_yield_init();
-    LOG ("{\r\n\"firmware\":\"" APP_FW_NAME "\",\r\n");
+    LOG ("{\r\n\"firmware\":\"" APP_FW_NAME " " APP_FW_VERSION "\",\r\n");
+    LOG ("\"compiled_on\":\"" __DATE__ " "__TIME__"\",\r\n");
     LOG ("\"board\":\"" RB_MODEL_STRING "\",\r\n");
     LOG ("\"ruuvi.boards.c\":\"" RUUVI_BOARDS_SEMVER "\",\r\n");
     LOG ("\"ruuvi.drivers.c\":\"" RUUVI_DRIVERS_SEMVER "\",\r\n");
@@ -75,7 +76,7 @@ void integration_test_start (void)
 /** @brief Print test close JSON to console */
 void integration_test_stop (void)
 {
-    LOG ("}");
+    LOG ("}\r\n");
     ri_yield_uninit();
 }
 
@@ -183,4 +184,4 @@ void integration_tests_run (void)
     integration_test_stop();
 }
 
-/*@}*/
+/** @}*/

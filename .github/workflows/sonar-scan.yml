@@ -1,0 +1,78 @@
+# Run SonarScanner
+
+name: SonarCloud
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  sonar-scan:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    - name: Checkout submodules
+      uses: textbook/git-checkout-submodule-action@2.1.1
+
+    - name: Set up Sonar Scanner 4.40
+      run: |
+        export SONAR_SCANNER_VERSION=4.4.0.2170
+        export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
+        curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
+        unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
+        echo "$SONAR_SCANNER_HOME/bin" >> $GITHUB_PATH
+        curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+        unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
+        echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
+
+    - name: Download Nordic SDK
+      run: |
+        if [ ! -d "nRF5_SDK_15.3.0_59ac345/modules" ]; then
+          wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+          unzip -q nRF5_SDK_15.3.0_59ac345.zip
+        fi
+
+    # Runs a single command using the runners shell
+    - name: Compile project
+      run: build-wrapper-linux-x86-64 --out-dir bw-output make sonar
+
+    - name: Set up Ruby 2.6
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6
+
+    # Runs a single command using the runners shell
+    - name: Install Ceedling and GCovr
+      run: |
+        gem install ceedling
+        sudo pip install gcovr
+        
+
+    # Runs a set of commands using the runners shell
+    - name: Run Sonar scanner
+      run: |
+        ceedling test:all
+        ceedling gcov:all utils:gcov
+        gcov  -b -c build/gcov/out/*.gcno
+        export SONAR_SCANNER_OPTS="-server"
+        sonar-scanner \
+          -Dsonar.organization=ruuvi \
+          -Dsonar.projectKey=ruuvi_ruuvi.firmware.c \
+          -Dsonar.sources=./src \
+          -Dsonar.cfamily.build-wrapper-output=bw-output \
+          -Dsonar.cfamily.gcov.reportsPath=. \
+          -Dsonar.host.url=https://sonarcloud.io
+
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

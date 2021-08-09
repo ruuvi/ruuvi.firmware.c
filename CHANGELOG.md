@@ -1,6 +1,24 @@
 # Changelog
+## 3.30.3 (in progress)
+ * Use 400 kHz I2C to save power
+ * Fix TMP117 single sample occasionally returning invalid data 
+ * Fix nRF52 not returning temperature data due to default configuration
+ * Fix device not switching to slow advertising after GATT connection.
+ * Fix Leds not lighting up on button press
+
+## 3.30.2
+ * Fix history log rotation
+
+## 3.30.1 
+ * Fix VDD sampling for the first data broadcast
+
 ## 3.30.0
+ - Fix Kalervo support
+ - Configure measurement and broadcast interval separately
+ - Add GPIO-sensor power support
+ - Add support for TMP117 temperature sensor
  - Add support for DPS310 pressure/temperature sensor
+ - Fix log rotation drifing which caused gaps in data
 
 ## 3.29.3
  - Fix factory reset not erasing entire flash storage of app.

@@ -75,26 +75,24 @@ void test_main_ok (void)
     ri_yield_low_power_enable_ExpectAndReturn (true, RD_SUCCESS);
     rt_flash_init_ExpectAndReturn (RD_SUCCESS);
     app_led_init_ExpectAndReturn (RD_SUCCESS);
-    app_led_activate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
+    app_led_error_signal_Expect (true);
     app_button_init_ExpectAndReturn (RD_SUCCESS);
     app_dc_dc_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_init_ExpectAndReturn (RD_SUCCESS);
     app_log_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_acc_thr_set_ExpectWithArrayAndReturn (&motion_threshold, 1, RD_SUCCESS);
     app_comms_init_ExpectAndReturn (true, RD_SUCCESS);
+    app_sensor_vdd_sample_ExpectAndReturn (RD_SUCCESS);
     app_heartbeat_init_ExpectAndReturn (RD_SUCCESS);
     app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
-    app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
-    app_led_activate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
+    app_led_error_signal_Expect (false);
+    app_led_activity_signal_Expect (true);
     ri_delay_ms_ExpectAndReturn (APP_SELFTEST_OK_DELAY_MS, RD_SUCCESS);
-    app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_OK, RD_SUCCESS);
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    app_led_activity_signal_Expect (false);
     rd_error_cb_set_Expect (&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (true, RD_SUCCESS);
     app_main();
 }
 
@@ -110,23 +108,20 @@ void test_main_error (void)
     ri_yield_low_power_enable_ExpectAndReturn (true, RD_SUCCESS);
     rt_flash_init_ExpectAndReturn (RD_SUCCESS);
     app_led_init_ExpectAndReturn (RD_SUCCESS);
-    app_led_activate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
+    app_led_error_signal_Expect (true);
     app_button_init_ExpectAndReturn (RD_SUCCESS);
     app_dc_dc_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_init_ExpectAndReturn (RD_SUCCESS);
     app_log_init_ExpectAndReturn (RD_SUCCESS);
     app_sensor_acc_thr_set_ExpectWithArrayAndReturn (&motion_threshold, 1, RD_SUCCESS);
     app_comms_init_ExpectAndReturn (true, RD_SUCCESS);
+    app_sensor_vdd_sample_ExpectAndReturn (RD_SUCCESS);
     app_heartbeat_init_ExpectAndReturn (RD_ERROR_INTERNAL);
     app_heartbeat_start_ExpectAndReturn (RD_ERROR_INVALID_STATE);
-    app_led_deactivate_ExpectAndReturn (RB_LED_STATUS_ERROR, RD_SUCCESS);
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
     rd_error_cb_set_Expect (&app_on_error);
     // </setup>
     ri_scheduler_execute_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (false, RD_SUCCESS);
     ri_yield_ExpectAndReturn (RD_SUCCESS);
-    app_led_activity_indicate_ExpectAndReturn (true, RD_SUCCESS);
     app_main();
 }
 

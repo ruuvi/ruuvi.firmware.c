@@ -13,7 +13,7 @@
  * @defgroup app_config Application configuration
  * @brief Configure application enabled modules and parameters.
  */
-/** @ }*/
+/** @}*/
 /**
  * @addtogroup SDK15
  */
@@ -61,11 +61,6 @@
 /** @brief Enable NTC driver */
 #ifndef RI_ADC_NTC_ENABLED
 #   define RI_ADC_NTC_ENABLED APP_SENSOR_NTC_ENABLED
-#endif
-
-#define APP_SENSOR_TMP117_ENABLED 0
-#ifndef APP_SENSOR_TMP117_ENABLED
-#   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
 #endif
 
 /** @brief Enable BME280 temperature, humidity, pressure sensor */
@@ -156,10 +151,71 @@
 #   define RI_SHTCX_ENABLED APP_SENSOR_SHTCX_ENABLED
 #endif
 
+/** @brief Enable TMP117 temperature sensor */
+#ifndef APP_SENSOR_TMP117_ENABLED
+#   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
+#endif
+
+#ifndef APP_SENSOR_TMP117_DSP_FUNC
+#   define APP_SENSOR_TMP117_DSP_FUNC RD_SENSOR_DSP_LAST //!< Do not use DSP by default
+#endif
+#ifndef APP_SENSOR_TMP117_DSP_PARAM
+#   define APP_SENSOR_TMP117_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#endif
+#ifndef APP_SENSOR_TMP117_MODE
+#   define APP_SENSOR_TMP117_MODE RD_SENSOR_CFG_CONTINUOUS    //!< TMP117 runs continuously internally.
+#endif
+#ifndef APP_SENSOR_TMP117_RESOLUTION
+#   define APP_SENSOR_TMP117_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
+#endif
+#ifndef APP_SENSOR_TMP117_SAMPLERATE
+#   define APP_SENSOR_TMP117_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!<  sample rate is defined by reads.
+#endif
+#ifndef APP_SENSOR_TMP117_SCALE
+#   define APP_SENSOR_TMP117_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
+#endif
+
+/** @brief Enable TMP117 driver */
+#ifndef RI_TMP117_ENABLED
+#   define RI_TMP117_ENABLED APP_SENSOR_TMP117_ENABLED
+#endif
+
+/** @brief Enable nRF52 temperature sensor */
+#ifndef APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+#   define APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED RB_ENVIRONMENTAL_MCU_PRESENT
+#endif
+
+#ifndef RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED
+#   define RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
+#endif
+
+#ifndef APP_SENSOR_NRF52_DSP_FUNC
+#   define APP_SENSOR_NRF52_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
+#endif
+#ifndef APP_SENSOR_NRF52_DSP_PARAM
+#   define APP_SENSOR_NRF52_DSP_PARAM (1U) //!< Only 1 is valid with LAST
+#endif
+#ifndef APP_SENSOR_NRF52_MODE
+#   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
+#endif
+#ifndef APP_SENSOR_NRF52_RESOLUTION
+#   define APP_SENSOR_NRF52_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
+#endif
+#ifndef APP_SENSOR_NRF52_SAMPLERATE
+#   define APP_SENSOR_NRF52_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< NRF52 sample rate is defined by reads.
+#endif
+#ifndef APP_SENSOR_NRF52_SCALE
+#   define APP_SENSOR_NRF52_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
+#endif
+
+
+
 /** @brief Enable DPS310 sensor */
 #ifndef APP_SENSOR_DPS310_ENABLED
 #   define APP_SENSOR_DPS310_ENABLED RB_ENVIRONMENTAL_DPS310_PRESENT
-#   define RI_DPS310_SPI_ENABLED (1U)
+#   ifndef RI_DPS310_SPI_ENABLED
+#       define RI_DPS310_SPI_ENABLED (1U)
+#   endif
 #endif
 
 #ifndef APP_SENSOR_DPS310_DSP_FUNC
@@ -181,15 +237,8 @@
 #   define APP_SENSOR_DPS310_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid.
 #endif
 
-#ifndef APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
-#   define APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED RB_ENVIRONMENTAL_MCU_PRESENT
-#endif
 
-#ifndef RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED
-#   define RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED
-#endif
-
-/** @brief Enable DPSX driver */
+/** @brief Enable DPS310 driver */
 #ifndef RI_DPS310_ENABLED
 #   define RI_DPS310_ENABLED APP_SENSOR_DPS310_ENABLED
 #endif
@@ -277,16 +326,20 @@
 // Record constants can be any non-zero uint16
 // Two files and two records in same file can't have same ID.
 #define APP_FLASH_SENSOR_FILE (0xCEU)
-#define APP_FLASH_SENSOR_NTC_RECORD      (0xC1U)
-#define APP_FLASH_SENSOR_PHOTO_RECORD    (0xC2U)
-#define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
-#define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_BME280_RECORD   (0x28U)
 #define APP_FLASH_SENSOR_DPS310_RECORD   (0x31U)
 #define APP_FLASH_SENSOR_ENVI_RECORD     (0x52U)
+#define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
+#define APP_FLASH_SENSOR_NTC_RECORD      (0xC1U)
+#define APP_FLASH_SENSOR_PHOTO_RECORD    (0xC2U)
+#define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
+#define APP_FLASH_SENSOR_TMP117_RECORD   (0x17U)
+
+
 
 #define APP_FLASH_LOG_FILE (0xF0U)
 #define APP_FLASH_LOG_CONFIG_RECORD      (0x01U)
+#define APP_FLASH_LOG_BOOT_COUNTER_RECORD (0xEFU)
 #define APP_FLASH_LOG_DATA_RECORD_PREFIX (0xF0U) //!< Prefix, append with U8 number
 
 // ** Logging constants ** //
@@ -410,5 +463,5 @@
 #   define APP_LOG_LEVEL RI_LOG_LEVEL_NONE
 #endif
 
-/*@}*/
+/** @}*/
 #endif
