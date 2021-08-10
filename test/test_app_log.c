@@ -228,11 +228,8 @@ static void app_log_read_boot_count_not_found_Expect (void)
 static void app_log_read_boot_count_noflash_Expect (void)
 {
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                                   &m_boot_count, sizeof (uint32_t), RD_ERROR_NOT_FOUND);
+                                   &m_boot_count, sizeof (uint32_t), RD_ERROR_INVALID_STATE);
     rt_flash_load_IgnoreArg_message();
-    rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                                    &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
-    rt_flash_store_IgnoreArg_message();
 }
 
 static void sample_process_expect (const rd_sensor_data_t * const sample)
@@ -448,14 +445,14 @@ void test_app_log_init_noflash (void)
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    APP_FLASH_LOG_CONFIG_RECORD,
                                    &defaults, sizeof (defaults),
-                                   RD_ERROR_NOT_FOUND);
+                                   RD_ERROR_INVALID_STATE);
     rt_flash_load_IgnoreArg_message();
 #   else
     log_purge_Expect();
 #   endif
     app_log_read_boot_count_noflash_Expect();
     err_code |= app_log_init();
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
 }
 
@@ -528,14 +525,14 @@ void test_app_log_init_noflash_nocounter (void)
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    APP_FLASH_LOG_CONFIG_RECORD,
                                    &defaults, sizeof (defaults),
-                                   RD_ERROR_NOT_FOUND);
+                                   RD_ERROR_INVALID_STATE);
     rt_flash_load_IgnoreArg_message();
 #   else
     log_purge_Expect();
 #   endif
-    app_log_read_boot_count_not_found_Expect();
+    app_log_read_boot_count_noflash_Expect();
     err_code |= app_log_init();
-    TEST_ASSERT (RD_SUCCESS == err_code);
+    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
 }
 
