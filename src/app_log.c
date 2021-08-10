@@ -185,14 +185,14 @@ rd_status_t app_log_init (void)
                               &config, sizeof (config));
 #   endif
 
-    if (RD_ERROR_NOT_FOUND == err_code)
+    if (RD_ERROR_NOT_FOUND == err_code) //-V547
     {
         err_code = rt_flash_store (APP_FLASH_LOG_FILE,
                                    APP_FLASH_LOG_CONFIG_RECORD,
                                    &config, sizeof (config));
     }
 
-    if (RD_SUCCESS == err_code)
+    if (RD_SUCCESS == err_code) //-V547
     {
         memcpy (&m_log_config, &config, sizeof (config));
         err_code |= purge_logs();
