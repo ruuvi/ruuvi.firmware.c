@@ -205,34 +205,34 @@ static void log_purge_Expect (void)
     rt_flash_gc_run_ExpectAndReturn (RD_SUCCESS);
 }
 
-static rd_status_t app_log_read_boot_count (void)
+static void app_log_read_boot_count_Expect (void)
 {
-    rd_status_t err_code = RD_SUCCESS;
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                    &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
     rt_flash_load_IgnoreArg_message();
     rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                     &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
-    return err_code;
 }
 
-static rd_status_t app_log_read_boot_count_not_found (void)
+static void app_log_read_boot_count_not_found_Expect (void)
 {
-    rd_status_t err_code = RD_SUCCESS;
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                    &m_boot_count, sizeof (uint32_t), RD_ERROR_NOT_FOUND);
     rt_flash_load_IgnoreArg_message();
     rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                     &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
+}
+
+static void app_log_read_boot_count_noflash_Expect (void)
+{
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                                   &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
+                                   &m_boot_count, sizeof (uint32_t), RD_ERROR_NOT_FOUND);
     rt_flash_load_IgnoreArg_message();
     rt_flash_store_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                     &m_boot_count, sizeof (uint32_t), RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
-    return err_code;
 }
 
 static void sample_process_expect (const rd_sensor_data_t * const sample)
@@ -392,6 +392,7 @@ void test_app_log_init_nostored (void)
             .datas.pressure_pa = APP_LOG_PRESSURE_ENABLED
         }
     };
+#if APP_FLASH_LOG_CONFIG_NVM_ENABLED
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    APP_FLASH_LOG_CONFIG_RECORD,
                                    &defaults, sizeof (defaults),
@@ -402,13 +403,15 @@ void test_app_log_init_nostored (void)
                                     &defaults, sizeof (defaults),
                                     RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
+#endif
     log_purge_Expect();
-    TEST_ASSERT (RD_SUCCESS == app_log_read_boot_count());
+    app_log_read_boot_count_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
 }
 
+#if APP_FLASH_LOG_CONFIG_NVM_ENABLED
 void test_app_log_init_stored (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -429,25 +432,30 @@ void test_app_log_init_stored (void)
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnMemThruPtr_message (&stored, sizeof (stored));
     log_purge_Expect();
-    TEST_ASSERT (RD_SUCCESS == app_log_read_boot_count());
+    app_log_read_boot_count_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&stored, &m_log_config, sizeof (m_log_config)));
 }
+#endif
 
 void test_app_log_init_noflash (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     app_log_config_t defaults = {0};
     memcpy (&defaults, &m_log_config, sizeof (defaults));
+#if APP_FLASH_LOG_CONFIG_NVM_ENABLED
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    APP_FLASH_LOG_CONFIG_RECORD,
                                    &defaults, sizeof (defaults),
-                                   RD_ERROR_INVALID_STATE);
+                                   RD_ERROR_NOT_FOUND);
     rt_flash_load_IgnoreArg_message();
-    TEST_ASSERT (RD_SUCCESS == app_log_read_boot_count());
+#   else
+    log_purge_Expect();
+#   endif
+    app_log_read_boot_count_noflash_Expect();
     err_code |= app_log_init();
-    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
+    TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
 }
 
@@ -464,6 +472,7 @@ void test_app_log_init_nostored_nocounter (void)
             .datas.pressure_pa = APP_LOG_PRESSURE_ENABLED
         }
     };
+#if APP_FLASH_LOG_CONFIG_NVM_ENABLED
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    APP_FLASH_LOG_CONFIG_RECORD,
                                    &defaults, sizeof (defaults),
@@ -474,13 +483,15 @@ void test_app_log_init_nostored_nocounter (void)
                                     &defaults, sizeof (defaults),
                                     RD_SUCCESS);
     rt_flash_store_IgnoreArg_message();
+#endif
     log_purge_Expect();
-    TEST_ASSERT (RD_SUCCESS == app_log_read_boot_count_not_found());
+    app_log_read_boot_count_not_found_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
 }
 
+#if APP_FLASH_LOG_CONFIG_NVM_ENABLED
 void test_app_log_init_stored_nocounter (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -501,25 +512,30 @@ void test_app_log_init_stored_nocounter (void)
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnMemThruPtr_message (&stored, sizeof (stored));
     log_purge_Expect();
-    TEST_ASSERT (RD_SUCCESS == app_log_read_boot_count_not_found());
+    app_log_read_boot_count_not_found_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&stored, &m_log_config, sizeof (m_log_config)));
 }
+#endif
 
 void test_app_log_init_noflash_nocounter (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     app_log_config_t defaults = {0};
     memcpy (&defaults, &m_log_config, sizeof (defaults));
+#if APP_FLASH_LOG_CONFIG_NVM_ENABLED
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
                                    APP_FLASH_LOG_CONFIG_RECORD,
                                    &defaults, sizeof (defaults),
-                                   RD_ERROR_INVALID_STATE);
+                                   RD_ERROR_NOT_FOUND);
     rt_flash_load_IgnoreArg_message();
-    TEST_ASSERT (RD_SUCCESS == app_log_read_boot_count_not_found());
+#   else
+    log_purge_Expect();
+#   endif
+    app_log_read_boot_count_not_found_Expect();
     err_code |= app_log_init();
-    TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
+    TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
 }
 

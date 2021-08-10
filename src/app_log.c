@@ -151,17 +151,13 @@ rd_status_t app_log_read_boot_count (void)
     err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                &m_boot_count, sizeof (uint32_t));
 
-    if (RD_ERROR_NOT_FOUND == err_code)
+    if ( (RD_SUCCESS == err_code) || (RD_ERROR_NOT_FOUND == err_code))
     {
+        m_boot_count++;
         err_code = rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                    &m_boot_count, sizeof (uint32_t));
-        err_code = rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                                  &m_boot_count, sizeof (uint32_t));
     }
 
-    m_boot_count++;
-    err_code |= rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                                &m_boot_count, sizeof (uint32_t));
     char msg[128];
     snprintf (msg, sizeof (msg), "LOG: Boot count: %d\r\n", m_boot_count);
     LOG (msg);
@@ -183,9 +179,11 @@ rd_status_t app_log_init (void)
             .datas.pressure_pa = APP_LOG_PRESSURE_ENABLED
         }
     };
+#   if APP_FLASH_LOG_CONFIG_NVM_ENABLED
     err_code = rt_flash_load (APP_FLASH_LOG_FILE,
                               APP_FLASH_LOG_CONFIG_RECORD,
                               &config, sizeof (config));
+#   endif
 
     if (RD_ERROR_NOT_FOUND == err_code)
     {
