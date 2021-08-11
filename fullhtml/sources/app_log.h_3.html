@@ -86,7 +86,7 @@
 <a name="ln73"> * If there is a logging configuration stored to flash, stored configuration is used.</a>
 <a name="ln74"> * If not, default configuration is used and stored to flash.</a>
 <a name="ln75"> *</a>
-<a name="ln76"> * @retval RD_SUCCESS if logging was initialized.</a>
+<a name="ln76"> * @retval RD_SUCCESS if logging was initialized or if logging is disabled in config.</a>
 <a name="ln77"> */</a>
 <a name="ln78">rd_status_t app_log_init();</a>
 <a name="ln79"> </a>
@@ -148,6 +148,7 @@
 
 </code></pre>
 <div class="balloon" rel="66"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="78"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2601/" target="_blank">V2601</a> Functions should be declared in prototype form with named parameters.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

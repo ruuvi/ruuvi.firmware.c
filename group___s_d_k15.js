@@ -4,6 +4,7 @@ var group___s_d_k15 =
     [ "APP_ADV_ENABLED", "group___s_d_k15.html#ga977370877b8921fcaf571ac73e15563e", null ],
     [ "APP_COMMS_BIDIR_ENABLED", "group___s_d_k15.html#gae3f4ac87ea584a2f20fc740f5679da61", null ],
     [ "APP_FLASH_LOG_BOOT_COUNTER_RECORD", "group___s_d_k15.html#gacf2255f784f3313dfb30142a20fea6b4", null ],
+    [ "APP_FLASH_LOG_CONFIG_NVM_ENABLED", "group___s_d_k15.html#ga1cb0accae24da420321b87d893844787", null ],
     [ "APP_FLASH_LOG_CONFIG_RECORD", "group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8", null ],
     [ "APP_FLASH_LOG_DATA_RECORD_PREFIX", "group___s_d_k15.html#gaea688c96cb118340e20e6d5ee728bd39", null ],
     [ "APP_FLASH_LOG_DATA_RECORDS_NUM", "group___s_d_k15.html#gac2d6884ce2bb8042af22696a66421861", null ],

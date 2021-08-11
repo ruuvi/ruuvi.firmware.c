@@ -1,0 +1,214 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>ruuvi_interface_communication_radio.h</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">#ifndef RUUVI_INTERFACE_COMMUNICATION_RADIO_H</a>
+<a name="ln2">#define RUUVI_INTERFACE_COMMUNICATION_RADIO_H</a>
+<a name="ln3"> </a>
+<a name="ln4">#include &quot;ruuvi_driver_enabled_modules.h&quot;</a>
+<a name="ln5">#include &quot;ruuvi_driver_error.h&quot;</a>
+<a name="ln6">#include &lt;stdbool.h&gt;</a>
+<a name="ln7">#include &lt;stdint.h&gt;</a>
+<a name="ln8">#if RI_RADIO_ENABLED</a>
+<a name="ln9">#define RUUVI_NRF5_SDK15_RADIO_ENABLED RUUVI_NRF5_SDK15_ENABLED</a>
+<a name="ln10">#endif</a>
+<a name="ln11"> </a>
+<a name="ln12">/**</a>
+<a name="ln13"> * @file ruuvi_interface_communication_radio.h</a>
+<a name="ln14"> * @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
+<a name="ln15"> * @date 2020-05-20</a>
+<a name="ln16"> * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
+<a name="ln17"> *</a>
+<a name="ln18"> * Commmon definitions and functions for all radio operations.</a>
+<a name="ln19"> *</a>
+<a name="ln20"> */</a>
+<a name="ln21"> </a>
+<a name="ln22">/**</a>
+<a name="ln23"> * @defgroup Radio Radio operations.</a>
+<a name="ln24"> */</a>
+<a name="ln25"> </a>
+<a name="ln26">/** @{ */</a>
+<a name="ln27">/**</a>
+<a name="ln28"> * @brief radio activity event type.</a>
+<a name="ln29"> */</a>
+<a name="ln30">typedef enum</a>
+<a name="ln31">{</a>
+<a name="ln32">    RI_RADIO_BEFORE, //!&lt; Event is before radio goes active, i.e. radio turns on soon.</a>
+<a name="ln33">    RI_RADIO_AFTER   //!&lt; Event is after radio activity, i.e. radio was turned off.</a>
+<a name="ln34">} ri_radio_activity_evt_t;</a>
+<a name="ln35"> </a>
+<a name="ln36">/**</a>
+<a name="ln37"> *  @brief type of radio modulation to be used.</a>
+<a name="ln38"> */</a>
+<a name="ln39">typedef enum</a>
+<a name="ln40">{</a>
+<a name="ln41">    RI_RADIO_BLE_125KBPS,       //!&lt; Also known as BLE Long Range S=8</a>
+<a name="ln42">    RI_RADIO_BLE_1MBPS,         //!&lt; &quot;Normal&quot; BLE 4 modulation</a>
+<a name="ln43">    /** @brief &quot;Fast BLE&quot;. Advertising uses 1MBPS primary advertisement followed by 2 MBit/s extended advertisement. */</a>
+<a name="ln44">    RI_RADIO_BLE_2MBPS</a>
+<a name="ln45">} ri_radio_modulation_t;</a>
+<a name="ln46"> </a>
+<a name="ln47">/**</a>
+<a name="ln48"> * @brief Bitfield to describe related sensor data</a>
+<a name="ln49"> */</a>
+<a name="ln50">typedef struct</a>
+<a name="ln51">{</a>
+<a name="ln52">    unsigned int channel_37 : 1; //!&lt; BLE channel 37, 2402 MHz.</a>
+<a name="ln53">    unsigned int channel_38 : 1; //!&lt; BLE channel 38, 2426 MHz.</a>
+<a name="ln54">    unsigned int channel_39 : 1; //!&lt; BLE channel 39, 2480 MHz.</a>
+<a name="ln55">} ri_radio_channels_t;</a>
+<a name="ln56"> </a>
+<a name="ln57">/**</a>
+<a name="ln58"> *  @brief Type of radio activity interrupt.</a>
+<a name="ln59"> *  This is common to all radio modules, i,e, the callback gets called for every radio action.</a>
+<a name="ln60"> *</a>
+<a name="ln61"> *  @param[in] evt Type of radio event</a>
+<a name="ln62"> */</a>
+<a name="ln63">typedef void (*ri_radio_activity_interrupt_fp_t) (const ri_radio_activity_evt_t evt);</a>
+<a name="ln64"> </a>
+<a name="ln65">/**</a>
+<a name="ln66"> * @brief Check how many radio channels are enabled.</a>
+<a name="ln67"> *</a>
+<a name="ln68"> * @param[in] channels Structure with enabled channels.</a>
+<a name="ln69"> * @return Number of enabled channels.</a>
+<a name="ln70"> */</a>
+<a name="ln71">uint8_t ri_radio_num_channels_get (const ri_radio_channels_t channels);</a>
+<a name="ln72"> </a>
+<a name="ln73">/**</a>
+<a name="ln74"> * @brief Check if radio supports given modulation.</a>
+<a name="ln75"> *</a>
+<a name="ln76"> * @param[in] modulation Modulation to check.</a>
+<a name="ln77"> * @retval true If given modulation is supported by radio.</a>
+<a name="ln78"> * @retval false If given modulation is not supported by radio.</a>
+<a name="ln79"> */</a>
+<a name="ln80">bool ri_radio_supports (ri_radio_modulation_t modulation);</a>
+<a name="ln81"> </a>
+<a name="ln82">/**</a>
+<a name="ln83"> *  @brief Enable radio stack for an user.</a>
+<a name="ln84"> *  This function also starts radio activity callbacks internally.</a>
+<a name="ln85"> *</a>
+<a name="ln86"> *  @param[in] modulation Modulation for radio operations.</a>
+<a name="ln87"> *                        If 2 MBPS is defined, primary advertising PHY is 1 MBPS and</a>
+<a name="ln88"> *                        secondary PHY is 2 MBPS.</a>
+<a name="ln89"> *                        Note: if other end of communication requests different speed,</a>
+<a name="ln90"> *                        the implementation should support it if applicable to board.</a>
+<a name="ln91"> *  @retval    RD_SUCCESS on success</a>
+<a name="ln92"> *  @retval    RD_ERROR_INVALID_STATE if radio is already initialized.</a>
+<a name="ln93"> *  @retval    RD_ERROR_INVALID_PARAM if trying to initialize radio with unsupported modulation.</a>
+<a name="ln94"> */</a>
+<a name="ln95">rd_status_t ri_radio_init (const ri_radio_modulation_t modulation);</a>
+<a name="ln96"> </a>
+<a name="ln97">/**</a>
+<a name="ln98"> *  @brief Release radio stack.</a>
+<a name="ln99"> *</a>
+<a name="ln100"> * This function also stops the internal radio activity callbacks</a>
+<a name="ln101"> *</a>
+<a name="ln102"> *  @retval    RD_SUCCESS on success</a>
+<a name="ln103"> *  @retval    RD_ERROR_FORBIDDEN if radio is in use by other user</a>
+<a name="ln104"> *  @note      It's not possible to uninitialize radio from another user than original initializer.</a>
+<a name="ln105"> */</a>
+<a name="ln106">rd_status_t ri_radio_uninit ();</a>
+<a name="ln107"> </a>
+<a name="ln108">/**</a>
+<a name="ln109"> * Writes maximum 64-bit unique address of the device to the pointer. This address</a>
+<a name="ln110"> * may be changed during runtime. The address is identifier of the device on radio network,</a>
+<a name="ln111"> * such as BLE MAC address.</a>
+<a name="ln112"> *</a>
+<a name="ln113"> * @param[out] address Value of radio address, i.e. MAC address.</a>
+<a name="ln114"> *</a>
+<a name="ln115"> * @retval RD_SUCCESS on success</a>
+<a name="ln116"> * @retval RD_ERROR_NOT_SUPPORTED if address cannot be returned on given platform</a>
+<a name="ln117"> */</a>
+<a name="ln118">rd_status_t ri_radio_address_get (uint64_t * const address);</a>
+<a name="ln119"> </a>
+<a name="ln120">/**</a>
+<a name="ln121"> * Configures maximum 64-bit unique address of the device to the radio.</a>
+<a name="ln122"> * The address is identifier of the device on radio network,</a>
+<a name="ln123"> * such as BLE MAC address.</a>
+<a name="ln124"> *</a>
+<a name="ln125"> * @param[in] address Address to configure, MSB first.</a>
+<a name="ln126"> *</a>
+<a name="ln127"> * @retval RD_SUCCESS on success.</a>
+<a name="ln128"> * @retval RD_ERROR_NOT_SUPPORTED if address cannot be configured on given platform.</a>
+<a name="ln129"> * @retval RD_ERROR_INVALID_ADDR if the address does not match protocol rules and cannot or is not converted automatically.</a>
+<a name="ln130"> * @retval RD_ERRO_BUSY if radio stack is doing some other operation, try later.</a>
+<a name="ln131"> * @retval RD_ERROR_INVALID_STATE if radio is in state where address is required, such as advertising, connected or scanning.</a>
+<a name="ln132"> * @note   The implementation is allowed to enforce protocol rules, for example BLE MAC will be masked with 0x00 00 [0b11xx]X XX XX XX XX XX XX and sent LSB first.</a>
+<a name="ln133"> */</a>
+<a name="ln134">rd_status_t ri_radio_address_set (uint64_t const address);</a>
+<a name="ln135"> </a>
+<a name="ln136">/**</a>
+<a name="ln137"> * @brief Setup radio activity interrupt</a>
+<a name="ln138"> *</a>
+<a name="ln139"> * This function allows driver to notify application on all radio activity.</a>
+<a name="ln140"> * @param[in] handler Function to call on radio event. Set to @c NULL to disable radio-level callback.</a>
+<a name="ln141"> */</a>
+<a name="ln142">void ri_radio_activity_callback_set (const ri_radio_activity_interrupt_fp_t handler);</a>
+<a name="ln143"> </a>
+<a name="ln144">/**</a>
+<a name="ln145"> * @brief Check if radio is initialized</a>
+<a name="ln146"> *</a>
+<a name="ln147"> * @return true if radio is initialized, false otherwise.</a>
+<a name="ln148"> */</a>
+<a name="ln149">bool ri_radio_is_init();</a>
+<a name="ln150"> </a>
+<a name="ln151">/**</a>
+<a name="ln152"> * @brief Get the modulation used by application.</a>
+<a name="ln153"> *</a>
+<a name="ln154"> * Modulation is decided at initialization and used by all radio modules.</a>
+<a name="ln155"> * However, other modules are allowed to switch to other modulation as a part</a>
+<a name="ln156"> * of their operation, for example GATT can use 1 MBit/s when setting up connection and</a>
+<a name="ln157"> * negotiate 2 MBit/s for the remainder of connection.</a>
+<a name="ln158"> *</a>
+<a name="ln159"> * @param[out] p_modulation Modulation used by default.</a>
+<a name="ln160"> * @retval RD_SUCCESS if modulation was written to pointer</a>
+<a name="ln161"> * @retval RD_ERROR_NULL if p_modulation is NULL</a>
+<a name="ln162"> * @retval RD_ERROR_INVALID_STATE if radio is not initialized.</a>
+<a name="ln163"> */</a>
+<a name="ln164">rd_status_t ri_radio_get_modulation (ri_radio_modulation_t * const p_modulation);</a>
+<a name="ln165"> </a>
+<a name="ln166">/** @} */</a>
+<a name="ln167">#endif</a>
+
+</code></pre>
+<div class="balloon" rel="106"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2601/" target="_blank">V2601</a> Functions should be declared in prototype form with named parameters.</p></div>
+<div class="balloon" rel="149"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2601/" target="_blank">V2601</a> Functions should be declared in prototype form with named parameters.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>
