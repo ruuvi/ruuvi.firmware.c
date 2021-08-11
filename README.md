@@ -117,7 +117,7 @@ Navigate to `ruuvi.firmware.c/src/targets/<board name>/armgcc`.
 Run `make` to compile the application, which is stored inside `_build` folder.
 Run `./package.sh` script to generate the complete firmware.
 To flash the tag, run `nrfjprog -e && nrfjprog --program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex && nrfjprog -r`.
-The tag flash will be erased and overwritten with the fresh built application.
+The tag's flash will be erased and overwritten with the fresh built application.
 
 # How to contribute
 Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?

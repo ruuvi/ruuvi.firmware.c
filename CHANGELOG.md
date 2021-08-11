@@ -1,9 +1,9 @@
 # Changelog
-## 3.30.3 (in progress)
+## 3.30.3
  * Use 400 kHz I2C to save power
  * Fix TMP117 single sample occasionally returning invalid data 
- * Fix nRF52 not returning temperature data due to default configuration
- * Fix device not switching to slow advertising after GATT connection.
+ * Fix nRF52 not returning temperature data due to default configuration of app
+ * Fix device switching to slow advertising 60 seconds after a GATT connection, now 5 seconds
  * Fix Leds not lighting up on button press
 
 ## 3.30.2
