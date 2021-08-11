@@ -16,7 +16,7 @@
 
 #define APP_FW_VARIANT  "+longmem"
 
-#define APP_LOG_INTERVAL_S (5U * 60u)         // 5 seconds. Less often that the default variant of
+#define APP_LOG_INTERVAL_S (5U * 60u)         // 5 seconds. Less often than the default variant of
 
 #define no  0
 #define yes 1
@@ -38,8 +38,8 @@
 #define     RI_ADC_NTC_ENABLED                  no
 #define APP_SENSOR_TMP117_ENABLED               no
 #define         RI_TMP117_ENABLED               no
-#define APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED    no
 #define APP_SENSOR_DPS310_ENABLED               no
 #define         RI_DPS310_SPI_ENABLED           no
+#define APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED    no
 
 // END
