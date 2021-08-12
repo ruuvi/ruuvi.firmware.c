@@ -16,7 +16,7 @@
 
 #define APP_FW_VARIANT  "+longmem"
 
-#define APP_LOG_INTERVAL_S (5U * 60u)         // 5 seconds. Less often than the default variant of
+#define APP_LOG_INTERVAL_S (5U * 60u)         // 5 seconds. Less often then the default variant of
 
 #define no  0
 #define yes 1
