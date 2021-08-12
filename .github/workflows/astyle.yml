@@ -1,4 +1,4 @@
-# Run code formatting
+# Run code format enforcer
 
 name: Artistic Style
 
@@ -12,12 +12,11 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "unit-test"
+  # This workflow contains a 1 job
   astyle:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
@@ -39,6 +38,6 @@ jobs:
     - name: Run Astyle
       run: make astyle
         
-    # Check output
+    # Check output.  suppress-common-lines
     - name: Check formatting (watch for training spaces)
-      run: git diff --exit-code --diff-filter=d --color
+      run: git diff --exit-code --diff-filter=d --color --suppress-common-lines
