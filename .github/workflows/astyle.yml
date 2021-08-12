@@ -35,10 +35,10 @@ jobs:
           sudo make install
           cd ../../
 
-    # Run Artistic Style
+    # Run Artistic Style on ALL 
     - name: Run Astyle
       run: make astyle
         
     # Check output
-    - name: Check formatting
+    - name: Check formatting (watch for training spaces)
       run: git diff --exit-code --diff-filter=d --color
