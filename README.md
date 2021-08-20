@@ -134,7 +134,7 @@ If you want to assist in the project maintenance by fixing some issues _doxygen.
 a good place to look for code which needs better commenting. Project badges at the top of the
 readme point to issues which range from trivial clarifications to complex refactoring. 
 
-If you want to add new features, please discuss the feature first, and then create ceedling
+If you want to add new features, please discuss the feature first at the [Forum](https://f.ruuvi.com), and then create ceedling
 unit tests for the functionality. Once the functionality is agreed and testable in can be integrated
 into project.
 
