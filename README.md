@@ -13,8 +13,8 @@ Current git repository status:
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
-Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason.  
-
+Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for details. 
+The project is in beta stage, no breaking changes are expected
 # Setting up
 
 ## Prerequisites
@@ -26,7 +26,7 @@ Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for detai
 * [Nordic Command Line Tools](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools/Download)
 * [Nordic nRFconnect](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-desktop) for your desktop or phone to upload DFU to the Ruuvi and a means to transfer the DFU zip file to you phone.
 * A computer or phone with a bluetooth radio to receive advertisments from the ruuvi. See [Dealing with the data](https://github.com/ruuvi/ruuvitag_fw/wiki/Dealing-with-the-data)
-* on Mac OS [XCode](https://wilsonmar.github.io/xcode/)
+* On Mac OS [XCode](https://wilsonmar.github.io/xcode/)
 
 ### Suggested 
 * [Ruuvi Dev kit board](https://shop.ruuvi.com/product/devkit/) and a USB power & data cable.
@@ -46,7 +46,7 @@ If you're working on multiple nRF projects, use soft linking to have only one co
 ## Use git to include all Submodules ( ruuvi.drivers.c, ruuvi.endpoint.c, etc )
 Run `git submodule sync --recursive` and `git submodule update --init --recursive` to update the modules from the master repository . 
 
-## Code style
+## Coding style
 Use coding style consistant with [BARR-C:2018](https://barrgroup.com/embedded-systems/books/embedded-c-coding-standard).
 Coding style is enforced with [Artistic Style](http://astyle.sourceforge.net). 
 Some source files were inserted into the master repository before this was established and running astyle will revise the source as necessary.
