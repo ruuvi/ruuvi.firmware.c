@@ -73,7 +73,7 @@ typedef struct
  * If there is a logging configuration stored to flash, stored configuration is used.
  * If not, default configuration is used and stored to flash.
  *
- * @retval RD_SUCCESS if logging was initialized.
+ * @retval RD_SUCCESS if logging was initialized or if logging is disabled in config.
  */
 rd_status_t app_log_init();
 

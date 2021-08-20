@@ -337,10 +337,11 @@
 
 
 
-#define APP_FLASH_LOG_FILE (0xF0U)
-#define APP_FLASH_LOG_CONFIG_RECORD      (0x01U)
+#define APP_FLASH_LOG_FILE                (0xF0U)
+#define APP_FLASH_LOG_CONFIG_RECORD       (0x01U)
 #define APP_FLASH_LOG_BOOT_COUNTER_RECORD (0xEFU)
-#define APP_FLASH_LOG_DATA_RECORD_PREFIX (0xF0U) //!< Prefix, append with U8 number
+#define APP_FLASH_LOG_DATA_RECORD_PREFIX  (0xF0U) //!< Prefix, append with U8 number
+
 
 // ** Logging constants ** //
 #ifndef APP_LOG_INTERVAL_S
@@ -357,6 +358,9 @@
 #endif
 #ifndef APP_LOG_PRESSURE_ENABLED
 #   define APP_LOG_PRESSURE_ENABLED (true)
+#endif
+#ifndef APP_FLASH_LOG_CONFIG_NVM_ENABLED
+#   define APP_FLASH_LOG_CONFIG_NVM_ENABLED  (0U)
 #endif
 
 /** @brief Enable ADC tasks */

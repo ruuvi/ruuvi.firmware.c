@@ -88,6 +88,11 @@ The report can be found under _build/artifacts/gcov_.
 Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
 
 # Usage
+## Flashing
+You can flash a RuuviTag several ways:
+* nRF52 DevKit and [RuuviTag Development Shield](https://lab.ruuvi.com/devshield/). 
+* nRF52 DevKit and [TC2030-CTX-NL 6-pin Cable](https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors)
+
 Compile and flash the project to your board using Segger Embedded Studio. 
 Note: You should erase your board entirely in case there is a bootloader from a previous firmware.
 
@@ -98,6 +103,26 @@ If you have tagged the version as `v3.99.1` the outputs will be named `$BOARD_ar
 For example `ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex`. 
 
 Tags should be valid semantic versions, starting with `v` and possibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`.
+
+## SES - Segger Embedded Studio
+Open the project in SES from `File -> Open Solution -> ruuvi.firmware.c.emProject`.
+In the Project Explorer select the correct project according to the appropriate tag name.
+Additionally select the Build Configuration: `Debug`, `Long Life` or `Release`.   
+Build the project by navigating to `Build -> Build <project name>` or press the F7 key. 
+On succesfull build, navigate to `Debug -> Go` or press the F5 key.
+RuuviTag wil be erased and flashed with the freshly compiled application.
+
+## nRF Command Line Tools
+Navigate to `ruuvi.firmware.c/src/targets/<board name>/armgcc`.
+Run `make` to compile the application, which is stored inside `_build` folder.
+Run `./package.sh` script to generate the complete firmware.
+To flash the tag, run 
+```
+nrfjprog --eraseall 
+nrfjprog --program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex
+nrfjprog -r
+`-reset`.
+The tag's flash will be erased and overwritten with the fresh built application.
 
 # How to contribute
 Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?

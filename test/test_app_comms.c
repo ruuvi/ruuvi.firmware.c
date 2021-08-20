@@ -153,7 +153,6 @@ static void nfc_init_Expect (ri_comm_dis_init_t * p_dis)
 static void app_comms_ble_adv_init_Expect (void)
 {
     adv_init_Expect();
-    ri_radio_activity_callback_set_Expect (&app_sensor_vdd_measure_isr);
 }
 
 static void app_comms_ble_uninit_Expect (void)
@@ -196,7 +195,7 @@ static void app_comms_configure_next_enable_Expect (void)
     memset (&ble_dis, 0, sizeof (ble_dis));
     app_comms_ble_uninit_Expect();
     app_comms_ble_init_Expect (false, &ble_dis);
-    app_led_activity_set_ExpectAndReturn (RB_LED_CONFIG_ENABLED, RD_SUCCESS);
+    app_led_configuration_signal_Expect (true);
     ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
     ri_timer_start_ExpectAndReturn (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops,
                                     RD_SUCCESS);
@@ -208,7 +207,7 @@ static void connection_cleanup_Expect (void)
     memset (&ble_dis, 0, sizeof (ble_dis));
     app_comms_ble_uninit_Expect();
     app_comms_ble_init_Expect (true, &ble_dis);
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    app_led_configuration_signal_Expect (false);
 }
 
 void test_app_comms_configure_next_enable_ok (void)
@@ -231,6 +230,7 @@ void test_app_comms_init_timer_fail (void)
 void test_handle_gatt_connected (void)
 {
     rt_gatt_adv_disable_ExpectAndReturn (RD_SUCCESS);
+    rt_adv_uninit_ExpectAndReturn (RD_SUCCESS);
     app_comms_ble_adv_init_Expect();
     handle_gatt_connected (NULL, 0);
     TEST_ASSERT (!m_config_enabled_on_next_conn);
@@ -345,7 +345,7 @@ void test_handle_config_disable_not_connected (void)
     rt_gatt_nus_is_connected_ExpectAndReturn (false);
     app_comms_ble_uninit_Expect();
     app_comms_ble_init_Expect (true, &ble_dis);
-    app_led_activity_set_ExpectAndReturn (RB_LED_ACTIVITY, RD_SUCCESS);
+    app_led_configuration_signal_Expect (false);
     handle_config_disable (NULL, 0);
 }
 
