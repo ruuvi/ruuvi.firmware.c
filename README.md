@@ -44,6 +44,9 @@ If you're working on multiple nRF projects, use soft linking to have only one co
 
 # Creating your fork
 ## Use git to include all Submodules ( ruuvi.drivers.c, ruuvi.endpoint.c, etc )
+
+Run `git clone --verbose --progress --recursive https://github.com/ruuvi/ruuvi.firmware.c`
+
 Run `git submodule sync --recursive` and `git submodule update --init --recursive` to update the modules from the master repository . 
 
 ## Coding style
