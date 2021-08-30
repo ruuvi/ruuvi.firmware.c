@@ -152,6 +152,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_nfc.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_radio.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/communication/ruuvi_nrf5_sdk15_communication_uart.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/crypto/ruuvi_nrf5_sdk15_aes.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/environmental/ruuvi_nrf5_sdk15_environmental_mcu.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/flash/ruuvi_nrf5_sdk15_flash.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/gpio/ruuvi_nrf5_sdk15_gpio.c \
@@ -310,6 +311,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/adc \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/atomic \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/crypto \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/flash \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/gpio \
