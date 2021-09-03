@@ -817,22 +817,22 @@
 <a name="ln804">    float data[rd_sensor_data_fieldcount (&amp;sample)];</a>
 <a name="ln805">    sample.data = data;</a>
 <a name="ln806">    // Parse start, end times.</a>
-<a name="ln807">    uint32_t current_time_s = re_std_log_current_time (raw_message);</a>
-<a name="ln808">    uint32_t start_s = re_std_log_start_time (raw_message);</a>
+<a name="ln807">    int64_t current_time_s = (int64_t) re_std_log_current_time (raw_message);</a>
+<a name="ln808">    int64_t start_s = (int64_t) re_std_log_start_time (raw_message);</a>
 <a name="ln809">    uint32_t sent_elements = 0;</a>
-<a name="ln810">    const uint64_t system_time_ms = ri_rtc_millis();</a>
-<a name="ln811"> </a>
-<a name="ln812">    // Cannot have start_s &gt;= current_time_s</a>
-<a name="ln813">    if (current_time_s &gt; start_s)</a>
-<a name="ln814">    {</a>
-<a name="ln815">        // Parse offset to system clock - flows over in 68 years.</a>
-<a name="ln816">        LOG (&quot;Sending logged data\r\n&quot;);</a>
-<a name="ln817">        int32_t system_time_s = (int32_t) (system_time_ms / 1000U);</a>
-<a name="ln818">        int64_t offset_ms = ( (int64_t) current_time_s - (int64_t) system_time_s) *</a>
-<a name="ln819">                            (int64_t) 1000;</a>
-<a name="ln820">        int64_t time_diff_ms = (current_time_s - start_s) * 1000U;</a>
+<a name="ln810">    // overflow in 292 277 266 years</a>
+<a name="ln811">    const int64_t system_time_ms = (int64_t) ri_rtc_millis();</a>
+<a name="ln812"> </a>
+<a name="ln813">    // Cannot have start_s &gt;= current_time_s</a>
+<a name="ln814">    if (current_time_s &gt; start_s)</a>
+<a name="ln815">    {</a>
+<a name="ln816">        // Parse offset to system clock</a>
+<a name="ln817">        LOG (&quot;Sending logged data\r\n&quot;);</a>
+<a name="ln818">        int64_t system_time_s = (system_time_ms / 1000LL);</a>
+<a name="ln819">        int64_t offset_ms = (current_time_s - system_time_s)  * 1000LL;</a>
+<a name="ln820">        int64_t time_diff_ms = (current_time_s - start_s) * 1000LL;</a>
 <a name="ln821">        // First sample to send in real time</a>
-<a name="ln822">        sample.timestamp_ms = (start_s * 1000U);</a>
+<a name="ln822">        sample.timestamp_ms = (start_s * 1000LL);</a>
 <a name="ln823"> </a>
 <a name="ln824">        // Offset sample time to system clock.</a>
 <a name="ln825">        if (time_diff_ms &gt; system_time_ms)</a>
@@ -1045,11 +1045,11 @@
 <div class="balloon" rel="773"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="776"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="804"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2598/" target="_blank">V2598</a> Variable-length array types should not be used. Check the array size expression: '[rd_sensor_data_fieldcount(& sample)]'.</p></div>
-<div class="balloon" rel="820"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(current_time_s - start_s) * 1000U' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</p></div>
-<div class="balloon" rel="820"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2596/" target="_blank">V2596</a> Value of composite expression should not be assigned to object of wider essential type. Inspect the '(current_time_s - start_s) * 1000U' expression of the 'unsigned int' type that is assigned to the 'time_diff_ms' variable of the 'long long' type.</p></div>
-<div class="balloon" rel="825"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '>' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="822"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(start_s * 1000LL)' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="822"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="827"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="831"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '-' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="831"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'system_time_ms - time_diff_ms' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="831"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="844"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="852"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
 <div class="balloon" rel="854"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>

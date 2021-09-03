@@ -78,446 +78,445 @@
 <a name="ln65"> </a>
 <a name="ln66">    do</a>
 <a name="ln67">    {</a>
-<a name="ln68">        uint8_t record_slot = (record_idx + num_tries) % APP_FLASH_LOG_DATA_RECORDS_NUM;</a>
-<a name="ln69">        uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + record_slot;</a>
-<a name="ln70">        err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);</a>
-<a name="ln71"> </a>
-<a name="ln72">        // It's not a problem if there wasn't old block to erase.</a>
-<a name="ln73">        if (RD_SUCCESS == err_code)</a>
-<a name="ln74">        {</a>
-<a name="ln75">            char msg[128];</a>
+<a name="ln68">        char msg[128];</a>
+<a name="ln69">        uint8_t record_slot = (record_idx + num_tries) % APP_FLASH_LOG_DATA_RECORDS_NUM;</a>
+<a name="ln70">        uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + record_slot;</a>
+<a name="ln71">        err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);</a>
+<a name="ln72"> </a>
+<a name="ln73">        // It's not a problem if there wasn't old block to erase.</a>
+<a name="ln74">        if (RD_SUCCESS == err_code)</a>
+<a name="ln75">        {</a>
 <a name="ln76">            snprintf (msg, sizeof (msg), &quot;store_block:freed old record #%d\r\n&quot;, target_record);</a>
 <a name="ln77">            LOG (msg);</a>
 <a name="ln78">        }</a>
 <a name="ln79">        else</a>
 <a name="ln80">        {</a>
-<a name="ln81">            char msg[128];</a>
-<a name="ln82">            snprintf (msg, sizeof (msg), &quot;store_block:creating new record #%d\r\n&quot;, target_record);</a>
-<a name="ln83">            LOG (msg);</a>
-<a name="ln84">        }</a>
-<a name="ln85"> </a>
-<a name="ln86">        err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
-<a name="ln87"> </a>
-<a name="ln88">        while (rt_flash_busy())</a>
-<a name="ln89">        {</a>
-<a name="ln90">            ri_yield();</a>
-<a name="ln91">        }</a>
-<a name="ln92"> </a>
-<a name="ln93">        err_code |= rt_flash_gc_run ();</a>
-<a name="ln94"> </a>
-<a name="ln95">        while (rt_flash_busy())</a>
-<a name="ln96">        {</a>
-<a name="ln97">            ri_yield();</a>
-<a name="ln98">        }</a>
-<a name="ln99"> </a>
-<a name="ln100">        err_code |= rt_flash_store (APP_FLASH_LOG_FILE,</a>
-<a name="ln101">                                    target_record,</a>
-<a name="ln102">                                    p_record, sizeof (app_log_record_t));</a>
-<a name="ln103"> </a>
-<a name="ln104">        while (rt_flash_busy())</a>
-<a name="ln105">        {</a>
-<a name="ln106">            ri_yield();</a>
-<a name="ln107">        }</a>
-<a name="ln108"> </a>
-<a name="ln109">        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln110">        // Erase another block and try again if there was error.</a>
-<a name="ln111">        num_tries++;</a>
-<a name="ln112">    } while ( (RD_SUCCESS != err_code) &amp;&amp; (num_tries &lt; APP_FLASH_LOG_DATA_RECORDS_NUM));</a>
-<a name="ln113"> </a>
-<a name="ln114">    if (RD_SUCCESS == err_code)</a>
-<a name="ln115">    {</a>
-<a name="ln116">        record_idx += num_tries;</a>
-<a name="ln117">        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;</a>
-<a name="ln118">    }</a>
-<a name="ln119"> </a>
-<a name="ln120">    return err_code;</a>
-<a name="ln121">}</a>
+<a name="ln81">            snprintf (msg, sizeof (msg), &quot;store_block:creating new record #%d\r\n&quot;, target_record);</a>
+<a name="ln82">            LOG (msg);</a>
+<a name="ln83">        }</a>
+<a name="ln84"> </a>
+<a name="ln85">        err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
+<a name="ln86"> </a>
+<a name="ln87">        while (rt_flash_busy())</a>
+<a name="ln88">        {</a>
+<a name="ln89">            ri_yield();</a>
+<a name="ln90">        }</a>
+<a name="ln91"> </a>
+<a name="ln92">        err_code |= rt_flash_gc_run ();</a>
+<a name="ln93"> </a>
+<a name="ln94">        while (rt_flash_busy())</a>
+<a name="ln95">        {</a>
+<a name="ln96">            ri_yield();</a>
+<a name="ln97">        }</a>
+<a name="ln98"> </a>
+<a name="ln99">        err_code |= rt_flash_store (APP_FLASH_LOG_FILE,</a>
+<a name="ln100">                                    target_record,</a>
+<a name="ln101">                                    p_record, sizeof (app_log_record_t));</a>
+<a name="ln102"> </a>
+<a name="ln103">        while (rt_flash_busy())</a>
+<a name="ln104">        {</a>
+<a name="ln105">            ri_yield();</a>
+<a name="ln106">        }</a>
+<a name="ln107"> </a>
+<a name="ln108">        RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln109">        // Erase another block and try again if there was error.</a>
+<a name="ln110">        num_tries++;</a>
+<a name="ln111">    } while ( (RD_SUCCESS != err_code) &amp;&amp; (num_tries &lt; APP_FLASH_LOG_DATA_RECORDS_NUM));</a>
+<a name="ln112"> </a>
+<a name="ln113">    if (RD_SUCCESS == err_code)</a>
+<a name="ln114">    {</a>
+<a name="ln115">        record_idx += num_tries;</a>
+<a name="ln116">        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;</a>
+<a name="ln117">    }</a>
+<a name="ln118"> </a>
+<a name="ln119">    return err_code;</a>
+<a name="ln120">}</a>
+<a name="ln121"> </a>
 <a name="ln122"> </a>
-<a name="ln123"> </a>
-<a name="ln124">static rd_status_t purge_logs (void)</a>
-<a name="ln125">{</a>
-<a name="ln126">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln127"> </a>
-<a name="ln128">    for (uint8_t record_idx = 0; record_idx &lt; APP_FLASH_LOG_DATA_RECORDS_NUM; record_idx++)</a>
-<a name="ln129">    {</a>
-<a name="ln130">        err_code |= rt_flash_free (APP_FLASH_LOG_FILE,</a>
-<a name="ln131">                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + record_idx);</a>
-<a name="ln132"> </a>
-<a name="ln133">        while (rt_flash_busy())</a>
-<a name="ln134">        {</a>
-<a name="ln135">            ri_yield();</a>
-<a name="ln136">        }</a>
-<a name="ln137">    }</a>
-<a name="ln138"> </a>
-<a name="ln139">    // It doesn't matter if there was no data to erase.</a>
-<a name="ln140">    err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
-<a name="ln141">    err_code |= rt_flash_gc_run ();</a>
-<a name="ln142">    return err_code;</a>
-<a name="ln143">}</a>
-<a name="ln144"> </a>
-<a name="ln145">#ifndef CEEDLING</a>
-<a name="ln146">static</a>
-<a name="ln147">#endif</a>
-<a name="ln148">rd_status_t app_log_read_boot_count (void)</a>
-<a name="ln149">{</a>
-<a name="ln150">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln151">    err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,</a>
-<a name="ln152">                               &amp;m_boot_count, sizeof (uint32_t));</a>
-<a name="ln153"> </a>
-<a name="ln154">    if ( (RD_SUCCESS == err_code) || (RD_ERROR_NOT_FOUND == err_code))</a>
-<a name="ln155">    {</a>
-<a name="ln156">        m_boot_count++;</a>
-<a name="ln157">        err_code = rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,</a>
-<a name="ln158">                                   &amp;m_boot_count, sizeof (uint32_t));</a>
-<a name="ln159">    }</a>
-<a name="ln160"> </a>
-<a name="ln161">    char msg[128];</a>
-<a name="ln162">    snprintf (msg, sizeof (msg), &quot;LOG: Boot count: %d\r\n&quot;, m_boot_count);</a>
-<a name="ln163">    LOG (msg);</a>
-<a name="ln164">    return err_code;</a>
-<a name="ln165">}</a>
+<a name="ln123">static rd_status_t purge_logs (void)</a>
+<a name="ln124">{</a>
+<a name="ln125">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln126"> </a>
+<a name="ln127">    for (uint8_t record_idx = 0; record_idx &lt; APP_FLASH_LOG_DATA_RECORDS_NUM; record_idx++)</a>
+<a name="ln128">    {</a>
+<a name="ln129">        err_code |= rt_flash_free (APP_FLASH_LOG_FILE,</a>
+<a name="ln130">                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + record_idx);</a>
+<a name="ln131"> </a>
+<a name="ln132">        while (rt_flash_busy())</a>
+<a name="ln133">        {</a>
+<a name="ln134">            ri_yield();</a>
+<a name="ln135">        }</a>
+<a name="ln136">    }</a>
+<a name="ln137"> </a>
+<a name="ln138">    // It doesn't matter if there was no data to erase.</a>
+<a name="ln139">    err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
+<a name="ln140">    err_code |= rt_flash_gc_run ();</a>
+<a name="ln141">    return err_code;</a>
+<a name="ln142">}</a>
+<a name="ln143"> </a>
+<a name="ln144">#ifndef CEEDLING</a>
+<a name="ln145">static</a>
+<a name="ln146">#endif</a>
+<a name="ln147">rd_status_t app_log_read_boot_count (void)</a>
+<a name="ln148">{</a>
+<a name="ln149">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln150">    err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,</a>
+<a name="ln151">                               &amp;m_boot_count, sizeof (uint32_t));</a>
+<a name="ln152"> </a>
+<a name="ln153">    if ( (RD_SUCCESS == err_code) || (RD_ERROR_NOT_FOUND == err_code))</a>
+<a name="ln154">    {</a>
+<a name="ln155">        m_boot_count++;</a>
+<a name="ln156">        err_code = rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,</a>
+<a name="ln157">                                   &amp;m_boot_count, sizeof (uint32_t));</a>
+<a name="ln158">    }</a>
+<a name="ln159"> </a>
+<a name="ln160">    char msg[128];</a>
+<a name="ln161">    snprintf (msg, sizeof (msg), &quot;LOG: Boot count: %d\r\n&quot;, m_boot_count);</a>
+<a name="ln162">    LOG (msg);</a>
+<a name="ln163">    return err_code;</a>
+<a name="ln164">}</a>
+<a name="ln165"> </a>
 <a name="ln166"> </a>
-<a name="ln167"> </a>
-<a name="ln168">rd_status_t app_log_init (void)</a>
-<a name="ln169">{</a>
-<a name="ln170">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln171">    // Defaults get overwritten by flash load and stored if the load fails.</a>
-<a name="ln172">    app_log_config_t config =</a>
-<a name="ln173">    {</a>
-<a name="ln174">        .interval_s = APP_LOG_INTERVAL_S,</a>
-<a name="ln175">        .overflow   = APP_LOG_OVERFLOW,</a>
-<a name="ln176">        .fields = {</a>
-<a name="ln177">            .datas.temperature_c = APP_LOG_TEMPERATURE_ENABLED,</a>
-<a name="ln178">            .datas.humidity_rh = APP_LOG_HUMIDITY_ENABLED,</a>
-<a name="ln179">            .datas.pressure_pa = APP_LOG_PRESSURE_ENABLED</a>
-<a name="ln180">        }</a>
-<a name="ln181">    };</a>
-<a name="ln182">#   if APP_FLASH_LOG_CONFIG_NVM_ENABLED</a>
-<a name="ln183">    err_code = rt_flash_load (APP_FLASH_LOG_FILE,</a>
-<a name="ln184">                              APP_FLASH_LOG_CONFIG_RECORD,</a>
-<a name="ln185">                              &amp;config, sizeof (config));</a>
-<a name="ln186">#   endif</a>
-<a name="ln187"> </a>
-<a name="ln188">    if (RD_ERROR_NOT_FOUND == err_code) //-V547</a>
-<a name="ln189">    {</a>
-<a name="ln190">        err_code = rt_flash_store (APP_FLASH_LOG_FILE,</a>
-<a name="ln191">                                   APP_FLASH_LOG_CONFIG_RECORD,</a>
-<a name="ln192">                                   &amp;config, sizeof (config));</a>
-<a name="ln193">    }</a>
-<a name="ln194"> </a>
-<a name="ln195">    if (RD_SUCCESS == err_code) //-V547</a>
-<a name="ln196">    {</a>
-<a name="ln197">        memcpy (&amp;m_log_config, &amp;config, sizeof (config));</a>
-<a name="ln198">        err_code |= purge_logs();</a>
-<a name="ln199">    }</a>
-<a name="ln200"> </a>
-<a name="ln201">    err_code |= app_log_read_boot_count();</a>
-<a name="ln202">    return err_code;</a>
-<a name="ln203">}</a>
-<a name="ln204"> </a>
-<a name="ln205">rd_status_t app_log_process (const rd_sensor_data_t * const sample)</a>
-<a name="ln206">{</a>
-<a name="ln207">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln208">    uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000U);</a>
-<a name="ln209">    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;</a>
-<a name="ln210">    LOGD (&quot;LOG: Sample received\r\n&quot;);</a>
-<a name="ln211"> </a>
-<a name="ln212">    // Always store first sample.</a>
-<a name="ln213">    if (0 == m_last_sample_ms)</a>
-<a name="ln214">    {</a>
-<a name="ln215">        next_sample_ms = 0;</a>
-<a name="ln216">    }</a>
-<a name="ln217"> </a>
-<a name="ln218">    //Check if new sample should be processed</a>
-<a name="ln219">    if (next_sample_ms &lt;= sample-&gt;timestamp_ms)</a>
-<a name="ln220">    {</a>
-<a name="ln221">        LOGD (&quot;LOG: Storing sample\r\n&quot;);</a>
-<a name="ln222">        app_log_element_t element =</a>
-<a name="ln223">        {</a>
-<a name="ln224">            .timestamp_s = sample-&gt;timestamp_ms / 1000U,</a>
-<a name="ln225">            .temperature_c = rd_sensor_data_parse (sample, RD_SENSOR_TEMP_FIELD),</a>
-<a name="ln226">            .humidity_rh = rd_sensor_data_parse (sample, RD_SENSOR_HUMI_FIELD),</a>
-<a name="ln227">            .pressure_pa = rd_sensor_data_parse (sample, RD_SENSOR_PRES_FIELD),</a>
-<a name="ln228">        };</a>
-<a name="ln229"> </a>
-<a name="ln230">        if (APP_LOG_MAX_SAMPLES &gt; m_log_input_block.num_samples)</a>
-<a name="ln231">        {</a>
-<a name="ln232">            m_log_input_block.storage[m_log_input_block.num_samples++] = element;</a>
-<a name="ln233">        }</a>
-<a name="ln234"> </a>
-<a name="ln235">        if (m_log_input_block.num_samples &gt;= APP_LOG_MAX_SAMPLES)</a>
-<a name="ln236">        {</a>
-<a name="ln237">            LOG (&quot;LOG: Storing block\r\n&quot;);</a>
-<a name="ln238">            err_code |= store_block (&amp;m_log_input_block);</a>
-<a name="ln239">            RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln240">            memset (&amp;m_log_input_block, 0, sizeof (m_log_input_block));</a>
-<a name="ln241">            m_log_input_block.start_timestamp_s = end_timestamp;</a>
-<a name="ln242">        }</a>
-<a name="ln243"> </a>
-<a name="ln244">        m_last_sample_ms = sample-&gt;timestamp_ms;</a>
-<a name="ln245">        m_log_input_block.end_timestamp_s = sample-&gt;timestamp_ms / 1000U;</a>
-<a name="ln246">    }</a>
-<a name="ln247">    else</a>
-<a name="ln248">    {</a>
-<a name="ln249">        // No action needed.</a>
-<a name="ln250">    }</a>
-<a name="ln251"> </a>
-<a name="ln252">    return err_code;</a>
-<a name="ln253">}</a>
-<a name="ln254"> </a>
-<a name="ln255">/**</a>
-<a name="ln256"> * @brief Load new block to be read if needed.</a>
-<a name="ln257"> *</a>
-<a name="ln258"> * Can also copy input block to</a>
-<a name="ln259"> * output block if there's no more stored blocks in flash.</a>
-<a name="ln260"> */</a>
-<a name="ln261">static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)</a>
-<a name="ln262">{</a>
-<a name="ln263">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln264"> </a>
-<a name="ln265">    if ( (0 == p_rs-&gt;element_idx)</a>
-<a name="ln266">            &amp;&amp; (0 == p_rs-&gt;page_idx))</a>
-<a name="ln267">    {</a>
-<a name="ln268">        // Clear out previous state</a>
-<a name="ln269">        err_code |= rt_flash_load (APP_FLASH_LOG_FILE,</a>
-<a name="ln270">                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + p_rs-&gt;page_idx,</a>
-<a name="ln271">                                   &amp;m_log_output_block, sizeof (m_log_output_block));</a>
-<a name="ln272">        p_rs-&gt;page_idx++;</a>
-<a name="ln273">    }</a>
-<a name="ln274">    else if ( (APP_FLASH_LOG_DATA_RECORDS_NUM &gt; p_rs-&gt;page_idx)</a>
-<a name="ln275">              &amp;&amp; (p_rs-&gt;element_idx &gt;= m_log_output_block.num_samples))</a>
-<a name="ln276">    {</a>
-<a name="ln277">        // Returns NOT_FOUND if page IDX is not in flash.</a>
-<a name="ln278">        err_code |= rt_flash_load (APP_FLASH_LOG_FILE,</a>
-<a name="ln279">                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + p_rs-&gt;page_idx,</a>
-<a name="ln280">                                   &amp;m_log_output_block, sizeof (m_log_output_block));</a>
-<a name="ln281">        p_rs-&gt;page_idx++;</a>
-<a name="ln282">        p_rs-&gt;element_idx = 0;</a>
-<a name="ln283">    }</a>
-<a name="ln284">    else if ( (APP_FLASH_LOG_DATA_RECORDS_NUM == p_rs-&gt;page_idx)</a>
-<a name="ln285">              &amp;&amp; (p_rs-&gt;element_idx &gt;= m_log_output_block.num_samples))</a>
-<a name="ln286">    {</a>
-<a name="ln287">        memcpy (&amp;m_log_output_block, &amp;m_log_input_block, sizeof (m_log_output_block));</a>
-<a name="ln288">        p_rs-&gt;page_idx++;</a>
-<a name="ln289">        p_rs-&gt;element_idx = 0;</a>
-<a name="ln290">    }</a>
-<a name="ln291">    else</a>
-<a name="ln292">    {</a>
-<a name="ln293">        // No action needed.</a>
-<a name="ln294">    }</a>
-<a name="ln295"> </a>
-<a name="ln296">    // Clear out state if block was not found</a>
-<a name="ln297">    if (RD_ERROR_NOT_FOUND == err_code)</a>
-<a name="ln298">    {</a>
-<a name="ln299">        memset (&amp;m_log_output_block, 0, sizeof (m_log_output_block));</a>
-<a name="ln300">    }</a>
-<a name="ln301"> </a>
-<a name="ln302">    return err_code;</a>
-<a name="ln303">}</a>
-<a name="ln304"> </a>
-<a name="ln305">/**</a>
-<a name="ln306"> * @brief Forward read state to first next valid element.</a>
-<a name="ln307"> *</a>
-<a name="ln308"> * @retval RD_SUCCESS p_rs points to a valid element</a>
-<a name="ln309"> * @retval RD_ERROR_NOT_FOUND if block doesn't have a valid element.</a>
-<a name="ln310"> */</a>
-<a name="ln311">static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)</a>
-<a name="ln312">{</a>
-<a name="ln313">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln314">    uint64_t ts = m_log_output_block.storage[p_rs-&gt;element_idx].timestamp_s * 1000U;</a>
+<a name="ln167">rd_status_t app_log_init (void)</a>
+<a name="ln168">{</a>
+<a name="ln169">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln170">    // Defaults get overwritten by flash load and stored if the load fails.</a>
+<a name="ln171">    app_log_config_t config =</a>
+<a name="ln172">    {</a>
+<a name="ln173">        .interval_s = APP_LOG_INTERVAL_S,</a>
+<a name="ln174">        .overflow   = APP_LOG_OVERFLOW,</a>
+<a name="ln175">        .fields = {</a>
+<a name="ln176">            .datas.temperature_c = APP_LOG_TEMPERATURE_ENABLED,</a>
+<a name="ln177">            .datas.humidity_rh = APP_LOG_HUMIDITY_ENABLED,</a>
+<a name="ln178">            .datas.pressure_pa = APP_LOG_PRESSURE_ENABLED</a>
+<a name="ln179">        }</a>
+<a name="ln180">    };</a>
+<a name="ln181">#   if APP_FLASH_LOG_CONFIG_NVM_ENABLED</a>
+<a name="ln182">    err_code = rt_flash_load (APP_FLASH_LOG_FILE,</a>
+<a name="ln183">                              APP_FLASH_LOG_CONFIG_RECORD,</a>
+<a name="ln184">                              &amp;config, sizeof (config));</a>
+<a name="ln185">#   endif</a>
+<a name="ln186"> </a>
+<a name="ln187">    if (RD_ERROR_NOT_FOUND == err_code) //-V547</a>
+<a name="ln188">    {</a>
+<a name="ln189">        err_code = rt_flash_store (APP_FLASH_LOG_FILE,</a>
+<a name="ln190">                                   APP_FLASH_LOG_CONFIG_RECORD,</a>
+<a name="ln191">                                   &amp;config, sizeof (config));</a>
+<a name="ln192">    }</a>
+<a name="ln193"> </a>
+<a name="ln194">    if (RD_SUCCESS == err_code) //-V547</a>
+<a name="ln195">    {</a>
+<a name="ln196">        memcpy (&amp;m_log_config, &amp;config, sizeof (config));</a>
+<a name="ln197">        err_code |= purge_logs();</a>
+<a name="ln198">    }</a>
+<a name="ln199"> </a>
+<a name="ln200">    err_code |= app_log_read_boot_count();</a>
+<a name="ln201">    return err_code;</a>
+<a name="ln202">}</a>
+<a name="ln203"> </a>
+<a name="ln204">rd_status_t app_log_process (const rd_sensor_data_t * const sample)</a>
+<a name="ln205">{</a>
+<a name="ln206">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln207">    uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000U);</a>
+<a name="ln208">    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;</a>
+<a name="ln209">    LOGD (&quot;LOG: Sample received\r\n&quot;);</a>
+<a name="ln210"> </a>
+<a name="ln211">    // Always store first sample.</a>
+<a name="ln212">    if (0 == m_last_sample_ms)</a>
+<a name="ln213">    {</a>
+<a name="ln214">        next_sample_ms = 0;</a>
+<a name="ln215">    }</a>
+<a name="ln216"> </a>
+<a name="ln217">    //Check if new sample should be processed</a>
+<a name="ln218">    if (next_sample_ms &lt;= sample-&gt;timestamp_ms)</a>
+<a name="ln219">    {</a>
+<a name="ln220">        LOGD (&quot;LOG: Storing sample\r\n&quot;);</a>
+<a name="ln221">        app_log_element_t element =</a>
+<a name="ln222">        {</a>
+<a name="ln223">            .timestamp_s = sample-&gt;timestamp_ms / 1000U,</a>
+<a name="ln224">            .temperature_c = rd_sensor_data_parse (sample, RD_SENSOR_TEMP_FIELD),</a>
+<a name="ln225">            .humidity_rh = rd_sensor_data_parse (sample, RD_SENSOR_HUMI_FIELD),</a>
+<a name="ln226">            .pressure_pa = rd_sensor_data_parse (sample, RD_SENSOR_PRES_FIELD),</a>
+<a name="ln227">        };</a>
+<a name="ln228"> </a>
+<a name="ln229">        if (APP_LOG_MAX_SAMPLES &gt; m_log_input_block.num_samples)</a>
+<a name="ln230">        {</a>
+<a name="ln231">            m_log_input_block.storage[m_log_input_block.num_samples++] = element;</a>
+<a name="ln232">        }</a>
+<a name="ln233"> </a>
+<a name="ln234">        if (m_log_input_block.num_samples &gt;= APP_LOG_MAX_SAMPLES)</a>
+<a name="ln235">        {</a>
+<a name="ln236">            LOG (&quot;LOG: Storing block\r\n&quot;);</a>
+<a name="ln237">            err_code |= store_block (&amp;m_log_input_block);</a>
+<a name="ln238">            RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln239">            memset (&amp;m_log_input_block, 0, sizeof (m_log_input_block));</a>
+<a name="ln240">            m_log_input_block.start_timestamp_s = end_timestamp;</a>
+<a name="ln241">        }</a>
+<a name="ln242"> </a>
+<a name="ln243">        m_last_sample_ms = sample-&gt;timestamp_ms;</a>
+<a name="ln244">        m_log_input_block.end_timestamp_s = sample-&gt;timestamp_ms / 1000U;</a>
+<a name="ln245">    }</a>
+<a name="ln246">    else</a>
+<a name="ln247">    {</a>
+<a name="ln248">        // No action needed.</a>
+<a name="ln249">    }</a>
+<a name="ln250"> </a>
+<a name="ln251">    return err_code;</a>
+<a name="ln252">}</a>
+<a name="ln253"> </a>
+<a name="ln254">/**</a>
+<a name="ln255"> * @brief Load new block to be read if needed.</a>
+<a name="ln256"> *</a>
+<a name="ln257"> * Can also copy input block to</a>
+<a name="ln258"> * output block if there's no more stored blocks in flash.</a>
+<a name="ln259"> */</a>
+<a name="ln260">static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)</a>
+<a name="ln261">{</a>
+<a name="ln262">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln263"> </a>
+<a name="ln264">    if ( (0 == p_rs-&gt;element_idx)</a>
+<a name="ln265">            &amp;&amp; (0 == p_rs-&gt;page_idx))</a>
+<a name="ln266">    {</a>
+<a name="ln267">        // Clear out previous state</a>
+<a name="ln268">        err_code |= rt_flash_load (APP_FLASH_LOG_FILE,</a>
+<a name="ln269">                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + p_rs-&gt;page_idx,</a>
+<a name="ln270">                                   &amp;m_log_output_block, sizeof (m_log_output_block));</a>
+<a name="ln271">        p_rs-&gt;page_idx++;</a>
+<a name="ln272">    }</a>
+<a name="ln273">    else if ( (APP_FLASH_LOG_DATA_RECORDS_NUM &gt; p_rs-&gt;page_idx)</a>
+<a name="ln274">              &amp;&amp; (p_rs-&gt;element_idx &gt;= m_log_output_block.num_samples))</a>
+<a name="ln275">    {</a>
+<a name="ln276">        // Returns NOT_FOUND if page IDX is not in flash.</a>
+<a name="ln277">        err_code |= rt_flash_load (APP_FLASH_LOG_FILE,</a>
+<a name="ln278">                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX &lt;&lt; 8U) + p_rs-&gt;page_idx,</a>
+<a name="ln279">                                   &amp;m_log_output_block, sizeof (m_log_output_block));</a>
+<a name="ln280">        p_rs-&gt;page_idx++;</a>
+<a name="ln281">        p_rs-&gt;element_idx = 0;</a>
+<a name="ln282">    }</a>
+<a name="ln283">    else if ( (APP_FLASH_LOG_DATA_RECORDS_NUM == p_rs-&gt;page_idx)</a>
+<a name="ln284">              &amp;&amp; (p_rs-&gt;element_idx &gt;= m_log_output_block.num_samples))</a>
+<a name="ln285">    {</a>
+<a name="ln286">        memcpy (&amp;m_log_output_block, &amp;m_log_input_block, sizeof (m_log_output_block));</a>
+<a name="ln287">        p_rs-&gt;page_idx++;</a>
+<a name="ln288">        p_rs-&gt;element_idx = 0;</a>
+<a name="ln289">    }</a>
+<a name="ln290">    else</a>
+<a name="ln291">    {</a>
+<a name="ln292">        // No action needed.</a>
+<a name="ln293">    }</a>
+<a name="ln294"> </a>
+<a name="ln295">    // Clear out state if block was not found</a>
+<a name="ln296">    if (RD_ERROR_NOT_FOUND == err_code)</a>
+<a name="ln297">    {</a>
+<a name="ln298">        memset (&amp;m_log_output_block, 0, sizeof (m_log_output_block));</a>
+<a name="ln299">    }</a>
+<a name="ln300"> </a>
+<a name="ln301">    return err_code;</a>
+<a name="ln302">}</a>
+<a name="ln303"> </a>
+<a name="ln304">/**</a>
+<a name="ln305"> * @brief Forward read state to first next valid element.</a>
+<a name="ln306"> *</a>
+<a name="ln307"> * @retval RD_SUCCESS p_rs points to a valid element</a>
+<a name="ln308"> * @retval RD_ERROR_NOT_FOUND if block doesn't have a valid element.</a>
+<a name="ln309"> */</a>
+<a name="ln310">static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)</a>
+<a name="ln311">{</a>
+<a name="ln312">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln313">    uint64_t ts_s  = m_log_output_block.storage[p_rs-&gt;element_idx].timestamp_s;</a>
+<a name="ln314">    uint64_t ts_ms = ts_s * 1000LLU;</a>
 <a name="ln315"> </a>
-<a name="ln316">    while ( (p_rs-&gt;oldest_element_ms &gt; ts)</a>
+<a name="ln316">    while ( (p_rs-&gt;oldest_element_ms &gt; ts_ms)</a>
 <a name="ln317">            &amp;&amp; (p_rs-&gt;element_idx &lt; m_log_output_block.num_samples))</a>
 <a name="ln318">    {</a>
-<a name="ln319">        ts = m_log_output_block.storage[p_rs-&gt;element_idx].timestamp_s * 1000U;</a>
-<a name="ln320">        p_rs-&gt;element_idx++;</a>
-<a name="ln321">    }</a>
-<a name="ln322"> </a>
-<a name="ln323">    if (p_rs-&gt;element_idx &gt;= m_log_output_block.num_samples)</a>
-<a name="ln324">    {</a>
-<a name="ln325">        err_code |= RD_ERROR_NOT_FOUND;</a>
-<a name="ln326">    }</a>
-<a name="ln327"> </a>
-<a name="ln328">    return err_code;</a>
-<a name="ln329">}</a>
-<a name="ln330"> </a>
-<a name="ln331">static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,</a>
-<a name="ln332">        app_log_read_state_t * const p_rs)</a>
-<a name="ln333">{</a>
-<a name="ln334">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln335"> </a>
-<a name="ln336">    // Last memory block is the current RAM buffer, so we have valid data</a>
-<a name="ln337">    // when APP_FLASH_LOG_DATA_RECORDS_NUM + 1 == p_rs-&gt;page_idx</a>
-<a name="ln338">    if ( (APP_FLASH_LOG_DATA_RECORDS_NUM + 1) &lt; p_rs-&gt;page_idx)</a>
-<a name="ln339">    {</a>
-<a name="ln340">        err_code |= RD_ERROR_NOT_FOUND;</a>
-<a name="ln341">    }</a>
-<a name="ln342">    else if (p_rs-&gt;element_idx &lt; m_log_output_block.num_samples)</a>
-<a name="ln343">    {</a>
-<a name="ln344">        const app_log_element_t * const p_el = &amp;m_log_output_block.storage[p_rs-&gt;element_idx];</a>
-<a name="ln345">        rd_sensor_data_set (sample, RD_SENSOR_TEMP_FIELD, p_el-&gt;temperature_c);</a>
-<a name="ln346">        rd_sensor_data_set (sample, RD_SENSOR_HUMI_FIELD, p_el-&gt;humidity_rh);</a>
-<a name="ln347">        rd_sensor_data_set (sample, RD_SENSOR_PRES_FIELD, p_el-&gt;pressure_pa);</a>
-<a name="ln348">        sample-&gt;timestamp_ms = (uint64_t) (p_el-&gt;timestamp_s) * 1000U;</a>
-<a name="ln349">        p_rs-&gt;element_idx++;</a>
-<a name="ln350">    }</a>
-<a name="ln351">    else</a>
-<a name="ln352">    {</a>
-<a name="ln353">        // No action required.</a>
-<a name="ln354">    }</a>
-<a name="ln355"> </a>
-<a name="ln356">    return err_code;</a>
-<a name="ln357">}</a>
-<a name="ln358"> </a>
-<a name="ln359">rd_status_t app_log_read (rd_sensor_data_t * const sample,</a>
-<a name="ln360">                          app_log_read_state_t * const p_rs)</a>
-<a name="ln361">{</a>
-<a name="ln362">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln363"> </a>
-<a name="ln364">    if ( (NULL != sample) &amp;&amp; (NULL != p_rs))</a>
-<a name="ln365">    {</a>
-<a name="ln366">        // Load new block if needed</a>
-<a name="ln367">        do</a>
-<a name="ln368">        {</a>
-<a name="ln369">            err_code = app_log_read_load_block (p_rs);</a>
-<a name="ln370"> </a>
-<a name="ln371">            // Decompress block -todo.</a>
-<a name="ln372">            // Check if ths block contains data in desired time range - TODO</a>
-<a name="ln373">            // Fast forward to start of desired time range.</a>
-<a name="ln374">            if (RD_SUCCESS == err_code)</a>
-<a name="ln375">            {</a>
-<a name="ln376">                err_code |= app_log_read_fast_forward (p_rs);</a>
-<a name="ln377">            }</a>
-<a name="ln378">        } while ( (err_code != RD_SUCCESS)</a>
-<a name="ln379"> </a>
-<a name="ln380">                  &amp;&amp; (p_rs-&gt;page_idx &lt;= APP_FLASH_LOG_DATA_RECORDS_NUM));</a>
-<a name="ln381"> </a>
-<a name="ln382">        // AStyle fails here. ^</a>
-<a name="ln383">        // Populate record</a>
-<a name="ln384">        err_code |= app_log_read_populate (sample, p_rs);</a>
-<a name="ln385">    }</a>
-<a name="ln386">    else</a>
-<a name="ln387">    {</a>
-<a name="ln388">        err_code = RD_ERROR_NULL;</a>
-<a name="ln389">    }</a>
-<a name="ln390"> </a>
-<a name="ln391">    return err_code;</a>
-<a name="ln392">}</a>
-<a name="ln393"> </a>
-<a name="ln394">rd_status_t app_log_config_set (const app_log_config_t * const configuration)</a>
-<a name="ln395">{</a>
-<a name="ln396">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln397">    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;</a>
-<a name="ln398"> </a>
-<a name="ln399">    if (NULL == configuration)</a>
-<a name="ln400">    {</a>
-<a name="ln401">        err_code |= RD_ERROR_NULL;</a>
-<a name="ln402">    }</a>
-<a name="ln403">    else</a>
-<a name="ln404">    {</a>
-<a name="ln405">        err_code |= rt_flash_store (APP_FLASH_LOG_FILE,</a>
-<a name="ln406">                                    APP_FLASH_LOG_CONFIG_RECORD,</a>
-<a name="ln407">                                    &amp;configuration, sizeof (configuration));</a>
-<a name="ln408"> </a>
-<a name="ln409">        if (RD_SUCCESS == err_code)</a>
-<a name="ln410">        {</a>
-<a name="ln411">            err_code |= store_block (&amp;m_log_input_block);</a>
-<a name="ln412">            RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln413">            memset (&amp;m_log_input_block, 0, sizeof (m_log_input_block));</a>
-<a name="ln414">            m_log_input_block.start_timestamp_s = end_timestamp;</a>
-<a name="ln415">            memcpy (&amp;m_log_config, configuration, sizeof (m_log_config));</a>
-<a name="ln416">        }</a>
-<a name="ln417">    }</a>
-<a name="ln418"> </a>
-<a name="ln419">    return err_code;</a>
-<a name="ln420">}</a>
-<a name="ln421"> </a>
-<a name="ln422">rd_status_t app_log_config_get (app_log_config_t * const configuration)</a>
-<a name="ln423">{</a>
-<a name="ln424">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln425">    err_code |= rt_flash_load (APP_FLASH_LOG_FILE,</a>
-<a name="ln426">                               APP_FLASH_LOG_CONFIG_RECORD,</a>
-<a name="ln427">                               configuration, sizeof (app_log_config_t));</a>
-<a name="ln428">    memcpy (configuration, &amp;m_log_config, sizeof (m_log_config));</a>
-<a name="ln429">    return err_code;</a>
-<a name="ln430">}</a>
-<a name="ln431"> </a>
-<a name="ln432">void app_log_purge_flash (void)</a>
-<a name="ln433">{</a>
-<a name="ln434">    ri_flash_purge();</a>
-<a name="ln435">}</a>
-<a name="ln436"> </a>
-<a name="ln437">#else</a>
-<a name="ln438">//Dummy implementation to save flash space</a>
-<a name="ln439">rd_status_t app_log_init (void)</a>
-<a name="ln440">{</a>
-<a name="ln441">    return RD_SUCCESS;</a>
-<a name="ln442">}</a>
-<a name="ln443">rd_status_t app_log_process (const rd_sensor_data_t * const sample)</a>
-<a name="ln444">{</a>
-<a name="ln445">    return RD_SUCCESS;</a>
-<a name="ln446">}</a>
-<a name="ln447">rd_status_t app_log_config_get (app_log_config_t * const configuration)</a>
-<a name="ln448">{</a>
-<a name="ln449">    return RD_SUCCESS;</a>
-<a name="ln450">}</a>
-<a name="ln451">rd_status_t app_log_config_set (const app_log_config_t * const configuration)</a>
-<a name="ln452">{</a>
-<a name="ln453">    return RD_SUCCESS;</a>
-<a name="ln454">}</a>
-<a name="ln455">rd_status_t app_log_read (rd_sensor_data_t * const sample,</a>
-<a name="ln456">                          app_log_read_state_t * const p_read_state)</a>
-<a name="ln457">{</a>
-<a name="ln458">    return RD_ERROR_NOT_FOUND;</a>
-<a name="ln459">}</a>
-<a name="ln460"> </a>
-<a name="ln461">void app_log_purge_flash (void)</a>
-<a name="ln462">{</a>
-<a name="ln463">    return;</a>
-<a name="ln464">}</a>
-<a name="ln465">#endif</a>
+<a name="ln319">        ts_s  = m_log_output_block.storage[p_rs-&gt;element_idx].timestamp_s;</a>
+<a name="ln320">        ts_ms = ts_s * 1000LLU;</a>
+<a name="ln321">        p_rs-&gt;element_idx++;</a>
+<a name="ln322">    }</a>
+<a name="ln323"> </a>
+<a name="ln324">    if (p_rs-&gt;element_idx &gt;= m_log_output_block.num_samples)</a>
+<a name="ln325">    {</a>
+<a name="ln326">        err_code |= RD_ERROR_NOT_FOUND;</a>
+<a name="ln327">    }</a>
+<a name="ln328"> </a>
+<a name="ln329">    return err_code;</a>
+<a name="ln330">}</a>
+<a name="ln331"> </a>
+<a name="ln332">static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,</a>
+<a name="ln333">        app_log_read_state_t * const p_rs)</a>
+<a name="ln334">{</a>
+<a name="ln335">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln336"> </a>
+<a name="ln337">    // Last memory block is the current RAM buffer, so we have valid data</a>
+<a name="ln338">    // when APP_FLASH_LOG_DATA_RECORDS_NUM + 1 == p_rs-&gt;page_idx</a>
+<a name="ln339">    if ( (APP_FLASH_LOG_DATA_RECORDS_NUM + 1) &lt; p_rs-&gt;page_idx)</a>
+<a name="ln340">    {</a>
+<a name="ln341">        err_code |= RD_ERROR_NOT_FOUND;</a>
+<a name="ln342">    }</a>
+<a name="ln343">    else if (p_rs-&gt;element_idx &lt; m_log_output_block.num_samples)</a>
+<a name="ln344">    {</a>
+<a name="ln345">        const app_log_element_t * const p_el = &amp;m_log_output_block.storage[p_rs-&gt;element_idx];</a>
+<a name="ln346">        rd_sensor_data_set (sample, RD_SENSOR_TEMP_FIELD, p_el-&gt;temperature_c);</a>
+<a name="ln347">        rd_sensor_data_set (sample, RD_SENSOR_HUMI_FIELD, p_el-&gt;humidity_rh);</a>
+<a name="ln348">        rd_sensor_data_set (sample, RD_SENSOR_PRES_FIELD, p_el-&gt;pressure_pa);</a>
+<a name="ln349">        sample-&gt;timestamp_ms = (uint64_t) (p_el-&gt;timestamp_s) * 1000U;</a>
+<a name="ln350">        p_rs-&gt;element_idx++;</a>
+<a name="ln351">    }</a>
+<a name="ln352">    else</a>
+<a name="ln353">    {</a>
+<a name="ln354">        // No action required.</a>
+<a name="ln355">    }</a>
+<a name="ln356"> </a>
+<a name="ln357">    return err_code;</a>
+<a name="ln358">}</a>
+<a name="ln359"> </a>
+<a name="ln360">rd_status_t app_log_read (rd_sensor_data_t * const sample,</a>
+<a name="ln361">                          app_log_read_state_t * const p_rs)</a>
+<a name="ln362">{</a>
+<a name="ln363">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln364"> </a>
+<a name="ln365">    if ( (NULL != sample) &amp;&amp; (NULL != p_rs))</a>
+<a name="ln366">    {</a>
+<a name="ln367">        // Load new block if needed</a>
+<a name="ln368">        do</a>
+<a name="ln369">        {</a>
+<a name="ln370">            err_code = app_log_read_load_block (p_rs);</a>
+<a name="ln371"> </a>
+<a name="ln372">            // Decompress block -todo.</a>
+<a name="ln373">            // Check if ths block contains data in desired time range - TODO</a>
+<a name="ln374">            // Fast forward to start of desired time range.</a>
+<a name="ln375">            if (RD_SUCCESS == err_code)</a>
+<a name="ln376">            {</a>
+<a name="ln377">                err_code |= app_log_read_fast_forward (p_rs);</a>
+<a name="ln378">            }</a>
+<a name="ln379">        } while ( (err_code != RD_SUCCESS)</a>
+<a name="ln380"> </a>
+<a name="ln381">                  &amp;&amp; (p_rs-&gt;page_idx &lt;= APP_FLASH_LOG_DATA_RECORDS_NUM));</a>
+<a name="ln382"> </a>
+<a name="ln383">        // AStyle fails here. ^</a>
+<a name="ln384">        // Populate record</a>
+<a name="ln385">        err_code |= app_log_read_populate (sample, p_rs);</a>
+<a name="ln386">    }</a>
+<a name="ln387">    else</a>
+<a name="ln388">    {</a>
+<a name="ln389">        err_code = RD_ERROR_NULL;</a>
+<a name="ln390">    }</a>
+<a name="ln391"> </a>
+<a name="ln392">    return err_code;</a>
+<a name="ln393">}</a>
+<a name="ln394"> </a>
+<a name="ln395">rd_status_t app_log_config_set (const app_log_config_t * const configuration)</a>
+<a name="ln396">{</a>
+<a name="ln397">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln398">    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;</a>
+<a name="ln399"> </a>
+<a name="ln400">    if (NULL == configuration)</a>
+<a name="ln401">    {</a>
+<a name="ln402">        err_code |= RD_ERROR_NULL;</a>
+<a name="ln403">    }</a>
+<a name="ln404">    else</a>
+<a name="ln405">    {</a>
+<a name="ln406">        err_code |= rt_flash_store (APP_FLASH_LOG_FILE,</a>
+<a name="ln407">                                    APP_FLASH_LOG_CONFIG_RECORD,</a>
+<a name="ln408">                                    &amp;configuration, sizeof (configuration));</a>
+<a name="ln409"> </a>
+<a name="ln410">        if (RD_SUCCESS == err_code)</a>
+<a name="ln411">        {</a>
+<a name="ln412">            err_code |= store_block (&amp;m_log_input_block);</a>
+<a name="ln413">            RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln414">            memset (&amp;m_log_input_block, 0, sizeof (m_log_input_block));</a>
+<a name="ln415">            m_log_input_block.start_timestamp_s = end_timestamp;</a>
+<a name="ln416">            memcpy (&amp;m_log_config, configuration, sizeof (m_log_config));</a>
+<a name="ln417">        }</a>
+<a name="ln418">    }</a>
+<a name="ln419"> </a>
+<a name="ln420">    return err_code;</a>
+<a name="ln421">}</a>
+<a name="ln422"> </a>
+<a name="ln423">rd_status_t app_log_config_get (app_log_config_t * const configuration)</a>
+<a name="ln424">{</a>
+<a name="ln425">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln426">    err_code |= rt_flash_load (APP_FLASH_LOG_FILE,</a>
+<a name="ln427">                               APP_FLASH_LOG_CONFIG_RECORD,</a>
+<a name="ln428">                               configuration, sizeof (app_log_config_t));</a>
+<a name="ln429">    memcpy (configuration, &amp;m_log_config, sizeof (m_log_config));</a>
+<a name="ln430">    return err_code;</a>
+<a name="ln431">}</a>
+<a name="ln432"> </a>
+<a name="ln433">void app_log_purge_flash (void)</a>
+<a name="ln434">{</a>
+<a name="ln435">    ri_flash_purge();</a>
+<a name="ln436">}</a>
+<a name="ln437"> </a>
+<a name="ln438">#else</a>
+<a name="ln439">//Dummy implementation to save flash space</a>
+<a name="ln440">rd_status_t app_log_init (void)</a>
+<a name="ln441">{</a>
+<a name="ln442">    return RD_SUCCESS;</a>
+<a name="ln443">}</a>
+<a name="ln444">rd_status_t app_log_process (const rd_sensor_data_t * const sample)</a>
+<a name="ln445">{</a>
+<a name="ln446">    return RD_SUCCESS;</a>
+<a name="ln447">}</a>
+<a name="ln448">rd_status_t app_log_config_get (app_log_config_t * const configuration)</a>
+<a name="ln449">{</a>
+<a name="ln450">    return RD_SUCCESS;</a>
+<a name="ln451">}</a>
+<a name="ln452">rd_status_t app_log_config_set (const app_log_config_t * const configuration)</a>
+<a name="ln453">{</a>
+<a name="ln454">    return RD_SUCCESS;</a>
+<a name="ln455">}</a>
+<a name="ln456">rd_status_t app_log_read (rd_sensor_data_t * const sample,</a>
+<a name="ln457">                          app_log_read_state_t * const p_read_state)</a>
+<a name="ln458">{</a>
+<a name="ln459">    return RD_ERROR_NOT_FOUND;</a>
+<a name="ln460">}</a>
+<a name="ln461"> </a>
+<a name="ln462">void app_log_purge_flash (void)</a>
+<a name="ln463">{</a>
+<a name="ln464">    return;</a>
+<a name="ln465">}</a>
+<a name="ln466">#endif</a>
 
 </code></pre>
-<div class="balloon" rel="68"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '%' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="68"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(record_idx + num_tries) % ((16U) - 2U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="69"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + record_slot' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="70"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="69"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '%' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="69"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(record_idx + num_tries) % ((16U) - 2U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="70"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + record_slot' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="71"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="76"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="82"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="100"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="102"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sizeof (app_log_record_t)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="117"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'record_idx % ((16U) - 2U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="130"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="131"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + record_idx' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="151"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="151"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xEFU)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="157"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="157"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xEFU)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="162"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="188"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2594/" target="_blank">V2594</a> Controlling expressions should not be invariant. The result of the '(1U << 2U) == err_code' expression in the 'if' statement is always false.</p></div>
-<div class="balloon" rel="190"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="191"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="195"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2594/" target="_blank">V2594</a> Controlling expressions should not be invariant. The result of the '(0U) == err_code' expression in the 'if' statement is always true.</p></div>
-<div class="balloon" rel="213"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="215"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="230"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="235"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="245"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sample->timestamp_ms / 1000U' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="81"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="99"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="101"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sizeof (app_log_record_t)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="116"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'record_idx % ((16U) - 2U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="129"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="130"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + record_idx' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="150"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="150"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xEFU)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="156"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="156"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xEFU)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="161"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="187"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2594/" target="_blank">V2594</a> Controlling expressions should not be invariant. The result of the '(1U << 2U) == err_code' expression in the 'if' statement is always false.</p></div>
+<div class="balloon" rel="189"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="190"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="194"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2594/" target="_blank">V2594</a> Controlling expressions should not be invariant. The result of the '(0U) == err_code' expression in the 'if' statement is always true.</p></div>
+<div class="balloon" rel="212"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="214"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="229"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="234"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="244"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sample->timestamp_ms / 1000U' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="264"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
 <div class="balloon" rel="265"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="266"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="269"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="270"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + p_rs->page_idx' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="278"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="279"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + p_rs->page_idx' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="282"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="289"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="314"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2596/" target="_blank">V2596</a> Value of composite expression should not be assigned to object of wider essential type. Inspect the expression of the 'unsigned int' type that is assigned to the 'ts' variable of the 'unsigned long long' type.</p></div>
-<div class="balloon" rel="319"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2596/" target="_blank">V2596</a> Value of composite expression should not be assigned to object of wider essential type. Inspect the expression of the 'unsigned int' type that is assigned to the 'ts' variable of the 'unsigned long long' type.</p></div>
-<div class="balloon" rel="338"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="405"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="406"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="425"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="426"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="268"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="269"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + p_rs->page_idx' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="277"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="278"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xF0U) << 8U) + p_rs->page_idx' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="281"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="288"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="339"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="406"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="407"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="426"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="427"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>
