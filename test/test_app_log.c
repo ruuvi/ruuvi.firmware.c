@@ -164,6 +164,36 @@ const app_log_element_t e_5_4 =
     .pressure_pa = 0
 };
 
+// 60 days
+const app_log_element_t e_6_1 =
+{
+    .timestamp_s = 5184 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_6_2 =
+{
+    .timestamp_s = 5270 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_6_3 =
+{
+    .timestamp_s = 5357 * 1000,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+const app_log_element_t e_6_4 =
+{
+    .timestamp_s = 54432 * 100,
+    .temperature_c = 0,
+    .humidity_rh = 0,
+    .pressure_pa = 0
+};
+
 void setUp (void)
 {
     ri_log_Ignore();
@@ -685,6 +715,58 @@ void test_app_log_process_fill_blocks (void)
         store_block_expect (record_idx, store_fail);
         record_idx ++;
         sample.timestamp_ms += (m_log_config.interval_s * 1001U);
+        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
+        err_code |= app_log_process (&sample);
+    }
+
+    TEST_ASSERT (RD_SUCCESS == err_code);
+}
+
+void test_app_log_process_32b_ms_overflow (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    m_last_sample_ms = 0;
+    float samples[4] = {0}; //!< number of fields to mock-store.
+    rd_sensor_data_t sample =
+    {
+        .timestamp_ms = 5184000U * 1000U,
+        .fields = {
+            .datas.temperature_c = 1,
+            .datas.humidity_rh = 1,
+            .datas.pressure_pa = 1,
+            .datas.voltage_v = 1
+        },
+        .valid = {
+            .datas.temperature_c = 1,
+            .datas.humidity_rh = 1,
+            .datas.pressure_pa = 1,
+            .datas.voltage_v = 1
+        },
+        .data = samples
+    };
+    uint8_t record_idx = 0;
+
+    for (size_t ii = 0; ii < APP_FLASH_LOG_DATA_RECORDS_NUM * 2; ii++)
+    {
+        for (size_t jj = 0; jj < STORED_FIELDS; jj++)
+        {
+            rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+        }
+
+#       if RL_COMPRESS_ENABLED
+        rl_compress_ExpectAndReturn (NULL,
+                                     m_log_input_block.storage,
+                                     sizeof (m_log_input_block.storage),
+                                     &m_compress_state,
+                                     RL_COMPRESS_END);
+        rl_compress_IgnoreArg_data();
+#       else
+        m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
+#       endif
+        bool store_fail = false;
+        store_block_expect (record_idx, store_fail);
+        record_idx ++;
+        sample.timestamp_ms += (86400U * 1000U);
         record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
         err_code |= app_log_process (&sample);
     }
@@ -1223,6 +1305,53 @@ void test_app_log_read_rambuffer_at_end (void)
 
     TEST_ASSERT (RD_ERROR_NOT_FOUND == err_code);
     TEST_ASSERT (21 == num_reads);
+}
+
+void test_app_log_read_32b_ms_overflow (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    float samples[NUM_FIELDS] = {0};
+    rd_sensor_data_t sample =
+    {
+        .timestamp_ms = 0U,
+        .fields = {
+            .datas.temperature_c = 1,
+            .datas.humidity_rh = 1,
+            .datas.pressure_pa = 1,
+            .datas.voltage_v = 1
+        },
+        .valid = { 0 },
+        .data = samples
+    };
+    app_log_record_t r1 =
+    {
+        .start_timestamp_s = 5184  * 1000,
+        .end_timestamp_s   = 54432 * 100,
+        .num_samples = 4,
+        .storage = { e_6_1, e_6_2, e_6_3, e_6_4 }
+    };
+    app_log_read_state_t rs = {0};
+    uint8_t record_idx = 0;
+    // Load flash, check if we can find a block which has end timestamp after target time.
+    rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx,
+                                   &r1, sizeof (r1),
+                                   RD_SUCCESS);
+    rt_flash_load_IgnoreArg_message();
+    rt_flash_load_ReturnArrayThruPtr_message (&r1, 1);
+#if RL_COMPRESS_ENABLED
+    uint32_t timestamp = sample.timestamp_ms / 1000;
+    rl_data_t data = {0};
+    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
+                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
+                                            sizeof (m_log_output_block.storage),
+                                            &m_compress_state, 1,
+                                            &timestamp, 1,
+                                            RD_SUCCESS);
+#endif
+    sample_read_expect (&sample, &r1.storage[0]);
+    err_code |= app_log_read (&sample, &rs);
+    TEST_ASSERT (RD_SUCCESS == err_code);
 }
 
 void test_app_log_purge_flash (void)
