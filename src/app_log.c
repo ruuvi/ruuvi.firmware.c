@@ -65,6 +65,7 @@ static rd_status_t store_block (const app_log_record_t * const p_record)
 
     do
     {
+        char msg[128];
         uint8_t record_slot = (record_idx + num_tries) % APP_FLASH_LOG_DATA_RECORDS_NUM;
         uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_slot;
         err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);
@@ -72,13 +73,11 @@ static rd_status_t store_block (const app_log_record_t * const p_record)
         // It's not a problem if there wasn't old block to erase.
         if (RD_SUCCESS == err_code)
         {
-            char msg[128];
             snprintf (msg, sizeof (msg), "store_block:freed old record #%d\r\n", target_record);
             LOG (msg);
         }
         else
         {
-            char msg[128];
             snprintf (msg, sizeof (msg), "store_block:creating new record #%d\r\n", target_record);
             LOG (msg);
         }
@@ -311,12 +310,14 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
 static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
-    uint64_t ts = m_log_output_block.storage[p_rs->element_idx].timestamp_s * 1000U;
+    uint64_t ts_s  = m_log_output_block.storage[p_rs->element_idx].timestamp_s;
+    uint64_t ts_ms = ts_s * 1000LLU;
 
-    while ( (p_rs->oldest_element_ms > ts)
+    while ( (p_rs->oldest_element_ms > ts_ms)
             && (p_rs->element_idx < m_log_output_block.num_samples))
     {
-        ts = m_log_output_block.storage[p_rs->element_idx].timestamp_s * 1000U;
+        ts_s  = m_log_output_block.storage[p_rs->element_idx].timestamp_s;
+        ts_ms = ts_s * 1000LLU;
         p_rs->element_idx++;
     }
 
