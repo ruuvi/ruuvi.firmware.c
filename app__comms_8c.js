@@ -1,6 +1,7 @@
 var app__comms_8c =
 [
     [ "BLOCKING_COMM_TIMEOUT_MS", "group__app__comms.html#ga28a6a58e483c8d843d391955e8c45823", null ],
+    [ "CONN_PARAM_UPDATE_DELAY_MS", "group__app__comms.html#gaa2e2158412b1c4234d51612509701cf0", null ],
     [ "app_comms_ble_adv_init", "group__app__comms.html#ga51cd8dd182881fffb4bcd3685efd5452", null ],
     [ "app_comms_ble_init", "group__app__comms.html#ga646b738f8c7047c63f1f0e3b9eb7e534", null ],
     [ "app_comms_ble_uninit", "group__app__comms.html#ga16aa163f983d508c973c9ac60b5f9f78", null ],

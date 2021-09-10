@@ -106,6 +106,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga28a6a58e483c8d843d391955e8c45823"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga28a6a58e483c8d843d391955e8c45823">BLOCKING_COMM_TIMEOUT_MS</a>&#160;&#160;&#160;(4000U)</td></tr>
 <tr class="memdesc:ga28a6a58e483c8d843d391955e8c45823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set to long enough to handle existing queue, then as short as possible.  <a href="group__app__comms.html#ga28a6a58e483c8d843d391955e8c45823">More...</a><br /></td></tr>
 <tr class="separator:ga28a6a58e483c8d843d391955e8c45823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa2e2158412b1c4234d51612509701cf0"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gaa2e2158412b1c4234d51612509701cf0">CONN_PARAM_UPDATE_DELAY_MS</a>&#160;&#160;&#160;(30U * 1000U)</td></tr>
+<tr class="memdesc:gaa2e2158412b1c4234d51612509701cf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delay before switching to faster conn params in long ops.  <a href="group__app__comms.html#gaa2e2158412b1c4234d51612509701cf0">More...</a><br /></td></tr>
+<tr class="separator:gaa2e2158412b1c4234d51612509701cf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae691154ba72e79a6084f222fb66ad5c8"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gae691154ba72e79a6084f222fb66ad5c8">APP_COMM_ADV_REPEAT_FOREVER</a>&#160;&#160;&#160;(255U)</td></tr>
 <tr class="memdesc:gae691154ba72e79a6084f222fb66ad5c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Repeat advertisement until explicitly stopped.  <a href="group__app__comms.html#gae691154ba72e79a6084f222fb66ad5c8">More...</a><br /></td></tr>
 <tr class="separator:gae691154ba72e79a6084f222fb66ad5c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -218,6 +221,24 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="gaa2e2158412b1c4234d51612509701cf0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa2e2158412b1c4234d51612509701cf0">&#9670;&nbsp;</a></span>CONN_PARAM_UPDATE_DELAY_MS</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define CONN_PARAM_UPDATE_DELAY_MS&#160;&#160;&#160;(30U * 1000U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Delay before switching to faster conn params in long ops. </p>
+
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00041">41</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga51cd8dd182881fffb4bcd3685efd5452"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga51cd8dd182881fffb4bcd3685efd5452">&#9670;&nbsp;</a></span>app_comms_ble_adv_init()</h2>
@@ -246,7 +267,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00573">573</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00574">574</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -278,7 +299,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00559">559</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00560">560</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -301,7 +322,7 @@ Functions</h2></td></tr>
 <p>Uninitialize GATT. </p>
 <p>After calling this function advertisements cannot be sent and GATT server is disabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00582">582</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00583">583</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -327,7 +348,7 @@ Functions</h2></td></tr>
 <dd>
 APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00073">73</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00074">74</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -358,7 +379,7 @@ APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 <dd>
 APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00078">78</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00079">79</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -406,7 +427,7 @@ APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Timeout requires RTC and some process which brings thread out of yield. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00590">590</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00591">591</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -477,7 +498,7 @@ APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>error code from stack on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00533">533</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00534">534</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
