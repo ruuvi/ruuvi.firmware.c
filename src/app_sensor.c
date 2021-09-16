@@ -780,11 +780,6 @@ static rd_status_t app_sensor_send_timeout (const ri_comm_xfer_fp_t reply_fp,
     return err_code;
 }
 
-static bool this_takes_forever (const uint64_t start_time_ms)
-{
-    return ( (start_time_ms + (30 * 1000)) < ri_rtc_millis());
-}
-
 /**
  * @brief Log read sensor op.
  *
@@ -809,7 +804,6 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
     sample.fields = fields;
     float data[rd_sensor_data_fieldcount (&sample)];
     sample.data = data;
-    bool turbo = false;
     // Parse start, end times.
     int64_t current_time_s = (int64_t) re_std_log_current_time (raw_message);
     int64_t start_s = (int64_t) re_std_log_start_time (raw_message);
@@ -859,11 +853,6 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
                 snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", sent_elements); //-V576
                 LOG (msg);
                 sent_elements = 0;
-            }
-            else if (!turbo && this_takes_forever (system_time_ms))
-            {
-                LOG ("Slow TX detected, switching to faster connection\r\n");
-                turbo = true;
             }
             else if (app_heartbeat_overdue())
             {
