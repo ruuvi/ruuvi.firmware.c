@@ -23,1039 +23,1040 @@
 <a name="ln10">#include &quot;ruuvi_interface_adc_ntc.h&quot;</a>
 <a name="ln11">#include &quot;ruuvi_interface_adc_photo.h&quot;</a>
 <a name="ln12">#include &quot;ruuvi_interface_bme280.h&quot;</a>
-<a name="ln13">#include &quot;ruuvi_interface_communication_radio.h&quot;</a>
-<a name="ln14">#include &quot;ruuvi_interface_dps310.h&quot;</a>
-<a name="ln15">#include &quot;ruuvi_interface_gpio.h&quot;</a>
-<a name="ln16">#include &quot;ruuvi_interface_gpio_interrupt.h&quot;</a>
-<a name="ln17">#include &quot;ruuvi_interface_i2c.h&quot;</a>
-<a name="ln18">#include &quot;ruuvi_interface_lis2dh12.h&quot;</a>
-<a name="ln19">#include &quot;ruuvi_interface_log.h&quot;</a>
-<a name="ln20">#include &quot;ruuvi_interface_rtc.h&quot;</a>
-<a name="ln21">#include &quot;ruuvi_interface_shtcx.h&quot;</a>
-<a name="ln22">#include &quot;ruuvi_interface_spi.h&quot;</a>
-<a name="ln23">#include &quot;ruuvi_interface_yield.h&quot;</a>
-<a name="ln24">#include &quot;ruuvi_task_adc.h&quot;</a>
-<a name="ln25">#include &quot;ruuvi_task_sensor.h&quot;</a>
-<a name="ln26"> </a>
-<a name="ln27">#include &lt;stdio.h&gt;</a>
-<a name="ln28">#include &lt;string.h&gt;</a>
-<a name="ln29"> </a>
-<a name="ln30">#define POWERUP_DELAY_MS (10U)</a>
-<a name="ln31"> </a>
-<a name="ln32">static inline void LOG (const char * const msg)</a>
-<a name="ln33">{</a>
-<a name="ln34">    ri_log (RI_LOG_LEVEL_INFO, msg);</a>
-<a name="ln35">}</a>
-<a name="ln36"> </a>
-<a name="ln37">static inline void LOGD (const char * const msg)</a>
-<a name="ln38">{</a>
-<a name="ln39">    ri_log (RI_LOG_LEVEL_DEBUG, msg);</a>
-<a name="ln40">}</a>
-<a name="ln41">/**</a>
-<a name="ln42"> * @addtogroup app_sensor</a>
-<a name="ln43"> */</a>
-<a name="ln44">/** @{ */</a>
-<a name="ln45">/**</a>
-<a name="ln46"> * @file app_sensor.c</a>
-<a name="ln47"> * @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
-<a name="ln48"> * @date 2020-04-16</a>
-<a name="ln49"> * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
-<a name="ln50"> *</a>
-<a name="ln51"> * Initialize, configure and use sensors on board.</a>
-<a name="ln52"> *</a>
-<a name="ln53"> * Typical usage:</a>
-<a name="ln54"> *</a>
-<a name="ln55"> * @code{.c}</a>
-<a name="ln56"> * TODO</a>
-<a name="ln57"> * @endcode</a>
-<a name="ln58"> */</a>
-<a name="ln59"> </a>
-<a name="ln60">#ifndef CEEDLING</a>
-<a name="ln61">static</a>
-<a name="ln62">#endif</a>
-<a name="ln63">rt_sensor_ctx_t * m_sensors[SENSOR_COUNT]; //!&lt; Sensor APIs.</a>
-<a name="ln64">static uint64_t vdd_update_time;              //!&lt; timestamp of VDD update.</a>
-<a name="ln65">static uint32_t</a>
-<a name="ln66">m_event_counter;              //!&lt; Number of events registered in app_sensor.</a>
-<a name="ln67"> </a>
-<a name="ln68">/**</a>
-<a name="ln69"> * @brief Sensor operation, such as read or configure.</a>
-<a name="ln70"> *</a>
-<a name="ln71"> * These are used when outside central commands sensor to e.g. configure a sensor</a>
-<a name="ln72"> * or read log. Operations are targeted on specific data types, such as</a>
-<a name="ln73"> * temperature or acceleration. The operation is execcuted on first</a>
-<a name="ln74"> * provider of given data if applicable.</a>
-<a name="ln75"> *</a>
-<a name="ln76"> * @param[in] reply_fp A function to which send operation acknowledgement.</a>
-<a name="ln77"> * @param[in] fields Affected fields.</a>
-<a name="ln78"> * @param[in] raw_message Original message triggering operation.</a>
-<a name="ln79"> */</a>
-<a name="ln80">typedef rd_status_t (*sensor_op) (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln81">                                  const rd_sensor_data_fields_t fields,</a>
-<a name="ln82">                                  const uint8_t * const raw_message);</a>
-<a name="ln83"> </a>
-<a name="ln84">#if APP_SENSOR_BME280_ENABLED</a>
-<a name="ln85">static rt_sensor_ctx_t bme280 = APP_SENSOR_BME280_DEFAULT_CFG;</a>
-<a name="ln86">#endif</a>
-<a name="ln87"> </a>
-<a name="ln88">#if APP_SENSOR_DPS310_ENABLED</a>
-<a name="ln89">static rt_sensor_ctx_t dps310 = APP_SENSOR_DPS310_DEFAULT_CFG;</a>
-<a name="ln90">#endif</a>
-<a name="ln91"> </a>
-<a name="ln92">#if APP_SENSOR_LIS2DH12_ENABLED</a>
-<a name="ln93">static rt_sensor_ctx_t lis2dh12 = APP_SENSOR_LIS2DH12_DEFAULT_CFG;</a>
-<a name="ln94">#endif</a>
-<a name="ln95"> </a>
-<a name="ln96">#if APP_SENSOR_LIS2DW12_ENABLED</a>
-<a name="ln97">static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;</a>
-<a name="ln98">#endif</a>
-<a name="ln99"> </a>
-<a name="ln100">#if APP_SENSOR_SHTCX_ENABLED</a>
-<a name="ln101">static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;</a>
-<a name="ln102">#endif</a>
-<a name="ln103"> </a>
-<a name="ln104">#if APP_SENSOR_TMP117_ENABLED</a>
-<a name="ln105">static rt_sensor_ctx_t tmp117 = APP_SENSOR_TMP117_DEFAULT_CFG;</a>
-<a name="ln106">#endif</a>
-<a name="ln107"> </a>
-<a name="ln108">#if APP_SENSOR_PHOTO_ENABLED</a>
-<a name="ln109">static rt_sensor_ctx_t photo = APP_SENSOR_PHOTO_DEFAULT_CFG;</a>
-<a name="ln110">#endif</a>
-<a name="ln111"> </a>
-<a name="ln112">#if APP_SENSOR_NTC_ENABLED</a>
-<a name="ln113">static rt_sensor_ctx_t ntc = APP_SENSOR_NTC_DEFAULT_CFG;</a>
-<a name="ln114">#endif</a>
-<a name="ln115"> </a>
-<a name="ln116">#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED</a>
-<a name="ln117">static rt_sensor_ctx_t env_mcu = APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG;</a>
-<a name="ln118">#endif</a>
-<a name="ln119"> </a>
-<a name="ln120">/** @brief Initialize sensor pointer array */</a>
-<a name="ln121">#ifndef CEEDLING</a>
-<a name="ln122">static</a>
-<a name="ln123">#endif</a>
-<a name="ln124">void</a>
-<a name="ln125">m_sensors_init (void)</a>
-<a name="ln126">{</a>
-<a name="ln127">#if APP_SENSOR_TMP117_ENABLED</a>
-<a name="ln128">    m_sensors[TMP117_INDEX] = &amp;tmp117;</a>
-<a name="ln129">#endif</a>
-<a name="ln130">#if APP_SENSOR_SHTCX_ENABLED</a>
-<a name="ln131">    m_sensors[SHTCX_INDEX] = &amp;shtcx;</a>
-<a name="ln132">#endif</a>
-<a name="ln133">#if APP_SENSOR_DPS310_ENABLED</a>
-<a name="ln134">    m_sensors[DPS310_INDEX] = &amp;dps310;</a>
-<a name="ln135">#endif</a>
-<a name="ln136">#if APP_SENSOR_BME280_ENABLED</a>
-<a name="ln137">    m_sensors[BME280_INDEX] = &amp;bme280;</a>
-<a name="ln138">#endif</a>
-<a name="ln139">#if APP_SENSOR_NTC_ENABLED</a>
-<a name="ln140">    m_sensors[NTC_INDEX] = &amp;ntc;</a>
-<a name="ln141">#endif</a>
-<a name="ln142">#if APP_SENSOR_PHOTO_ENABLED</a>
-<a name="ln143">    m_sensors[PHOTO_INDEX] = &amp;photo;</a>
-<a name="ln144">#endif</a>
-<a name="ln145">#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED</a>
-<a name="ln146">    m_sensors[ENV_MCU_INDEX] = &amp;env_mcu;</a>
-<a name="ln147">#endif</a>
-<a name="ln148">#if APP_SENSOR_LIS2DH12_ENABLED</a>
-<a name="ln149">    m_sensors[LIS2DH12_INDEX] = &amp;lis2dh12;</a>
-<a name="ln150">#endif</a>
-<a name="ln151">#if APP_SENSOR_LIS2DW12_ENABLED</a>
-<a name="ln152">    m_sensors[LIS2DW12_INDEX] = lis2dw12;</a>
-<a name="ln153">#endif</a>
-<a name="ln154">}</a>
-<a name="ln155"> </a>
-<a name="ln156">void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt)</a>
-<a name="ln157">{</a>
-<a name="ln158">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln159"> </a>
-<a name="ln160">    if (vdd_update_time &lt; ri_rtc_millis())</a>
-<a name="ln161">    {</a>
-<a name="ln162">        if (RI_RADIO_BEFORE == evt)</a>
-<a name="ln163">        {</a>
-<a name="ln164">            rd_sensor_configuration_t configuration =</a>
-<a name="ln165">            {</a>
-<a name="ln166">                .dsp_function = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln167">                .dsp_parameter = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln168">                .mode = RD_SENSOR_CFG_SINGLE,</a>
-<a name="ln169">                .resolution = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln170">                .samplerate = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln171">                .scale = RD_SENSOR_CFG_DEFAULT</a>
-<a name="ln172">            };</a>
-<a name="ln173">            err_code |= rt_adc_vdd_prepare (&amp;configuration);</a>
-<a name="ln174">            RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln175">        }</a>
-<a name="ln176">        else</a>
-<a name="ln177">        {</a>
-<a name="ln178">            if (true == rt_adc_is_init())</a>
-<a name="ln179">            {</a>
-<a name="ln180">                vdd_update_time = ri_rtc_millis();</a>
-<a name="ln181">                vdd_update_time += APP_BATTERY_SAMPLE_MS;</a>
-<a name="ln182">                err_code |= rt_adc_vdd_sample();</a>
-<a name="ln183">                RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln184">            }</a>
-<a name="ln185">        }</a>
-<a name="ln186">    }</a>
-<a name="ln187">}</a>
-<a name="ln188"> </a>
-<a name="ln189">#ifndef CEEDLING</a>
-<a name="ln190">static</a>
-<a name="ln191">#endif</a>
-<a name="ln192">void</a>
-<a name="ln193">on_accelerometer_isr (const ri_gpio_evt_t event)</a>
-<a name="ln194">{</a>
-<a name="ln195">    if (RI_GPIO_SLOPE_LOTOHI == event.slope)</a>
-<a name="ln196">    {</a>
-<a name="ln197">        LOG (&quot;Movement \r\n&quot;);</a>
-<a name="ln198">        app_sensor_event_increment();</a>
-<a name="ln199">    }</a>
-<a name="ln200">}</a>
-<a name="ln201"> </a>
-<a name="ln202">static ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)</a>
-<a name="ln203">{</a>
-<a name="ln204">    ri_i2c_frequency_t freq = RI_I2C_FREQUENCY_100k;</a>
-<a name="ln205"> </a>
-<a name="ln206">    switch (rb_freq)</a>
-<a name="ln207">    {</a>
-<a name="ln208">        case RB_I2C_FREQUENCY_400k:</a>
-<a name="ln209">            freq = RI_I2C_FREQUENCY_400k;</a>
-<a name="ln210">            break;</a>
-<a name="ln211"> </a>
-<a name="ln212">        case RB_I2C_FREQUENCY_250k:</a>
-<a name="ln213">            freq = RI_I2C_FREQUENCY_250k;</a>
-<a name="ln214">            break;</a>
-<a name="ln215"> </a>
-<a name="ln216">        case RB_I2C_FREQUENCY_100k:</a>
-<a name="ln217"> </a>
-<a name="ln218">        // Intentional fall-through.</a>
-<a name="ln219">        default:</a>
-<a name="ln220">            freq = RI_I2C_FREQUENCY_100k;</a>
-<a name="ln221">            break;</a>
-<a name="ln222">    }</a>
-<a name="ln223"> </a>
-<a name="ln224">    return freq;</a>
-<a name="ln225">}</a>
-<a name="ln226"> </a>
-<a name="ln227">static ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)</a>
-<a name="ln228">{</a>
-<a name="ln229">    ri_spi_frequency_t freq = RI_SPI_FREQUENCY_1M;</a>
-<a name="ln230"> </a>
-<a name="ln231">    switch (rb_freq)</a>
-<a name="ln232">    {</a>
-<a name="ln233">        case RB_SPI_FREQUENCY_8M:</a>
-<a name="ln234">            freq = RI_SPI_FREQUENCY_8M;</a>
-<a name="ln235">            break;</a>
-<a name="ln236"> </a>
-<a name="ln237">        case RB_SPI_FREQUENCY_4M:</a>
-<a name="ln238">            freq = RI_SPI_FREQUENCY_4M;</a>
-<a name="ln239">            break;</a>
-<a name="ln240"> </a>
-<a name="ln241">        case RB_SPI_FREQUENCY_2M:</a>
-<a name="ln242">            freq = RI_SPI_FREQUENCY_2M;</a>
-<a name="ln243">            break;</a>
-<a name="ln244"> </a>
-<a name="ln245">        case RB_SPI_FREQUENCY_1M:</a>
-<a name="ln246"> </a>
-<a name="ln247">        // Intentional fall-through.</a>
-<a name="ln248">        default:</a>
-<a name="ln249">            freq = RI_SPI_FREQUENCY_1M;</a>
-<a name="ln250">            break;</a>
-<a name="ln251">    }</a>
-<a name="ln252"> </a>
-<a name="ln253">    return freq;</a>
-<a name="ln254">}</a>
-<a name="ln255"> </a>
-<a name="ln256">static rd_status_t app_sensor_buses_init (void)</a>
-<a name="ln257">{</a>
-<a name="ln258">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln259">    ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;</a>
-<a name="ln260">    ri_spi_init_config_t spi_config =</a>
-<a name="ln261">    {</a>
-<a name="ln262">        .mosi = RB_SPI_MOSI_PIN,</a>
-<a name="ln263">        .miso = RB_SPI_MISO_PIN,</a>
-<a name="ln264">        .sclk = RB_SPI_SCLK_PIN,</a>
-<a name="ln265">        .ss_pins = ss_pins,</a>
-<a name="ln266">        .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),</a>
-<a name="ln267">        // Assume mode 0 always.</a>
-<a name="ln268">        .mode = RI_SPI_MODE_0,</a>
-<a name="ln269">        .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)</a>
-<a name="ln270">    };</a>
-<a name="ln271">    ri_i2c_init_config_t i2c_config =</a>
-<a name="ln272">    {</a>
-<a name="ln273">        .sda = RB_I2C_SDA_PIN,</a>
-<a name="ln274">        .scl = RB_I2C_SCL_PIN,</a>
-<a name="ln275">        .bus_pwr = RB_I2C_BUS_POWER_PIN,</a>
-<a name="ln276">        .frequency = rb_to_ri_i2c_freq (RB_I2C_FREQ)</a>
-<a name="ln277">    };</a>
-<a name="ln278"> </a>
-<a name="ln279">    if ( (!ri_gpio_is_init()) || (!ri_gpio_interrupt_is_init()))</a>
-<a name="ln280">    {</a>
-<a name="ln281">        err_code |= RD_ERROR_INVALID_STATE;</a>
-<a name="ln282">    }</a>
-<a name="ln283">    else</a>
-<a name="ln284">    {</a>
-<a name="ln285">        err_code |= ri_spi_init (&amp;spi_config);</a>
-<a name="ln286">        err_code |= ri_i2c_init (&amp;i2c_config);</a>
-<a name="ln287">        err_code |= ri_gpio_configure (RB_I2C_SDA_PIN,</a>
-<a name="ln288">                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);</a>
-<a name="ln289">        err_code |= ri_gpio_configure (RB_I2C_SCL_PIN,</a>
-<a name="ln290">                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);</a>
-<a name="ln291">    }</a>
-<a name="ln292"> </a>
-<a name="ln293">    return err_code;</a>
-<a name="ln294">}</a>
-<a name="ln295"> </a>
-<a name="ln296">static rd_status_t app_sensor_buses_uninit (void)</a>
-<a name="ln297">{</a>
-<a name="ln298">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln299">    err_code |= ri_spi_uninit();</a>
-<a name="ln300">    err_code |= ri_i2c_uninit();</a>
-<a name="ln301">    return err_code;</a>
-<a name="ln302">}</a>
-<a name="ln303"> </a>
-<a name="ln304">static void app_sensor_rtc_init (void)</a>
-<a name="ln305">{</a>
-<a name="ln306">    // Returns invalid state if already init, not a problem here.</a>
-<a name="ln307">    (void) ri_rtc_init();</a>
-<a name="ln308">    rd_sensor_timestamp_function_set (&amp;ri_rtc_millis);</a>
-<a name="ln309">}</a>
-<a name="ln310"> </a>
-<a name="ln311">static void app_sensor_rtc_uninit (void)</a>
-<a name="ln312">{</a>
-<a name="ln313">    rd_sensor_timestamp_function_set (NULL);</a>
-<a name="ln314">    (void) ri_rtc_uninit();</a>
-<a name="ln315">}</a>
-<a name="ln316"> </a>
-<a name="ln317">rd_status_t app_sensor_init (void)</a>
-<a name="ln318">{</a>
-<a name="ln319">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln320">    m_sensors_init();</a>
-<a name="ln321">    err_code |= app_sensor_buses_init();</a>
-<a name="ln322"> </a>
-<a name="ln323">    if (RD_SUCCESS == err_code)</a>
-<a name="ln324">    {</a>
-<a name="ln325">        app_sensor_rtc_init();</a>
-<a name="ln326">        // Wait for the power lines to settle after bus powerup.</a>
-<a name="ln327">        ri_delay_ms (POWERUP_DELAY_MS);</a>
-<a name="ln328"> </a>
-<a name="ln329">        for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
-<a name="ln330">        {</a>
-<a name="ln331">            rd_status_t init_code = RD_SUCCESS;</a>
-<a name="ln332">            size_t retries = 0;</a>
-<a name="ln333"> </a>
-<a name="ln334">            // Enable power to sensor</a>
-<a name="ln335">            if (m_sensors[ii]-&gt;pwr_pin != RI_GPIO_ID_UNUSED)</a>
-<a name="ln336">            {</a>
-<a name="ln337">                (void) ri_gpio_configure (m_sensors[ii]-&gt;pwr_pin,</a>
-<a name="ln338">                                          RI_GPIO_MODE_OUTPUT_HIGHDRIVE);</a>
-<a name="ln339">                (void) ri_gpio_write (m_sensors[ii]-&gt;pwr_pin, m_sensors[ii]-&gt;pwr_on);</a>
-<a name="ln340">                ri_delay_ms (POWERUP_DELAY_MS);</a>
-<a name="ln341">            }</a>
-<a name="ln342"> </a>
-<a name="ln343">            // Some sensors, such as accelerometer may fail on user moving the board. Retry.</a>
-<a name="ln344">            do</a>
-<a name="ln345">            {</a>
-<a name="ln346">                init_code = rt_sensor_initialize (m_sensors[ii]);</a>
-<a name="ln347">            } while ( (APP_SENSOR_SELFTEST_RETRIES &gt; retries++)</a>
-<a name="ln348"> </a>
-<a name="ln349">                      &amp;&amp; (RD_ERROR_SELFTEST == init_code));</a>
-<a name="ln350"> </a>
-<a name="ln351">            if (RD_SUCCESS == init_code)</a>
-<a name="ln352">            {</a>
-<a name="ln353">                // Check for a configuration in flash.</a>
-<a name="ln354">                init_code = rt_sensor_load (m_sensors[ii]);</a>
-<a name="ln355"> </a>
-<a name="ln356">                // Configuration found, use it.</a>
-<a name="ln357">                if (RD_SUCCESS == init_code)</a>
-<a name="ln358">                {</a>
-<a name="ln359">                    init_code = rt_sensor_configure (m_sensors[ii]);</a>
-<a name="ln360">                }</a>
-<a name="ln361">                // Configuration not found, use defaults, store to flash.</a>
-<a name="ln362">                else</a>
-<a name="ln363">                {</a>
-<a name="ln364">                    init_code = rt_sensor_configure (m_sensors[ii]);</a>
-<a name="ln365">                    rt_sensor_store (m_sensors[ii]);</a>
-<a name="ln366">                }</a>
-<a name="ln367">            }</a>
-<a name="ln368">            else if (RD_ERROR_SELFTEST == init_code)</a>
-<a name="ln369">            {</a>
-<a name="ln370">                err_code |= RD_ERROR_SELFTEST;</a>
-<a name="ln371">            }</a>
-<a name="ln372">            // Mark unavailable sensor handles as unused.</a>
-<a name="ln373">            else</a>
-<a name="ln374">            {</a>
-<a name="ln375">                m_sensors[ii]-&gt;handle = APP_SENSOR_HANDLE_UNUSED;</a>
-<a name="ln376">            }</a>
-<a name="ln377">        }</a>
-<a name="ln378">    }</a>
-<a name="ln379"> </a>
-<a name="ln380">    return err_code;</a>
-<a name="ln381">}</a>
-<a name="ln382"> </a>
-<a name="ln383">rd_status_t app_sensor_uninit (void)</a>
-<a name="ln384">{</a>
-<a name="ln385">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln386"> </a>
-<a name="ln387">    for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
-<a name="ln388">    {</a>
-<a name="ln389">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor)))</a>
-<a name="ln390">        {</a>
-<a name="ln391">            m_sensors[ii]-&gt;sensor.uninit (&amp;m_sensors[ii]-&gt;sensor, m_sensors[ii]-&gt;bus,</a>
-<a name="ln392">                                          m_sensors[ii]-&gt;handle);</a>
-<a name="ln393"> </a>
-<a name="ln394">            // Disable power to sensor</a>
-<a name="ln395">            if (m_sensors[ii]-&gt;pwr_pin != RI_GPIO_ID_UNUSED)</a>
-<a name="ln396">            {</a>
-<a name="ln397">                (void) ri_gpio_write (m_sensors[ii]-&gt;pwr_pin, !m_sensors[ii]-&gt;pwr_on);</a>
-<a name="ln398">                (void) ri_gpio_configure (m_sensors[ii]-&gt;pwr_pin, RI_GPIO_MODE_HIGH_Z);</a>
-<a name="ln399">            }</a>
-<a name="ln400">        }</a>
-<a name="ln401">    }</a>
-<a name="ln402"> </a>
-<a name="ln403">    err_code |= app_sensor_buses_uninit();</a>
-<a name="ln404">    app_sensor_rtc_uninit();</a>
-<a name="ln405">    ri_radio_activity_callback_set (NULL);</a>
-<a name="ln406">    return err_code;</a>
-<a name="ln407">}</a>
-<a name="ln408"> </a>
-<a name="ln409">rd_sensor_data_fields_t app_sensor_available_data (void)</a>
-<a name="ln410">{</a>
-<a name="ln411">    rd_sensor_data_fields_t available = {0};</a>
-<a name="ln412"> </a>
-<a name="ln413">    for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
-<a name="ln414">    {</a>
-<a name="ln415">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor)))</a>
-<a name="ln416">        {</a>
-<a name="ln417">            available.bitfield |= m_sensors[ii]-&gt;sensor.provides.bitfield;</a>
-<a name="ln418">        }</a>
-<a name="ln419">    }</a>
-<a name="ln420"> </a>
-<a name="ln421">    return available;</a>
-<a name="ln422">}</a>
-<a name="ln423"> </a>
-<a name="ln424">rd_status_t app_sensor_get (rd_sensor_data_t * const data)</a>
-<a name="ln425">{</a>
-<a name="ln426">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln427"> </a>
-<a name="ln428">    for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
-<a name="ln429">    {</a>
-<a name="ln430">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor)))</a>
-<a name="ln431">        {</a>
-<a name="ln432">            err_code |= m_sensors[ii]-&gt;sensor.data_get (data);</a>
-<a name="ln433">        }</a>
-<a name="ln434">    }</a>
-<a name="ln435"> </a>
-<a name="ln436">    return err_code;</a>
-<a name="ln437">}</a>
-<a name="ln438"> </a>
-<a name="ln439">rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data)</a>
-<a name="ln440">{</a>
-<a name="ln441">    rd_sensor_t * provider = NULL;</a>
-<a name="ln442"> </a>
-<a name="ln443">    for (size_t ii = 0; (ii &lt; SENSOR_COUNT) &amp;&amp; (NULL == provider); ii++)</a>
-<a name="ln444">    {</a>
-<a name="ln445">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor))</a>
-<a name="ln446">                &amp;&amp; (! (~ (m_sensors[ii]-&gt;sensor.provides.bitfield) &amp; data.bitfield)))</a>
-<a name="ln447">        {</a>
-<a name="ln448">            provider = &amp; (m_sensors[ii]-&gt;sensor);</a>
-<a name="ln449">        }</a>
-<a name="ln450">    }</a>
-<a name="ln451"> </a>
-<a name="ln452">    return provider;</a>
-<a name="ln453">}</a>
-<a name="ln454"> </a>
-<a name="ln455">void app_sensor_event_increment (void)</a>
-<a name="ln456">{</a>
-<a name="ln457">    m_event_counter++;</a>
-<a name="ln458">}</a>
-<a name="ln459"> </a>
-<a name="ln460">uint32_t app_sensor_event_count_get (void)</a>
-<a name="ln461">{</a>
-<a name="ln462">    return m_event_counter;</a>
-<a name="ln463">}</a>
-<a name="ln464"> </a>
-<a name="ln465">rd_status_t app_sensor_acc_thr_set (float * const threshold_g)</a>
-<a name="ln466">{</a>
-<a name="ln467">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln468">    const rd_sensor_data_fields_t acceleration =</a>
-<a name="ln469">    {</a>
-<a name="ln470">        .datas.acceleration_x_g = 1,</a>
-<a name="ln471">        .datas.acceleration_y_g = 1,</a>
-<a name="ln472">        .datas.acceleration_z_g = 1</a>
-<a name="ln473">    };</a>
-<a name="ln474">    const rd_sensor_t * const provider = app_sensor_find_provider (acceleration);</a>
-<a name="ln475"> </a>
-<a name="ln476">    if (RI_GPIO_ID_UNUSED == RB_INT_LEVEL_PIN)</a>
-<a name="ln477">    {</a>
-<a name="ln478">        err_code |= RD_ERROR_NOT_SUPPORTED;</a>
-<a name="ln479">    }</a>
-<a name="ln480">    else if ( (NULL == provider) || (NULL == provider-&gt;level_interrupt_set))</a>
-<a name="ln481">    {</a>
-<a name="ln482">        err_code |= RD_ERROR_NOT_SUPPORTED;</a>
-<a name="ln483">    }</a>
-<a name="ln484">    else if (NULL == threshold_g)</a>
-<a name="ln485">    {</a>
-<a name="ln486">        ri_gpio_interrupt_disable (RB_INT_LEVEL_PIN);</a>
-<a name="ln487">        err_code |= provider-&gt;level_interrupt_set (false, threshold_g);</a>
-<a name="ln488">    }</a>
-<a name="ln489">    else if (0 &gt; *threshold_g)</a>
-<a name="ln490">    {</a>
-<a name="ln491">        err_code |= RD_ERROR_NOT_IMPLEMENTED;</a>
-<a name="ln492">    }</a>
-<a name="ln493">    else</a>
-<a name="ln494">    {</a>
-<a name="ln495">        err_code |= ri_gpio_interrupt_enable (RB_INT_LEVEL_PIN,</a>
-<a name="ln496">                                              RI_GPIO_SLOPE_TOGGLE,</a>
-<a name="ln497">                                              RI_GPIO_MODE_INPUT_NOPULL,</a>
-<a name="ln498">                                              &amp;on_accelerometer_isr);</a>
-<a name="ln499">        err_code |= provider-&gt;level_interrupt_set (true, threshold_g);</a>
-<a name="ln500">    }</a>
-<a name="ln501"> </a>
-<a name="ln502">    return err_code;</a>
-<a name="ln503">}</a>
-<a name="ln504"> </a>
-<a name="ln505">/**</a>
-<a name="ln506"> * @brief Determine which fields are affected by given endpoint.</a>
-<a name="ln507"> *</a>
-<a name="ln508"> * @param[in] type Ruuvi Endpoint type.</a>
-<a name="ln509"> * @return Ruuvi Driver fields corresponding to endpoint.</a>
-<a name="ln510"> */</a>
-<a name="ln511">static rd_sensor_data_fields_t re2rd_fields (const re_type_t type)</a>
-<a name="ln512">{</a>
-<a name="ln513">    rd_sensor_data_fields_t fields = {0};</a>
-<a name="ln514"> </a>
-<a name="ln515">    switch (type)</a>
-<a name="ln516">    {</a>
-<a name="ln517">        case RE_ACC_XYZ:</a>
-<a name="ln518">            fields.datas.acceleration_x_g = 1;</a>
-<a name="ln519">            fields.datas.acceleration_y_g = 1;</a>
-<a name="ln520">            fields.datas.acceleration_z_g = 1;</a>
-<a name="ln521">            break;</a>
-<a name="ln522"> </a>
-<a name="ln523">        case RE_ACC_X:</a>
-<a name="ln524">            fields.datas.acceleration_x_g = 1;</a>
-<a name="ln525">            break;</a>
-<a name="ln526"> </a>
-<a name="ln527">        case RE_ACC_Y:</a>
-<a name="ln528">            fields.datas.acceleration_y_g = 1;</a>
-<a name="ln529">            break;</a>
-<a name="ln530"> </a>
-<a name="ln531">        case RE_ACC_Z:</a>
-<a name="ln532">            fields.datas.acceleration_z_g = 1;</a>
-<a name="ln533">            break;</a>
-<a name="ln534"> </a>
-<a name="ln535">        case RE_GYR_XYZ:</a>
-<a name="ln536">            fields.datas.gyro_x_dps = 1;</a>
-<a name="ln537">            fields.datas.gyro_y_dps = 1;</a>
-<a name="ln538">            fields.datas.gyro_z_dps = 1;</a>
-<a name="ln539">            break;</a>
-<a name="ln540"> </a>
-<a name="ln541">        case RE_GYR_X:</a>
-<a name="ln542">            fields.datas.gyro_x_dps = 1;</a>
-<a name="ln543">            break;</a>
-<a name="ln544"> </a>
-<a name="ln545">        case RE_GYR_Y:</a>
-<a name="ln546">            fields.datas.gyro_y_dps = 1;</a>
-<a name="ln547">            break;</a>
-<a name="ln548"> </a>
-<a name="ln549">        case RE_GYR_Z:</a>
-<a name="ln550">            fields.datas.gyro_z_dps = 1;</a>
-<a name="ln551">            break;</a>
-<a name="ln552"> </a>
-<a name="ln553">        case RE_ENV_ALL:</a>
-<a name="ln554">            fields.datas.humidity_rh = 1;</a>
-<a name="ln555">            fields.datas.pressure_pa = 1;</a>
-<a name="ln556">            fields.datas.temperature_c = 1;</a>
-<a name="ln557">            break;</a>
-<a name="ln558"> </a>
-<a name="ln559">        case RE_ENV_HUMI:</a>
-<a name="ln560">            fields.datas.humidity_rh = 1;</a>
-<a name="ln561">            break;</a>
-<a name="ln562"> </a>
-<a name="ln563">        case RE_ENV_PRES:</a>
-<a name="ln564">            fields.datas.pressure_pa = 1;</a>
-<a name="ln565">            break;</a>
-<a name="ln566"> </a>
-<a name="ln567">        case RE_ENV_TEMP:</a>
-<a name="ln568">            fields.datas.temperature_c = 1;</a>
-<a name="ln569">            break;</a>
-<a name="ln570"> </a>
-<a name="ln571">        default:</a>
-<a name="ln572">            RD_ERROR_CHECK (RD_ERROR_NOT_IMPLEMENTED, ~RD_ERROR_FATAL);</a>
-<a name="ln573">            break;</a>
-<a name="ln574">    }</a>
-<a name="ln575"> </a>
-<a name="ln576">    return fields;</a>
-<a name="ln577">}</a>
-<a name="ln578"> </a>
-<a name="ln579">/**</a>
-<a name="ln580"> * @brief Convert Ruuvi Driver data type to Ruuvi endpoint header.</a>
-<a name="ln581"> *</a>
-<a name="ln582"> * @param[in] field Data field to convert, exactly one must be set.</a>
-<a name="ln583"> * @return Ruuvi Endpoint constant corresponding to field. 0 if field is invalid.</a>
-<a name="ln584"> */</a>
-<a name="ln585">static uint8_t rd2re_fields (const rd_sensor_data_bitfield_t fields)</a>
-<a name="ln586">{</a>
-<a name="ln587">    // Implementing field-&gt;header assigments as a look-up table would</a>
-<a name="ln588">    // rely on specific representation of bitfield at compile time.</a>
-<a name="ln589">    // Little-endian, big-endian, BE-8, BE-32 etc. Using if-else</a>
-<a name="ln590">    // here for robustness.</a>
-<a name="ln591">    uint8_t header_value = 0;</a>
-<a name="ln592"> </a>
-<a name="ln593">    if (fields.acceleration_x_g)</a>
-<a name="ln594">    {</a>
-<a name="ln595">        header_value = RE_ACC_X;</a>
-<a name="ln596">    }</a>
-<a name="ln597">    else if (fields.acceleration_y_g)</a>
-<a name="ln598">    {</a>
-<a name="ln599">        header_value = RE_ACC_Y;</a>
-<a name="ln600">    }</a>
-<a name="ln601">    else if (fields.acceleration_z_g)</a>
-<a name="ln602">    {</a>
-<a name="ln603">        header_value = RE_ACC_Z;</a>
-<a name="ln604">    }</a>
-<a name="ln605">    else if (fields.gyro_x_dps)</a>
-<a name="ln606">    {</a>
-<a name="ln607">        header_value = RE_GYR_X;</a>
-<a name="ln608">    }</a>
-<a name="ln609">    else if (fields.gyro_y_dps)</a>
-<a name="ln610">    {</a>
-<a name="ln611">        header_value = RE_GYR_Y;</a>
-<a name="ln612">    }</a>
-<a name="ln613">    else if (fields.gyro_z_dps)</a>
-<a name="ln614">    {</a>
-<a name="ln615">        header_value = RE_GYR_Z;</a>
-<a name="ln616">    }</a>
-<a name="ln617">    else if (fields.humidity_rh)</a>
-<a name="ln618">    {</a>
-<a name="ln619">        header_value = RE_ENV_HUMI;</a>
-<a name="ln620">    }</a>
-<a name="ln621">    else if (fields.pressure_pa)</a>
-<a name="ln622">    {</a>
-<a name="ln623">        header_value = RE_ENV_PRES;</a>
-<a name="ln624">    }</a>
-<a name="ln625">    else if (fields.temperature_c)</a>
-<a name="ln626">    {</a>
-<a name="ln627">        header_value = RE_ENV_TEMP;</a>
-<a name="ln628">    }</a>
-<a name="ln629">    else</a>
-<a name="ln630">    {</a>
-<a name="ln631">        // No action needed</a>
-<a name="ln632">    }</a>
-<a name="ln633"> </a>
-<a name="ln634">    return header_value;</a>
-<a name="ln635">}</a>
-<a name="ln636"> </a>
-<a name="ln637">/**</a>
-<a name="ln638"> * @brief encode log element into given buffer.</a>
-<a name="ln639"> *</a>
-<a name="ln640"> * @param[in] buffer Buffer to encode data into.</a>
-<a name="ln641"> * @param[in] timestamp_ms Float value to encode.</a>
-<a name="ln642"> * @param[in] data Float value to encode.</a>
-<a name="ln643"> * @param[in] type Type of data to encode. Only one type/message is implemented.</a>
-<a name="ln644"> *</a>
-<a name="ln645"> * @note This function will not set the destination endpoint in buffer.</a>
-<a name="ln646"> * @retval RD_SUCCESS Data was encoded successfully.</a>
-<a name="ln647"> * @retval RD_ERROR_NULL Buffer or data was NULL.</a>
-<a name="ln648"> * @retval RD_ERROR_INVALID_PARAM Type had no field set.</a>
-<a name="ln649"> * @retval RD_ERROR_NOT_IMPLEMENTED Type had &gt; 1 field set or encoding type is not implemented.</a>
-<a name="ln650"> */</a>
-<a name="ln651">static rd_status_t app_sensor_encode_log (uint8_t * const buffer,</a>
-<a name="ln652">        const uint64_t timestamp_ms,</a>
-<a name="ln653">        const float data,</a>
-<a name="ln654">        const rd_sensor_data_bitfield_t type)</a>
-<a name="ln655">{</a>
-<a name="ln656">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln657">    const uint8_t source = rd2re_fields (type);</a>
-<a name="ln658"> </a>
-<a name="ln659">    if (0 != source)</a>
-<a name="ln660">    {</a>
-<a name="ln661">        re_log_write_header (buffer, source);</a>
-<a name="ln662">        re_log_write_timestamp (buffer, timestamp_ms);</a>
-<a name="ln663">        re_log_write_data (buffer, data, source);</a>
-<a name="ln664">    }</a>
-<a name="ln665">    else</a>
-<a name="ln666">    {</a>
-<a name="ln667">        err_code |= RD_ERROR_INVALID_PARAM;</a>
-<a name="ln668">    }</a>
-<a name="ln669"> </a>
-<a name="ln670">    return err_code;</a>
-<a name="ln671">}</a>
-<a name="ln672"> </a>
-<a name="ln673">/**</a>
-<a name="ln674"> * if valid data in sample</a>
-<a name="ln675"> * parse data type</a>
-<a name="ln676"> * parse data value</a>
-<a name="ln677"> * format msg</a>
-<a name="ln678"> * send msg</a>
-<a name="ln679"> */</a>
-<a name="ln680">static rd_status_t send_field (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln681">                               const uint8_t * const raw_message,</a>
-<a name="ln682">                               const rd_sensor_data_bitfield_t type,</a>
-<a name="ln683">                               const float value,</a>
-<a name="ln684">                               const int64_t real_time_ms)</a>
-<a name="ln685">{</a>
-<a name="ln686">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln687">    ri_comm_message_t msg = {0};</a>
-<a name="ln688">    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value,</a>
-<a name="ln689">                                       type);</a>
-<a name="ln690"> </a>
-<a name="ln691">    if (RD_SUCCESS == err_code)</a>
-<a name="ln692">    {</a>
-<a name="ln693">        msg.repeat_count = 1;</a>
-<a name="ln694">        msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
-<a name="ln695">        msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
-<a name="ln696">        err_code |= app_comms_blocking_send (reply_fp, &amp;msg);</a>
-<a name="ln697">    }</a>
-<a name="ln698"> </a>
-<a name="ln699">    return err_code;</a>
-<a name="ln700">}</a>
-<a name="ln701"> </a>
-<a name="ln702">/**</a>
-<a name="ln703"> * @brief Send data element.</a>
-<a name="ln704"> *</a>
-<a name="ln705"> * This function sends given data element to given reply function pointer.</a>
-<a name="ln706"> *</a>
-<a name="ln707"> * @param[in] reply_fp Function pointer to reply to.</a>
-<a name="ln708"> * @param[in] raw_message original query from remote.</a>
-<a name="ln709"> * @param[in] sample Data sample to send.</a>
-<a name="ln710"> * @param[in] time_offset_ms Offset between tag time and real time.</a>
-<a name="ln711"> * @retval RD_SUCCESS reply was sent successfully.</a>
-<a name="ln712"> * @retval error code from reply_fp in case of error.</a>
-<a name="ln713"> *</a>
-<a name="ln714"> * @note This function blocks until reply_fp returns something else than</a>
-<a name="ln715"> *       RD_ERROR_NO_MEM.</a>
-<a name="ln716"> */</a>
-<a name="ln717">static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln718">        const uint8_t * const raw_message,</a>
-<a name="ln719">        const rd_sensor_data_t * const sample,</a>
-<a name="ln720">        const int64_t time_offset_ms)</a>
-<a name="ln721">{</a>
-<a name="ln722">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln723">    const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);</a>
-<a name="ln724">    int64_t real_time_ms = 0;</a>
-<a name="ln725"> </a>
-<a name="ln726">    if ( (0 - time_offset_ms) &lt; (int64_t) sample-&gt;timestamp_ms)</a>
-<a name="ln727">    {</a>
-<a name="ln728">        real_time_ms = sample-&gt;timestamp_ms + time_offset_ms;</a>
-<a name="ln729">    }</a>
-<a name="ln730"> </a>
-<a name="ln731">    for (uint8_t ii = 0; ii &lt; fieldcount; ii++)</a>
-<a name="ln732">    {</a>
-<a name="ln733">        if (rd_sensor_has_valid_data (sample, ii))</a>
-<a name="ln734">        {</a>
-<a name="ln735">            rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);</a>
-<a name="ln736">            err_code |= send_field (reply_fp, raw_message,</a>
-<a name="ln737">                                    type, sample-&gt;data[ii], real_time_ms);</a>
-<a name="ln738">        }</a>
-<a name="ln739">    }</a>
-<a name="ln740"> </a>
-<a name="ln741">    return err_code;</a>
-<a name="ln742">}</a>
-<a name="ln743"> </a>
-<a name="ln744">/**</a>
-<a name="ln745"> * @brief Send no more sensor log data message.</a>
-<a name="ln746"> * TODO -refactor encoding to endpoints.</a>
-<a name="ln747"> * TODO -refactor into comms</a>
-<a name="ln748"> */</a>
-<a name="ln749">static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln750">                                        const uint8_t * const raw_message)</a>
-<a name="ln751">{</a>
-<a name="ln752">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln753">    ri_comm_message_t msg = {0};</a>
-<a name="ln754">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
-<a name="ln755">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
-<a name="ln756">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
-<a name="ln757">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;</a>
-<a name="ln758">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
-<a name="ln759">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
-<a name="ln760">    return err_code;</a>
-<a name="ln761">}</a>
-<a name="ln762"> </a>
-<a name="ln763">/**</a>
-<a name="ln764"> * @brief Send heartbeat overdue data message.</a>
-<a name="ln765"> * TODO -refactor encoding to endpoints.</a>
-<a name="ln766"> * TODO -refactor into comms</a>
-<a name="ln767"> */</a>
-<a name="ln768">static rd_status_t app_sensor_send_timeout (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln769">        const uint8_t * const raw_message)</a>
-<a name="ln770">{</a>
-<a name="ln771">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln772">    ri_comm_message_t msg = {0};</a>
-<a name="ln773">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
-<a name="ln774">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
-<a name="ln775">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
-<a name="ln776">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_OP_TIMEOUT;</a>
-<a name="ln777">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
-<a name="ln778">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
-<a name="ln779">    return err_code;</a>
-<a name="ln780">}</a>
-<a name="ln781"> </a>
-<a name="ln782">/**</a>
-<a name="ln783"> * @brief Log read sensor op.</a>
-<a name="ln784"> *</a>
-<a name="ln785"> * @ref sensor_op.</a>
-<a name="ln786"> *</a>
-<a name="ln787"> * @param[in] reply_fp Function pointer to which send logs.</a>
-<a name="ln788"> * @param[fields] Fields to read.</a>
-<a name="ln789"> * @param[raw_message] Original message from remote.</a>
-<a name="ln790"> * @retval RD_SUCCESS on success.</a>
-<a name="ln791"> * @retval RD_ERROR_INVALID_PARAM if start of logs is after current time.</a>
-<a name="ln792"> * @retval error code from reply_fp if reply fails.</a>
-<a name="ln793"> *</a>
-<a name="ln794"> * @note This function blocks until all requested logs are sent and will therefore</a>
-<a name="ln795"> *       block for a long time.</a>
-<a name="ln796"> */</a>
-<a name="ln797">static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln798">                                        const rd_sensor_data_fields_t fields,</a>
-<a name="ln799">                                        const uint8_t * const raw_message)</a>
-<a name="ln800">{</a>
-<a name="ln801">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln802">    rd_sensor_data_t sample = {0};</a>
-<a name="ln803">    sample.fields = fields;</a>
-<a name="ln804">    float data[rd_sensor_data_fieldcount (&amp;sample)];</a>
-<a name="ln805">    sample.data = data;</a>
-<a name="ln806">    // Parse start, end times.</a>
-<a name="ln807">    int64_t current_time_s = (int64_t) re_std_log_current_time (raw_message);</a>
-<a name="ln808">    int64_t start_s = (int64_t) re_std_log_start_time (raw_message);</a>
-<a name="ln809">    uint32_t sent_elements = 0;</a>
-<a name="ln810">    // overflow in 292 277 266 years</a>
-<a name="ln811">    const int64_t system_time_ms = (int64_t) ri_rtc_millis();</a>
-<a name="ln812"> </a>
-<a name="ln813">    // Cannot have start_s &gt;= current_time_s</a>
-<a name="ln814">    if (current_time_s &gt; start_s)</a>
-<a name="ln815">    {</a>
-<a name="ln816">        // Parse offset to system clock</a>
-<a name="ln817">        LOG (&quot;Sending logged data\r\n&quot;);</a>
-<a name="ln818">        int64_t system_time_s = (system_time_ms / 1000LL);</a>
-<a name="ln819">        int64_t offset_ms = (current_time_s - system_time_s)  * 1000LL;</a>
-<a name="ln820">        int64_t time_diff_ms = (current_time_s - start_s) * 1000LL;</a>
-<a name="ln821">        // First sample to send in real time</a>
-<a name="ln822">        sample.timestamp_ms = (start_s * 1000LL);</a>
-<a name="ln823"> </a>
-<a name="ln824">        // Offset sample time to system clock.</a>
-<a name="ln825">        if (time_diff_ms &gt; system_time_ms)</a>
-<a name="ln826">        {</a>
-<a name="ln827">            sample.timestamp_ms = 0;</a>
-<a name="ln828">        }</a>
-<a name="ln829">        else</a>
-<a name="ln830">        {</a>
-<a name="ln831">            sample.timestamp_ms = system_time_ms - time_diff_ms;</a>
-<a name="ln832">        }</a>
-<a name="ln833"> </a>
-<a name="ln834">        app_log_read_state_t rs =</a>
-<a name="ln835">        {</a>
-<a name="ln836">            .oldest_element_ms = sample.timestamp_ms,</a>
-<a name="ln837">            .element_idx = 0,</a>
-<a name="ln838">            .page_idx = 0</a>
-<a name="ln839">        };</a>
-<a name="ln840"> </a>
-<a name="ln841">        while (RD_SUCCESS == err_code)</a>
-<a name="ln842">        {</a>
-<a name="ln843">            // Reset data validity</a>
-<a name="ln844">            sample.valid.bitfield = 0;</a>
-<a name="ln845">            // Timestamp and fields are set in log read function.</a>
-<a name="ln846">            err_code |= app_log_read (&amp;sample, &amp;rs);</a>
-<a name="ln847"> </a>
-<a name="ln848">            if (RD_ERROR_NOT_FOUND == err_code)</a>
-<a name="ln849">            {</a>
-<a name="ln850">                err_code |= app_sensor_send_eof (reply_fp, raw_message);</a>
-<a name="ln851">                char msg[128];</a>
-<a name="ln852">                snprintf (msg, sizeof (msg), &quot;Logged data sent: %lu elements\r\n&quot;, sent_elements); //-V576</a>
-<a name="ln853">                LOG (msg);</a>
-<a name="ln854">                sent_elements = 0;</a>
-<a name="ln855">            }</a>
-<a name="ln856">            else if (app_heartbeat_overdue())</a>
-<a name="ln857">            {</a>
-<a name="ln858">                err_code |= RD_ERROR_TIMEOUT;</a>
-<a name="ln859">                err_code |= app_sensor_send_timeout (reply_fp, raw_message);</a>
-<a name="ln860">            }</a>
-<a name="ln861">            // If data element was found, send log element.</a>
-<a name="ln862">            else if (RD_SUCCESS == err_code)</a>
-<a name="ln863">            {</a>
-<a name="ln864">                err_code |= app_sensor_send_data (reply_fp, raw_message,</a>
-<a name="ln865">                                                  &amp;sample, offset_ms);</a>
-<a name="ln866">                sent_elements++;</a>
-<a name="ln867">                LOGD (&quot;S&quot;);</a>
-<a name="ln868">            }</a>
-<a name="ln869">            else</a>
-<a name="ln870">            {</a>
-<a name="ln871">                // No action needed, error code gets returned to caller.</a>
-<a name="ln872">            }</a>
-<a name="ln873">        }</a>
-<a name="ln874">    }</a>
-<a name="ln875">    // Start time &gt;= current time</a>
-<a name="ln876">    else</a>
-<a name="ln877">    {</a>
-<a name="ln878">        err_code |= RD_ERROR_INVALID_PARAM;</a>
-<a name="ln879">    }</a>
-<a name="ln880"> </a>
-<a name="ln881">    // Send op status, remove expected not found</a>
-<a name="ln882">    err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
-<a name="ln883">    return err_code;</a>
-<a name="ln884">}</a>
-<a name="ln885"> </a>
-<a name="ln886">rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln887">                               const uint8_t * const raw_message,</a>
-<a name="ln888">                               const uint16_t data_len)</a>
-<a name="ln889">{</a>
-<a name="ln890">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln891"> </a>
-<a name="ln892">    if (NULL == raw_message)</a>
-<a name="ln893">    {</a>
-<a name="ln894">        err_code |= RD_ERROR_NULL;</a>
-<a name="ln895">    }</a>
-<a name="ln896">    else if (data_len &lt; RE_STANDARD_MESSAGE_LENGTH)</a>
-<a name="ln897">    {</a>
-<a name="ln898">        err_code |= RD_ERROR_DATA_SIZE;</a>
-<a name="ln899">    }</a>
-<a name="ln900">    else</a>
-<a name="ln901">    {</a>
-<a name="ln902">        // Parse affected fields. It's ok to have unspecified value here,</a>
-<a name="ln903">        // in that case fields end up being empty and error is reported via reply_fp.</a>
-<a name="ln904">        re_type_t type = (re_type_t) raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
-<a name="ln905">        rd_sensor_data_fields_t target_fields = re2rd_fields (type);</a>
-<a name="ln906">        // Parse desired operation.</a>
-<a name="ln907">        re_op_t op = (re_op_t) raw_message[RE_STANDARD_OPERATION_INDEX];</a>
-<a name="ln908"> </a>
-<a name="ln909">        // If target and op are valid, execute.</a>
-<a name="ln910">        switch (op)</a>
-<a name="ln911">        {</a>
-<a name="ln912">            case RE_STANDARD_LOG_VALUE_READ:</a>
-<a name="ln913">                err_code |= app_sensor_log_read (reply_fp,</a>
-<a name="ln914">                                                 target_fields, raw_message);</a>
-<a name="ln915">                break;</a>
-<a name="ln916"> </a>
-<a name="ln917">            default:</a>
-<a name="ln918">                // Reply with error on unknown op.</a>
-<a name="ln919">                break;</a>
-<a name="ln920">        }</a>
-<a name="ln921">    }</a>
-<a name="ln922"> </a>
-<a name="ln923">    return err_code;</a>
-<a name="ln924">}</a>
-<a name="ln925"> </a>
-<a name="ln926">rd_status_t app_sensor_vdd_sample (void)</a>
-<a name="ln927">{</a>
-<a name="ln928">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln929">    rd_sensor_configuration_t configuration =</a>
-<a name="ln930">    {</a>
-<a name="ln931">        .dsp_function = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln932">        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln933">        .mode = RD_SENSOR_CFG_SINGLE,</a>
-<a name="ln934">        .resolution = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln935">        .samplerate = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln936">        .scale = RD_SENSOR_CFG_DEFAULT</a>
-<a name="ln937">    };</a>
-<a name="ln938">    err_code |= rt_adc_vdd_prepare (&amp;configuration);</a>
-<a name="ln939">    err_code |= rt_adc_vdd_sample();</a>
-<a name="ln940">    return err_code;</a>
-<a name="ln941">}</a>
-<a name="ln942"> </a>
-<a name="ln943">#ifdef RUUVI_RUN_TESTS</a>
-<a name="ln944">void app_sensor_ctx_get (rt_sensor_ctx_t *** p_sensors, size_t * num_sensors)</a>
-<a name="ln945">{</a>
-<a name="ln946">    *p_sensors = m_sensors;</a>
-<a name="ln947">    *num_sensors = SENSOR_COUNT;</a>
-<a name="ln948">}</a>
-<a name="ln949">#endif</a>
-<a name="ln950"> </a>
-<a name="ln951">/** @} */</a>
+<a name="ln13">#include &quot;ruuvi_interface_communication_ble_gatt.h&quot;</a>
+<a name="ln14">#include &quot;ruuvi_interface_communication_radio.h&quot;</a>
+<a name="ln15">#include &quot;ruuvi_interface_dps310.h&quot;</a>
+<a name="ln16">#include &quot;ruuvi_interface_gpio.h&quot;</a>
+<a name="ln17">#include &quot;ruuvi_interface_gpio_interrupt.h&quot;</a>
+<a name="ln18">#include &quot;ruuvi_interface_i2c.h&quot;</a>
+<a name="ln19">#include &quot;ruuvi_interface_lis2dh12.h&quot;</a>
+<a name="ln20">#include &quot;ruuvi_interface_log.h&quot;</a>
+<a name="ln21">#include &quot;ruuvi_interface_rtc.h&quot;</a>
+<a name="ln22">#include &quot;ruuvi_interface_shtcx.h&quot;</a>
+<a name="ln23">#include &quot;ruuvi_interface_spi.h&quot;</a>
+<a name="ln24">#include &quot;ruuvi_interface_yield.h&quot;</a>
+<a name="ln25">#include &quot;ruuvi_task_adc.h&quot;</a>
+<a name="ln26">#include &quot;ruuvi_task_sensor.h&quot;</a>
+<a name="ln27"> </a>
+<a name="ln28">#include &lt;stdio.h&gt;</a>
+<a name="ln29">#include &lt;string.h&gt;</a>
+<a name="ln30"> </a>
+<a name="ln31">#define POWERUP_DELAY_MS (10U)</a>
+<a name="ln32"> </a>
+<a name="ln33">static inline void LOG (const char * const msg)</a>
+<a name="ln34">{</a>
+<a name="ln35">    ri_log (RI_LOG_LEVEL_INFO, msg);</a>
+<a name="ln36">}</a>
+<a name="ln37"> </a>
+<a name="ln38">static inline void LOGD (const char * const msg)</a>
+<a name="ln39">{</a>
+<a name="ln40">    ri_log (RI_LOG_LEVEL_DEBUG, msg);</a>
+<a name="ln41">}</a>
+<a name="ln42">/**</a>
+<a name="ln43"> * @addtogroup app_sensor</a>
+<a name="ln44"> */</a>
+<a name="ln45">/** @{ */</a>
+<a name="ln46">/**</a>
+<a name="ln47"> * @file app_sensor.c</a>
+<a name="ln48"> * @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
+<a name="ln49"> * @date 2020-04-16</a>
+<a name="ln50"> * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
+<a name="ln51"> *</a>
+<a name="ln52"> * Initialize, configure and use sensors on board.</a>
+<a name="ln53"> *</a>
+<a name="ln54"> * Typical usage:</a>
+<a name="ln55"> *</a>
+<a name="ln56"> * @code{.c}</a>
+<a name="ln57"> * TODO</a>
+<a name="ln58"> * @endcode</a>
+<a name="ln59"> */</a>
+<a name="ln60"> </a>
+<a name="ln61">#ifndef CEEDLING</a>
+<a name="ln62">static</a>
+<a name="ln63">#endif</a>
+<a name="ln64">rt_sensor_ctx_t * m_sensors[SENSOR_COUNT]; //!&lt; Sensor APIs.</a>
+<a name="ln65">static uint64_t vdd_update_time;              //!&lt; timestamp of VDD update.</a>
+<a name="ln66">static uint32_t</a>
+<a name="ln67">m_event_counter;              //!&lt; Number of events registered in app_sensor.</a>
+<a name="ln68"> </a>
+<a name="ln69">/**</a>
+<a name="ln70"> * @brief Sensor operation, such as read or configure.</a>
+<a name="ln71"> *</a>
+<a name="ln72"> * These are used when outside central commands sensor to e.g. configure a sensor</a>
+<a name="ln73"> * or read log. Operations are targeted on specific data types, such as</a>
+<a name="ln74"> * temperature or acceleration. The operation is execcuted on first</a>
+<a name="ln75"> * provider of given data if applicable.</a>
+<a name="ln76"> *</a>
+<a name="ln77"> * @param[in] reply_fp A function to which send operation acknowledgement.</a>
+<a name="ln78"> * @param[in] fields Affected fields.</a>
+<a name="ln79"> * @param[in] raw_message Original message triggering operation.</a>
+<a name="ln80"> */</a>
+<a name="ln81">typedef rd_status_t (*sensor_op) (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln82">                                  const rd_sensor_data_fields_t fields,</a>
+<a name="ln83">                                  const uint8_t * const raw_message);</a>
+<a name="ln84"> </a>
+<a name="ln85">#if APP_SENSOR_BME280_ENABLED</a>
+<a name="ln86">static rt_sensor_ctx_t bme280 = APP_SENSOR_BME280_DEFAULT_CFG;</a>
+<a name="ln87">#endif</a>
+<a name="ln88"> </a>
+<a name="ln89">#if APP_SENSOR_DPS310_ENABLED</a>
+<a name="ln90">static rt_sensor_ctx_t dps310 = APP_SENSOR_DPS310_DEFAULT_CFG;</a>
+<a name="ln91">#endif</a>
+<a name="ln92"> </a>
+<a name="ln93">#if APP_SENSOR_LIS2DH12_ENABLED</a>
+<a name="ln94">static rt_sensor_ctx_t lis2dh12 = APP_SENSOR_LIS2DH12_DEFAULT_CFG;</a>
+<a name="ln95">#endif</a>
+<a name="ln96"> </a>
+<a name="ln97">#if APP_SENSOR_LIS2DW12_ENABLED</a>
+<a name="ln98">static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;</a>
+<a name="ln99">#endif</a>
+<a name="ln100"> </a>
+<a name="ln101">#if APP_SENSOR_SHTCX_ENABLED</a>
+<a name="ln102">static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;</a>
+<a name="ln103">#endif</a>
+<a name="ln104"> </a>
+<a name="ln105">#if APP_SENSOR_TMP117_ENABLED</a>
+<a name="ln106">static rt_sensor_ctx_t tmp117 = APP_SENSOR_TMP117_DEFAULT_CFG;</a>
+<a name="ln107">#endif</a>
+<a name="ln108"> </a>
+<a name="ln109">#if APP_SENSOR_PHOTO_ENABLED</a>
+<a name="ln110">static rt_sensor_ctx_t photo = APP_SENSOR_PHOTO_DEFAULT_CFG;</a>
+<a name="ln111">#endif</a>
+<a name="ln112"> </a>
+<a name="ln113">#if APP_SENSOR_NTC_ENABLED</a>
+<a name="ln114">static rt_sensor_ctx_t ntc = APP_SENSOR_NTC_DEFAULT_CFG;</a>
+<a name="ln115">#endif</a>
+<a name="ln116"> </a>
+<a name="ln117">#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED</a>
+<a name="ln118">static rt_sensor_ctx_t env_mcu = APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG;</a>
+<a name="ln119">#endif</a>
+<a name="ln120"> </a>
+<a name="ln121">/** @brief Initialize sensor pointer array */</a>
+<a name="ln122">#ifndef CEEDLING</a>
+<a name="ln123">static</a>
+<a name="ln124">#endif</a>
+<a name="ln125">void</a>
+<a name="ln126">m_sensors_init (void)</a>
+<a name="ln127">{</a>
+<a name="ln128">#if APP_SENSOR_TMP117_ENABLED</a>
+<a name="ln129">    m_sensors[TMP117_INDEX] = &amp;tmp117;</a>
+<a name="ln130">#endif</a>
+<a name="ln131">#if APP_SENSOR_SHTCX_ENABLED</a>
+<a name="ln132">    m_sensors[SHTCX_INDEX] = &amp;shtcx;</a>
+<a name="ln133">#endif</a>
+<a name="ln134">#if APP_SENSOR_DPS310_ENABLED</a>
+<a name="ln135">    m_sensors[DPS310_INDEX] = &amp;dps310;</a>
+<a name="ln136">#endif</a>
+<a name="ln137">#if APP_SENSOR_BME280_ENABLED</a>
+<a name="ln138">    m_sensors[BME280_INDEX] = &amp;bme280;</a>
+<a name="ln139">#endif</a>
+<a name="ln140">#if APP_SENSOR_NTC_ENABLED</a>
+<a name="ln141">    m_sensors[NTC_INDEX] = &amp;ntc;</a>
+<a name="ln142">#endif</a>
+<a name="ln143">#if APP_SENSOR_PHOTO_ENABLED</a>
+<a name="ln144">    m_sensors[PHOTO_INDEX] = &amp;photo;</a>
+<a name="ln145">#endif</a>
+<a name="ln146">#if APP_SENSOR_ENVIRONMENTAL_MCU_ENABLED</a>
+<a name="ln147">    m_sensors[ENV_MCU_INDEX] = &amp;env_mcu;</a>
+<a name="ln148">#endif</a>
+<a name="ln149">#if APP_SENSOR_LIS2DH12_ENABLED</a>
+<a name="ln150">    m_sensors[LIS2DH12_INDEX] = &amp;lis2dh12;</a>
+<a name="ln151">#endif</a>
+<a name="ln152">#if APP_SENSOR_LIS2DW12_ENABLED</a>
+<a name="ln153">    m_sensors[LIS2DW12_INDEX] = lis2dw12;</a>
+<a name="ln154">#endif</a>
+<a name="ln155">}</a>
+<a name="ln156"> </a>
+<a name="ln157">void app_sensor_vdd_measure_isr (const ri_radio_activity_evt_t evt)</a>
+<a name="ln158">{</a>
+<a name="ln159">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln160"> </a>
+<a name="ln161">    if (vdd_update_time &lt; ri_rtc_millis())</a>
+<a name="ln162">    {</a>
+<a name="ln163">        if (RI_RADIO_BEFORE == evt)</a>
+<a name="ln164">        {</a>
+<a name="ln165">            rd_sensor_configuration_t configuration =</a>
+<a name="ln166">            {</a>
+<a name="ln167">                .dsp_function = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln168">                .dsp_parameter = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln169">                .mode = RD_SENSOR_CFG_SINGLE,</a>
+<a name="ln170">                .resolution = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln171">                .samplerate = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln172">                .scale = RD_SENSOR_CFG_DEFAULT</a>
+<a name="ln173">            };</a>
+<a name="ln174">            err_code |= rt_adc_vdd_prepare (&amp;configuration);</a>
+<a name="ln175">            RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln176">        }</a>
+<a name="ln177">        else</a>
+<a name="ln178">        {</a>
+<a name="ln179">            if (true == rt_adc_is_init())</a>
+<a name="ln180">            {</a>
+<a name="ln181">                vdd_update_time = ri_rtc_millis();</a>
+<a name="ln182">                vdd_update_time += APP_BATTERY_SAMPLE_MS;</a>
+<a name="ln183">                err_code |= rt_adc_vdd_sample();</a>
+<a name="ln184">                RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln185">            }</a>
+<a name="ln186">        }</a>
+<a name="ln187">    }</a>
+<a name="ln188">}</a>
+<a name="ln189"> </a>
+<a name="ln190">#ifndef CEEDLING</a>
+<a name="ln191">static</a>
+<a name="ln192">#endif</a>
+<a name="ln193">void</a>
+<a name="ln194">on_accelerometer_isr (const ri_gpio_evt_t event)</a>
+<a name="ln195">{</a>
+<a name="ln196">    if (RI_GPIO_SLOPE_LOTOHI == event.slope)</a>
+<a name="ln197">    {</a>
+<a name="ln198">        LOG (&quot;Movement \r\n&quot;);</a>
+<a name="ln199">        app_sensor_event_increment();</a>
+<a name="ln200">    }</a>
+<a name="ln201">}</a>
+<a name="ln202"> </a>
+<a name="ln203">static ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)</a>
+<a name="ln204">{</a>
+<a name="ln205">    ri_i2c_frequency_t freq = RI_I2C_FREQUENCY_100k;</a>
+<a name="ln206"> </a>
+<a name="ln207">    switch (rb_freq)</a>
+<a name="ln208">    {</a>
+<a name="ln209">        case RB_I2C_FREQUENCY_400k:</a>
+<a name="ln210">            freq = RI_I2C_FREQUENCY_400k;</a>
+<a name="ln211">            break;</a>
+<a name="ln212"> </a>
+<a name="ln213">        case RB_I2C_FREQUENCY_250k:</a>
+<a name="ln214">            freq = RI_I2C_FREQUENCY_250k;</a>
+<a name="ln215">            break;</a>
+<a name="ln216"> </a>
+<a name="ln217">        case RB_I2C_FREQUENCY_100k:</a>
+<a name="ln218"> </a>
+<a name="ln219">        // Intentional fall-through.</a>
+<a name="ln220">        default:</a>
+<a name="ln221">            freq = RI_I2C_FREQUENCY_100k;</a>
+<a name="ln222">            break;</a>
+<a name="ln223">    }</a>
+<a name="ln224"> </a>
+<a name="ln225">    return freq;</a>
+<a name="ln226">}</a>
+<a name="ln227"> </a>
+<a name="ln228">static ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)</a>
+<a name="ln229">{</a>
+<a name="ln230">    ri_spi_frequency_t freq = RI_SPI_FREQUENCY_1M;</a>
+<a name="ln231"> </a>
+<a name="ln232">    switch (rb_freq)</a>
+<a name="ln233">    {</a>
+<a name="ln234">        case RB_SPI_FREQUENCY_8M:</a>
+<a name="ln235">            freq = RI_SPI_FREQUENCY_8M;</a>
+<a name="ln236">            break;</a>
+<a name="ln237"> </a>
+<a name="ln238">        case RB_SPI_FREQUENCY_4M:</a>
+<a name="ln239">            freq = RI_SPI_FREQUENCY_4M;</a>
+<a name="ln240">            break;</a>
+<a name="ln241"> </a>
+<a name="ln242">        case RB_SPI_FREQUENCY_2M:</a>
+<a name="ln243">            freq = RI_SPI_FREQUENCY_2M;</a>
+<a name="ln244">            break;</a>
+<a name="ln245"> </a>
+<a name="ln246">        case RB_SPI_FREQUENCY_1M:</a>
+<a name="ln247"> </a>
+<a name="ln248">        // Intentional fall-through.</a>
+<a name="ln249">        default:</a>
+<a name="ln250">            freq = RI_SPI_FREQUENCY_1M;</a>
+<a name="ln251">            break;</a>
+<a name="ln252">    }</a>
+<a name="ln253"> </a>
+<a name="ln254">    return freq;</a>
+<a name="ln255">}</a>
+<a name="ln256"> </a>
+<a name="ln257">static rd_status_t app_sensor_buses_init (void)</a>
+<a name="ln258">{</a>
+<a name="ln259">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln260">    ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;</a>
+<a name="ln261">    ri_spi_init_config_t spi_config =</a>
+<a name="ln262">    {</a>
+<a name="ln263">        .mosi = RB_SPI_MOSI_PIN,</a>
+<a name="ln264">        .miso = RB_SPI_MISO_PIN,</a>
+<a name="ln265">        .sclk = RB_SPI_SCLK_PIN,</a>
+<a name="ln266">        .ss_pins = ss_pins,</a>
+<a name="ln267">        .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),</a>
+<a name="ln268">        // Assume mode 0 always.</a>
+<a name="ln269">        .mode = RI_SPI_MODE_0,</a>
+<a name="ln270">        .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)</a>
+<a name="ln271">    };</a>
+<a name="ln272">    ri_i2c_init_config_t i2c_config =</a>
+<a name="ln273">    {</a>
+<a name="ln274">        .sda = RB_I2C_SDA_PIN,</a>
+<a name="ln275">        .scl = RB_I2C_SCL_PIN,</a>
+<a name="ln276">        .bus_pwr = RB_I2C_BUS_POWER_PIN,</a>
+<a name="ln277">        .frequency = rb_to_ri_i2c_freq (RB_I2C_FREQ)</a>
+<a name="ln278">    };</a>
+<a name="ln279"> </a>
+<a name="ln280">    if ( (!ri_gpio_is_init()) || (!ri_gpio_interrupt_is_init()))</a>
+<a name="ln281">    {</a>
+<a name="ln282">        err_code |= RD_ERROR_INVALID_STATE;</a>
+<a name="ln283">    }</a>
+<a name="ln284">    else</a>
+<a name="ln285">    {</a>
+<a name="ln286">        err_code |= ri_spi_init (&amp;spi_config);</a>
+<a name="ln287">        err_code |= ri_i2c_init (&amp;i2c_config);</a>
+<a name="ln288">        err_code |= ri_gpio_configure (RB_I2C_SDA_PIN,</a>
+<a name="ln289">                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);</a>
+<a name="ln290">        err_code |= ri_gpio_configure (RB_I2C_SCL_PIN,</a>
+<a name="ln291">                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);</a>
+<a name="ln292">    }</a>
+<a name="ln293"> </a>
+<a name="ln294">    return err_code;</a>
+<a name="ln295">}</a>
+<a name="ln296"> </a>
+<a name="ln297">static rd_status_t app_sensor_buses_uninit (void)</a>
+<a name="ln298">{</a>
+<a name="ln299">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln300">    err_code |= ri_spi_uninit();</a>
+<a name="ln301">    err_code |= ri_i2c_uninit();</a>
+<a name="ln302">    return err_code;</a>
+<a name="ln303">}</a>
+<a name="ln304"> </a>
+<a name="ln305">static void app_sensor_rtc_init (void)</a>
+<a name="ln306">{</a>
+<a name="ln307">    // Returns invalid state if already init, not a problem here.</a>
+<a name="ln308">    (void) ri_rtc_init();</a>
+<a name="ln309">    rd_sensor_timestamp_function_set (&amp;ri_rtc_millis);</a>
+<a name="ln310">}</a>
+<a name="ln311"> </a>
+<a name="ln312">static void app_sensor_rtc_uninit (void)</a>
+<a name="ln313">{</a>
+<a name="ln314">    rd_sensor_timestamp_function_set (NULL);</a>
+<a name="ln315">    (void) ri_rtc_uninit();</a>
+<a name="ln316">}</a>
+<a name="ln317"> </a>
+<a name="ln318">rd_status_t app_sensor_init (void)</a>
+<a name="ln319">{</a>
+<a name="ln320">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln321">    m_sensors_init();</a>
+<a name="ln322">    err_code |= app_sensor_buses_init();</a>
+<a name="ln323"> </a>
+<a name="ln324">    if (RD_SUCCESS == err_code)</a>
+<a name="ln325">    {</a>
+<a name="ln326">        app_sensor_rtc_init();</a>
+<a name="ln327">        // Wait for the power lines to settle after bus powerup.</a>
+<a name="ln328">        ri_delay_ms (POWERUP_DELAY_MS);</a>
+<a name="ln329"> </a>
+<a name="ln330">        for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
+<a name="ln331">        {</a>
+<a name="ln332">            rd_status_t init_code = RD_SUCCESS;</a>
+<a name="ln333">            size_t retries = 0;</a>
+<a name="ln334"> </a>
+<a name="ln335">            // Enable power to sensor</a>
+<a name="ln336">            if (m_sensors[ii]-&gt;pwr_pin != RI_GPIO_ID_UNUSED)</a>
+<a name="ln337">            {</a>
+<a name="ln338">                (void) ri_gpio_configure (m_sensors[ii]-&gt;pwr_pin,</a>
+<a name="ln339">                                          RI_GPIO_MODE_OUTPUT_HIGHDRIVE);</a>
+<a name="ln340">                (void) ri_gpio_write (m_sensors[ii]-&gt;pwr_pin, m_sensors[ii]-&gt;pwr_on);</a>
+<a name="ln341">                ri_delay_ms (POWERUP_DELAY_MS);</a>
+<a name="ln342">            }</a>
+<a name="ln343"> </a>
+<a name="ln344">            // Some sensors, such as accelerometer may fail on user moving the board. Retry.</a>
+<a name="ln345">            do</a>
+<a name="ln346">            {</a>
+<a name="ln347">                init_code = rt_sensor_initialize (m_sensors[ii]);</a>
+<a name="ln348">            } while ( (APP_SENSOR_SELFTEST_RETRIES &gt; retries++)</a>
+<a name="ln349"> </a>
+<a name="ln350">                      &amp;&amp; (RD_ERROR_SELFTEST == init_code));</a>
+<a name="ln351"> </a>
+<a name="ln352">            if (RD_SUCCESS == init_code)</a>
+<a name="ln353">            {</a>
+<a name="ln354">                // Check for a configuration in flash.</a>
+<a name="ln355">                init_code = rt_sensor_load (m_sensors[ii]);</a>
+<a name="ln356"> </a>
+<a name="ln357">                // Configuration found, use it.</a>
+<a name="ln358">                if (RD_SUCCESS == init_code)</a>
+<a name="ln359">                {</a>
+<a name="ln360">                    init_code = rt_sensor_configure (m_sensors[ii]);</a>
+<a name="ln361">                }</a>
+<a name="ln362">                // Configuration not found, use defaults, store to flash.</a>
+<a name="ln363">                else</a>
+<a name="ln364">                {</a>
+<a name="ln365">                    init_code = rt_sensor_configure (m_sensors[ii]);</a>
+<a name="ln366">                    rt_sensor_store (m_sensors[ii]);</a>
+<a name="ln367">                }</a>
+<a name="ln368">            }</a>
+<a name="ln369">            else if (RD_ERROR_SELFTEST == init_code)</a>
+<a name="ln370">            {</a>
+<a name="ln371">                err_code |= RD_ERROR_SELFTEST;</a>
+<a name="ln372">            }</a>
+<a name="ln373">            // Mark unavailable sensor handles as unused.</a>
+<a name="ln374">            else</a>
+<a name="ln375">            {</a>
+<a name="ln376">                m_sensors[ii]-&gt;handle = APP_SENSOR_HANDLE_UNUSED;</a>
+<a name="ln377">            }</a>
+<a name="ln378">        }</a>
+<a name="ln379">    }</a>
+<a name="ln380"> </a>
+<a name="ln381">    return err_code;</a>
+<a name="ln382">}</a>
+<a name="ln383"> </a>
+<a name="ln384">rd_status_t app_sensor_uninit (void)</a>
+<a name="ln385">{</a>
+<a name="ln386">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln387"> </a>
+<a name="ln388">    for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
+<a name="ln389">    {</a>
+<a name="ln390">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor)))</a>
+<a name="ln391">        {</a>
+<a name="ln392">            m_sensors[ii]-&gt;sensor.uninit (&amp;m_sensors[ii]-&gt;sensor, m_sensors[ii]-&gt;bus,</a>
+<a name="ln393">                                          m_sensors[ii]-&gt;handle);</a>
+<a name="ln394"> </a>
+<a name="ln395">            // Disable power to sensor</a>
+<a name="ln396">            if (m_sensors[ii]-&gt;pwr_pin != RI_GPIO_ID_UNUSED)</a>
+<a name="ln397">            {</a>
+<a name="ln398">                (void) ri_gpio_write (m_sensors[ii]-&gt;pwr_pin, !m_sensors[ii]-&gt;pwr_on);</a>
+<a name="ln399">                (void) ri_gpio_configure (m_sensors[ii]-&gt;pwr_pin, RI_GPIO_MODE_HIGH_Z);</a>
+<a name="ln400">            }</a>
+<a name="ln401">        }</a>
+<a name="ln402">    }</a>
+<a name="ln403"> </a>
+<a name="ln404">    err_code |= app_sensor_buses_uninit();</a>
+<a name="ln405">    app_sensor_rtc_uninit();</a>
+<a name="ln406">    ri_radio_activity_callback_set (NULL);</a>
+<a name="ln407">    return err_code;</a>
+<a name="ln408">}</a>
+<a name="ln409"> </a>
+<a name="ln410">rd_sensor_data_fields_t app_sensor_available_data (void)</a>
+<a name="ln411">{</a>
+<a name="ln412">    rd_sensor_data_fields_t available = {0};</a>
+<a name="ln413"> </a>
+<a name="ln414">    for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
+<a name="ln415">    {</a>
+<a name="ln416">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor)))</a>
+<a name="ln417">        {</a>
+<a name="ln418">            available.bitfield |= m_sensors[ii]-&gt;sensor.provides.bitfield;</a>
+<a name="ln419">        }</a>
+<a name="ln420">    }</a>
+<a name="ln421"> </a>
+<a name="ln422">    return available;</a>
+<a name="ln423">}</a>
+<a name="ln424"> </a>
+<a name="ln425">rd_status_t app_sensor_get (rd_sensor_data_t * const data)</a>
+<a name="ln426">{</a>
+<a name="ln427">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln428"> </a>
+<a name="ln429">    for (size_t ii = 0; ii &lt; SENSOR_COUNT; ii++)</a>
+<a name="ln430">    {</a>
+<a name="ln431">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor)))</a>
+<a name="ln432">        {</a>
+<a name="ln433">            err_code |= m_sensors[ii]-&gt;sensor.data_get (data);</a>
+<a name="ln434">        }</a>
+<a name="ln435">    }</a>
+<a name="ln436"> </a>
+<a name="ln437">    return err_code;</a>
+<a name="ln438">}</a>
+<a name="ln439"> </a>
+<a name="ln440">rd_sensor_t * app_sensor_find_provider (const rd_sensor_data_fields_t data)</a>
+<a name="ln441">{</a>
+<a name="ln442">    rd_sensor_t * provider = NULL;</a>
+<a name="ln443"> </a>
+<a name="ln444">    for (size_t ii = 0; (ii &lt; SENSOR_COUNT) &amp;&amp; (NULL == provider); ii++)</a>
+<a name="ln445">    {</a>
+<a name="ln446">        if ( (NULL != m_sensors[ii]) &amp;&amp; rd_sensor_is_init (&amp; (m_sensors[ii]-&gt;sensor))</a>
+<a name="ln447">                &amp;&amp; (! (~ (m_sensors[ii]-&gt;sensor.provides.bitfield) &amp; data.bitfield)))</a>
+<a name="ln448">        {</a>
+<a name="ln449">            provider = &amp; (m_sensors[ii]-&gt;sensor);</a>
+<a name="ln450">        }</a>
+<a name="ln451">    }</a>
+<a name="ln452"> </a>
+<a name="ln453">    return provider;</a>
+<a name="ln454">}</a>
+<a name="ln455"> </a>
+<a name="ln456">void app_sensor_event_increment (void)</a>
+<a name="ln457">{</a>
+<a name="ln458">    m_event_counter++;</a>
+<a name="ln459">}</a>
+<a name="ln460"> </a>
+<a name="ln461">uint32_t app_sensor_event_count_get (void)</a>
+<a name="ln462">{</a>
+<a name="ln463">    return m_event_counter;</a>
+<a name="ln464">}</a>
+<a name="ln465"> </a>
+<a name="ln466">rd_status_t app_sensor_acc_thr_set (float * const threshold_g)</a>
+<a name="ln467">{</a>
+<a name="ln468">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln469">    const rd_sensor_data_fields_t acceleration =</a>
+<a name="ln470">    {</a>
+<a name="ln471">        .datas.acceleration_x_g = 1,</a>
+<a name="ln472">        .datas.acceleration_y_g = 1,</a>
+<a name="ln473">        .datas.acceleration_z_g = 1</a>
+<a name="ln474">    };</a>
+<a name="ln475">    const rd_sensor_t * const provider = app_sensor_find_provider (acceleration);</a>
+<a name="ln476"> </a>
+<a name="ln477">    if (RI_GPIO_ID_UNUSED == RB_INT_LEVEL_PIN)</a>
+<a name="ln478">    {</a>
+<a name="ln479">        err_code |= RD_ERROR_NOT_SUPPORTED;</a>
+<a name="ln480">    }</a>
+<a name="ln481">    else if ( (NULL == provider) || (NULL == provider-&gt;level_interrupt_set))</a>
+<a name="ln482">    {</a>
+<a name="ln483">        err_code |= RD_ERROR_NOT_SUPPORTED;</a>
+<a name="ln484">    }</a>
+<a name="ln485">    else if (NULL == threshold_g)</a>
+<a name="ln486">    {</a>
+<a name="ln487">        ri_gpio_interrupt_disable (RB_INT_LEVEL_PIN);</a>
+<a name="ln488">        err_code |= provider-&gt;level_interrupt_set (false, threshold_g);</a>
+<a name="ln489">    }</a>
+<a name="ln490">    else if (0 &gt; *threshold_g)</a>
+<a name="ln491">    {</a>
+<a name="ln492">        err_code |= RD_ERROR_NOT_IMPLEMENTED;</a>
+<a name="ln493">    }</a>
+<a name="ln494">    else</a>
+<a name="ln495">    {</a>
+<a name="ln496">        err_code |= ri_gpio_interrupt_enable (RB_INT_LEVEL_PIN,</a>
+<a name="ln497">                                              RI_GPIO_SLOPE_TOGGLE,</a>
+<a name="ln498">                                              RI_GPIO_MODE_INPUT_NOPULL,</a>
+<a name="ln499">                                              &amp;on_accelerometer_isr);</a>
+<a name="ln500">        err_code |= provider-&gt;level_interrupt_set (true, threshold_g);</a>
+<a name="ln501">    }</a>
+<a name="ln502"> </a>
+<a name="ln503">    return err_code;</a>
+<a name="ln504">}</a>
+<a name="ln505"> </a>
+<a name="ln506">/**</a>
+<a name="ln507"> * @brief Determine which fields are affected by given endpoint.</a>
+<a name="ln508"> *</a>
+<a name="ln509"> * @param[in] type Ruuvi Endpoint type.</a>
+<a name="ln510"> * @return Ruuvi Driver fields corresponding to endpoint.</a>
+<a name="ln511"> */</a>
+<a name="ln512">static rd_sensor_data_fields_t re2rd_fields (const re_type_t type)</a>
+<a name="ln513">{</a>
+<a name="ln514">    rd_sensor_data_fields_t fields = {0};</a>
+<a name="ln515"> </a>
+<a name="ln516">    switch (type)</a>
+<a name="ln517">    {</a>
+<a name="ln518">        case RE_ACC_XYZ:</a>
+<a name="ln519">            fields.datas.acceleration_x_g = 1;</a>
+<a name="ln520">            fields.datas.acceleration_y_g = 1;</a>
+<a name="ln521">            fields.datas.acceleration_z_g = 1;</a>
+<a name="ln522">            break;</a>
+<a name="ln523"> </a>
+<a name="ln524">        case RE_ACC_X:</a>
+<a name="ln525">            fields.datas.acceleration_x_g = 1;</a>
+<a name="ln526">            break;</a>
+<a name="ln527"> </a>
+<a name="ln528">        case RE_ACC_Y:</a>
+<a name="ln529">            fields.datas.acceleration_y_g = 1;</a>
+<a name="ln530">            break;</a>
+<a name="ln531"> </a>
+<a name="ln532">        case RE_ACC_Z:</a>
+<a name="ln533">            fields.datas.acceleration_z_g = 1;</a>
+<a name="ln534">            break;</a>
+<a name="ln535"> </a>
+<a name="ln536">        case RE_GYR_XYZ:</a>
+<a name="ln537">            fields.datas.gyro_x_dps = 1;</a>
+<a name="ln538">            fields.datas.gyro_y_dps = 1;</a>
+<a name="ln539">            fields.datas.gyro_z_dps = 1;</a>
+<a name="ln540">            break;</a>
+<a name="ln541"> </a>
+<a name="ln542">        case RE_GYR_X:</a>
+<a name="ln543">            fields.datas.gyro_x_dps = 1;</a>
+<a name="ln544">            break;</a>
+<a name="ln545"> </a>
+<a name="ln546">        case RE_GYR_Y:</a>
+<a name="ln547">            fields.datas.gyro_y_dps = 1;</a>
+<a name="ln548">            break;</a>
+<a name="ln549"> </a>
+<a name="ln550">        case RE_GYR_Z:</a>
+<a name="ln551">            fields.datas.gyro_z_dps = 1;</a>
+<a name="ln552">            break;</a>
+<a name="ln553"> </a>
+<a name="ln554">        case RE_ENV_ALL:</a>
+<a name="ln555">            fields.datas.humidity_rh = 1;</a>
+<a name="ln556">            fields.datas.pressure_pa = 1;</a>
+<a name="ln557">            fields.datas.temperature_c = 1;</a>
+<a name="ln558">            break;</a>
+<a name="ln559"> </a>
+<a name="ln560">        case RE_ENV_HUMI:</a>
+<a name="ln561">            fields.datas.humidity_rh = 1;</a>
+<a name="ln562">            break;</a>
+<a name="ln563"> </a>
+<a name="ln564">        case RE_ENV_PRES:</a>
+<a name="ln565">            fields.datas.pressure_pa = 1;</a>
+<a name="ln566">            break;</a>
+<a name="ln567"> </a>
+<a name="ln568">        case RE_ENV_TEMP:</a>
+<a name="ln569">            fields.datas.temperature_c = 1;</a>
+<a name="ln570">            break;</a>
+<a name="ln571"> </a>
+<a name="ln572">        default:</a>
+<a name="ln573">            RD_ERROR_CHECK (RD_ERROR_NOT_IMPLEMENTED, ~RD_ERROR_FATAL);</a>
+<a name="ln574">            break;</a>
+<a name="ln575">    }</a>
+<a name="ln576"> </a>
+<a name="ln577">    return fields;</a>
+<a name="ln578">}</a>
+<a name="ln579"> </a>
+<a name="ln580">/**</a>
+<a name="ln581"> * @brief Convert Ruuvi Driver data type to Ruuvi endpoint header.</a>
+<a name="ln582"> *</a>
+<a name="ln583"> * @param[in] field Data field to convert, exactly one must be set.</a>
+<a name="ln584"> * @return Ruuvi Endpoint constant corresponding to field. 0 if field is invalid.</a>
+<a name="ln585"> */</a>
+<a name="ln586">static uint8_t rd2re_fields (const rd_sensor_data_bitfield_t fields)</a>
+<a name="ln587">{</a>
+<a name="ln588">    // Implementing field-&gt;header assigments as a look-up table would</a>
+<a name="ln589">    // rely on specific representation of bitfield at compile time.</a>
+<a name="ln590">    // Little-endian, big-endian, BE-8, BE-32 etc. Using if-else</a>
+<a name="ln591">    // here for robustness.</a>
+<a name="ln592">    uint8_t header_value = 0;</a>
+<a name="ln593"> </a>
+<a name="ln594">    if (fields.acceleration_x_g)</a>
+<a name="ln595">    {</a>
+<a name="ln596">        header_value = RE_ACC_X;</a>
+<a name="ln597">    }</a>
+<a name="ln598">    else if (fields.acceleration_y_g)</a>
+<a name="ln599">    {</a>
+<a name="ln600">        header_value = RE_ACC_Y;</a>
+<a name="ln601">    }</a>
+<a name="ln602">    else if (fields.acceleration_z_g)</a>
+<a name="ln603">    {</a>
+<a name="ln604">        header_value = RE_ACC_Z;</a>
+<a name="ln605">    }</a>
+<a name="ln606">    else if (fields.gyro_x_dps)</a>
+<a name="ln607">    {</a>
+<a name="ln608">        header_value = RE_GYR_X;</a>
+<a name="ln609">    }</a>
+<a name="ln610">    else if (fields.gyro_y_dps)</a>
+<a name="ln611">    {</a>
+<a name="ln612">        header_value = RE_GYR_Y;</a>
+<a name="ln613">    }</a>
+<a name="ln614">    else if (fields.gyro_z_dps)</a>
+<a name="ln615">    {</a>
+<a name="ln616">        header_value = RE_GYR_Z;</a>
+<a name="ln617">    }</a>
+<a name="ln618">    else if (fields.humidity_rh)</a>
+<a name="ln619">    {</a>
+<a name="ln620">        header_value = RE_ENV_HUMI;</a>
+<a name="ln621">    }</a>
+<a name="ln622">    else if (fields.pressure_pa)</a>
+<a name="ln623">    {</a>
+<a name="ln624">        header_value = RE_ENV_PRES;</a>
+<a name="ln625">    }</a>
+<a name="ln626">    else if (fields.temperature_c)</a>
+<a name="ln627">    {</a>
+<a name="ln628">        header_value = RE_ENV_TEMP;</a>
+<a name="ln629">    }</a>
+<a name="ln630">    else</a>
+<a name="ln631">    {</a>
+<a name="ln632">        // No action needed</a>
+<a name="ln633">    }</a>
+<a name="ln634"> </a>
+<a name="ln635">    return header_value;</a>
+<a name="ln636">}</a>
+<a name="ln637"> </a>
+<a name="ln638">/**</a>
+<a name="ln639"> * @brief encode log element into given buffer.</a>
+<a name="ln640"> *</a>
+<a name="ln641"> * @param[in] buffer Buffer to encode data into.</a>
+<a name="ln642"> * @param[in] timestamp_ms Float value to encode.</a>
+<a name="ln643"> * @param[in] data Float value to encode.</a>
+<a name="ln644"> * @param[in] type Type of data to encode. Only one type/message is implemented.</a>
+<a name="ln645"> *</a>
+<a name="ln646"> * @note This function will not set the destination endpoint in buffer.</a>
+<a name="ln647"> * @retval RD_SUCCESS Data was encoded successfully.</a>
+<a name="ln648"> * @retval RD_ERROR_NULL Buffer or data was NULL.</a>
+<a name="ln649"> * @retval RD_ERROR_INVALID_PARAM Type had no field set.</a>
+<a name="ln650"> * @retval RD_ERROR_NOT_IMPLEMENTED Type had &gt; 1 field set or encoding type is not implemented.</a>
+<a name="ln651"> */</a>
+<a name="ln652">static rd_status_t app_sensor_encode_log (uint8_t * const buffer,</a>
+<a name="ln653">        const uint64_t timestamp_ms,</a>
+<a name="ln654">        const float data,</a>
+<a name="ln655">        const rd_sensor_data_bitfield_t type)</a>
+<a name="ln656">{</a>
+<a name="ln657">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln658">    const uint8_t source = rd2re_fields (type);</a>
+<a name="ln659"> </a>
+<a name="ln660">    if (0 != source)</a>
+<a name="ln661">    {</a>
+<a name="ln662">        re_log_write_header (buffer, source);</a>
+<a name="ln663">        re_log_write_timestamp (buffer, timestamp_ms);</a>
+<a name="ln664">        re_log_write_data (buffer, data, source);</a>
+<a name="ln665">    }</a>
+<a name="ln666">    else</a>
+<a name="ln667">    {</a>
+<a name="ln668">        err_code |= RD_ERROR_INVALID_PARAM;</a>
+<a name="ln669">    }</a>
+<a name="ln670"> </a>
+<a name="ln671">    return err_code;</a>
+<a name="ln672">}</a>
+<a name="ln673"> </a>
+<a name="ln674">/**</a>
+<a name="ln675"> * if valid data in sample</a>
+<a name="ln676"> * parse data type</a>
+<a name="ln677"> * parse data value</a>
+<a name="ln678"> * format msg</a>
+<a name="ln679"> * send msg</a>
+<a name="ln680"> */</a>
+<a name="ln681">static rd_status_t send_field (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln682">                               const uint8_t * const raw_message,</a>
+<a name="ln683">                               const rd_sensor_data_bitfield_t type,</a>
+<a name="ln684">                               const float value,</a>
+<a name="ln685">                               const int64_t real_time_ms)</a>
+<a name="ln686">{</a>
+<a name="ln687">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln688">    ri_comm_message_t msg = {0};</a>
+<a name="ln689">    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value,</a>
+<a name="ln690">                                       type);</a>
+<a name="ln691"> </a>
+<a name="ln692">    if (RD_SUCCESS == err_code)</a>
+<a name="ln693">    {</a>
+<a name="ln694">        msg.repeat_count = 1;</a>
+<a name="ln695">        msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
+<a name="ln696">        msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
+<a name="ln697">        err_code |= app_comms_blocking_send (reply_fp, &amp;msg);</a>
+<a name="ln698">    }</a>
+<a name="ln699"> </a>
+<a name="ln700">    return err_code;</a>
+<a name="ln701">}</a>
+<a name="ln702"> </a>
+<a name="ln703">/**</a>
+<a name="ln704"> * @brief Send data element.</a>
+<a name="ln705"> *</a>
+<a name="ln706"> * This function sends given data element to given reply function pointer.</a>
+<a name="ln707"> *</a>
+<a name="ln708"> * @param[in] reply_fp Function pointer to reply to.</a>
+<a name="ln709"> * @param[in] raw_message original query from remote.</a>
+<a name="ln710"> * @param[in] sample Data sample to send.</a>
+<a name="ln711"> * @param[in] time_offset_ms Offset between tag time and real time.</a>
+<a name="ln712"> * @retval RD_SUCCESS reply was sent successfully.</a>
+<a name="ln713"> * @retval error code from reply_fp in case of error.</a>
+<a name="ln714"> *</a>
+<a name="ln715"> * @note This function blocks until reply_fp returns something else than</a>
+<a name="ln716"> *       RD_ERROR_NO_MEM.</a>
+<a name="ln717"> */</a>
+<a name="ln718">static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln719">        const uint8_t * const raw_message,</a>
+<a name="ln720">        const rd_sensor_data_t * const sample,</a>
+<a name="ln721">        const int64_t time_offset_ms)</a>
+<a name="ln722">{</a>
+<a name="ln723">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln724">    const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);</a>
+<a name="ln725">    int64_t real_time_ms = 0;</a>
+<a name="ln726"> </a>
+<a name="ln727">    if ( (0 - time_offset_ms) &lt; (int64_t) sample-&gt;timestamp_ms)</a>
+<a name="ln728">    {</a>
+<a name="ln729">        real_time_ms = sample-&gt;timestamp_ms + time_offset_ms;</a>
+<a name="ln730">    }</a>
+<a name="ln731"> </a>
+<a name="ln732">    for (uint8_t ii = 0; ii &lt; fieldcount; ii++)</a>
+<a name="ln733">    {</a>
+<a name="ln734">        if (rd_sensor_has_valid_data (sample, ii))</a>
+<a name="ln735">        {</a>
+<a name="ln736">            rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);</a>
+<a name="ln737">            err_code |= send_field (reply_fp, raw_message,</a>
+<a name="ln738">                                    type, sample-&gt;data[ii], real_time_ms);</a>
+<a name="ln739">        }</a>
+<a name="ln740">    }</a>
+<a name="ln741"> </a>
+<a name="ln742">    return err_code;</a>
+<a name="ln743">}</a>
+<a name="ln744"> </a>
+<a name="ln745">/**</a>
+<a name="ln746"> * @brief Send no more sensor log data message.</a>
+<a name="ln747"> * TODO -refactor encoding to endpoints.</a>
+<a name="ln748"> * TODO -refactor into comms</a>
+<a name="ln749"> */</a>
+<a name="ln750">static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln751">                                        const uint8_t * const raw_message)</a>
+<a name="ln752">{</a>
+<a name="ln753">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln754">    ri_comm_message_t msg = {0};</a>
+<a name="ln755">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
+<a name="ln756">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
+<a name="ln757">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
+<a name="ln758">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;</a>
+<a name="ln759">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
+<a name="ln760">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
+<a name="ln761">    return err_code;</a>
+<a name="ln762">}</a>
+<a name="ln763"> </a>
+<a name="ln764">/**</a>
+<a name="ln765"> * @brief Send heartbeat overdue data message.</a>
+<a name="ln766"> * TODO -refactor encoding to endpoints.</a>
+<a name="ln767"> * TODO -refactor into comms</a>
+<a name="ln768"> */</a>
+<a name="ln769">static rd_status_t app_sensor_send_timeout (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln770">        const uint8_t * const raw_message)</a>
+<a name="ln771">{</a>
+<a name="ln772">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln773">    ri_comm_message_t msg = {0};</a>
+<a name="ln774">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
+<a name="ln775">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
+<a name="ln776">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
+<a name="ln777">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_OP_TIMEOUT;</a>
+<a name="ln778">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
+<a name="ln779">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
+<a name="ln780">    return err_code;</a>
+<a name="ln781">}</a>
+<a name="ln782"> </a>
+<a name="ln783">/**</a>
+<a name="ln784"> * @brief Log read sensor op.</a>
+<a name="ln785"> *</a>
+<a name="ln786"> * @ref sensor_op.</a>
+<a name="ln787"> *</a>
+<a name="ln788"> * @param[in] reply_fp Function pointer to which send logs.</a>
+<a name="ln789"> * @param[fields] Fields to read.</a>
+<a name="ln790"> * @param[raw_message] Original message from remote.</a>
+<a name="ln791"> * @retval RD_SUCCESS on success.</a>
+<a name="ln792"> * @retval RD_ERROR_INVALID_PARAM if start of logs is after current time.</a>
+<a name="ln793"> * @retval error code from reply_fp if reply fails.</a>
+<a name="ln794"> *</a>
+<a name="ln795"> * @note This function blocks until all requested logs are sent and will therefore</a>
+<a name="ln796"> *       block for a long time.</a>
+<a name="ln797"> */</a>
+<a name="ln798">static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln799">                                        const rd_sensor_data_fields_t fields,</a>
+<a name="ln800">                                        const uint8_t * const raw_message)</a>
+<a name="ln801">{</a>
+<a name="ln802">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln803">    rd_sensor_data_t sample = {0};</a>
+<a name="ln804">    sample.fields = fields;</a>
+<a name="ln805">    float data[rd_sensor_data_fieldcount (&amp;sample)];</a>
+<a name="ln806">    sample.data = data;</a>
+<a name="ln807">    // Parse start, end times.</a>
+<a name="ln808">    int64_t current_time_s = (int64_t) re_std_log_current_time (raw_message);</a>
+<a name="ln809">    int64_t start_s = (int64_t) re_std_log_start_time (raw_message);</a>
+<a name="ln810">    uint32_t sent_elements = 0;</a>
+<a name="ln811">    // overflow in 292 277 266 years</a>
+<a name="ln812">    const int64_t system_time_ms = (int64_t) ri_rtc_millis();</a>
+<a name="ln813"> </a>
+<a name="ln814">    // Cannot have start_s &gt;= current_time_s</a>
+<a name="ln815">    if (current_time_s &gt; start_s)</a>
+<a name="ln816">    {</a>
+<a name="ln817">        // Parse offset to system clock</a>
+<a name="ln818">        LOG (&quot;Sending logged data\r\n&quot;);</a>
+<a name="ln819">        int64_t system_time_s = (system_time_ms / 1000LL);</a>
+<a name="ln820">        int64_t offset_ms = (current_time_s - system_time_s)  * 1000LL;</a>
+<a name="ln821">        int64_t time_diff_ms = (current_time_s - start_s) * 1000LL;</a>
+<a name="ln822">        // First sample to send in real time</a>
+<a name="ln823">        sample.timestamp_ms = (start_s * 1000LL);</a>
+<a name="ln824"> </a>
+<a name="ln825">        // Offset sample time to system clock.</a>
+<a name="ln826">        if (time_diff_ms &gt; system_time_ms)</a>
+<a name="ln827">        {</a>
+<a name="ln828">            sample.timestamp_ms = 0;</a>
+<a name="ln829">        }</a>
+<a name="ln830">        else</a>
+<a name="ln831">        {</a>
+<a name="ln832">            sample.timestamp_ms = system_time_ms - time_diff_ms;</a>
+<a name="ln833">        }</a>
+<a name="ln834"> </a>
+<a name="ln835">        app_log_read_state_t rs =</a>
+<a name="ln836">        {</a>
+<a name="ln837">            .oldest_element_ms = sample.timestamp_ms,</a>
+<a name="ln838">            .element_idx = 0,</a>
+<a name="ln839">            .page_idx = 0</a>
+<a name="ln840">        };</a>
+<a name="ln841"> </a>
+<a name="ln842">        while (RD_SUCCESS == err_code)</a>
+<a name="ln843">        {</a>
+<a name="ln844">            // Reset data validity</a>
+<a name="ln845">            sample.valid.bitfield = 0;</a>
+<a name="ln846">            // Timestamp and fields are set in log read function.</a>
+<a name="ln847">            err_code |= app_log_read (&amp;sample, &amp;rs);</a>
+<a name="ln848"> </a>
+<a name="ln849">            if (RD_ERROR_NOT_FOUND == err_code)</a>
+<a name="ln850">            {</a>
+<a name="ln851">                err_code |= app_sensor_send_eof (reply_fp, raw_message);</a>
+<a name="ln852">                char msg[128];</a>
+<a name="ln853">                snprintf (msg, sizeof (msg), &quot;Logged data sent: %lu elements\r\n&quot;, sent_elements); //-V576</a>
+<a name="ln854">                LOG (msg);</a>
+<a name="ln855">                sent_elements = 0;</a>
+<a name="ln856">            }</a>
+<a name="ln857">            else if (app_heartbeat_overdue())</a>
+<a name="ln858">            {</a>
+<a name="ln859">                err_code |= RD_ERROR_TIMEOUT;</a>
+<a name="ln860">                err_code |= app_sensor_send_timeout (reply_fp, raw_message);</a>
+<a name="ln861">            }</a>
+<a name="ln862">            // If data element was found, send log element.</a>
+<a name="ln863">            else if (RD_SUCCESS == err_code)</a>
+<a name="ln864">            {</a>
+<a name="ln865">                err_code |= app_sensor_send_data (reply_fp, raw_message,</a>
+<a name="ln866">                                                  &amp;sample, offset_ms);</a>
+<a name="ln867">                sent_elements++;</a>
+<a name="ln868">                LOGD (&quot;S&quot;);</a>
+<a name="ln869">            }</a>
+<a name="ln870">            else</a>
+<a name="ln871">            {</a>
+<a name="ln872">                // No action needed, error code gets returned to caller.</a>
+<a name="ln873">            }</a>
+<a name="ln874">        }</a>
+<a name="ln875">    }</a>
+<a name="ln876">    // Start time &gt;= current time</a>
+<a name="ln877">    else</a>
+<a name="ln878">    {</a>
+<a name="ln879">        err_code |= RD_ERROR_INVALID_PARAM;</a>
+<a name="ln880">    }</a>
+<a name="ln881"> </a>
+<a name="ln882">    // Send op status, remove expected not found</a>
+<a name="ln883">    err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
+<a name="ln884">    return err_code;</a>
+<a name="ln885">}</a>
+<a name="ln886"> </a>
+<a name="ln887">rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln888">                               const uint8_t * const raw_message,</a>
+<a name="ln889">                               const uint16_t data_len)</a>
+<a name="ln890">{</a>
+<a name="ln891">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln892"> </a>
+<a name="ln893">    if (NULL == raw_message)</a>
+<a name="ln894">    {</a>
+<a name="ln895">        err_code |= RD_ERROR_NULL;</a>
+<a name="ln896">    }</a>
+<a name="ln897">    else if (data_len &lt; RE_STANDARD_MESSAGE_LENGTH)</a>
+<a name="ln898">    {</a>
+<a name="ln899">        err_code |= RD_ERROR_DATA_SIZE;</a>
+<a name="ln900">    }</a>
+<a name="ln901">    else</a>
+<a name="ln902">    {</a>
+<a name="ln903">        // Parse affected fields. It's ok to have unspecified value here,</a>
+<a name="ln904">        // in that case fields end up being empty and error is reported via reply_fp.</a>
+<a name="ln905">        re_type_t type = (re_type_t) raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
+<a name="ln906">        rd_sensor_data_fields_t target_fields = re2rd_fields (type);</a>
+<a name="ln907">        // Parse desired operation.</a>
+<a name="ln908">        re_op_t op = (re_op_t) raw_message[RE_STANDARD_OPERATION_INDEX];</a>
+<a name="ln909"> </a>
+<a name="ln910">        // If target and op are valid, execute.</a>
+<a name="ln911">        switch (op)</a>
+<a name="ln912">        {</a>
+<a name="ln913">            case RE_STANDARD_LOG_VALUE_READ:</a>
+<a name="ln914">                err_code |= app_sensor_log_read (reply_fp,</a>
+<a name="ln915">                                                 target_fields, raw_message);</a>
+<a name="ln916">                break;</a>
+<a name="ln917"> </a>
+<a name="ln918">            default:</a>
+<a name="ln919">                // Reply with error on unknown op.</a>
+<a name="ln920">                break;</a>
+<a name="ln921">        }</a>
+<a name="ln922">    }</a>
+<a name="ln923"> </a>
+<a name="ln924">    return err_code;</a>
+<a name="ln925">}</a>
+<a name="ln926"> </a>
+<a name="ln927">rd_status_t app_sensor_vdd_sample (void)</a>
+<a name="ln928">{</a>
+<a name="ln929">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln930">    rd_sensor_configuration_t configuration =</a>
+<a name="ln931">    {</a>
+<a name="ln932">        .dsp_function = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln933">        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln934">        .mode = RD_SENSOR_CFG_SINGLE,</a>
+<a name="ln935">        .resolution = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln936">        .samplerate = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln937">        .scale = RD_SENSOR_CFG_DEFAULT</a>
+<a name="ln938">    };</a>
+<a name="ln939">    err_code |= rt_adc_vdd_prepare (&amp;configuration);</a>
+<a name="ln940">    err_code |= rt_adc_vdd_sample();</a>
+<a name="ln941">    return err_code;</a>
+<a name="ln942">}</a>
+<a name="ln943"> </a>
+<a name="ln944">#ifdef RUUVI_RUN_TESTS</a>
+<a name="ln945">void app_sensor_ctx_get (rt_sensor_ctx_t *** p_sensors, size_t * num_sensors)</a>
+<a name="ln946">{</a>
+<a name="ln947">    *p_sensors = m_sensors;</a>
+<a name="ln948">    *num_sensors = SENSOR_COUNT;</a>
+<a name="ln949">}</a>
+<a name="ln950">#endif</a>
+<a name="ln951"> </a>
+<a name="ln952">/** @} */</a>
 
 </code></pre>
-<div class="balloon" rel="85"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="89"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="93"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="101"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="105"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="178"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'Boolean'.</p></div>
-<div class="balloon" rel="259"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="262"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="86"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="90"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="94"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="102"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="106"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="179"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'Boolean'.</p></div>
+<div class="balloon" rel="260"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
 <div class="balloon" rel="263"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
 <div class="balloon" rel="264"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="273"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="265"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
 <div class="balloon" rel="274"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
 <div class="balloon" rel="275"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="287"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="289"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="329"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="335"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="339"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'm_sensors[ii]->pwr_on' expression should not be converted from the essential 'ri_gpio_state_t' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="375"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xFFU)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="387"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="395"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="397"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The 'm_sensors[ii]->pwr_on' operand of the '!' operator should not have the essential 'ri_gpio_state_t' type.</p></div>
-<div class="balloon" rel="397"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2570/" target="_blank">V2570</a> Operands of the '!' operator should have bool essential type.</p></div>
-<div class="balloon" rel="397"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '!m_sensors[ii]->pwr_on' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="413"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="428"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="443"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="446"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> Operand of the '!' operator should have an appropriate essential type.</p></div>
-<div class="balloon" rel="446"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2570/" target="_blank">V2570</a> Operands of the '!' operator should have bool essential type.</p></div>
-<div class="balloon" rel="476"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="476"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2594/" target="_blank">V2594</a> Controlling expressions should not be invariant. The result of the '0xFFFF == (((0) << 8U) + (6))' expression in the 'if' statement is always false.</p></div>
-<div class="balloon" rel="486"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="489"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '>' operator should have the same essential type. The current types are: 'signed' and 'floating'.</p></div>
-<div class="balloon" rel="495"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="518"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="276"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="288"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="290"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="330"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="336"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="340"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'm_sensors[ii]->pwr_on' expression should not be converted from the essential 'ri_gpio_state_t' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="376"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0xFFU)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="388"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="396"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="398"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The 'm_sensors[ii]->pwr_on' operand of the '!' operator should not have the essential 'ri_gpio_state_t' type.</p></div>
+<div class="balloon" rel="398"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2570/" target="_blank">V2570</a> Operands of the '!' operator should have bool essential type.</p></div>
+<div class="balloon" rel="398"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '!m_sensors[ii]->pwr_on' expression should not be converted from the essential 'Boolean' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="414"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="429"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="444"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="447"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> Operand of the '!' operator should have an appropriate essential type.</p></div>
+<div class="balloon" rel="447"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2570/" target="_blank">V2570</a> Operands of the '!' operator should have bool essential type.</p></div>
+<div class="balloon" rel="477"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="477"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2594/" target="_blank">V2594</a> Controlling expressions should not be invariant. The result of the '0xFFFF == (((0) << 8U) + (6))' expression in the 'if' statement is always false.</p></div>
+<div class="balloon" rel="487"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="490"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '>' operator should have the same essential type. The current types are: 'signed' and 'floating'.</p></div>
+<div class="balloon" rel="496"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
 <div class="balloon" rel="519"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="520"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="524"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="528"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="532"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="536"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="521"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="525"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="529"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="533"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="537"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="538"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="542"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="546"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="550"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="554"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="539"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="543"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="547"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="551"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="555"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="556"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="560"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="564"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="568"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="595"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="599"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="603"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="607"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="611"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="615"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="619"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="623"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="627"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="625"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.temperature_c' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="621"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.pressure_pa' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="617"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.humidity_rh' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="613"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.gyro_z_dps' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="609"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.gyro_y_dps' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="605"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.gyro_x_dps' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="601"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_z_g' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="597"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_y_g' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="593"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_x_g' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="659"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="693"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="694"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="728"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="728"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sample->timestamp_ms + time_offset_ms' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</p></div>
-<div class="balloon" rel="728"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="754"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="757"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x10U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="773"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="776"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="804"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2598/" target="_blank">V2598</a> Variable-length array types should not be used. Check the array size expression: '[rd_sensor_data_fieldcount(& sample)]'.</p></div>
-<div class="balloon" rel="822"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(start_s * 1000LL)' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="822"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="827"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="831"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'system_time_ms - time_diff_ms' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="831"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="844"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="852"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="854"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="904"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(0U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_type_t' type.</p></div>
-<div class="balloon" rel="907"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(2U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_op_t' type.</p></div>
-<div class="balloon" rel="912"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Constant expression of the case label of the essential 'unsigned' type should not be converted to the essential 're_op_t' type of the controlling expression.</p></div>
+<div class="balloon" rel="557"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="561"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="565"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="569"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="596"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="600"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="604"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="608"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="612"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="616"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="620"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="624"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="628"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="626"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.temperature_c' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="622"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.pressure_pa' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="618"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.humidity_rh' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="614"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.gyro_z_dps' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="610"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.gyro_y_dps' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="606"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.gyro_x_dps' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="602"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_z_g' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="598"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_y_g' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="594"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_x_g' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="660"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="694"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="695"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="729"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="729"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sample->timestamp_ms + time_offset_ms' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</p></div>
+<div class="balloon" rel="729"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="755"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="758"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x10U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="774"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="777"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="805"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2598/" target="_blank">V2598</a> Variable-length array types should not be used. Check the array size expression: '[rd_sensor_data_fieldcount(& sample)]'.</p></div>
+<div class="balloon" rel="823"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(start_s * 1000LL)' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="823"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="828"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="832"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'system_time_ms - time_diff_ms' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="832"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="845"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="853"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="855"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="905"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(0U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_type_t' type.</p></div>
+<div class="balloon" rel="908"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(2U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_op_t' type.</p></div>
+<div class="balloon" rel="913"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Constant expression of the case label of the essential 'unsigned' type should not be converted to the essential 're_op_t' type of the controlling expression.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>
