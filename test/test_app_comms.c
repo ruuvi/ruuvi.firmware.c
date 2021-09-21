@@ -283,10 +283,10 @@ void test_handle_gatt_sensor_op_acc (void)
     uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
     mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION;
     app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
-    ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, RD_SUCCESS);
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
     app_sensor_handle_ExpectAndReturn (&rt_gatt_send_asynchronous, mock_data,
                                        sizeof (mock_data), RD_SUCCESS);
-    ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, RD_SUCCESS);
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_SUCCESS);
     app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
     RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
     handle_gatt_data (mock_data, sizeof (mock_data));

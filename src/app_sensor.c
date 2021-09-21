@@ -10,6 +10,7 @@
 #include "ruuvi_interface_adc_ntc.h"
 #include "ruuvi_interface_adc_photo.h"
 #include "ruuvi_interface_bme280.h"
+#include "ruuvi_interface_communication_ble_gatt.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_dps310.h"
 #include "ruuvi_interface_gpio.h"
