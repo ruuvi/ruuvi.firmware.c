@@ -1,5 +1,5 @@
 # Changelog
-## 3.30.4 (in progress)
+## 3.30.4
  - Fix overflow in timer causing tag to stop logging in 50 days. 
  - Fix overflow in data encoding, causing pressure to jump 115 534 Pa -> 50 000 Pa 
  - Switch to faster connection parameters when transferring logged data to avoid timeouts
