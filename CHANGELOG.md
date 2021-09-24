@@ -1,16 +1,21 @@
 # Changelog
+## 3.30.4
+ - Fix overflow in timer causing tag to stop logging in 50 days. 
+ - Fix overflow in data encoding, causing pressure to jump 115 534 Pa -> 50 000 Pa 
+ - Switch to faster connection parameters when transferring logged data to avoid timeouts
+
 ## 3.30.3
- * Use 400 kHz I2C to save power
- * Fix TMP117 single sample occasionally returning invalid data 
- * Fix nRF52 not returning temperature data due to default configuration of app
- * Fix device switching to slow advertising 60 seconds after a GATT connection, now 5 seconds
- * Fix Leds not lighting up on button press
+ - Use 400 kHz I2C to save power
+ - Fix TMP117 single sample occasionally returning invalid data 
+ - Fix nRF52 not returning temperature data due to default configuration of app
+ - Fix device switching to slow advertising 60 seconds after a GATT connection, now 5 seconds
+ - Fix Leds not lighting up on button press
 
 ## 3.30.2
- * Fix history log rotation
+ - Fix history log rotation
 
 ## 3.30.1 
- * Fix VDD sampling for the first data broadcast
+ - Fix VDD sampling for the first data broadcast
 
 ## 3.30.0
  - Fix Kalervo support

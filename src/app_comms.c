@@ -7,6 +7,7 @@
 #include "ruuvi_endpoints.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
+#include "ruuvi_interface_communication_ble_gatt.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
@@ -37,6 +38,7 @@
 
 /** @brief Set to long enough to handle existing queue, then as short as possible. */
 #define BLOCKING_COMM_TIMEOUT_MS (4000U)
+#define CONN_PARAM_UPDATE_DELAY_MS (30U * 1000U) //!< Delay before switching to faster conn params in long ops.
 
 #if APP_COMMS_BIDIR_ENABLED
 #ifndef CEEDLING
@@ -148,11 +150,13 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
     {
         // Stop heartbeat processing.
         err_code |= app_heartbeat_stop();
-        // Parse message type
+        // Switch GATT to faster params.
+        err_code |= ri_gatt_params_request (RI_GATT_TURBO, CONN_PARAM_UPDATE_DELAY_MS);
+        // Parse message type.
         const uint8_t * const raw_message = (uint8_t *) p_data;
         re_type_t type = raw_message[RE_STANDARD_DESTINATION_INDEX];
 
-        // Route message to proper handler
+        // Route message to proper handler.
         switch (type)
         {
             case RE_ACC_XYZ:
@@ -174,6 +178,8 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
                 break;
         }
 
+        // Switch GATT to slower params.
+        err_code |= ri_gatt_params_request (RI_GATT_LOW_POWER, 0);
         // Resume heartbeat processing.
         err_code |= app_heartbeat_start();
     }
