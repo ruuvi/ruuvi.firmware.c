@@ -88,9 +88,7 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <div class="contents">
 <div class="textblock"><p>Current git repository status:</p>
 <p><a href="https://jenkins.ruuvi.com/job/ruuvi.firmware.c%20-%20deploy/"><img src="https://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c+-+deploy" alt="Build Status" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=alert_status" alt="Quality Gate Status" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=bugs" alt="Bugs" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=code_smells" alt="Code Smells" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=coverage" alt="Coverage" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=duplicated_lines_density" alt="Duplicated Lines (%)" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=ncloc" alt="Lines of Code" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=sqale_rating" alt="Maintainability Rating" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=reliability_rating" alt="Reliability Rating" class="inline"/></a> <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c"><img src="https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&amp;metric=sqale_index" alt="Technical Debt" class="inline"/></a></p>
-<p>Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules. Under development, please follow <a href="https://ruuvi.com/blog/">Ruuvi Blog</a> for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason. <br  />
-</p>
-<h1>Setting up</h1>
+<p>Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules. Under development, please follow <a href="https://ruuvi.com/blog/">Ruuvi Blog</a> for details. The project is in beta stage, no breaking changes are expected </p><h1>Setting up</h1>
 <h2>Prerequisites</h2>
 <ul>
 <li><a href="https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/7-2018-q2-update">gcc-arm-none-eabi-7-2018-q2-update</a> Check that nRF5_SDK_15.3.0_59ac345/components/toolchain/gcc Makefile.posix or Makefile.windows points to it.</li>
@@ -101,64 +99,75 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 <li><a href="https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools/Download">Nordic Command Line Tools</a></li>
 <li><a href="https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-desktop">Nordic nRFconnect</a> for your desktop or phone to upload DFU to the Ruuvi and a means to transfer the DFU zip file to you phone.</li>
 <li>A computer or phone with a bluetooth radio to receive advertisments from the ruuvi. See <a href="https://github.com/ruuvi/ruuvitag_fw/wiki/Dealing-with-the-data">Dealing with the data</a></li>
-<li>on Mac OS <a href="https://wilsonmar.github.io/xcode/">XCode</a></li>
+<li>On Mac OS <a href="https://wilsonmar.github.io/xcode/">XCode</a></li>
 </ul>
 <h3>Suggested</h3>
 <ul>
 <li><a href="https://shop.ruuvi.com/product/devkit/">Ruuvi Dev kit board</a> and a USB power &amp; data cable.</li>
 <li>Or any other SWD programmer and a cable matching your target board.</li>
 </ul>
-<h3>To run makefiles locally, e.g. before making Pull Requests</h3>
+<h3>To validate you changes, for example before making Pull Requests</h3>
 <ul>
 <li><a href="http://www.throwtheswitch.org/ceedling">Ceedling</a></li>
 <li><a href="https://www.viva64.com/en/pvs-studio/">PVS-Studio Analyzer</a></li>
-<li><a href="https://sourceforge.net/projects/astyle/files/">astyle</a></li>
+<li><a href="https://sourceforge.net/projects/astyle/files/">Artistic Style</a></li>
 <li><a href="https://www.doxygen.nl/index.html">doxygen</a></li>
 </ul>
-<h2>SDK 15.3</h2>
+<h2>SDK 15.3.</h2>
 <p>Download <a href="https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/">Nordic SDK15.3</a> (.8GB)and install it at the project root. If you're working on multiple nRF projects, use soft linking to have only one copy.</p>
-<h2>Submodules</h2>
-<p>Run <code>git submodule sync --recursive</code> and <code>git submodule update --init --recursive</code> to update the modules from new remotes.</p>
-<h2>Toolchain</h2>
-<p>ARMGCC is used for <a href="http://jenkins.ruuvi.com/job/ruuvi.firmware.c/">Jenkins builds</a>, it's recommended that you use Segger Embedded Studio for developing. You can make the project and a single variant by runnning "make variantName" (for example "make ruuvitag_b" at top level of this repository</p>
-<p>Segger Embedded Studio can be set up by installing <a href="https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D">nRF Connect for Desktop</a> and following Getting Started plugin instructions.</p>
-<p>Start SES and open <code>ruuvi_ruuvi.firmware.c.emProject</code> at root level. Each of the target boards is in their own project.</p>
-<h2>Code style</h2>
-<p>Code is formatted with <a href="http://astyle.sourceforge.net">Artistic Style</a>. Run <code>make astyle</code>.</p>
-<h2>Static analysis</h2>
-<p>The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. <a href="https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html">Here</a> is a link to generated report.</p>
-<h3>PVS</h3>
-<p>Obtain license and software from <a href="https://www.viva64.com/en/pvs-studio/">Viva64</a>.</p>
-<p>Installation process is described in <a href="https://docs.ruuvi.com/toolchain/pvs-studio">ruuvi.docs.com</a></p>
-<p>Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml.</p>
-<p>This produces hundreds of warnings, you need to filter the warnings you're interested in. For example you probably want to filter out warnings related to 64-bit systems.</p>
-<h3>Sonar scan</h3>
-<p>Travis pushes the results to <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c">SonarCloud.IO</a>. SonarCloud uses access token which is private to Ruuvi, you'll need to fork the project and setup the SonarCloud under your own account if you wish to run Sonar Scan on your own code.</p>
-<h1>Running unit tests</h1>
-<h2>Ceedling</h2>
-<p>Unit tests are implemented with Ceedling. Run the tests with <code>ceedling test:all</code></p>
-<h3>Gcov</h3>
-<p>Ceedling can also generate Gcov reports with <code>ceedling gcov:all utils:gcov</code>. The report can be found under <em>build/artifacts/gcov</em>.</p>
-<h2>Unit test continuous integration</h2>
-<p>Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.</p>
-<h1>Usage</h1>
-<h2>Flashing</h2>
-<p>You can flash a RuuviTag several ways:</p><ul>
+<h1>Creating your fork</h1>
+<h3>Use git to include all Submodules ( ruuvi.drivers.c, ruuvi.endpoint.c, etc )</h3>
+<p>Run <code>git submodule sync --recursive</code> and <code>git submodule update --init --recursive</code> to update the modules from the master repository .</p>
+<h2>Coding style</h2>
+<p>Use coding style consistant with <a href="https://barrgroup.com/embedded-systems/books/embedded-c-coding-standard">BARR-C:2018</a>. Coding style is enforced with <a href="http://astyle.sourceforge.net">Artistic Style</a>. Some source files were inserted into the master repository before this was established and running astyle will revise the source as necessary. See .astylerc for non-default options (for example max-code-length=90). Run <code>make astyle</code>.</p>
+<h1>Compiling and Testing</h1>
+<h2>Segger Embedded Studio should be used for developing.</h2>
+<p>Segger Embedded Studio is set up by installing <a href="https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D">nRF Connect for Desktop</a> and following Getting Started instructions.</p>
+<h3>Start SES</h3>
+<p><code>File -&gt; Open Solution -&gt; ruuvi.firmware.c.emProject</code>. Each of the target boards is in their own project. Sess 'build' compiles and links the firmware. In the Project Explorer select the correct project according to the appropriate tag name. Select the Build Configuration: <code>Debug</code>, <code>Long Life</code> or <code>Release</code>. <br  />
+</p>
+<h3>Build</h3>
+<p>Navigate to <code>Build -&gt; Build &lt;project name&gt;</code> or press the F7 key.</p>
+<h3>Connect you board with either:</h3>
+<ul>
 <li>nRF52 DevKit and <a href="https://lab.ruuvi.com/devshield/">RuuviTag Development Shield</a>.</li>
 <li>nRF52 DevKit and <a href="https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors">TC2030-CTX-NL 6-pin Cable</a></li>
 </ul>
-<p>Compile and flash the project to your board using Segger Embedded Studio. Note: You should erase your board entirely in case there is a bootloader from a previous firmware.</p>
-<p>If you're building binaries for distribution, use the provided make script to generate binaries. This way you can be certain to have a repeatable build process. The makefile takes tag name of current git commit and names the binaries with the tag. The version information also gets compiled into binaries. If you have tagged the version as <code>v3.99.1</code> the outputs will be named <code>$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension</code>. For example <code>ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex</code>.</p>
-<p>Tags should be valid semantic versions, starting with <code>v</code> and possibly having pre-release information such as <code>-rc2</code>. Do not add build information such as <code>+TestFW</code>.</p>
-<h2>SES - Segger Embedded Studio</h2>
-<p>Open the project in SES from <code>File -&gt; Open Solution -&gt; ruuvi.firmware.c.emProject</code>. In the Project Explorer select the correct project according to the appropriate tag name. Additionally select the Build Configuration: <code>Debug</code>, <code>Long Life</code> or <code>Release</code>. <br  />
- Build the project by navigating to <code>Build -&gt; Build &lt;project name&gt;</code> or press the F7 key. On succesfull build, navigate to <code>Debug -&gt; Go</code> or press the F5 key. RuuviTag wil be erased and flashed with the freshly compiled application.</p>
-<h2>nRF Command Line Tools</h2>
-<p>Navigate to <code>ruuvi.firmware.c/src/targets/&lt;board name&gt;/armgcc</code>. Run <code>make</code> to compile the application, which is stored inside <code>_build</code> folder. Run <code>./package.sh</code> script to generate the complete firmware. To flash the tag, run ``` nrfjprog &ndash;eraseall nrfjprog &ndash;program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex nrfjprog -r <code>-reset</code>. The tag's flash will be erased and overwritten with the fresh built application.</p>
+<h3>Debug</h3>
+<p>Navigate to <code>Debug -&gt; Go</code> or press the F5 key. This will flash the firmware and start the debugger.</p>
+<h2>ARMGCC is used for <a href="http://jenkins.ruuvi.com/job/ruuvi.firmware.c/">Jenkins builds</a></h2>
+<p>You can make the project and a single variant by runnning "make variantName" (for example "make ruuvitag_b" at top level of this repository</p>
+<p>When building binaries for distribution, use the provided 'Makefile' script. This way you can be certain to have a repeatable build process. The Makefile uses the tag name of current git commit for filenames and version number. Tags should be valid semantic versions, starting with <code>v</code> and possibly having pre-release information such as <code>-rc2</code>. Do not add build information such as <code>+TestFW</code>. If you have tagged the version as <code>v3.99.1</code> the files will be named <code>$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension</code>. For example <code>ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex</code>.</p>
+<h3>Flashing</h3>
+<p>Connect your board with either:</p><ul>
+<li>nRF52 DevKit and <a href="https://lab.ruuvi.com/devshield/">RuuviTag Development Shield</a>.</li>
+<li>nRF52 DevKit and <a href="https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors">TC2030-CTX-NL 6-pin Cable</a></li>
+</ul>
+<h3>nRF Command Line Tools</h3>
+<p>Navigate to <code>ruuvi.firmware.c/src/targets/&lt;board name&gt;/armgcc</code>.<br  />
+ Run <code>make</code> to compile the application.<br  />
+ Run <code>./package.sh</code> to generate the complete firmware HEX and ZIP files.<br  />
+ To flash the tag, run </p><pre>
+nrfjprog  --eraseall   # including previous bootloader
+nrfjprog  --program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex --verify --fast --reset 
+</pre><h1>Finishing up</h1>
+<h2>Static analysis</h2>
+<p>The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. <a href="https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html">Here</a> is a link to generated report.</p>
+<h3>PVS</h3>
+<p>Obtain license and software from <a href="https://www.viva64.com/en/pvs-studio/">Viva64</a>. Installation process is described in <a href="https://docs.ruuvi.com/toolchain/pvs-studio">ruuvi.docs.com</a> Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml. This produces many warnings, you need to filter the warnings you're interested in. For example you probably want to filter out warnings related to 64-bit systems.</p>
+<h3>Sonar scan</h3>
+<p>Travis pushes the results to <a href="https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c">SonarCloud.IO</a>. SonarCloud uses access token which is private to Ruuvi. You need to fork the project and setup the SonarCloud under your own account to run Sonar Scan on your own code.</p>
+<h2>Running unit tests</h2>
+<h3>Ceedling</h3>
+<p>Unit tests are implemented with Ceedling. Run the tests with <code>ceedling test:all</code></p>
+<h3>Gcov</h3>
+<p>Ceedling can also generate Gcov reports with <code>ceedling gcov:all utils:gcov</code>. The report can be found under <em>build/artifacts/gcov</em>.</p>
+<h3>Unit test continuous integration</h3>
+<p>Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.</p>
 <h1>How to contribute</h1>
 <p>Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag? Is the structure of the project sensible to you?</p>
 <p>If you want to assist in the project maintenance by fixing some issues <em>doxygen.error</em> is a good place to look for code which needs better commenting. Project badges at the top of the readme point to issues which range from trivial clarifications to complex refactoring.</p>
-<p>If you want to add new features, please discuss the feature first, and then create ceedling unit tests for the functionality. Once the functionality is agreed and testable in can be integrated into project.</p>
+<p>If you want to add new features, please discuss the feature first at the <a href="https://f.ruuvi.com">Forum</a> and then create ceedling unit tests for the functionality. Once the functionality is agreed and testable in can be integrated into project.</p>
 <h1>Licensing</h1>
 <p>Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their own licenses, which are BSD-compatible.</p>
 <h1>Documentation</h1>
