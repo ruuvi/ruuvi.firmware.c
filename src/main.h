@@ -10,7 +10,7 @@
 /**
  * @addtogroup main
  */
-/*@{*/
+/** @{ */
 /**
  * @file main.h
  * @author Otso Jousimaa <otso@ojousima.net>
@@ -42,5 +42,5 @@ int app_main (void);
 #define LOOP_FOREVER 1 //!< Normal run does not exit.
 #endif
 
-/*@}*/
+/** @} */
 #endif // MAIN_H
