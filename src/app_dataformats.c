@@ -5,6 +5,8 @@
 #include "ruuvi_endpoint_5.h"
 #include "ruuvi_endpoint_8.h"
 #include "ruuvi_endpoint_fa.h"
+#include "ruuvi_interface_communication_ble_advertising.h"
+#include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_adc.h"
 
 #include <math.h>
@@ -34,6 +36,7 @@ encode_to_3 (uint8_t * const output,
              const rd_sensor_data_t * const data)
 {
     rd_status_t err_code = RD_SUCCESS;
+    re_status_t enc_code = RE_SUCCESS;
     re_3_data_t ep_data = {0};
     ep_data.accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD);
     ep_data.accelerationy_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Y_FIELD);
@@ -42,7 +45,13 @@ encode_to_3 (uint8_t * const output,
     ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
     ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
     err_code |= rt_adc_vdd_get (&ep_data.battery_v);
-    re_3_encode (output, &ep_data, RD_FLOAT_INVALID);
+    enc_code |= re_3_encode (output, &ep_data, RD_FLOAT_INVALID);
+
+    if (RE_SUCCESS != enc_code)
+    {
+        err_code |= RD_ERROR_INTERNAL;
+    }
+
     *output_length = RE_3_DATA_LENGTH;
     return err_code;
 }
@@ -52,7 +61,33 @@ encode_to_5 (uint8_t * const output,
              size_t * const output_length,
              const rd_sensor_data_t * const data)
 {
-    return RD_ERROR_NOT_IMPLEMENTED;
+    static uint16_t ep_5_measurement_count = 0;
+    rd_status_t err_code = RD_SUCCESS;
+    re_status_t enc_code = RE_SUCCESS;
+    re_5_data_t ep_data = {0};
+    ep_5_measurement_count++;
+    ep_5_measurement_count %= RE_5_SEQCTR_MAX;
+    ep_data.accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD);
+    ep_data.accelerationy_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Y_FIELD);
+    ep_data.accelerationz_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Z_FIELD);
+    ep_data.humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
+    ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
+    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
+    ep_data.measurement_count = ep_5_measurement_count;
+    uint8_t mvtctr = (uint8_t) (app_sensor_event_count_get() % (RE_5_MVTCTR_MAX + 1));
+    ep_data.movement_count    = mvtctr;
+    err_code |= ri_radio_address_get (&ep_data.address);
+    err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
+    err_code |= rt_adc_vdd_get (&ep_data.battery_v);
+    enc_code |= re_5_encode (output, &ep_data);
+
+    if (RE_SUCCESS != enc_code)
+    {
+        err_code |= RD_ERROR_INTERNAL;
+    }
+
+    *output_length = RE_5_DATA_LENGTH;
+    return err_code;
 }
 
 TESTABLE_STATIC rd_status_t
@@ -98,6 +133,10 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
     {
         case DF_3:
             encode_to_3 (output, output_length, &data);
+            break;
+
+        case DF_5:
+            encode_to_5 (output, output_length, &data);
             break;
 
         default:

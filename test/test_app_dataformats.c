@@ -77,6 +77,7 @@ void test_app_dataformat_encode_3_ok (void)
     re_3_encode_IgnoreArg_data();
     status = app_dataformat_encode (output, &output_length, format);
     TEST_ASSERT (RD_SUCCESS == status);
+    TEST_ASSERT (RE_3_DATA_LENGTH == output_length);
 }
 
 void test_app_dataformat_encode_5 (void)
@@ -110,6 +111,7 @@ void test_app_dataformat_encode_5 (void)
     re_5_encode_IgnoreArg_data();
     status = app_dataformat_encode (output, &output_length, format);
     TEST_ASSERT (RD_SUCCESS == status);
+    TEST_ASSERT (RE_5_DATA_LENGTH == output_length);
 }
 
 void test_app_dataformat_encode_8 (void)
