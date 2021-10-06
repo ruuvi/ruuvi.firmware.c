@@ -14,6 +14,8 @@
 #include "mock_ruuvi_endpoint_5.h"
 #include "mock_ruuvi_endpoint_8.h"
 #include "mock_ruuvi_endpoint_fa.h"
+#include "mock_ruuvi_interface_communication_ble_advertising.h"
+#include "mock_ruuvi_interface_communication_radio.h"
 #include "mock_ruuvi_task_adc.h"
 
 void setUp (void)
@@ -79,6 +81,35 @@ void test_app_dataformat_encode_3_ok (void)
 
 void test_app_dataformat_encode_5 (void)
 {
+    uint8_t output[24] = {0};
+    size_t output_length = sizeof (output);
+    app_dataformat_t format = DF_5;
+    float voltage = 2.5F;
+    uint64_t address = 0x0000AABBCCDDEEFF;
+    int8_t power = 4;
+    rd_status_t status = RD_SUCCESS;
+    rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    app_sensor_available_data_ExpectAndReturn (fields);
+    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    app_sensor_event_count_get_ExpectAndReturn (1);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_radio_address_get_ReturnThruPtr_address (&address);
+    ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_adv_tx_power_get_ReturnThruPtr_dbm (&power);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    re_5_encode_ExpectAndReturn (NULL, NULL, RE_SUCCESS);
+    re_5_encode_IgnoreArg_buffer();
+    re_5_encode_IgnoreArg_data();
+    status = app_dataformat_encode (output, &output_length, format);
+    TEST_ASSERT (RD_SUCCESS == status);
 }
 
 void test_app_dataformat_encode_8 (void)
