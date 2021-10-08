@@ -13,8 +13,8 @@ Current git repository status:
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=sqale_index)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 
 Ruuvi Firmware version 3. Built on top of Nordic SDK 15, uses both Ruuvi and external repositories as submodules.
-Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for details. The project is in beta stage, no breaking changes are intented but will be done if absolutely necessary for some reason.  
-
+Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for details. 
+The project is in beta stage, no breaking changes are expected
 # Setting up
 
 ## Prerequisites
@@ -26,57 +26,96 @@ Under development, please follow [Ruuvi Blog](https://ruuvi.com/blog/) for detai
 * [Nordic Command Line Tools](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools/Download)
 * [Nordic nRFconnect](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-desktop) for your desktop or phone to upload DFU to the Ruuvi and a means to transfer the DFU zip file to you phone.
 * A computer or phone with a bluetooth radio to receive advertisments from the ruuvi. See [Dealing with the data](https://github.com/ruuvi/ruuvitag_fw/wiki/Dealing-with-the-data)
-* on Mac OS [XCode](https://wilsonmar.github.io/xcode/)
+* On Mac OS [XCode](https://wilsonmar.github.io/xcode/)
 
 ### Suggested 
 * [Ruuvi Dev kit board](https://shop.ruuvi.com/product/devkit/) and a USB power & data cable.
 * Or any other SWD programmer and a cable matching your target board. 
  
-### To run makefiles locally, e.g. before making Pull Requests
+### To validate you changes, for example before making Pull Requests
 * [Ceedling](http://www.throwtheswitch.org/ceedling)
 * [PVS-Studio Analyzer](https://www.viva64.com/en/pvs-studio/) 
-* [astyle](https://sourceforge.net/projects/astyle/files/)
+* [Artistic Style](https://sourceforge.net/projects/astyle/files/)
 * [doxygen](https://www.doxygen.nl/index.html)
 
-## SDK 15.3
+## SDK 15.3.
 Download [Nordic SDK15.3](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) (.8GB)and install it at the project root.
 If you're working on multiple nRF projects, use soft linking to have only one copy.
 
-## Submodules
-Run `git submodule sync --recursive` and `git submodule update --init --recursive` to update the modules from new remotes. 
+# Creating your fork
+### Use git to include all Submodules ( ruuvi.drivers.c, ruuvi.endpoint.c, etc )
+Run `git submodule sync --recursive` and `git submodule update --init --recursive` to update the modules from the master repository . 
 
-## Toolchain
-ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/), it's recommended that you use Segger Embedded Studio for developing. You can make the project and a single variant by runnning "make variantName" (for example "make ruuvitag_b" at top level of this repository
- 
-Segger Embedded Studio can be set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
-and following Getting Started plugin instructions.
-
-Start SES and open `ruuvi_ruuvi.firmware.c.emProject` at root level. Each of the target boards is in their own project.
-
-## Code style
-Code is formatted with [Artistic Style](http://astyle.sourceforge.net). 
+## Coding style
+Use coding style consistant with [BARR-C:2018](https://barrgroup.com/embedded-systems/books/embedded-c-coding-standard).
+Coding style is enforced with [Artistic Style](http://astyle.sourceforge.net). 
+Some source files were inserted into the master repository before this was established and running astyle will revise the source as necessary.
+See .astylerc for non-default options (for example max-code-length=90).
 Run `make astyle`.
 
+# Compiling and Testing
+## Segger Embedded Studio should be used for developing. 
+Segger Embedded Studio is set up by installing [nRF Connect for Desktop](https://www.nordicsemi.com/?sc_itemid=%7BB935528E-8BFA-42D9-8BB5-83E2A5E1FF5C%7D) 
+and following Getting Started instructions.
+
+### Start SES 
+`File -> Open Solution -> ruuvi.firmware.c.emProject`. 
+Each of the target boards is in their own project.
+Sess  'build' compiles and links the firmware. 
+In the Project Explorer select the correct project according to the appropriate tag name.
+Select the Build Configuration: `Debug`, `Long Life` or `Release`.   
+
+### Build 
+Navigate to `Build -> Build <project name>` or press the F7 key. 
+
+### Connect you board with either:
+* nRF52 DevKit and [RuuviTag Development Shield](https://lab.ruuvi.com/devshield/). 
+* nRF52 DevKit and [TC2030-CTX-NL 6-pin Cable](https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors)
+
+### Debug 
+Navigate to `Debug -> Go` or press the F5 key.
+This will flash the firmware and start the debugger.
+
+## ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/)
+You can make the project and a single variant by runnning "make variantName" (for example "make ruuvitag_b" at top level of this repository
+
+When building binaries for distribution, use the provided 'Makefile' script.
+This way you can be certain to have a repeatable build process. 
+The Makefile uses the tag name of current git commit for filenames and version number.
+Tags should be valid semantic versions, starting with `v` and possibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`. If you have tagged the version as `v3.99.1` the files will be named `$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension`. For example `ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex`. 
+
+### Flashing
+Connect your board with either:
+* nRF52 DevKit and [RuuviTag Development Shield](https://lab.ruuvi.com/devshield/). 
+* nRF52 DevKit and [TC2030-CTX-NL 6-pin Cable](https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors)
+
+### nRF Command Line Tools
+Navigate to `ruuvi.firmware.c/src/targets/<board name>/armgcc`.<br>
+Run `make` to compile the application.<br>
+Run `./package.sh` to generate the complete firmware HEX and ZIP files.<br>
+To flash the tag, run 
+<pre>
+nrfjprog  --eraseall   # including previous bootloader
+nrfjprog  --program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex --verify --fast --reset 
+</pre>       
+
+# Finishing up
 ## Static analysis
 The code can be checked with PVS Studio and Sonarcloud for some common errors, style issues and potential problems. [Here](https://ruuvi.github.io/ruuvi.firmware.c/fullhtml/index.html) is a link to generated report.
 
-
 ### PVS
 Obtain license and software from [Viva64](https://www.viva64.com/en/pvs-studio/).
-
 Installation process is described in [ruuvi.docs.com](https://docs.ruuvi.com/toolchain/pvs-studio)
-
 Make runs PVS Studio scan and outputs results under doxygen/html/fullhtml. 
-
-This produces hundreds of warnings, you need to filter the warnings you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
+This produces many warnings, you need to filter the warnings you're interested in. For example you probably want to filter out warnings related to 64-bit systems. 
 
 ### Sonar scan
 Travis pushes the results to [SonarCloud.IO](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c).
-SonarCloud uses access token which is private to Ruuvi, you'll need to fork the project and setup
-the SonarCloud under your own account if you wish to run Sonar Scan on your own code.
+SonarCloud uses access token which is private to Ruuvi.
+You need to fork the project and setup the SonarCloud under your own account to run Sonar Scan on your own code.
 
-# Running unit tests
-## Ceedling
+## Running unit tests
+### Ceedling
 Unit tests are implemented with Ceedling. Run the tests with
 `ceedling test:all`
 
@@ -84,45 +123,8 @@ Unit tests are implemented with Ceedling. Run the tests with
 Ceedling can also generate Gcov reports with `ceedling gcov:all utils:gcov`.
 The report can be found under _build/artifacts/gcov_.
 
-## Unit test continuous integration
+### Unit test continuous integration
 Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
-
-# Usage
-## Flashing
-You can flash a RuuviTag several ways:
-* nRF52 DevKit and [RuuviTag Development Shield](https://lab.ruuvi.com/devshield/). 
-* nRF52 DevKit and [TC2030-CTX-NL 6-pin Cable](https://www.tag-connect.com/product/tc2030-ctx-nl-6-pin-no-legs-cable-with-10-pin-micro-connector-for-cortex-processors)
-
-Compile and flash the project to your board using Segger Embedded Studio. 
-Note: You should erase your board entirely in case there is a bootloader from a previous firmware.
-
-If you're building binaries for distribution, use the provided make script to generate binaries.
-This way you can be certain to have a repeatable build process. The makefile takes tag name of current git commit
-and names the binaries with the tag. The version information also gets compiled into binaries. 
-If you have tagged the version as `v3.99.1` the outputs will be named `$BOARD_armgcc_ruuvifw_$VARIANT_v3.99.1_$TYPE.extension`.
-For example `ruuvitag_b_armgcc_ruuvifw_default_v3.29.3-rc1_full.hex`. 
-
-Tags should be valid semantic versions, starting with `v` and possibly having pre-release information such as `-rc2`. Do not add build information such as `+TestFW`.
-
-## SES - Segger Embedded Studio
-Open the project in SES from `File -> Open Solution -> ruuvi.firmware.c.emProject`.
-In the Project Explorer select the correct project according to the appropriate tag name.
-Additionally select the Build Configuration: `Debug`, `Long Life` or `Release`.   
-Build the project by navigating to `Build -> Build <project name>` or press the F7 key. 
-On succesfull build, navigate to `Debug -> Go` or press the F5 key.
-RuuviTag wil be erased and flashed with the freshly compiled application.
-
-## nRF Command Line Tools
-Navigate to `ruuvi.firmware.c/src/targets/<board name>/armgcc`.
-Run `make` to compile the application, which is stored inside `_build` folder.
-Run `./package.sh` script to generate the complete firmware.
-To flash the tag, run 
-```
-nrfjprog --eraseall 
-nrfjprog --program ruuvitag_b_armgcc_ruuvifw_v3.30.0-RC5_app.hex
-nrfjprog -r
-`-reset`.
-The tag's flash will be erased and overwritten with the fresh built application.
 
 # How to contribute
 Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?
@@ -132,7 +134,7 @@ If you want to assist in the project maintenance by fixing some issues _doxygen.
 a good place to look for code which needs better commenting. Project badges at the top of the
 readme point to issues which range from trivial clarifications to complex refactoring. 
 
-If you want to add new features, please discuss the feature first, and then create ceedling
+If you want to add new features, please discuss the feature first at the [Forum](https://f.ruuvi.com) and then create ceedling
 unit tests for the functionality. Once the functionality is agreed and testable in can be integrated
 into project.
 
@@ -142,4 +144,3 @@ Ruuvi code is BSD-3 licensed. Submodules and external dependencies have their ow
 # Documentation
 Document is generated with Doxygen. Run `make doxygen` to generate the docs locally, or
 browse to [Travis built docs](https://ruuvi.github.io/ruuvi.firmware.c)
-
