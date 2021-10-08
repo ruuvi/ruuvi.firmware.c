@@ -131,6 +131,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_interface_timer_test.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/acceleration/ruuvi_interface_lis2dh12.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/communication/ruuvi_interface_communication_radio.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/crypto/ruuvi_interface_aes.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_adc_ntc.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_adc_photo.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_bme280.c \
@@ -190,6 +191,8 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoints.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_3.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_5.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_8.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_fa.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/ruuvi_library_compress.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/liblzf-3.6/lzf_c.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/liblzf-3.6/lzf_d.c \
