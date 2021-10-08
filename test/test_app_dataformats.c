@@ -17,6 +17,7 @@
 #include "mock_ruuvi_interface_aes.h"
 #include "mock_ruuvi_interface_communication_ble_advertising.h"
 #include "mock_ruuvi_interface_communication_radio.h"
+#include "mock_ruuvi_interface_communication.h"
 #include "mock_ruuvi_task_adc.h"
 
 void setUp (void)
@@ -132,6 +133,7 @@ void test_app_dataformat_encode_8_ok (void)
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     app_sensor_event_count_get_ExpectAndReturn (1);
+    ri_comm_id_get_ExpectAnyArgsAndReturn (RE_SUCCESS);
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_radio_address_get_ReturnThruPtr_address (&address);
     ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
@@ -142,7 +144,7 @@ void test_app_dataformat_encode_8_ok (void)
                                  NULL, NULL, NULL,
                                  RE_8_CIPHERTEXT_LENGTH,
                                  RE_SUCCESS);
-    re_8_encode_IgnoreArg_buffer();
+    re_8_encode_IgnoreArg_cipher();
     re_8_encode_IgnoreArg_data();
     re_8_encode_IgnoreArg_key();
     status = app_dataformat_encode (output, &output_length, format);

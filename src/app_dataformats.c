@@ -8,9 +8,11 @@
 #include "ruuvi_interface_aes.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_communication_radio.h"
+#include "ruuvi_interface_communication.h"
 #include "ruuvi_task_adc.h"
 
 #include <math.h>
+#include <string.h>
 
 #ifdef CEEDLING
 #   define TESTABLE_STATIC
@@ -22,6 +24,12 @@
 #define APP_FA_KEY {00, 11, 22, 33, 44, 55, 66, 77, 88, 99, 11, 12, 13, 14, 15, 16}
 #endif
 static const uint8_t ep_fa_key[RE_FA_CIPHERTEXT_LENGTH] = APP_FA_KEY;
+
+#ifndef APP_8_KEY
+// "RuuviComRuuviTag"
+#define APP_8_KEY { 0x52, 0x75, 0x75, 0x76, 0x69, 0x43, 0x6F, 0x6D, 0x52, 0x75, 0x75, 0x76, 0x69, 0x54, 0x61, 0x67}
+#endif
+static const uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = APP_8_KEY;
 
 uint32_t app_data_encrypt (const uint8_t * const cleartext,
                            uint8_t * const ciphertext,
@@ -127,11 +135,56 @@ encode_to_5 (uint8_t * const output,
 }
 
 TESTABLE_STATIC rd_status_t
+ep_8_key_generate (uint8_t * const key)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    memcpy (key, ep_8_key, RE_8_CIPHERTEXT_LENGTH);
+    uint64_t device_id = 0;
+    err_code |= ri_comm_id_get (&device_id);
+
+    for (uint8_t ii = 0U; ii < 8; ii++)
+    {
+        key[ii] = key[ii] ^ ( (device_id >> (ii * 8U)) & 0xFFU);
+    }
+
+    return err_code;
+}
+
+TESTABLE_STATIC rd_status_t
 encode_to_8 (uint8_t * const output,
              size_t * const output_length,
              const rd_sensor_data_t * const data)
 {
-    return RD_ERROR_NOT_IMPLEMENTED;
+    static uint16_t ep_8_measurement_count = 0;
+    uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = {};
+    rd_status_t err_code = RD_SUCCESS;
+    re_status_t enc_code = RE_SUCCESS;
+    re_8_data_t ep_data = {0};
+    ep_8_measurement_count++;
+    ep_8_measurement_count %= RE_8_SEQCTR_MAX;
+    ep_data.humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
+    ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
+    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
+    ep_data.message_counter = ep_8_measurement_count;
+    uint8_t mvtctr = (uint8_t) (app_sensor_event_count_get() % (RE_8_MVTCTR_MAX + 1));
+    ep_data.movement_count    = mvtctr;
+    err_code |= ep_8_key_generate (ep_8_key);
+    err_code |= ri_radio_address_get (&ep_data.address);
+    err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
+    err_code |= rt_adc_vdd_get (&ep_data.battery_v);
+    enc_code |= re_8_encode (output,
+                             &ep_data,
+                             &app_data_encrypt,
+                             ep_8_key,
+                             RE_8_CIPHERTEXT_LENGTH);
+
+    if (RE_SUCCESS != enc_code)
+    {
+        err_code |= RD_ERROR_INTERNAL;
+    }
+
+    *output_length = RE_5_DATA_LENGTH;
+    return err_code;
 }
 
 TESTABLE_STATIC rd_status_t
