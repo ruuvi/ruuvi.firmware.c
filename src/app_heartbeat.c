@@ -95,7 +95,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     app_led_activity_signal (true);
     m_dataformat_state = app_dataformat_next (m_dataformats_enabled, m_dataformat_state);
     app_dataformat_encode (msg.data, &buffer_len, m_dataformat_state);
-    msg.data_length = buffer_len;
+    msg.data_length = (uint8_t) buffer_len;
     err_code = send_adv (&msg);
     // Advertising should always be successful
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
@@ -117,7 +117,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     }
 
     // Restore original message length for NFC
-    msg.data_length = buffer_len;
+    msg.data_length = (uint8_t) buffer_len;
     err_code = rt_nfc_send (&msg);
 
     if (RD_SUCCESS == err_code)

@@ -225,24 +225,24 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
     data.fields = app_sensor_available_data();
     float data_values[rd_sensor_data_fieldcount (&data)];
     data.data = data_values;
-    app_sensor_get (&data);
+    err_code |= app_sensor_get (&data);
 
     switch (format)
     {
         case DF_3:
-            encode_to_3 (output, output_length, &data);
+            err_code |= encode_to_3 (output, output_length, &data);
             break;
 
         case DF_5:
-            encode_to_5 (output, output_length, &data);
+            err_code |= encode_to_5 (output, output_length, &data);
             break;
 
         case DF_8:
-            encode_to_8 (output, output_length, &data);
+            err_code |= encode_to_8 (output, output_length, &data);
             break;
 
         case DF_FA:
-            encode_to_fa (output, output_length, &data);
+            err_code |= encode_to_fa (output, output_length, &data);
             break;
 
         default:

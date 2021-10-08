@@ -82,6 +82,32 @@ void test_app_dataformat_encode_3_ok (void)
     TEST_ASSERT (RE_3_DATA_LENGTH == output_length);
 }
 
+void test_app_dataformat_encode_3_error (void)
+{
+    uint8_t output[24] = {0};
+    size_t output_length = sizeof (output);
+    app_dataformat_t format = DF_3;
+    float voltage = 2.5F;
+    rd_status_t status = RD_SUCCESS;
+    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    app_sensor_available_data_ExpectAndReturn (fields);
+    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    re_3_encode_ExpectAndReturn (output, NULL, NAN, RE_ERROR_ENCODING);
+    re_3_encode_IgnoreArg_data();
+    status = app_dataformat_encode (output, &output_length, format);
+    TEST_ASSERT (RD_ERROR_INTERNAL == status);
+}
+
+
 void test_app_dataformat_encode_5_ok (void)
 {
     uint8_t output[24] = {0};
@@ -116,7 +142,76 @@ void test_app_dataformat_encode_5_ok (void)
     TEST_ASSERT (RE_5_DATA_LENGTH == output_length);
 }
 
+void test_app_dataformat_encode_5_error (void)
+{
+    uint8_t output[24] = {0};
+    size_t output_length = sizeof (output);
+    app_dataformat_t format = DF_5;
+    float voltage = 2.5F;
+    uint64_t address = 0x0000AABBCCDDEEFF;
+    int8_t power = 4;
+    rd_status_t status = RD_SUCCESS;
+    rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    app_sensor_available_data_ExpectAndReturn (fields);
+    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    app_sensor_event_count_get_ExpectAndReturn (1);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_radio_address_get_ReturnThruPtr_address (&address);
+    ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_adv_tx_power_get_ReturnThruPtr_dbm (&power);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    re_5_encode_ExpectAndReturn (NULL, NULL, RE_ERROR_ENCODING);
+    re_5_encode_IgnoreArg_buffer();
+    re_5_encode_IgnoreArg_data();
+    status = app_dataformat_encode (output, &output_length, format);
+    TEST_ASSERT (RD_ERROR_INTERNAL == status);
+}
+
 void test_app_dataformat_encode_8_ok (void)
+{
+    uint8_t output[24] = {0};
+    size_t output_length = sizeof (output);
+    app_dataformat_t format = DF_8;
+    float voltage = 2.5F;
+    uint64_t address = 0x0000AABBCCDDEEFF;
+    int8_t power = 4;
+    rd_status_t status = RD_SUCCESS;
+    rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    app_sensor_available_data_ExpectAndReturn (fields);
+    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    app_sensor_event_count_get_ExpectAndReturn (1);
+    ri_comm_id_get_ExpectAnyArgsAndReturn (RE_SUCCESS);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_radio_address_get_ReturnThruPtr_address (&address);
+    ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_adv_tx_power_get_ReturnThruPtr_dbm (&power);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    re_8_encode_ExpectAndReturn (output,
+                                 NULL, NULL, NULL,
+                                 RE_8_CIPHERTEXT_LENGTH,
+                                 RE_SUCCESS);
+    re_8_encode_IgnoreArg_cipher();
+    re_8_encode_IgnoreArg_data();
+    re_8_encode_IgnoreArg_key();
+    status = app_dataformat_encode (output, &output_length, format);
+    TEST_ASSERT (RD_SUCCESS == status);
+    TEST_ASSERT (RE_8_DATA_LENGTH == output_length);
+}
+
+void test_app_dataformat_encode_8_error (void)
 {
     uint8_t output[24] = {0};
     size_t output_length = sizeof (output);
@@ -177,13 +272,45 @@ void test_app_dataformat_encode_fa_ok (void)
     re_fa_encode_ExpectAndReturn (output,
                                   NULL, NULL, NULL,
                                   RE_FA_CIPHERTEXT_LENGTH,
-                                  RE_SUCCESS);
+                                  RE_ERROR_ENCODING);
     re_fa_encode_IgnoreArg_data();
     re_fa_encode_IgnoreArg_cipher();
     re_fa_encode_IgnoreArg_key();
     status = app_dataformat_encode (output, &output_length, format);
-    TEST_ASSERT (RD_SUCCESS == status);
-    TEST_ASSERT (RE_FA_DATA_LENGTH == output_length);
+    TEST_ASSERT (RD_ERROR_INTERNAL == status);
+}
+
+void test_app_dataformat_encode_fa_error (void)
+{
+    uint8_t output[24] = {0};
+    size_t output_length = sizeof (output);
+    app_dataformat_t format = DF_FA;
+    float voltage = 2.5F;
+    uint64_t address = 0x0000AABBCCDDEEFF;
+    rd_status_t status = RD_SUCCESS;
+    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
+    app_sensor_available_data_ExpectAndReturn (fields);
+    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
+    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_radio_address_get_ReturnThruPtr_address (&address);
+    re_fa_encode_ExpectAndReturn (output,
+                                  NULL, NULL, NULL,
+                                  RE_FA_CIPHERTEXT_LENGTH,
+                                  RE_ERROR_ENCODING);
+    re_fa_encode_IgnoreArg_data();
+    re_fa_encode_IgnoreArg_cipher();
+    re_fa_encode_IgnoreArg_key();
+    status = app_dataformat_encode (output, &output_length, format);
+    TEST_ASSERT (RD_ERROR_INTERNAL == status);
 }
 
 #endif // TEST

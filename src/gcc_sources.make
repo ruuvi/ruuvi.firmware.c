@@ -207,6 +207,7 @@ RUUVI_PRJ_SOURCES= \
   $(PROJ_DIR)/run_integration_tests.c \
   $(PROJ_DIR)/app_button.c \
   $(PROJ_DIR)/app_comms.c \
+  $(PROJ_DIR)/app_dataformats.c \
   $(PROJ_DIR)/app_heartbeat.c \
   $(PROJ_DIR)/app_led.c \
   $(PROJ_DIR)/app_log.c \
