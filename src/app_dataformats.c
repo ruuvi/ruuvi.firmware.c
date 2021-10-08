@@ -5,6 +5,7 @@
 #include "ruuvi_endpoint_5.h"
 #include "ruuvi_endpoint_8.h"
 #include "ruuvi_endpoint_fa.h"
+#include "ruuvi_interface_aes.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_task_adc.h"
@@ -17,10 +18,45 @@
 #   define TESTABLE_STATIC static
 #endif
 
+#ifndef APP_FA_KEY
+#define APP_FA_KEY {00, 11, 22, 33, 44, 55, 66, 77, 88, 99, 11, 12, 13, 14, 15, 16}
+#endif
+static const uint8_t ep_fa_key[RE_FA_CIPHERTEXT_LENGTH] = APP_FA_KEY;
+
+uint32_t app_data_encrypt (const uint8_t * const cleartext,
+                           uint8_t * const ciphertext,
+                           const size_t data_size,
+                           const uint8_t * const key,
+                           const size_t key_size)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    uint32_t ret_code = 0;
+
+    if (16U != key_size)
+    {
+        err_code |= RD_ERROR_INVALID_LENGTH;
+    }
+    else
+    {
+        err_code |= ri_aes_ecb_128_encrypt (cleartext,
+                                            ciphertext,
+                                            key,
+                                            data_size);
+    }
+
+    if (RD_SUCCESS != err_code)
+    {
+        ret_code = 1;
+    }
+
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+    return ret_code;
+}
+
 /**
  * @brief Return next dataformat to send
  *
- * @param[in] formats Enabled formats
+ * @param[in] formats Enabled formats.
  * @param[in] state Current state of dataformat picker.
  * @return    Next dataformat to use in app.
  */
@@ -103,7 +139,34 @@ encode_to_fa (uint8_t * const output,
               size_t * const output_length,
               const rd_sensor_data_t * const data)
 {
-    return RD_ERROR_NOT_IMPLEMENTED;
+    static uint8_t ep_fa_measurement_count = 0;
+    rd_status_t err_code = RD_SUCCESS;
+    re_status_t enc_code = RE_SUCCESS;
+    re_fa_data_t ep_data = {0};
+    ep_fa_measurement_count++;
+    ep_fa_measurement_count %= 0xFFU;
+    ep_data.accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD);
+    ep_data.accelerationy_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Y_FIELD);
+    ep_data.accelerationz_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Z_FIELD);
+    ep_data.humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
+    ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
+    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
+    ep_data.message_counter   = ep_fa_measurement_count;
+    err_code |= rt_adc_vdd_get (&ep_data.battery_v);
+    err_code |= ri_radio_address_get (&ep_data.address);
+    enc_code |= re_fa_encode (output,
+                              &ep_data,
+                              &app_data_encrypt,
+                              ep_fa_key,
+                              RE_FA_CIPHERTEXT_LENGTH); //!< Cipher length == key lenght
+
+    if (RE_SUCCESS != enc_code)
+    {
+        err_code |= RD_ERROR_INTERNAL;
+    }
+
+    *output_length = RE_FA_DATA_LENGTH;
+    return err_code;
 }
 
 /**
@@ -137,6 +200,10 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
 
         case DF_5:
             encode_to_5 (output, output_length, &data);
+            break;
+
+        case DF_FA:
+            encode_to_fa (output, output_length, &data);
             break;
 
         default:
