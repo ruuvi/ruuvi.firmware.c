@@ -71,7 +71,8 @@ uint32_t app_data_encrypt (const uint8_t * const cleartext,
 app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
                                       const app_dataformat_t state)
 {
-    return DF_INVALID;
+    // TODO: Return enabled value instead of hardcoded one
+    return DF_5;
 }
 
 TESTABLE_STATIC rd_status_t
@@ -110,7 +111,7 @@ encode_to_5 (uint8_t * const output,
     re_status_t enc_code = RE_SUCCESS;
     re_5_data_t ep_data = {0};
     ep_5_measurement_count++;
-    ep_5_measurement_count %= RE_5_SEQCTR_MAX;
+    ep_5_measurement_count %= (RE_5_SEQCTR_MAX + 1);
     ep_data.accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD);
     ep_data.accelerationy_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Y_FIELD);
     ep_data.accelerationz_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Z_FIELD);
@@ -161,7 +162,7 @@ encode_to_8 (uint8_t * const output,
     re_status_t enc_code = RE_SUCCESS;
     re_8_data_t ep_data = {0};
     ep_8_measurement_count++;
-    ep_8_measurement_count %= RE_8_SEQCTR_MAX;
+    ep_8_measurement_count %= (RE_8_SEQCTR_MAX + 1);
     ep_data.humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
     ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
     ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
