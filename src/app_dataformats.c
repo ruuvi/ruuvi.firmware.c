@@ -202,6 +202,10 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
             encode_to_5 (output, output_length, &data);
             break;
 
+        case DF_8:
+            encode_to_8 (output, output_length, &data);
+            break;
+
         case DF_FA:
             encode_to_fa (output, output_length, &data);
             break;
