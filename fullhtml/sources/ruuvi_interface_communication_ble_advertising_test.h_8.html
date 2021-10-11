@@ -1,0 +1,92 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>ruuvi_interface_communication_ble_advertising_test.h</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">#ifndef RUUVI_INTERFACE_COMMUNICATION_BLE_ADVERTISING_TEST_H</a>
+<a name="ln2">#define RUUVI_INTERFACE_COMMUNICATION_BLE_ADVERTISING_TEST_H</a>
+<a name="ln3">#include &quot;ruuvi_interface_communication_radio.h&quot;</a>
+<a name="ln4"> </a>
+<a name="ln5">/**</a>
+<a name="ln6"> * @addtogroup BLE</a>
+<a name="ln7"> */</a>
+<a name="ln8">/** @{ */</a>
+<a name="ln9">/**</a>
+<a name="ln10"> * @file ruuvi_interface_communication_ble_advertising_test.h</a>
+<a name="ln11"> * @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
+<a name="ln12"> * @date 2020-06-18</a>
+<a name="ln13"> * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
+<a name="ln14"> *</a>
+<a name="ln15"> * Test implementation of BLE interface.</a>
+<a name="ln16"> */</a>
+<a name="ln17"> </a>
+<a name="ln18">#define RI_TEST_ADV_FAST          (100U)   //!&lt; Fastest allowed interval for connectable advertising.</a>
+<a name="ln19">#define RI_TEST_ADV_TOO_FAST      (99U)    //!&lt; Interval shorter than allowed for non-connectable advertising.</a>
+<a name="ln20">#define RI_TEST_ADV_TOO_SLOW      (10001U) //!&lt; Interval longer than allowed for non-connectable advertising.</a>
+<a name="ln21">#define RI_ADV_RND_DELAY          (10U)    //!&lt; Maximum random delay in adv interval.</a>
+<a name="ln22">#define RI_TEST_ADV_SCAN_INTERVAL (200U)   //!&lt; Scan interval for test</a>
+<a name="ln23">#define RI_TEST_ADV_SCAN_WINDOW   (100U)   //!&lt; Scan window for test</a>
+<a name="ln24">#define RI_TEST_ADV_SCAN_CH_NUM   (3U)     //!&lt; Number of channels to scan.</a>
+<a name="ln25"> </a>
+<a name="ln26">/**</a>
+<a name="ln27"> * @brief Run advertising test.</a>
+<a name="ln28"> *</a>
+<a name="ln29"> * Tests transmitting data at given modulation.</a>
+<a name="ln30"> * If selected modulation can be used as a primary PHY, it is used.</a>
+<a name="ln31"> * If selected modulation can be used only as a secondary PHY, primary</a>
+<a name="ln32"> * advertisement is sent at 1 MBit / s and secondary extended advertisement is sent</a>
+<a name="ln33"> * on selected PHY.</a>
+<a name="ln34"> *</a>
+<a name="ln35"> * Also checks that data is received while scanning, and that scanning times out</a>
+<a name="ln36"> * after scanning on all selected channels.</a>
+<a name="ln37"> *</a>
+<a name="ln38"> * Currently does not verify the actual PHY data was received / sent on.</a>
+<a name="ln39"> *</a>
+<a name="ln40"> */</a>
+<a name="ln41">bool ri_communication_ble_advertising_run_integration_test (const rd_test_print_fp</a>
+<a name="ln42">        printfp,</a>
+<a name="ln43">        const ri_radio_modulation_t modulation);</a>
+<a name="ln44"> </a>
+<a name="ln45">/** @} */</a>
+<a name="ln46">#endif</a>
+
+</code></pre>
+<div class="balloon" rel="41"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2614/" target="_blank">V2614</a> External identifiers should be distinct. The identifier must contain fewer than 32 characters.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>
