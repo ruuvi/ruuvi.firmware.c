@@ -186,7 +186,7 @@ encode_to_8 (uint8_t * const output,
 
 #if RE_FA_ENABLED
 #ifndef APP_FA_KEY
-#define APP_FA_KEY {00, 11, 22, 33, 44, 55, 66, 77, 88, 99, 11, 12, 13, 14, 15, 16}
+#define APP_FA_KEY {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15}
 #endif
 static const uint8_t ep_fa_key[RE_FA_CIPHERTEXT_LENGTH] = APP_FA_KEY;
 

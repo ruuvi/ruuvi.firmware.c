@@ -25,6 +25,7 @@
 #include "ruuvi_task_advertisement.h"
 #include "ruuvi_task_gatt.h"
 #include "ruuvi_task_nfc.h"
+#include <stdio.h>
 
 #define U8_MASK (0xFFU)
 #define APP_DF_3_ENABLED 0
@@ -35,16 +36,6 @@
 static ri_timer_id_t heart_timer; //!< Timer for updating data.
 
 static uint64_t last_heartbeat_timestamp_ms; //!< Timestamp for heartbeat refresh.
-
-static app_dataformat_t m_dataformat_state; //!< State of heartbeat.
-
-static app_dataformats_t m_dataformats_enabled =
-{
-    .DF_3  = APP_DF_3_ENABLED,
-    .DF_5  = APP_DF_5_ENABLED,
-    .DF_8  = APP_DF_8_ENABLED,
-    .DF_FA = APP_DF_FA_ENABLED
-}; //!< Flags of enabled formats
 
 static rd_status_t send_adv (ri_comm_message_t * const p_msg)
 {
@@ -86,6 +77,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     rd_status_t err_code = RD_SUCCESS;
     bool heartbeat_ok = false;
     rd_sensor_data_t data = { 0 };
+    uint8_t buffer[RI_COMM_MESSAGE_MAX_LENGTH] = { 0 };
     size_t buffer_len = RI_COMM_MESSAGE_MAX_LENGTH;
     data.fields = app_sensor_available_data();
     float data_values[rd_sensor_data_fieldcount (&data)];
@@ -93,8 +85,8 @@ void heartbeat (void * p_event, uint16_t event_size)
     app_sensor_get (&data);
     // Sensor read takes a long while, indicate activity once data is read.
     app_led_activity_signal (true);
-    m_dataformat_state = app_dataformat_next (m_dataformats_enabled, m_dataformat_state);
-    app_dataformat_encode (msg.data, &buffer_len, m_dataformat_state);
+    //m_dataformat_state = app_dataformat_next (m_dataformats_enabled, m_dataformat_state);
+    app_dataformat_encode (msg.data, &buffer_len, DF_FA);
     msg.data_length = (uint8_t) buffer_len;
     err_code = send_adv (&msg);
     // Advertising should always be successful
@@ -104,7 +96,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     {
         heartbeat_ok = true;
     }
-
+#if 0
     // Cut endpoint data to fit into GATT msg.
     msg.data_length = 18;
     // Gatt Link layer takes care of delivery.
@@ -115,9 +107,15 @@ void heartbeat (void * p_event, uint16_t event_size)
     {
         heartbeat_ok = true;
     }
+#endif
 
-    // Restore original message length for NFC
-    msg.data_length = (uint8_t) buffer_len;
+    // Encode to DF3 for NFC
+    buffer_len = RI_COMM_MESSAGE_MAX_LENGTH;
+    app_dataformat_encode (buffer, &buffer_len, DF_3);
+    for (uint8_t ii = 0; ii < buffer_len; ii++){
+    sprintf(msg.data + (2 * ii), "%02x", buffer[ii]);
+    }
+    msg.data_length = (uint8_t) (buffer_len * 2);
     err_code = rt_nfc_send (&msg);
 
     if (RD_SUCCESS == err_code)

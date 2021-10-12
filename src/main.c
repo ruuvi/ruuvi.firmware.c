@@ -1,6 +1,5 @@
 /**
  * @defgroup main Program main
- *
  */
 /** @{ */
 /**
