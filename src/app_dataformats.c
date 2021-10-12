@@ -152,7 +152,7 @@ encode_to_8 (uint8_t * const output,
              const rd_sensor_data_t * const data)
 {
     static uint16_t ep_8_measurement_count = 0;
-    uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = { 0 };
+    uint8_t final_key[RE_8_CIPHERTEXT_LENGTH] = { 0 };
     rd_status_t err_code = RD_SUCCESS;
     re_status_t enc_code = RE_SUCCESS;
     re_8_data_t ep_data = {0};
@@ -164,14 +164,14 @@ encode_to_8 (uint8_t * const output,
     ep_data.message_counter = ep_8_measurement_count;
     uint8_t mvtctr = (uint8_t) (app_sensor_event_count_get() % (RE_8_MVTCTR_MAX + 1));
     ep_data.movement_count    = mvtctr;
-    err_code |= ep_8_key_generate (ep_8_key);
+    err_code |= ep_8_key_generate (final_key);
     err_code |= ri_radio_address_get (&ep_data.address);
     err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
     err_code |= rt_adc_vdd_get (&ep_data.battery_v);
     enc_code |= re_8_encode (output,
                              &ep_data,
                              &app_data_encrypt,
-                             ep_8_key,
+                             final_key,
                              RE_8_CIPHERTEXT_LENGTH);
 
     if (RE_SUCCESS != enc_code)
