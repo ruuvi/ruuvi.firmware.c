@@ -5,6 +5,8 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "app_button.h", "app__button_8h.html", "app__button_8h" ],
     [ "app_comms.c", "app__comms_8c.html", "app__comms_8c" ],
     [ "app_comms.h", "app__comms_8h.html", "app__comms_8h" ],
+    [ "app_dataformats.c", "app__dataformats_8c.html", "app__dataformats_8c" ],
+    [ "app_dataformats.h", "app__dataformats_8h.html", "app__dataformats_8h" ],
     [ "app_heartbeat.c", "app__heartbeat_8c.html", "app__heartbeat_8c" ],
     [ "app_heartbeat.h", "app__heartbeat_8h.html", "app__heartbeat_8h" ],
     [ "app_led.c", "app__led_8c.html", "app__led_8c" ],

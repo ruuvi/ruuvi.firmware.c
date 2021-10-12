@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['powerup_5fdelay_5fms_377',['POWERUP_DELAY_MS',['../app__sensor_8c.html#a609557c87d7c45e2c10777bd9beb0891',1,'app_sensor.c']]]
+  ['ri_5flog_5fenabled_416',['RI_LOG_ENABLED',['../application__mode__debug_8h.html#ab55b9376f1e8e8ee5205a96b20f796ae',1,'application_mode_debug.h']]]
 ];

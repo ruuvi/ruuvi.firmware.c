@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ruuvi_2efirmware_2ec_398',['ruuvi.firmware.c',['../index.html',1,'']]]
+  ['ruuvi_2efirmware_2ec_433',['ruuvi.firmware.c',['../index.html',1,'']]]
 ];
