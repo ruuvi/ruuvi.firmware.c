@@ -398,13 +398,17 @@
 #   define RI_ADC_ENABLED (1U)
 #endif
 
+#define RE_3_ENABLED  (0U)
+#define RE_5_ENABLED  (1U)
+#define RE_8_ENABLED  (0U)
+#define RE_FA_ENABLED (0U)
 /**
  * @brief Enable Ruuvi AES interface.
  *
  * Required by Dataformats 8, FA. Boards with little flash can't support mbed tls.
  */
 #ifndef RI_AES_ENABLED
-#   define RI_AES_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)
+#   define RI_AES_ENABLED (RE_8_ENABLED | RE_FA_ENABLED)
 #endif
 
 /**
