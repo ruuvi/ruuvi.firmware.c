@@ -20,6 +20,7 @@
 #   define TESTABLE_STATIC static
 #endif
 
+#if (RE_8_ENABLED || RE_FA_ENABLED)
 uint32_t app_data_encrypt (const uint8_t * const cleartext,
                            uint8_t * const ciphertext,
                            const size_t data_size,
@@ -49,6 +50,7 @@ uint32_t app_data_encrypt (const uint8_t * const cleartext,
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     return ret_code;
 }
+#endif
 
 app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
                                       const app_dataformat_t state)
@@ -57,6 +59,7 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
     return DF_5;
 }
 
+#if RE_3_ENABLED
 TESTABLE_STATIC rd_status_t
 encode_to_3 (uint8_t * const output,
              size_t * const output_length,
@@ -82,7 +85,9 @@ encode_to_3 (uint8_t * const output,
     *output_length = RE_3_DATA_LENGTH;
     return err_code;
 }
+#endif
 
+#if RE_5_ENABLED
 TESTABLE_STATIC rd_status_t
 encode_to_5 (uint8_t * const output,
              size_t * const output_length,
@@ -116,8 +121,15 @@ encode_to_5 (uint8_t * const output,
     *output_length = RE_5_DATA_LENGTH;
     return err_code;
 }
+#endif
 
 #if RE_8_ENABLED
+#ifndef APP_8_KEY
+// "RuuviComRuuviTag"
+#define APP_8_KEY { 0x52, 0x75, 0x75, 0x76, 0x69, 0x43, 0x6F, 0x6D, 0x52, 0x75, 0x75, 0x76, 0x69, 0x54, 0x61, 0x67}
+#endif
+static const uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = APP_8_KEY;
+
 TESTABLE_STATIC rd_status_t
 ep_8_key_generate (uint8_t * const key)
 {
@@ -133,13 +145,6 @@ ep_8_key_generate (uint8_t * const key)
 
     return err_code;
 }
-
-
-#ifndef APP_8_KEY
-// "RuuviComRuuviTag"
-#define APP_8_KEY { 0x52, 0x75, 0x75, 0x76, 0x69, 0x43, 0x6F, 0x6D, 0x52, 0x75, 0x75, 0x76, 0x69, 0x54, 0x61, 0x67}
-#endif
-static const uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = APP_8_KEY;
 
 TESTABLE_STATIC rd_status_t
 encode_to_8 (uint8_t * const output,
@@ -234,28 +239,33 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
 
     switch (format)
     {
+#       if RE_3_ENABLED
+
         case DF_3:
             err_code |= encode_to_3 (output, output_length, &data);
             break;
+#       endif
+#       if RE_5_ENABLED
 
         case DF_5:
             err_code |= encode_to_5 (output, output_length, &data);
             break;
-
+#       endif
 #       if RE_8_ENABLED
+
         case DF_8:
             err_code |= encode_to_8 (output, output_length, &data);
             break;
 #       endif
-
 #       if RE_FA_ENABLED
+
         case DF_FA:
             err_code |= encode_to_fa (output, output_length, &data);
             break;
 #       endif
 
         default:
-            err_code |= RD_ERROR_NOT_IMPLEMENTED;
+            err_code |= RD_ERROR_NOT_ENABLED;
     }
 
     return err_code;

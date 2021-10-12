@@ -398,10 +398,43 @@
 #   define RI_ADC_ENABLED (1U)
 #endif
 
-#define RE_3_ENABLED  (0U)
-#define RE_5_ENABLED  (1U)
-#define RE_8_ENABLED  (0U)
-#define RE_FA_ENABLED (0U)
+/**
+ * @brief Enable all possible dataformats for unit testing.
+ */
+#ifdef CEEDLING
+#  define ENABLE_ALL_DATAFORMATS (1U)
+#else
+#  define ENABLE_ALL_DATAFORMATS (0U)
+#endif
+
+/**
+ * @brief Enable legacy raw dataformat
+ */
+#ifndef RE_3_ENABLED
+#   define RE_3_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable official raw dataformat
+ */
+#ifndef RE_5_ENABLED
+#   define RE_5_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable official encrypted dataformat
+ */
+#ifndef RE_8_ENABLED
+#   define RE_8_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable legacy encrypted dataformat
+ */
+#ifndef RE_FA_ENABLED
+#   define RE_FA_ENABLED (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
 /**
  * @brief Enable Ruuvi AES interface.
  *

@@ -66,6 +66,7 @@
     - NRF52832_XXAA
     - CMOCK
     - CEEDLING
+    - APPLICATION_ENDPOINTS_CONFIGURED
   :test:
     - *common_defines
     - TEST
