@@ -11,6 +11,7 @@
  *
  */
 
+#include "app_config.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_endpoints.h"

@@ -20,17 +20,6 @@
 #   define TESTABLE_STATIC static
 #endif
 
-#ifndef APP_FA_KEY
-#define APP_FA_KEY {00, 11, 22, 33, 44, 55, 66, 77, 88, 99, 11, 12, 13, 14, 15, 16}
-#endif
-static const uint8_t ep_fa_key[RE_FA_CIPHERTEXT_LENGTH] = APP_FA_KEY;
-
-#ifndef APP_8_KEY
-// "RuuviComRuuviTag"
-#define APP_8_KEY { 0x52, 0x75, 0x75, 0x76, 0x69, 0x43, 0x6F, 0x6D, 0x52, 0x75, 0x75, 0x76, 0x69, 0x54, 0x61, 0x67}
-#endif
-static const uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = APP_8_KEY;
-
 uint32_t app_data_encrypt (const uint8_t * const cleartext,
                            uint8_t * const ciphertext,
                            const size_t data_size,
@@ -128,6 +117,7 @@ encode_to_5 (uint8_t * const output,
     return err_code;
 }
 
+#if RE_8_ENABLED
 TESTABLE_STATIC rd_status_t
 ep_8_key_generate (uint8_t * const key)
 {
@@ -144,13 +134,20 @@ ep_8_key_generate (uint8_t * const key)
     return err_code;
 }
 
+
+#ifndef APP_8_KEY
+// "RuuviComRuuviTag"
+#define APP_8_KEY { 0x52, 0x75, 0x75, 0x76, 0x69, 0x43, 0x6F, 0x6D, 0x52, 0x75, 0x75, 0x76, 0x69, 0x54, 0x61, 0x67}
+#endif
+static const uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = APP_8_KEY;
+
 TESTABLE_STATIC rd_status_t
 encode_to_8 (uint8_t * const output,
              size_t * const output_length,
              const rd_sensor_data_t * const data)
 {
     static uint16_t ep_8_measurement_count = 0;
-    uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = {};
+    uint8_t ep_8_key[RE_8_CIPHERTEXT_LENGTH] = { 0 };
     rd_status_t err_code = RD_SUCCESS;
     re_status_t enc_code = RE_SUCCESS;
     re_8_data_t ep_data = {0};
@@ -180,6 +177,13 @@ encode_to_8 (uint8_t * const output,
     *output_length = RE_5_DATA_LENGTH;
     return err_code;
 }
+#endif
+
+#if RE_FA_ENABLED
+#ifndef APP_FA_KEY
+#define APP_FA_KEY {00, 11, 22, 33, 44, 55, 66, 77, 88, 99, 11, 12, 13, 14, 15, 16}
+#endif
+static const uint8_t ep_fa_key[RE_FA_CIPHERTEXT_LENGTH] = APP_FA_KEY;
 
 TESTABLE_STATIC rd_status_t
 encode_to_fa (uint8_t * const output,
@@ -215,6 +219,7 @@ encode_to_fa (uint8_t * const output,
     *output_length = RE_FA_DATA_LENGTH;
     return err_code;
 }
+#endif
 
 rd_status_t app_dataformat_encode (uint8_t * const output,
                                    size_t * const output_length,
@@ -237,13 +242,17 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
             err_code |= encode_to_5 (output, output_length, &data);
             break;
 
+#       if RE_8_ENABLED
         case DF_8:
             err_code |= encode_to_8 (output, output_length, &data);
             break;
+#       endif
 
+#       if RE_FA_ENABLED
         case DF_FA:
             err_code |= encode_to_fa (output, output_length, &data);
             break;
+#       endif
 
         default:
             err_code |= RD_ERROR_NOT_IMPLEMENTED;

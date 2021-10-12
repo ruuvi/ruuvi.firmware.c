@@ -30,17 +30,32 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_init.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw/nrf_hw_backend_rng_mbedtls.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_aes.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_aes_aead.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_ecc.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_ecdh.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_ecdsa.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_hash.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_hmac.c \
+  $(SDK_ROOT)/components/libraries/crypto/backend/mbedtls/mbedtls_backend_init.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_chacha_poly_aead.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_ecc.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_ecdh.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_ecdsa.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_hash.c \
   $(SDK_ROOT)/components/libraries/crypto/backend/oberon/oberon_backend_hmac.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_aes_shared.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_aes.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_ecc.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_ecdsa.c \
-  $(SDK_ROOT)//components/libraries/crypto/nrf_crypto_hash.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_hash.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_init.c \
   $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_rng.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_aead.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_error.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_hkdf.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_hmac.c \
+  $(SDK_ROOT)/components/libraries/crypto/nrf_crypto_shared.c \
   $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_sd.c \
@@ -67,6 +82,72 @@ NRF_LIB_SOURCES= \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_ble.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
+  $(SDK_ROOT)/external/mbedtls/library/aes.c \
+  $(SDK_ROOT)/external/mbedtls/library/aesni.c \
+  $(SDK_ROOT)/external/mbedtls/library/arc4.c \
+  $(SDK_ROOT)/external/mbedtls/library/asn1parse.c \
+  $(SDK_ROOT)/external/nrf_tls/mbedtls/replacements/asn1write.c \
+  $(SDK_ROOT)/external/mbedtls/library/base64.c \
+  $(SDK_ROOT)/external/mbedtls/library/bignum.c \
+  $(SDK_ROOT)/external/mbedtls/library/blowfish.c \
+  $(SDK_ROOT)/external/mbedtls/library/camellia.c \
+  $(SDK_ROOT)/external/mbedtls/library/ccm.c \
+  $(SDK_ROOT)/external/mbedtls/library/certs.c \
+  $(SDK_ROOT)/external/mbedtls/library/cipher.c \
+  $(SDK_ROOT)/external/mbedtls/library/cipher_wrap.c \
+  $(SDK_ROOT)/external/mbedtls/library/cmac.c \
+  $(SDK_ROOT)/external/mbedtls/library/ctr_drbg.c \
+  $(SDK_ROOT)/external/mbedtls/library/debug.c \
+  $(SDK_ROOT)/external/mbedtls/library/des.c \
+  $(SDK_ROOT)/external/mbedtls/library/dhm.c \
+  $(SDK_ROOT)/external/mbedtls/library/ecdh.c \
+  $(SDK_ROOT)/external/mbedtls/library/ecdsa.c \
+  $(SDK_ROOT)/external/mbedtls/library/ecp.c \
+  $(SDK_ROOT)/external/mbedtls/library/ecp_curves.c \
+  $(SDK_ROOT)/external/mbedtls/library/entropy.c \
+  $(SDK_ROOT)/external/mbedtls/library/entropy_poll.c \
+  $(SDK_ROOT)/external/mbedtls/library/error.c \
+  $(SDK_ROOT)/external/mbedtls/library/gcm.c \
+  $(SDK_ROOT)/external/mbedtls/library/havege.c \
+  $(SDK_ROOT)/external/mbedtls/library/hmac_drbg.c \
+  $(SDK_ROOT)/external/mbedtls/library/md.c \
+  $(SDK_ROOT)/external/mbedtls/library/md2.c \
+  $(SDK_ROOT)/external/mbedtls/library/md4.c \
+  $(SDK_ROOT)/external/mbedtls/library/md5.c \
+  $(SDK_ROOT)/external/mbedtls/library/md_wrap.c \
+  $(SDK_ROOT)/external/mbedtls/library/memory_buffer_alloc.c \
+  $(SDK_ROOT)/external/mbedtls/library/oid.c \
+  $(SDK_ROOT)/external/mbedtls/library/padlock.c \
+  $(SDK_ROOT)/external/mbedtls/library/pem.c \
+  $(SDK_ROOT)/external/mbedtls/library/pk.c \
+  $(SDK_ROOT)/external/mbedtls/library/pk_wrap.c \
+  $(SDK_ROOT)/external/mbedtls/library/pkcs11.c \
+  $(SDK_ROOT)/external/mbedtls/library/pkcs12.c \
+  $(SDK_ROOT)/external/mbedtls/library/pkcs5.c \
+  $(SDK_ROOT)/external/mbedtls/library/pkparse.c \
+  $(SDK_ROOT)/external/mbedtls/library/pkwrite.c \
+  $(SDK_ROOT)/external/mbedtls/library/platform.c \
+  $(SDK_ROOT)/external/mbedtls/library/ripemd160.c \
+  $(SDK_ROOT)/external/mbedtls/library/rsa.c \
+  $(SDK_ROOT)/external/mbedtls/library/sha1.c \
+  $(SDK_ROOT)/external/mbedtls/library/sha256.c \
+  $(SDK_ROOT)/external/mbedtls/library/sha512.c \
+  $(SDK_ROOT)/external/mbedtls/library/ssl_cache.c \
+  $(SDK_ROOT)/external/mbedtls/library/ssl_ciphersuites.c \
+  $(SDK_ROOT)/external/mbedtls/library/ssl_cli.c \
+  $(SDK_ROOT)/external/mbedtls/library/ssl_cookie.c \
+  $(SDK_ROOT)/external/nrf_tls/mbedtls/replacements/ssl_srv.c \
+  $(SDK_ROOT)/external/mbedtls/library/ssl_ticket.c \
+  $(SDK_ROOT)/external/mbedtls/library/ssl_tls.c \
+  $(SDK_ROOT)/external/mbedtls/library/threading.c \
+  $(SDK_ROOT)/external/mbedtls/library/version.c \
+  $(SDK_ROOT)/external/mbedtls/library/version_features.c \
+  $(SDK_ROOT)/external/mbedtls/library/x509.c \
+  $(SDK_ROOT)/external/mbedtls/library/x509_create.c \
+  $(SDK_ROOT)/external/mbedtls/library/x509_crl.c \
+  $(SDK_ROOT)/external/mbedtls/library/x509_crt.c \
+  $(SDK_ROOT)/external/mbedtls/library/x509_csr.c \
+  $(SDK_ROOT)/external/mbedtls/library/xtea.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf.c \
   $(SDK_ROOT)/external/fprintf/nrf_fprintf_format.c \
   $(SDK_ROOT)/external/segger_rtt/SEGGER_RTT.c \
@@ -341,4 +422,6 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.libraries.c/src/integration_tests 
 
 COMMON_DEFINES= \
-  -DAPPLICATION_DRIVER_CONFIGURED
+  -DAPPLICATION_DRIVER_CONFIGURED \
+  -DAPPLICATION_ENDPOINTS_CONFIGURED \
+  -DMBEDTLS_CONFIG_FILE=\"nrf_crypto_mbedtls_config.h\" 

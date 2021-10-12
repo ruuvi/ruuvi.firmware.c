@@ -390,12 +390,21 @@
 
 
 /**
- * @brief enable Ruuvi ADC interface.
+ * @brief Enable Ruuvi ADC interface.
  *
  * Required by sensor
  */
 #ifndef RI_ADC_ENABLED
 #   define RI_ADC_ENABLED (1U)
+#endif
+
+/**
+ * @brief Enable Ruuvi AES interface.
+ *
+ * Required by Dataformats 8, FA. Boards with little flash can't support mbed tls.
+ */
+#ifndef RI_AES_ENABLED
+#   define RI_AES_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)
 #endif
 
 /**
