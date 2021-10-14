@@ -147,9 +147,12 @@ static
 #endif
 void on_button_1_press_isr (const ri_gpio_evt_t evt)
 {
+    // Disabled for FW spec
+    #if 0
     rd_status_t err_code = ri_scheduler_event_put (&evt, sizeof (ri_gpio_evt_t),
                            &button_handler);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+    #endif
 }
 #endif
 

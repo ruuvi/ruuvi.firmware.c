@@ -20,6 +20,7 @@
 #include "run_integration_tests.h"
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_power.h"
+#include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_timer.h"
 #include "ruuvi_interface_watchdog.h"
@@ -39,6 +40,8 @@ void on_wdt (void)
     // Store cause of reset to flash - TODO
 }
 #endif
+
+#define REBOOT_TIMER_MS (24U*60U*60U*1000U)
 
 #ifndef CEEDLING
 static
@@ -118,6 +121,11 @@ int main (void)
         ri_yield();
         // Prevent loop being optimized away
         __asm__ ("");
+        // Reboot at 24 hours
+        if(ri_rtc_millis() > REBOOT_TIMER_MS)
+        {
+            ri_power_reset();
+        }
     } while (LOOP_FOREVER);
 
     // Intentionally non-reachable code unless unit testing.

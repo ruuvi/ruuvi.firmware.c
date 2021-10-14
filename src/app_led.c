@@ -37,7 +37,7 @@ TESTABLE_STATIC uint32_t m_signals;
 static void state_change_process (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-
+    #if 0 // Disabled for FW spec
     //State: Paused
     if (PAUSE_BIT & m_signals)
     {
@@ -65,6 +65,7 @@ static void state_change_process (void)
     }
     //Default: leds off
     else
+    #endif
     {
         for (size_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
         {

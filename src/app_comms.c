@@ -350,9 +350,11 @@ static
 #endif
 void on_nfc_connected_isr (void * p_data, size_t data_len)
 {
+#if 0
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_nfc_connected);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
+#endif 
 }
 
 #ifndef CEEDLING
@@ -372,10 +374,12 @@ static
 #endif
 void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 {
+#if 0
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,
                                         &handle_nfc_disconnected);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
+#endif 
 }
 #endif
 
@@ -565,7 +569,7 @@ rd_status_t app_comms_ble_init (const bool secure)
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= adv_init();
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
-    err_code |= gatt_init (&dis, secure);
+    // err_code |= gatt_init (&dis, secure);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     ri_radio_activity_callback_set (&app_sensor_vdd_measure_isr);
     return err_code;
@@ -584,7 +588,7 @@ rd_status_t app_comms_ble_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_adv_uninit();
-    err_code |= rt_gatt_uninit();
+    //err_code |= rt_gatt_uninit();
     return err_code;
 }
 
