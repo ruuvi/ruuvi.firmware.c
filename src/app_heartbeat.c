@@ -7,6 +7,7 @@
 
 #include "app_config.h"
 #include "app_comms.h"
+#include "app_dataformats.h"
 #include "app_heartbeat.h"
 #include "app_led.h"
 #include "app_log.h"
@@ -26,36 +27,24 @@
 #include "ruuvi_task_nfc.h"
 
 #define U8_MASK (0xFFU)
+#define APP_DF_3_ENABLED 0
+#define APP_DF_5_ENABLED 1
+#define APP_DF_8_ENABLED 0
+#define APP_DF_FA_ENABLED 0
 
 static ri_timer_id_t heart_timer; //!< Timer for updating data.
 
-#ifndef CEEDLING
-static
-#endif
-uint16_t m_measurement_count; //!< Increment on new samples.
+static uint64_t last_heartbeat_timestamp_ms; //!< Timestamp for heartbeat refresh.
 
-static uint64_t last_heartbeat_timestamp_ms;
+static app_dataformat_t m_dataformat_state; //!< State of heartbeat.
 
-static rd_status_t encode_to_5 (const rd_sensor_data_t * const data,
-                                ri_comm_message_t * const msg)
+static app_dataformats_t m_dataformats_enabled =
 {
-    rd_status_t err_code = RD_SUCCESS;
-    re_5_data_t ep_data = {0};
-    ep_data.accelerationx_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_X_FIELD);
-    ep_data.accelerationy_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Y_FIELD);
-    ep_data.accelerationz_g   = rd_sensor_data_parse (data, RD_SENSOR_ACC_Z_FIELD);
-    ep_data.humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
-    ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
-    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
-    ep_data.measurement_count = m_measurement_count;
-    ep_data.movement_count    = (uint8_t) (app_sensor_event_count_get() & U8_MASK);
-    err_code |= ri_radio_address_get (&ep_data.address);
-    err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
-    err_code |= rt_adc_vdd_get (&ep_data.battery_v);
-    re_5_encode (msg->data, &ep_data);
-    msg->data_length = RE_5_DATA_LENGTH;
-    return err_code;
-}
+    .DF_3  = APP_DF_3_ENABLED,
+    .DF_5  = APP_DF_5_ENABLED,
+    .DF_8  = APP_DF_8_ENABLED,
+    .DF_FA = APP_DF_FA_ENABLED
+}; //!< Flags of enabled formats
 
 static rd_status_t send_adv (ri_comm_message_t * const p_msg)
 {
@@ -97,19 +86,16 @@ void heartbeat (void * p_event, uint16_t event_size)
     rd_status_t err_code = RD_SUCCESS;
     bool heartbeat_ok = false;
     rd_sensor_data_t data = { 0 };
+    size_t buffer_len = RI_COMM_MESSAGE_MAX_LENGTH;
     data.fields = app_sensor_available_data();
     float data_values[rd_sensor_data_fieldcount (&data)];
     data.data = data_values;
     app_sensor_get (&data);
     // Sensor read takes a long while, indicate activity once data is read.
     app_led_activity_signal (true);
-    encode_to_5 (&data, &msg);
-
-    if (RE_5_INVALID_SEQUENCE == ++m_measurement_count)
-    {
-        m_measurement_count = 0;
-    }
-
+    m_dataformat_state = app_dataformat_next (m_dataformats_enabled, m_dataformat_state);
+    app_dataformat_encode (msg.data, &buffer_len, m_dataformat_state);
+    msg.data_length = (uint8_t) buffer_len;
     err_code = send_adv (&msg);
     // Advertising should always be successful
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
@@ -119,7 +105,7 @@ void heartbeat (void * p_event, uint16_t event_size)
         heartbeat_ok = true;
     }
 
-    // Cut endpoint 5 data to fit into GATT msg.
+    // Cut endpoint data to fit into GATT msg.
     msg.data_length = 18;
     // Gatt Link layer takes care of delivery.
     msg.repeat_count = 1;
@@ -130,6 +116,8 @@ void heartbeat (void * p_event, uint16_t event_size)
         heartbeat_ok = true;
     }
 
+    // Restore original message length for NFC
+    msg.data_length = (uint8_t) buffer_len;
     err_code = rt_nfc_send (&msg);
 
     if (RD_SUCCESS == err_code)

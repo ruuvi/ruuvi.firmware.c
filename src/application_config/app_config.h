@@ -390,12 +390,58 @@
 
 
 /**
- * @brief enable Ruuvi ADC interface.
+ * @brief Enable Ruuvi ADC interface.
  *
  * Required by sensor
  */
 #ifndef RI_ADC_ENABLED
 #   define RI_ADC_ENABLED (1U)
+#endif
+
+/**
+ * @brief Enable all possible dataformats for unit testing.
+ */
+#ifdef CEEDLING
+#  define ENABLE_ALL_DATAFORMATS (1U)
+#else
+#  define ENABLE_ALL_DATAFORMATS (0U)
+#endif
+
+/**
+ * @brief Enable legacy raw dataformat
+ */
+#ifndef RE_3_ENABLED
+#   define RE_3_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable official raw dataformat
+ */
+#ifndef RE_5_ENABLED
+#   define RE_5_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable official encrypted dataformat
+ */
+#ifndef RE_8_ENABLED
+#   define RE_8_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable legacy encrypted dataformat
+ */
+#ifndef RE_FA_ENABLED
+#   define RE_FA_ENABLED (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable Ruuvi AES interface.
+ *
+ * Required by Dataformats 8, FA. Boards with little flash can't support mbed tls.
+ */
+#ifndef RI_AES_ENABLED
+#   define RI_AES_ENABLED (RE_8_ENABLED | RE_FA_ENABLED)
 #endif
 
 /**
