@@ -286,12 +286,12 @@
 
 #ifndef APP_GATT_ENABLED
 //!< If Flash is at premium, cut GATT off by default.
-#   define APP_GATT_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)
+#   define APP_GATT_ENABLED (0U)
 #endif
 
 /** @brief Enable GATT tasks */
 #ifndef RT_GATT_ENABLED
-#   define RT_GATT_ENABLED APP_GATT_ENABLED
+#   define RT_GATT_ENABLED (1U)
 #endif
 
 /** @brief Enable communication tasks */

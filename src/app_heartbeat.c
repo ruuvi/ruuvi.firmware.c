@@ -28,10 +28,6 @@
 #include <stdio.h>
 
 #define U8_MASK (0xFFU)
-#define APP_DF_3_ENABLED 0
-#define APP_DF_5_ENABLED 1
-#define APP_DF_8_ENABLED 0
-#define APP_DF_FA_ENABLED 0
 
 static ri_timer_id_t heart_timer; //!< Timer for updating data.
 
@@ -129,7 +125,7 @@ void heartbeat (void * p_event, uint16_t event_size)
         last_heartbeat_timestamp_ms = ri_rtc_millis();
     }
 
-    err_code = app_log_process (&data);
+    // err_code = app_log_process (&data);
     app_led_activity_signal (false);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }

@@ -41,6 +41,7 @@
 #define CONN_PARAM_UPDATE_DELAY_MS (30U * 1000U) //!< Delay before switching to faster conn params in long ops.
 
 #if APP_COMMS_BIDIR_ENABLED
+#if 0
 #ifndef CEEDLING
 static
 #endif
@@ -49,6 +50,7 @@ bool m_config_enabled_on_curr_conn; //!< This connection has config enabled.
 static
 #endif
 bool m_config_enabled_on_next_conn; //!< Next connection has config enabled.
+#endif
 #endif
 
 #ifndef CEEDLING
@@ -133,6 +135,7 @@ static uint8_t initial_adv_send_count (void)
 
 #if APP_COMMS_BIDIR_ENABLED
 
+#if 0
 static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
                           size_t data_len)
 {
@@ -186,6 +189,7 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
 
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
+#endif 
 
 /**
  * @brief Allow configuration commands on next connection.
@@ -195,6 +199,7 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
  *
  * @param[in] enable True to enable configuration on connection, false to disable.
  */
+#if 0
 static rd_status_t enable_config_on_next_conn (const bool enable)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -214,6 +219,7 @@ static rd_status_t enable_config_on_next_conn (const bool enable)
 
     return err_code;
 }
+
 
 /**
  * @brief Configures this connection, call this in on_connected handler.
@@ -238,6 +244,7 @@ static void config_cleanup_on_disconnect (void)
     m_mode_ops.disable_config = 0; // No need to disable config again.
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
+#endif
 
 #if APP_GATT_ENABLED
 
@@ -387,6 +394,7 @@ void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 }
 #endif
 
+#if 0
 rd_status_t app_comms_configure_next_enable (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -396,7 +404,9 @@ rd_status_t app_comms_configure_next_enable (void)
     err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
     return err_code;
 }
+#endif
 
+#if 0
 #ifndef CEEDLING
 static
 #endif
@@ -413,6 +423,7 @@ void handle_config_disable (void * p_data, uint16_t data_len)
 
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
+#endif
 
 #else
 rd_status_t app_comms_configure_next_enable (void)
@@ -480,7 +491,7 @@ void comm_mode_change_isr (void * const p_context)
         p_change->switch_to_normal = 0;
     }
 
-#if APP_COMMS_BIDIR_ENABLED
+#if 0
 
     if (p_change->disable_config)
     {
@@ -516,6 +527,7 @@ static rd_status_t adv_init (void)
     return err_code;
 }
 
+#if 0
 static rd_status_t gatt_init (const ri_comm_dis_init_t * const p_dis, const bool secure)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -538,6 +550,7 @@ static rd_status_t gatt_init (const ri_comm_dis_init_t * const p_dis, const bool
 #endif
     return err_code;
 }
+#endif
 
 rd_status_t app_comms_init (const bool secure)
 {
@@ -550,7 +563,7 @@ rd_status_t app_comms_init (const bool secure)
     {
         if (!secure)
         {
-            err_code |= app_comms_configure_next_enable();
+            // err_code |= app_comms_configure_next_enable();
         }
 
         ri_comm_dis_init_t dis = {0};
