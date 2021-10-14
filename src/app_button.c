@@ -38,10 +38,13 @@ typedef struct
     unsigned int factory_reset : 1; //!< Button should do a factory reset.
 } button_action_t;
 #endif
+
+#if 0
 #ifndef CEEDLING
 static
 #endif
 button_action_t m_button_action;
+#endif
 
 static inline void LOG (const char * const msg)
 {
@@ -77,6 +80,7 @@ void button_timer_handler_isr (void * p_context)
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
+#if 0
 // Find which button was pressed
 #ifndef CEEDLING
 static
@@ -102,7 +106,9 @@ ri_gpio_slope_t get_activation (const ri_gpio_evt_t * const evt)
 
     return activation;
 }
+#endif
 
+#if 0
 static void handle_enable_config_button (const bool activated)
 {
     if (activated)
@@ -123,7 +129,9 @@ static void handle_enable_config_button (const bool activated)
         (void) app_comms_configure_next_enable();
     }
 }
+#endif
 
+#if 0
 #ifndef CEEDLING
 static
 #endif
@@ -140,6 +148,7 @@ void button_handler (void * p_event_data, uint16_t event_size)
         }
     }
 }
+#endif
 
 #if RB_BUTTONS_NUMBER > 0
 #ifndef CEEDLING

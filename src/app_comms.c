@@ -332,6 +332,7 @@ static rd_status_t ble_name_string_create (char * const name_str, const size_t n
 
 #if APP_NFC_ENABLED
 
+#if 0
 #ifndef CEEDLING
 static
 #endif
@@ -344,6 +345,7 @@ void handle_nfc_connected (void * p_data, uint16_t data_len)
     config_setup_on_this_conn();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
+#endif
 
 #ifndef CEEDLING
 static
@@ -357,6 +359,7 @@ void on_nfc_connected_isr (void * p_data, size_t data_len)
 #endif 
 }
 
+#if 0
 #ifndef CEEDLING
 static
 #endif
@@ -367,6 +370,7 @@ void handle_nfc_disconnected (void * p_data, uint16_t data_len)
     err_code |= app_comms_configure_next_enable();
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
+#endif
 
 /** @brief Callback when NFC is disconnected" */
 #ifndef CEEDLING
@@ -554,7 +558,7 @@ rd_status_t app_comms_init (const bool secure)
         err_code |= nfc_init (&dis);
         err_code |= adv_init();
         err_code |= dis_init (&dis, secure);
-        err_code |= gatt_init (&dis, secure);
+        // err_code |= gatt_init (&dis, secure);
         ri_radio_activity_callback_set (&app_sensor_vdd_measure_isr);
     }
 

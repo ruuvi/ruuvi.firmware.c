@@ -113,7 +113,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     buffer_len = RI_COMM_MESSAGE_MAX_LENGTH;
     app_dataformat_encode (buffer, &buffer_len, DF_3);
     for (uint8_t ii = 0; ii < buffer_len; ii++){
-    sprintf(msg.data + (2 * ii), "%02x", buffer[ii]);
+    sprintf((char*)msg.data + (2 * ii), "%02x", buffer[ii]);
     }
     msg.data_length = (uint8_t) (buffer_len * 2);
     err_code = rt_nfc_send (&msg);
