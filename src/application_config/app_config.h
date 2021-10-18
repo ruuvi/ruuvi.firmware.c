@@ -407,6 +407,9 @@
 #  define ENABLE_ALL_DATAFORMATS (0U)
 #endif
 
+// FW spec: hex-encoded data
+#define RI_COMM_MESSAGE_MAX_LENGTH (24*2U)
+
 /**
  * @brief Enable legacy raw dataformat
  */
