@@ -249,7 +249,7 @@ pvs: $(SOURCES) $(EXECUTABLE)
 $(EXECUTABLE): $(OBJECTS)
 # Converting
 	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
-	plog-converter -a 'GA:1;OP:1;CS:1;MISRA:1' -t errorfile $(POBJECTS) -o ./pvs.error
+	plog-converter -a 'GA:1;OP:1;CS:1;MISRA:1' ---excludedCodes=V1042 -t errorfile $(POBJECTS) -o ./pvs.error
 
 .c.o:
 # Build
