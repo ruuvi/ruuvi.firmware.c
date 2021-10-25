@@ -359,7 +359,7 @@
 <a name="ln346">        rd_sensor_data_set (sample, RD_SENSOR_TEMP_FIELD, p_el-&gt;temperature_c);</a>
 <a name="ln347">        rd_sensor_data_set (sample, RD_SENSOR_HUMI_FIELD, p_el-&gt;humidity_rh);</a>
 <a name="ln348">        rd_sensor_data_set (sample, RD_SENSOR_PRES_FIELD, p_el-&gt;pressure_pa);</a>
-<a name="ln349">        sample-&gt;timestamp_ms = (uint64_t) (p_el-&gt;timestamp_s) * 1000U;</a>
+<a name="ln349">        sample-&gt;timestamp_ms = ( (uint64_t) (p_el-&gt;timestamp_s)) * 1000LLU;</a>
 <a name="ln350">        p_rs-&gt;element_idx++;</a>
 <a name="ln351">    }</a>
 <a name="ln352">    else</a>

@@ -699,270 +699,269 @@
 <a name="ln686">{</a>
 <a name="ln687">    rd_status_t err_code = RD_SUCCESS;</a>
 <a name="ln688">    ri_comm_message_t msg = {0};</a>
-<a name="ln689">    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value,</a>
-<a name="ln690">                                       type);</a>
-<a name="ln691"> </a>
-<a name="ln692">    if (RD_SUCCESS == err_code)</a>
-<a name="ln693">    {</a>
-<a name="ln694">        msg.repeat_count = 1;</a>
-<a name="ln695">        msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
-<a name="ln696">        msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
-<a name="ln697">        err_code |= app_comms_blocking_send (reply_fp, &amp;msg);</a>
-<a name="ln698">    }</a>
-<a name="ln699"> </a>
-<a name="ln700">    return err_code;</a>
-<a name="ln701">}</a>
-<a name="ln702"> </a>
-<a name="ln703">/**</a>
-<a name="ln704"> * @brief Send data element.</a>
-<a name="ln705"> *</a>
-<a name="ln706"> * This function sends given data element to given reply function pointer.</a>
-<a name="ln707"> *</a>
-<a name="ln708"> * @param[in] reply_fp Function pointer to reply to.</a>
-<a name="ln709"> * @param[in] raw_message original query from remote.</a>
-<a name="ln710"> * @param[in] sample Data sample to send.</a>
-<a name="ln711"> * @param[in] time_offset_ms Offset between tag time and real time.</a>
-<a name="ln712"> * @retval RD_SUCCESS reply was sent successfully.</a>
-<a name="ln713"> * @retval error code from reply_fp in case of error.</a>
-<a name="ln714"> *</a>
-<a name="ln715"> * @note This function blocks until reply_fp returns something else than</a>
-<a name="ln716"> *       RD_ERROR_NO_MEM.</a>
-<a name="ln717"> */</a>
-<a name="ln718">static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln719">        const uint8_t * const raw_message,</a>
-<a name="ln720">        const rd_sensor_data_t * const sample,</a>
-<a name="ln721">        const int64_t time_offset_ms)</a>
-<a name="ln722">{</a>
-<a name="ln723">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln724">    const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);</a>
-<a name="ln725">    int64_t real_time_ms = 0;</a>
-<a name="ln726"> </a>
-<a name="ln727">    if ( (0 - time_offset_ms) &lt; (int64_t) sample-&gt;timestamp_ms)</a>
-<a name="ln728">    {</a>
-<a name="ln729">        real_time_ms = sample-&gt;timestamp_ms + time_offset_ms;</a>
-<a name="ln730">    }</a>
-<a name="ln731"> </a>
-<a name="ln732">    for (uint8_t ii = 0; ii &lt; fieldcount; ii++)</a>
-<a name="ln733">    {</a>
-<a name="ln734">        if (rd_sensor_has_valid_data (sample, ii))</a>
-<a name="ln735">        {</a>
-<a name="ln736">            rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);</a>
-<a name="ln737">            err_code |= send_field (reply_fp, raw_message,</a>
-<a name="ln738">                                    type, sample-&gt;data[ii], real_time_ms);</a>
-<a name="ln739">        }</a>
-<a name="ln740">    }</a>
-<a name="ln741"> </a>
-<a name="ln742">    return err_code;</a>
-<a name="ln743">}</a>
-<a name="ln744"> </a>
-<a name="ln745">/**</a>
-<a name="ln746"> * @brief Send no more sensor log data message.</a>
-<a name="ln747"> * TODO -refactor encoding to endpoints.</a>
-<a name="ln748"> * TODO -refactor into comms</a>
-<a name="ln749"> */</a>
-<a name="ln750">static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln751">                                        const uint8_t * const raw_message)</a>
-<a name="ln752">{</a>
-<a name="ln753">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln754">    ri_comm_message_t msg = {0};</a>
-<a name="ln755">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
-<a name="ln756">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
-<a name="ln757">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
-<a name="ln758">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;</a>
-<a name="ln759">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
-<a name="ln760">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
-<a name="ln761">    return err_code;</a>
-<a name="ln762">}</a>
-<a name="ln763"> </a>
-<a name="ln764">/**</a>
-<a name="ln765"> * @brief Send heartbeat overdue data message.</a>
-<a name="ln766"> * TODO -refactor encoding to endpoints.</a>
-<a name="ln767"> * TODO -refactor into comms</a>
-<a name="ln768"> */</a>
-<a name="ln769">static rd_status_t app_sensor_send_timeout (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln770">        const uint8_t * const raw_message)</a>
-<a name="ln771">{</a>
-<a name="ln772">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln773">    ri_comm_message_t msg = {0};</a>
-<a name="ln774">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
-<a name="ln775">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
-<a name="ln776">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
-<a name="ln777">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_OP_TIMEOUT;</a>
-<a name="ln778">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
-<a name="ln779">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
-<a name="ln780">    return err_code;</a>
-<a name="ln781">}</a>
-<a name="ln782"> </a>
-<a name="ln783">/**</a>
-<a name="ln784"> * @brief Log read sensor op.</a>
-<a name="ln785"> *</a>
-<a name="ln786"> * @ref sensor_op.</a>
-<a name="ln787"> *</a>
-<a name="ln788"> * @param[in] reply_fp Function pointer to which send logs.</a>
-<a name="ln789"> * @param[fields] Fields to read.</a>
-<a name="ln790"> * @param[raw_message] Original message from remote.</a>
-<a name="ln791"> * @retval RD_SUCCESS on success.</a>
-<a name="ln792"> * @retval RD_ERROR_INVALID_PARAM if start of logs is after current time.</a>
-<a name="ln793"> * @retval error code from reply_fp if reply fails.</a>
-<a name="ln794"> *</a>
-<a name="ln795"> * @note This function blocks until all requested logs are sent and will therefore</a>
-<a name="ln796"> *       block for a long time.</a>
-<a name="ln797"> */</a>
-<a name="ln798">static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln799">                                        const rd_sensor_data_fields_t fields,</a>
-<a name="ln800">                                        const uint8_t * const raw_message)</a>
-<a name="ln801">{</a>
-<a name="ln802">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln803">    rd_sensor_data_t sample = {0};</a>
-<a name="ln804">    sample.fields = fields;</a>
-<a name="ln805">    float data[rd_sensor_data_fieldcount (&amp;sample)];</a>
-<a name="ln806">    sample.data = data;</a>
-<a name="ln807">    // Parse start, end times.</a>
-<a name="ln808">    int64_t current_time_s = (int64_t) re_std_log_current_time (raw_message);</a>
-<a name="ln809">    int64_t start_s = (int64_t) re_std_log_start_time (raw_message);</a>
-<a name="ln810">    uint32_t sent_elements = 0;</a>
-<a name="ln811">    // overflow in 292 277 266 years</a>
-<a name="ln812">    const int64_t system_time_ms = (int64_t) ri_rtc_millis();</a>
-<a name="ln813"> </a>
-<a name="ln814">    // Cannot have start_s &gt;= current_time_s</a>
-<a name="ln815">    if (current_time_s &gt; start_s)</a>
-<a name="ln816">    {</a>
-<a name="ln817">        // Parse offset to system clock</a>
-<a name="ln818">        LOG (&quot;Sending logged data\r\n&quot;);</a>
-<a name="ln819">        int64_t system_time_s = (system_time_ms / 1000LL);</a>
-<a name="ln820">        int64_t offset_ms = (current_time_s - system_time_s)  * 1000LL;</a>
-<a name="ln821">        int64_t time_diff_ms = (current_time_s - start_s) * 1000LL;</a>
-<a name="ln822">        // First sample to send in real time</a>
-<a name="ln823">        sample.timestamp_ms = (start_s * 1000LL);</a>
-<a name="ln824"> </a>
-<a name="ln825">        // Offset sample time to system clock.</a>
-<a name="ln826">        if (time_diff_ms &gt; system_time_ms)</a>
-<a name="ln827">        {</a>
-<a name="ln828">            sample.timestamp_ms = 0;</a>
-<a name="ln829">        }</a>
-<a name="ln830">        else</a>
-<a name="ln831">        {</a>
-<a name="ln832">            sample.timestamp_ms = system_time_ms - time_diff_ms;</a>
-<a name="ln833">        }</a>
-<a name="ln834"> </a>
-<a name="ln835">        app_log_read_state_t rs =</a>
-<a name="ln836">        {</a>
-<a name="ln837">            .oldest_element_ms = sample.timestamp_ms,</a>
-<a name="ln838">            .element_idx = 0,</a>
-<a name="ln839">            .page_idx = 0</a>
-<a name="ln840">        };</a>
-<a name="ln841"> </a>
-<a name="ln842">        while (RD_SUCCESS == err_code)</a>
-<a name="ln843">        {</a>
-<a name="ln844">            // Reset data validity</a>
-<a name="ln845">            sample.valid.bitfield = 0;</a>
-<a name="ln846">            // Timestamp and fields are set in log read function.</a>
-<a name="ln847">            err_code |= app_log_read (&amp;sample, &amp;rs);</a>
-<a name="ln848"> </a>
-<a name="ln849">            if (RD_ERROR_NOT_FOUND == err_code)</a>
-<a name="ln850">            {</a>
-<a name="ln851">                err_code |= app_sensor_send_eof (reply_fp, raw_message);</a>
-<a name="ln852">                char msg[128];</a>
-<a name="ln853">                snprintf (msg, sizeof (msg), &quot;Logged data sent: %lu elements\r\n&quot;, sent_elements); //-V576</a>
-<a name="ln854">                LOG (msg);</a>
-<a name="ln855">                sent_elements = 0;</a>
-<a name="ln856">            }</a>
-<a name="ln857">            else if (app_heartbeat_overdue())</a>
-<a name="ln858">            {</a>
-<a name="ln859">                err_code |= RD_ERROR_TIMEOUT;</a>
-<a name="ln860">                err_code |= app_sensor_send_timeout (reply_fp, raw_message);</a>
-<a name="ln861">            }</a>
-<a name="ln862">            // If data element was found, send log element.</a>
-<a name="ln863">            else if (RD_SUCCESS == err_code)</a>
-<a name="ln864">            {</a>
-<a name="ln865">                err_code |= app_sensor_send_data (reply_fp, raw_message,</a>
-<a name="ln866">                                                  &amp;sample, offset_ms);</a>
-<a name="ln867">                sent_elements++;</a>
-<a name="ln868">                LOGD (&quot;S&quot;);</a>
-<a name="ln869">            }</a>
-<a name="ln870">            else</a>
-<a name="ln871">            {</a>
-<a name="ln872">                // No action needed, error code gets returned to caller.</a>
-<a name="ln873">            }</a>
-<a name="ln874">        }</a>
-<a name="ln875">    }</a>
-<a name="ln876">    // Start time &gt;= current time</a>
-<a name="ln877">    else</a>
-<a name="ln878">    {</a>
-<a name="ln879">        err_code |= RD_ERROR_INVALID_PARAM;</a>
-<a name="ln880">    }</a>
-<a name="ln881"> </a>
-<a name="ln882">    // Send op status, remove expected not found</a>
-<a name="ln883">    err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
-<a name="ln884">    return err_code;</a>
-<a name="ln885">}</a>
-<a name="ln886"> </a>
-<a name="ln887">rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln888">                               const uint8_t * const raw_message,</a>
-<a name="ln889">                               const uint16_t data_len)</a>
-<a name="ln890">{</a>
-<a name="ln891">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln892"> </a>
-<a name="ln893">    if (NULL == raw_message)</a>
-<a name="ln894">    {</a>
-<a name="ln895">        err_code |= RD_ERROR_NULL;</a>
-<a name="ln896">    }</a>
-<a name="ln897">    else if (data_len &lt; RE_STANDARD_MESSAGE_LENGTH)</a>
-<a name="ln898">    {</a>
-<a name="ln899">        err_code |= RD_ERROR_DATA_SIZE;</a>
-<a name="ln900">    }</a>
-<a name="ln901">    else</a>
-<a name="ln902">    {</a>
-<a name="ln903">        // Parse affected fields. It's ok to have unspecified value here,</a>
-<a name="ln904">        // in that case fields end up being empty and error is reported via reply_fp.</a>
-<a name="ln905">        re_type_t type = (re_type_t) raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
-<a name="ln906">        rd_sensor_data_fields_t target_fields = re2rd_fields (type);</a>
-<a name="ln907">        // Parse desired operation.</a>
-<a name="ln908">        re_op_t op = (re_op_t) raw_message[RE_STANDARD_OPERATION_INDEX];</a>
-<a name="ln909"> </a>
-<a name="ln910">        // If target and op are valid, execute.</a>
-<a name="ln911">        switch (op)</a>
-<a name="ln912">        {</a>
-<a name="ln913">            case RE_STANDARD_LOG_VALUE_READ:</a>
-<a name="ln914">                err_code |= app_sensor_log_read (reply_fp,</a>
-<a name="ln915">                                                 target_fields, raw_message);</a>
-<a name="ln916">                break;</a>
-<a name="ln917"> </a>
-<a name="ln918">            default:</a>
-<a name="ln919">                // Reply with error on unknown op.</a>
-<a name="ln920">                break;</a>
-<a name="ln921">        }</a>
-<a name="ln922">    }</a>
-<a name="ln923"> </a>
-<a name="ln924">    return err_code;</a>
-<a name="ln925">}</a>
-<a name="ln926"> </a>
-<a name="ln927">rd_status_t app_sensor_vdd_sample (void)</a>
-<a name="ln928">{</a>
-<a name="ln929">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln930">    rd_sensor_configuration_t configuration =</a>
-<a name="ln931">    {</a>
-<a name="ln932">        .dsp_function = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln933">        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln934">        .mode = RD_SENSOR_CFG_SINGLE,</a>
-<a name="ln935">        .resolution = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln936">        .samplerate = RD_SENSOR_CFG_DEFAULT,</a>
-<a name="ln937">        .scale = RD_SENSOR_CFG_DEFAULT</a>
-<a name="ln938">    };</a>
-<a name="ln939">    err_code |= rt_adc_vdd_prepare (&amp;configuration);</a>
-<a name="ln940">    err_code |= rt_adc_vdd_sample();</a>
-<a name="ln941">    return err_code;</a>
-<a name="ln942">}</a>
-<a name="ln943"> </a>
-<a name="ln944">#ifdef RUUVI_RUN_TESTS</a>
-<a name="ln945">void app_sensor_ctx_get (rt_sensor_ctx_t *** p_sensors, size_t * num_sensors)</a>
-<a name="ln946">{</a>
-<a name="ln947">    *p_sensors = m_sensors;</a>
-<a name="ln948">    *num_sensors = SENSOR_COUNT;</a>
-<a name="ln949">}</a>
-<a name="ln950">#endif</a>
-<a name="ln951"> </a>
-<a name="ln952">/** @} */</a>
+<a name="ln689">    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value, type);</a>
+<a name="ln690"> </a>
+<a name="ln691">    if (RD_SUCCESS == err_code)</a>
+<a name="ln692">    {</a>
+<a name="ln693">        msg.repeat_count = 1;</a>
+<a name="ln694">        msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
+<a name="ln695">        msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
+<a name="ln696">        err_code |= app_comms_blocking_send (reply_fp, &amp;msg);</a>
+<a name="ln697">    }</a>
+<a name="ln698"> </a>
+<a name="ln699">    return err_code;</a>
+<a name="ln700">}</a>
+<a name="ln701"> </a>
+<a name="ln702">/**</a>
+<a name="ln703"> * @brief Send data element.</a>
+<a name="ln704"> *</a>
+<a name="ln705"> * This function sends given data element to given reply function pointer.</a>
+<a name="ln706"> *</a>
+<a name="ln707"> * @param[in] reply_fp Function pointer to reply to.</a>
+<a name="ln708"> * @param[in] raw_message original query from remote.</a>
+<a name="ln709"> * @param[in] sample Data sample to send.</a>
+<a name="ln710"> * @param[in] time_offset_ms Offset between tag time and real time.</a>
+<a name="ln711"> * @retval RD_SUCCESS reply was sent successfully.</a>
+<a name="ln712"> * @retval error code from reply_fp in case of error.</a>
+<a name="ln713"> *</a>
+<a name="ln714"> * @note This function blocks until reply_fp returns something else than</a>
+<a name="ln715"> *       RD_ERROR_NO_MEM.</a>
+<a name="ln716"> */</a>
+<a name="ln717">static rd_status_t app_sensor_send_data (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln718">        const uint8_t * const raw_message,</a>
+<a name="ln719">        const rd_sensor_data_t * const sample,</a>
+<a name="ln720">        const int64_t time_offset_ms)</a>
+<a name="ln721">{</a>
+<a name="ln722">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln723">    const uint8_t fieldcount = rd_sensor_data_fieldcount (sample);</a>
+<a name="ln724">    int64_t real_time_ms = 0;</a>
+<a name="ln725"> </a>
+<a name="ln726">    if ( (0 - time_offset_ms) &lt; (int64_t) sample-&gt;timestamp_ms)</a>
+<a name="ln727">    {</a>
+<a name="ln728">        real_time_ms = sample-&gt;timestamp_ms + time_offset_ms;</a>
+<a name="ln729">    }</a>
+<a name="ln730"> </a>
+<a name="ln731">    for (uint8_t ii = 0; ii &lt; fieldcount; ii++)</a>
+<a name="ln732">    {</a>
+<a name="ln733">        if (rd_sensor_has_valid_data (sample, ii))</a>
+<a name="ln734">        {</a>
+<a name="ln735">            rd_sensor_data_bitfield_t type = rd_sensor_field_type (sample, ii);</a>
+<a name="ln736">            err_code |= send_field (reply_fp, raw_message,</a>
+<a name="ln737">                                    type, sample-&gt;data[ii], real_time_ms);</a>
+<a name="ln738">        }</a>
+<a name="ln739">    }</a>
+<a name="ln740"> </a>
+<a name="ln741">    return err_code;</a>
+<a name="ln742">}</a>
+<a name="ln743"> </a>
+<a name="ln744">/**</a>
+<a name="ln745"> * @brief Send no more sensor log data message.</a>
+<a name="ln746"> * TODO -refactor encoding to endpoints.</a>
+<a name="ln747"> * TODO -refactor into comms</a>
+<a name="ln748"> */</a>
+<a name="ln749">static rd_status_t app_sensor_send_eof (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln750">                                        const uint8_t * const raw_message)</a>
+<a name="ln751">{</a>
+<a name="ln752">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln753">    ri_comm_message_t msg = {0};</a>
+<a name="ln754">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
+<a name="ln755">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
+<a name="ln756">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
+<a name="ln757">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_LOG_VALUE_WRITE;</a>
+<a name="ln758">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
+<a name="ln759">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
+<a name="ln760">    return err_code;</a>
+<a name="ln761">}</a>
+<a name="ln762"> </a>
+<a name="ln763">/**</a>
+<a name="ln764"> * @brief Send heartbeat overdue data message.</a>
+<a name="ln765"> * TODO -refactor encoding to endpoints.</a>
+<a name="ln766"> * TODO -refactor into comms</a>
+<a name="ln767"> */</a>
+<a name="ln768">static rd_status_t app_sensor_send_timeout (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln769">        const uint8_t * const raw_message)</a>
+<a name="ln770">{</a>
+<a name="ln771">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln772">    ri_comm_message_t msg = {0};</a>
+<a name="ln773">    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;</a>
+<a name="ln774">    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];</a>
+<a name="ln775">    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
+<a name="ln776">    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_OP_TIMEOUT;</a>
+<a name="ln777">    memset (&amp;msg.data[RE_STANDARD_HEADER_LENGTH], 0xFF, RE_STANDARD_PAYLOAD_LENGTH);</a>
+<a name="ln778">    app_comms_blocking_send (reply_fp, &amp;msg);</a>
+<a name="ln779">    return err_code;</a>
+<a name="ln780">}</a>
+<a name="ln781"> </a>
+<a name="ln782">/**</a>
+<a name="ln783"> * @brief Log read sensor op.</a>
+<a name="ln784"> *</a>
+<a name="ln785"> * @ref sensor_op.</a>
+<a name="ln786"> *</a>
+<a name="ln787"> * @param[in] reply_fp Function pointer to which send logs.</a>
+<a name="ln788"> * @param[fields] Fields to read.</a>
+<a name="ln789"> * @param[raw_message] Original message from remote.</a>
+<a name="ln790"> * @retval RD_SUCCESS on success.</a>
+<a name="ln791"> * @retval RD_ERROR_INVALID_PARAM if start of logs is after current time.</a>
+<a name="ln792"> * @retval error code from reply_fp if reply fails.</a>
+<a name="ln793"> *</a>
+<a name="ln794"> * @note This function blocks until all requested logs are sent and will therefore</a>
+<a name="ln795"> *       block for a long time.</a>
+<a name="ln796"> */</a>
+<a name="ln797">static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln798">                                        const rd_sensor_data_fields_t fields,</a>
+<a name="ln799">                                        const uint8_t * const raw_message)</a>
+<a name="ln800">{</a>
+<a name="ln801">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln802">    rd_sensor_data_t sample = {0};</a>
+<a name="ln803">    sample.fields = fields;</a>
+<a name="ln804">    float data[rd_sensor_data_fieldcount (&amp;sample)];</a>
+<a name="ln805">    sample.data = data;</a>
+<a name="ln806">    // Parse start, end times.</a>
+<a name="ln807">    int64_t current_time_s = (int64_t) re_std_log_current_time (raw_message);</a>
+<a name="ln808">    int64_t start_s = (int64_t) re_std_log_start_time (raw_message);</a>
+<a name="ln809">    uint32_t sent_elements = 0;</a>
+<a name="ln810">    // overflow in 292 277 266 years</a>
+<a name="ln811">    const int64_t system_time_ms = (int64_t) ri_rtc_millis();</a>
+<a name="ln812"> </a>
+<a name="ln813">    // Cannot have start_s &gt;= current_time_s</a>
+<a name="ln814">    if (current_time_s &gt; start_s)</a>
+<a name="ln815">    {</a>
+<a name="ln816">        // Parse offset to system clock</a>
+<a name="ln817">        LOG (&quot;Sending logged data\r\n&quot;);</a>
+<a name="ln818">        int64_t system_time_s = (system_time_ms / 1000LL);</a>
+<a name="ln819">        int64_t offset_ms = (current_time_s - system_time_s)  * 1000LL;</a>
+<a name="ln820">        int64_t time_diff_ms = (current_time_s - start_s) * 1000LL;</a>
+<a name="ln821">        // First sample to send in real time</a>
+<a name="ln822">        sample.timestamp_ms = (start_s * 1000LL);</a>
+<a name="ln823"> </a>
+<a name="ln824">        // Offset sample time to system clock.</a>
+<a name="ln825">        if (time_diff_ms &gt; system_time_ms)</a>
+<a name="ln826">        {</a>
+<a name="ln827">            sample.timestamp_ms = 0;</a>
+<a name="ln828">        }</a>
+<a name="ln829">        else</a>
+<a name="ln830">        {</a>
+<a name="ln831">            sample.timestamp_ms = system_time_ms - time_diff_ms;</a>
+<a name="ln832">        }</a>
+<a name="ln833"> </a>
+<a name="ln834">        app_log_read_state_t rs =</a>
+<a name="ln835">        {</a>
+<a name="ln836">            .oldest_element_ms = sample.timestamp_ms,</a>
+<a name="ln837">            .element_idx = 0,</a>
+<a name="ln838">            .page_idx = 0</a>
+<a name="ln839">        };</a>
+<a name="ln840"> </a>
+<a name="ln841">        while (RD_SUCCESS == err_code)</a>
+<a name="ln842">        {</a>
+<a name="ln843">            // Reset data validity</a>
+<a name="ln844">            sample.valid.bitfield = 0;</a>
+<a name="ln845">            // Timestamp and fields are set in log read function.</a>
+<a name="ln846">            err_code |= app_log_read (&amp;sample, &amp;rs);</a>
+<a name="ln847"> </a>
+<a name="ln848">            if (RD_ERROR_NOT_FOUND == err_code)</a>
+<a name="ln849">            {</a>
+<a name="ln850">                err_code |= app_sensor_send_eof (reply_fp, raw_message);</a>
+<a name="ln851">                char msg[128];</a>
+<a name="ln852">                snprintf (msg, sizeof (msg), &quot;Logged data sent: %lu elements\r\n&quot;, sent_elements); //-V576</a>
+<a name="ln853">                LOG (msg);</a>
+<a name="ln854">                sent_elements = 0;</a>
+<a name="ln855">            }</a>
+<a name="ln856">            else if (app_heartbeat_overdue())</a>
+<a name="ln857">            {</a>
+<a name="ln858">                err_code |= RD_ERROR_TIMEOUT;</a>
+<a name="ln859">                err_code |= app_sensor_send_timeout (reply_fp, raw_message);</a>
+<a name="ln860">            }</a>
+<a name="ln861">            // If data element was found, send log element.</a>
+<a name="ln862">            else if (RD_SUCCESS == err_code)</a>
+<a name="ln863">            {</a>
+<a name="ln864">                err_code |= app_sensor_send_data (reply_fp, raw_message,</a>
+<a name="ln865">                                                  &amp;sample, offset_ms);</a>
+<a name="ln866">                sent_elements++;</a>
+<a name="ln867">                LOGD (&quot;S&quot;);</a>
+<a name="ln868">            }</a>
+<a name="ln869">            else</a>
+<a name="ln870">            {</a>
+<a name="ln871">                // No action needed, error code gets returned to caller.</a>
+<a name="ln872">            }</a>
+<a name="ln873">        }</a>
+<a name="ln874">    }</a>
+<a name="ln875">    // Start time &gt;= current time</a>
+<a name="ln876">    else</a>
+<a name="ln877">    {</a>
+<a name="ln878">        err_code |= RD_ERROR_INVALID_PARAM;</a>
+<a name="ln879">    }</a>
+<a name="ln880"> </a>
+<a name="ln881">    // Send op status, remove expected not found</a>
+<a name="ln882">    err_code &amp;= ~RD_ERROR_NOT_FOUND;</a>
+<a name="ln883">    return err_code;</a>
+<a name="ln884">}</a>
+<a name="ln885"> </a>
+<a name="ln886">rd_status_t app_sensor_handle (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln887">                               const uint8_t * const raw_message,</a>
+<a name="ln888">                               const uint16_t data_len)</a>
+<a name="ln889">{</a>
+<a name="ln890">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln891"> </a>
+<a name="ln892">    if (NULL == raw_message)</a>
+<a name="ln893">    {</a>
+<a name="ln894">        err_code |= RD_ERROR_NULL;</a>
+<a name="ln895">    }</a>
+<a name="ln896">    else if (data_len &lt; RE_STANDARD_MESSAGE_LENGTH)</a>
+<a name="ln897">    {</a>
+<a name="ln898">        err_code |= RD_ERROR_DATA_SIZE;</a>
+<a name="ln899">    }</a>
+<a name="ln900">    else</a>
+<a name="ln901">    {</a>
+<a name="ln902">        // Parse affected fields. It's ok to have unspecified value here,</a>
+<a name="ln903">        // in that case fields end up being empty and error is reported via reply_fp.</a>
+<a name="ln904">        re_type_t type = (re_type_t) raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
+<a name="ln905">        rd_sensor_data_fields_t target_fields = re2rd_fields (type);</a>
+<a name="ln906">        // Parse desired operation.</a>
+<a name="ln907">        re_op_t op = (re_op_t) raw_message[RE_STANDARD_OPERATION_INDEX];</a>
+<a name="ln908"> </a>
+<a name="ln909">        // If target and op are valid, execute.</a>
+<a name="ln910">        switch (op)</a>
+<a name="ln911">        {</a>
+<a name="ln912">            case RE_STANDARD_LOG_VALUE_READ:</a>
+<a name="ln913">                err_code |= app_sensor_log_read (reply_fp,</a>
+<a name="ln914">                                                 target_fields, raw_message);</a>
+<a name="ln915">                break;</a>
+<a name="ln916"> </a>
+<a name="ln917">            default:</a>
+<a name="ln918">                // Reply with error on unknown op.</a>
+<a name="ln919">                break;</a>
+<a name="ln920">        }</a>
+<a name="ln921">    }</a>
+<a name="ln922"> </a>
+<a name="ln923">    return err_code;</a>
+<a name="ln924">}</a>
+<a name="ln925"> </a>
+<a name="ln926">rd_status_t app_sensor_vdd_sample (void)</a>
+<a name="ln927">{</a>
+<a name="ln928">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln929">    rd_sensor_configuration_t configuration =</a>
+<a name="ln930">    {</a>
+<a name="ln931">        .dsp_function = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln932">        .dsp_parameter = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln933">        .mode = RD_SENSOR_CFG_SINGLE,</a>
+<a name="ln934">        .resolution = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln935">        .samplerate = RD_SENSOR_CFG_DEFAULT,</a>
+<a name="ln936">        .scale = RD_SENSOR_CFG_DEFAULT</a>
+<a name="ln937">    };</a>
+<a name="ln938">    err_code |= rt_adc_vdd_prepare (&amp;configuration);</a>
+<a name="ln939">    err_code |= rt_adc_vdd_sample();</a>
+<a name="ln940">    return err_code;</a>
+<a name="ln941">}</a>
+<a name="ln942"> </a>
+<a name="ln943">#ifdef RUUVI_RUN_TESTS</a>
+<a name="ln944">void app_sensor_ctx_get (rt_sensor_ctx_t *** p_sensors, size_t * num_sensors)</a>
+<a name="ln945">{</a>
+<a name="ln946">    *p_sensors = m_sensors;</a>
+<a name="ln947">    *num_sensors = SENSOR_COUNT;</a>
+<a name="ln948">}</a>
+<a name="ln949">#endif</a>
+<a name="ln950"> </a>
+<a name="ln951">/** @} */</a>
 
 </code></pre>
 <div class="balloon" rel="86"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The left operand '(0)' of the '<<' operator should not have the essential 'signed' type.</p></div>
@@ -1036,27 +1035,27 @@
 <div class="balloon" rel="598"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_y_g' expression used in condition should have essential Boolean type.</p></div>
 <div class="balloon" rel="594"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'fields.acceleration_x_g' expression used in condition should have essential Boolean type.</p></div>
 <div class="balloon" rel="660"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '!=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="694"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="695"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="729"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="729"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sample->timestamp_ms + time_offset_ms' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</p></div>
-<div class="balloon" rel="729"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
-<div class="balloon" rel="755"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="758"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x10U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="774"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="777"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="805"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2598/" target="_blank">V2598</a> Variable-length array types should not be used. Check the array size expression: '[rd_sensor_data_fieldcount(& sample)]'.</p></div>
-<div class="balloon" rel="823"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(start_s * 1000LL)' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="823"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="828"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="832"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'system_time_ms - time_diff_ms' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="832"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="845"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="853"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="855"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="905"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(0U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_type_t' type.</p></div>
-<div class="balloon" rel="908"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(2U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_op_t' type.</p></div>
-<div class="balloon" rel="913"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Constant expression of the case label of the essential 'unsigned' type should not be converted to the essential 're_op_t' type of the controlling expression.</p></div>
+<div class="balloon" rel="693"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="694"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="728"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="728"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'sample->timestamp_ms + time_offset_ms' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</p></div>
+<div class="balloon" rel="728"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</p></div>
+<div class="balloon" rel="754"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="757"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(0x10U)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="773"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((3U) + (8U))' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="776"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="804"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2598/" target="_blank">V2598</a> Variable-length array types should not be used. Check the array size expression: '[rd_sensor_data_fieldcount(& sample)]'.</p></div>
+<div class="balloon" rel="822"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(start_s * 1000LL)' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="822"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="827"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="831"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'system_time_ms - time_diff_ms' expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="831"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="844"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="852"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="854"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="904"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(0U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_type_t' type.</p></div>
+<div class="balloon" rel="907"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2531/" target="_blank">V2531</a> The 'raw_message[(2U)]' expression of the essential 'unsigned' type should not be cast to the essential 're_op_t' type.</p></div>
+<div class="balloon" rel="912"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Constant expression of the case label of the essential 'unsigned' type should not be converted to the essential 're_op_t' type of the controlling expression.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>
