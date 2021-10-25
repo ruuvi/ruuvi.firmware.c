@@ -686,8 +686,7 @@ static rd_status_t send_field (const ri_comm_xfer_fp_t reply_fp,
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_comm_message_t msg = {0};
-    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value,
-                                       type);
+    err_code |= app_sensor_encode_log (msg.data, real_time_ms, value, type);
 
     if (RD_SUCCESS == err_code)
     {
