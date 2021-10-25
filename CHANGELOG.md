@@ -1,6 +1,7 @@
 # Changelog
 ## 3.31.0 (in progress)
  - Add encrypted dataformats 0x08 (recommended) and 0xFA (legacy). 
+ - Fix resource leak in flash storage
 
 ## 3.30.4
  - Fix overflow in timer causing tag to stop logging in 50 days. 
