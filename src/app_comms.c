@@ -3,6 +3,7 @@
 #include "app_heartbeat.h"
 #include "app_led.h"
 #include "app_sensor.h"
+#include "app_testing.h"
 #include "ruuvi_boards.h"
 #include "ruuvi_endpoints.h"
 #include "ruuvi_interface_communication.h"
@@ -41,14 +42,10 @@
 #define CONN_PARAM_UPDATE_DELAY_MS (30U * 1000U) //!< Delay before switching to faster conn params in long ops.
 
 #if APP_COMMS_BIDIR_ENABLED
-#ifndef CEEDLING
-static
-#endif
-bool m_config_enabled_on_curr_conn; //!< This connection has config enabled.
-#ifndef CEEDLING
-static
-#endif
-bool m_config_enabled_on_next_conn; //!< Next connection has config enabled.
+TESTABLE_STATIC bool
+m_config_enabled_on_curr_conn; //!< This connection has config enabled.
+TESTABLE_STATIC bool
+m_config_enabled_on_next_conn; //!< Next connection has config enabled.
 #endif
 
 #ifndef CEEDLING
@@ -59,17 +56,10 @@ typedef struct
 } mode_changes_t;
 #endif
 
+static volatile bool m_tx_done; //!< Flag for data transfer done
 static uint8_t m_bleadv_repeat_count; //!< Number of times to repeat advertisement.
-
-#ifndef CEEDLING
-static
-#endif
-ri_timer_id_t m_comm_timer;    //!< Timer for communication mode changes.
-
-#ifndef CEEDLING
-static
-#endif
-mode_changes_t m_mode_ops;     //!< Pending mode changes.
+TESTABLE_STATIC ri_timer_id_t m_comm_timer;    //!< Timer for communication mode changes.
+TESTABLE_STATIC mode_changes_t m_mode_ops;     //!< Pending mode changes.
 
 uint8_t app_comms_bleadv_send_count_get (void)
 {
@@ -133,58 +123,49 @@ static uint8_t initial_adv_send_count (void)
 
 #if APP_COMMS_BIDIR_ENABLED
 
-static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
-                          size_t data_len)
+// Returns true if command is allowed.
+// If Configuration is not allowed, command type must be read.
+static bool command_is_authorized (const uint8_t op)
 {
-    rd_status_t err_code = RD_SUCCESS;
+    return (RE_STANDARD_OP_READ_BIT & op) | m_config_enabled_on_curr_conn;
+}
 
-    if (NULL == p_data)
+static rd_status_t reply_unauthorized (const ri_comm_xfer_fp_t reply_fp,
+                                       const uint8_t * const raw_message)
+{
+    ri_comm_message_t msg = {0};
+    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+    msg.repeat_count = 1;
+    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];
+    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_OP_UNAUTHORIZED;
+
+    for (uint8_t ii = RE_STANDARD_PAYLOAD_START_INDEX;
+            ii < RE_STANDARD_MESSAGE_LENGTH; ii++)
     {
-        err_code |= RD_ERROR_NULL;
-    }
-    else if (data_len < RE_STANDARD_MESSAGE_LENGTH)
-    {
-        err_code |= RD_ERROR_INVALID_PARAM;
-    }
-    else
-    {
-        // Stop heartbeat processing.
-        err_code |= app_heartbeat_stop();
-        // Switch GATT to faster params.
-        err_code |= ri_gatt_params_request (RI_GATT_TURBO, CONN_PARAM_UPDATE_DELAY_MS);
-        // Parse message type.
-        const uint8_t * const raw_message = (uint8_t *) p_data;
-        re_type_t type = raw_message[RE_STANDARD_DESTINATION_INDEX];
-
-        // Route message to proper handler.
-        switch (type)
-        {
-            case RE_ACC_XYZ:
-            case RE_ACC_X:
-            case RE_ACC_Y:
-            case RE_ACC_Z:
-            case RE_GYR_XYZ:
-            case RE_GYR_X:
-            case RE_GYR_Y:
-            case RE_GYR_Z:
-            case RE_ENV_ALL:
-            case RE_ENV_TEMP:
-            case RE_ENV_HUMI:
-            case RE_ENV_PRES:
-                err_code |= app_sensor_handle (reply_fp, raw_message, data_len);
-                break;
-
-            default:
-                break;
-        }
-
-        // Switch GATT to slower params.
-        err_code |= ri_gatt_params_request (RI_GATT_LOW_POWER, 0);
-        // Resume heartbeat processing.
-        err_code |= app_heartbeat_start();
+        msg.data[ii] = 0xFFU;
     }
 
-    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+    return reply_fp (&msg);
+}
+
+static rd_status_t reply_authorized (const ri_comm_xfer_fp_t reply_fp,
+                                     const uint8_t * const raw_message)
+{
+    ri_comm_message_t msg = {0};
+    msg.data_length = RE_STANDARD_MESSAGE_LENGTH;
+    msg.repeat_count = 1;
+    msg.data[RE_STANDARD_DESTINATION_INDEX] = raw_message[RE_STANDARD_SOURCE_INDEX];
+    msg.data[RE_STANDARD_SOURCE_INDEX] = raw_message[RE_STANDARD_DESTINATION_INDEX];
+    msg.data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_WRITE;
+
+    for (uint8_t ii = RE_STANDARD_PAYLOAD_START_INDEX;
+            ii < RE_STANDARD_MESSAGE_LENGTH; ii++)
+    {
+        msg.data[ii] = raw_message[ii];
+    }
+
+    return reply_fp (&msg);
 }
 
 /**
@@ -215,6 +196,131 @@ static rd_status_t enable_config_on_next_conn (const bool enable)
     return err_code;
 }
 
+static rd_status_t wait_for_tx_done (const uint32_t timeout_ms)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint64_t start = ri_rtc_millis();
+    const uint64_t timeout = start + timeout_ms;
+
+    while (!m_tx_done && (timeout > ri_rtc_millis()))
+    {
+        ri_yield();
+    }
+
+    if (!m_tx_done)
+    {
+        err_code |= RD_ERROR_TIMEOUT;
+    }
+
+    m_tx_done = false;
+    return err_code;
+}
+
+static rd_status_t password_check (const ri_comm_xfer_fp_t reply_fp,
+                                   const uint8_t * const raw_message,
+                                   const size_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    uint64_t entered_password = 0U;
+    bool auth_ok = false;
+    // Use non-zero initial value so passwords won't match on error
+    uint64_t current_password = 0xDEADBEEF12345678U;
+    re_op_t op = (re_op_t) raw_message[RE_STANDARD_OPERATION_INDEX];
+
+    if (RE_STANDARD_VALUE_READ == op)
+    {
+        err_code |= ri_comm_id_get (&current_password);
+
+        // Convert data to U64
+        for (uint8_t ii = RE_STANDARD_PAYLOAD_START_INDEX;
+                ii < RE_STANDARD_MESSAGE_LENGTH; ii++)
+        {
+            uint8_t byte_offset = RE_STANDARD_MESSAGE_LENGTH - ii - 1U;
+            uint8_t bit_offset = byte_offset * 8U;
+            uint64_t password_part = raw_message[ii];
+            password_part = password_part << bit_offset;
+            entered_password += password_part;
+        }
+    }
+
+    m_tx_done = false;
+
+    if (entered_password == current_password)
+    {
+        err_code |= reply_authorized (reply_fp, raw_message);
+        auth_ok = true;
+    }
+    else
+    {
+        err_code |= reply_unauthorized (reply_fp, raw_message);
+        auth_ok = false;
+    }
+
+    err_code |= wait_for_tx_done (BLOCKING_COMM_TIMEOUT_MS);
+    enable_config_on_next_conn (auth_ok);
+    return  err_code;
+}
+
+static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
+                          size_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    const uint8_t * const raw_message = (uint8_t *) p_data;
+
+    if (NULL == p_data)
+    {
+        err_code |= RD_ERROR_NULL;
+    }
+    else if (data_len < RE_STANDARD_MESSAGE_LENGTH)
+    {
+        err_code |= RD_ERROR_INVALID_PARAM;
+    }
+    else if (!command_is_authorized (raw_message[RE_STANDARD_OPERATION_INDEX]))
+    {
+        err_code |= reply_unauthorized (reply_fp, raw_message);
+    }
+    else
+    {
+        // Stop heartbeat processing.
+        err_code |= app_heartbeat_stop();
+        // Switch GATT to faster params.
+        err_code |= ri_gatt_params_request (RI_GATT_TURBO, CONN_PARAM_UPDATE_DELAY_MS);
+        // Parse message type.
+        re_type_t type = raw_message[RE_STANDARD_DESTINATION_INDEX];
+
+        // Route message to proper handler.
+        switch (type)
+        {
+            case RE_ACC_XYZ:
+            case RE_ACC_X:
+            case RE_ACC_Y:
+            case RE_ACC_Z:
+            case RE_GYR_XYZ:
+            case RE_GYR_X:
+            case RE_GYR_Y:
+            case RE_GYR_Z:
+            case RE_ENV_ALL:
+            case RE_ENV_TEMP:
+            case RE_ENV_HUMI:
+            case RE_ENV_PRES:
+                err_code |= app_sensor_handle (reply_fp, raw_message, data_len);
+
+            case RE_SEC_PASS:
+                err_code |= password_check (reply_fp, raw_message, data_len);
+
+            default:
+                break;
+        }
+
+        // Switch GATT to slower params.
+        err_code |= ri_gatt_params_request (RI_GATT_LOW_POWER, 0);
+        // Resume heartbeat processing.
+        err_code |= app_heartbeat_start();
+    }
+
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+}
+
 /**
  * @brief Configures this connection, call this in on_connected handler.
  */
@@ -241,10 +347,7 @@ static void config_cleanup_on_disconnect (void)
 
 #if APP_GATT_ENABLED
 
-#ifndef CEEDLING
-static
-#endif
-void handle_gatt_data (void * p_data, uint16_t data_len)
+TESTABLE_STATIC void handle_gatt_data (void * p_data, uint16_t data_len)
 {
     handle_comms (&rt_gatt_send_asynchronous, p_data, data_len);
 }
@@ -252,10 +355,7 @@ void handle_gatt_data (void * p_data, uint16_t data_len)
 /**
  * @brief Disable advertising for GATT connection and setup current connection.
  */
-#ifndef CEEDLING
-static
-#endif
-void handle_gatt_connected (void * p_data, uint16_t data_len)
+TESTABLE_STATIC void handle_gatt_connected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     // Disables advertising for GATT, does not kick current connetion out.
@@ -269,10 +369,7 @@ void handle_gatt_connected (void * p_data, uint16_t data_len)
 /**
  * @brief Callback when GATT is connected
  */
-#ifndef CEEDLING
-static
-#endif
-void on_gatt_connected_isr (void * p_data, size_t data_len)
+TESTABLE_STATIC void on_gatt_connected_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,
@@ -282,10 +379,7 @@ void on_gatt_connected_isr (void * p_data, size_t data_len)
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
-#ifndef CEEDLING
-static
-#endif
-void handle_gatt_disconnected (void * p_data, uint16_t data_len)
+TESTABLE_STATIC void handle_gatt_disconnected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     config_cleanup_on_disconnect();
@@ -293,10 +387,7 @@ void handle_gatt_disconnected (void * p_data, uint16_t data_len)
 }
 
 /** @brief Callback when GATT is disconnected" */
-#ifndef CEEDLING
-static
-#endif
-void on_gatt_disconnected_isr (void * p_data, size_t data_len)
+TESTABLE_STATIC void on_gatt_disconnected_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,
@@ -309,15 +400,23 @@ void on_gatt_disconnected_isr (void * p_data, size_t data_len)
  *
  * Schedule handling incoming message and replying back via given function pointer.
  */
-#ifndef CEEDLING
-static
-#endif
-void on_gatt_data_isr (void * p_data, size_t data_len)
+TESTABLE_STATIC void on_gatt_data_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_gatt_data);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
+
+/**
+ * @brief Callback when data is sent via GATT
+ *
+ * Schedule handling incoming message and replying back via given function pointer.
+ */
+TESTABLE_STATIC void on_gatt_tx_done_isr (void * p_data, size_t data_len)
+{
+    m_tx_done = true;
+}
+
 
 static rd_status_t ble_name_string_create (char * const name_str, const size_t name_len)
 {
@@ -526,6 +625,7 @@ static rd_status_t gatt_init (const ri_comm_dis_init_t * const p_dis, const bool
     rt_gatt_set_on_connected_isr (&on_gatt_connected_isr);
     rt_gatt_set_on_disconn_isr (&on_gatt_disconnected_isr);
     rt_gatt_set_on_received_isr (&on_gatt_data_isr);
+    rt_gatt_set_on_sent_isr (&on_gatt_tx_done_isr);
     err_code |= rt_gatt_adv_enable();
 #endif
     return err_code;
