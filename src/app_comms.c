@@ -208,8 +208,7 @@ static rd_status_t wait_for_tx_done (const uint32_t timeout_ms)
 }
 
 static rd_status_t password_check (const ri_comm_xfer_fp_t reply_fp,
-                                   const uint8_t * const raw_message,
-                                   const size_t data_len)
+                                   const uint8_t * const raw_message)
 {
     rd_status_t err_code = RD_SUCCESS;
     uint64_t entered_password = 0U;
@@ -307,7 +306,7 @@ TESTABLE_STATIC void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_da
                 break;
 
             case RE_SEC_PASS:
-                err_code |= password_check (reply_fp, raw_message, data_len);
+                err_code |= password_check (reply_fp, raw_message);
                 break;
 
             default:
