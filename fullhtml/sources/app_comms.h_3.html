@@ -1,0 +1,240 @@
+
+<html>
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>app_comms.h</title>
+
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+
+<pre><code class = "cpp">
+<a name="ln1">#ifndef APP_COMMS_H</a>
+<a name="ln2">#define APP_COMMS_H</a>
+<a name="ln3">#include &quot;ruuvi_driver_error.h&quot;</a>
+<a name="ln4">/**</a>
+<a name="ln5"> * @addtogroup app</a>
+<a name="ln6"> */</a>
+<a name="ln7">/** @{ */</a>
+<a name="ln8">/**</a>
+<a name="ln9"> * @defgroup app_comms Application communication</a>
+<a name="ln10"> * @brief Initialize and configure communication withoutside world.</a>
+<a name="ln11"> */</a>
+<a name="ln12">/** @} */</a>
+<a name="ln13">/**</a>
+<a name="ln14"> * @addtogroup app_comms</a>
+<a name="ln15"> */</a>
+<a name="ln16">/** @{ */</a>
+<a name="ln17">/**</a>
+<a name="ln18"> * @file app_comms.h</a>
+<a name="ln19"> * @author Otso Jousimaa &lt;otso@ojousima.net&gt;</a>
+<a name="ln20"> * @date 2020-07-13</a>
+<a name="ln21"> * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.</a>
+<a name="ln22"> *</a>
+<a name="ln23"> * Typical usage:</a>
+<a name="ln24"> * @code{.c}</a>
+<a name="ln25"> * rd_status_t err_code = app_comms_init();</a>
+<a name="ln26"> * RD_ERROR_CHECK(err_code, RD_SUCCESS);</a>
+<a name="ln27"> * @endcode</a>
+<a name="ln28"> */</a>
+<a name="ln29"> </a>
+<a name="ln30">#include &quot;ruuvi_interface_communication.h&quot;</a>
+<a name="ln31"> </a>
+<a name="ln32">/** @brief Repeat advertisement until explicitly stopped. */</a>
+<a name="ln33">#define APP_COMM_ADV_REPEAT_FOREVER (255U)</a>
+<a name="ln34">/** @brief Disable advertising. */</a>
+<a name="ln35">#define APP_COMM_ADV_DISABLE (0U)</a>
+<a name="ln36">/** @brief Initial period of fast advertising */</a>
+<a name="ln37">#define APP_FAST_ADV_TIME_MS (5U * 1000U)</a>
+<a name="ln38"> </a>
+<a name="ln39">/**</a>
+<a name="ln40"> * @brief Initialize communication methods supported by board</a>
+<a name="ln41"> *</a>
+<a name="ln42"> * After calling this function, NFC is ready to provide device information,</a>
+<a name="ln43"> * advertisement data can be sent and advertisements are connectable for enabling GATT</a>
+<a name="ln44"> * connection.</a>
+<a name="ln45"> *</a>
+<a name="ln46"> * Use ruuvi task functions, such as rt_gatt_send_asynchronous to send data out.</a>
+<a name="ln47"> *</a>
+<a name="ln48"> * @param[in] secure If true, GATT won't expose DFU service and device ID.</a>
+<a name="ln49"> *                   If false, DFU service is open and device ID can be read through GATT.</a>
+<a name="ln50"> * @retval RD_SUCCESS on success.</a>
+<a name="ln51"> * @return error code from stack on error.</a>
+<a name="ln52"> */</a>
+<a name="ln53">rd_status_t app_comms_init (const bool secure);</a>
+<a name="ln54"> </a>
+<a name="ln55">/**</a>
+<a name="ln56"> * @brief Get number of time BLE advertisement should be sent.</a>
+<a name="ln57"> *</a>
+<a name="ln58"> * @return Number of times to send same advertisement.</a>
+<a name="ln59"> *</a>
+<a name="ln60"> * @note Special value APP_COMM_ADV_REPEAT_FOREVER keeps sending</a>
+<a name="ln61"> *       advertisement until new value is set.</a>
+<a name="ln62"> * @note APP_COMM_ADV_DISABLE means advertisement should not be sent at all.</a>
+<a name="ln63"> */</a>
+<a name="ln64">uint8_t app_comms_bleadv_send_count_get (void);</a>
+<a name="ln65"> </a>
+<a name="ln66">/**</a>
+<a name="ln67"> * @brief Set number of time BLE advertisement should be sent.</a>
+<a name="ln68"> *</a>
+<a name="ln69"> * @param[in] count Number of times to send same advertisement.</a>
+<a name="ln70"> *</a>
+<a name="ln71"> * @note Special value APP_COMM_ADV_REPEAT_FOREVER keeps sending</a>
+<a name="ln72"> *       advertisement until new value is set.</a>
+<a name="ln73"> * @note APP_COMM_ADV_DISABLE means advertisement should not be sent at all.</a>
+<a name="ln74"> */</a>
+<a name="ln75">void app_comms_bleadv_send_count_set (const uint8_t count);</a>
+<a name="ln76"> </a>
+<a name="ln77">/**</a>
+<a name="ln78"> * @brief Enable security-sensitive configuration options.</a>
+<a name="ln79"> *</a>
+<a name="ln80"> * After calling this function:</a>
+<a name="ln81"> *   - DFU service is enabled which allows firmware updates.</a>
+<a name="ln82"> *   - Device ID is readable through DIS/Serial Number characteristic.</a>
+<a name="ln83"> *   - Configuration commands are allowed.</a>
+<a name="ln84"> *</a>
+<a name="ln85"> * The configuration is enabled for the next communication connection and is disabled</a>
+<a name="ln86"> * after disconnection or once timeout is triggered. This kicks current Bluetooth</a>
+<a name="ln87"> * connection (if any).</a>
+<a name="ln88"> *</a>
+<a name="ln89"> * This also calls app_led to indicate configuration is enabled.</a>
+<a name="ln90"> *</a>
+<a name="ln91"> * @retval RD_SUCCESS if configuration mode was entered.</a>
+<a name="ln92"> * @retval RD_ERROR_INVALID_STATE if communications are not initialized.</a>
+<a name="ln93"> */</a>
+<a name="ln94">rd_status_t app_comms_configure_next_enable (void);</a>
+<a name="ln95"> </a>
+<a name="ln96">/**</a>
+<a name="ln97"> * @brief Kick current BLE connection (if any) and disable security-sensitive configuration options.</a>
+<a name="ln98"> *</a>
+<a name="ln99"> * After calling this function:</a>
+<a name="ln100"> *   - DFU service is disabled</a>
+<a name="ln101"> *   - Device ID is not readable through DIS/Serial Number characteristic.</a>
+<a name="ln102"> *   - Configuration commands are not allowed.</a>
+<a name="ln103"> *</a>
+<a name="ln104"> * This also calls app_led to indicate configuration is disabled.</a>
+<a name="ln105"> *</a>
+<a name="ln106"> * @retval RD_SUCCESS if configuration mode was entered.</a>
+<a name="ln107"> * @retval RD_ERROR_INVALID_STATE if communications are not initialized.</a>
+<a name="ln108"> */</a>
+<a name="ln109">rd_status_t app_comms_configure_next_disable (void);</a>
+<a name="ln110"> </a>
+<a name="ln111">/**</a>
+<a name="ln112"> * @brief Enable Bluetooth on device</a>
+<a name="ln113"> *</a>
+<a name="ln114"> * After calling this function GATT server is initialized and ready to accept connection</a>
+<a name="ln115"> * if GATT is enabled in application. Advertisements can be sent.</a>
+<a name="ln116"> *</a>
+<a name="ln117"> * If ble comms are initialized as secure, DFU service is disabled and serial number is not</a>
+<a name="ln118"> * readable over GATT.</a>
+<a name="ln119"> *</a>
+<a name="ln120"> * If ble comms are initialized as unsecure, DFU service is enabled and serial number is</a>
+<a name="ln121"> * readable over GATT.</a>
+<a name="ln122"> *</a>
+<a name="ln123"> * Ble must be uninitialized to re-enter secure mode or vice versa.</a>
+<a name="ln124"> *</a>
+<a name="ln125"> * @param[in] secure True to not enable DFU service and serial number read over GATT.</a>
+<a name="ln126"> *                   False to enable DFU service and serial number read over GATT.</a>
+<a name="ln127"> */</a>
+<a name="ln128">rd_status_t app_comms_ble_init (const bool secure);</a>
+<a name="ln129"> </a>
+<a name="ln130">/**</a>
+<a name="ln131"> * @brief Enable Bluetooth advertising on device</a>
+<a name="ln132"> *</a>
+<a name="ln133"> * Calling this function will re-enable BLE advertising during activated GATT connection.</a>
+<a name="ln134"> *</a>
+<a name="ln135"> * @retval RD_SUCCESS on success.</a>
+<a name="ln136"> * @retval RD_ERROR_INVALID_STATE if advertising is already initialized.</a>
+<a name="ln137"> * @retval RD_ERROR_INVALID_PARAM if rt_adv_init()'s constant parameter is invalid. Not initialized.</a>
+<a name="ln138"> */</a>
+<a name="ln139">rd_status_t app_comms_ble_adv_init (void);</a>
+<a name="ln140"> </a>
+<a name="ln141">/**</a>
+<a name="ln142"> * @brief Uninitialize GATT.</a>
+<a name="ln143"> *</a>
+<a name="ln144"> * After calling this function advertisements cannot be sent and GATT server is disabled.</a>
+<a name="ln145"> */</a>
+<a name="ln146">rd_status_t app_comms_ble_uninit (void);</a>
+<a name="ln147"> </a>
+<a name="ln148">/**</a>
+<a name="ln149"> * @brief Blocking send message function.</a>
+<a name="ln150"> *</a>
+<a name="ln151"> * Calls reply_fp with given data, and if reply_fp returns ERR_NO_MEM</a>
+<a name="ln152"> * yields and retries. Has optional timeout. Function will return once</a>
+<a name="ln153"> * message has been queued to driver buffer, not necessarily sent.</a>
+<a name="ln154"> *</a>
+<a name="ln155"> * @param[in] reply_fp Function pointer to use to send the data.</a>
+<a name="ln156"> * @param[in] msg Message to send.</a>
+<a name="ln157"> * @retval RD_SUCCESS Message was queued to TX buffer.</a>
+<a name="ln158"> * @retval RD_ERROR_TIMEOUT Message was queued to TX buffer. Error code from</a>
+<a name="ln159"> *                          reply_fp is also included,</a>
+<a name="ln160"> *                          e.g. RD_ERROR_TIMEOUT | RD_ERROR_INVALID_STATE</a>
+<a name="ln161"> *</a>
+<a name="ln162"> * @note Timeout requires RTC and some process which brings thread out</a>
+<a name="ln163"> * of yield.</a>
+<a name="ln164"> */</a>
+<a name="ln165">rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln166">                                     ri_comm_message_t * const msg);</a>
+<a name="ln167"> </a>
+<a name="ln168">#ifdef CEEDLING</a>
+<a name="ln169">/** Handles for unit test framework */</a>
+<a name="ln170">typedef struct</a>
+<a name="ln171">{</a>
+<a name="ln172">    unsigned int switch_to_normal : 1;</a>
+<a name="ln173">    unsigned int disable_config : 1;</a>
+<a name="ln174">} mode_changes_t;</a>
+<a name="ln175">void on_gatt_connected_isr (void * p_data, size_t data_len);</a>
+<a name="ln176">void on_gatt_disconnected_isr (void * p_data, size_t data_len);</a>
+<a name="ln177">void on_gatt_data_isr (void * p_data, size_t data_len);</a>
+<a name="ln178">void on_gatt_tx_done_isr (void * p_data, size_t data_len);</a>
+<a name="ln179">void handle_config_disable (void * p_data, uint16_t data_len);</a>
+<a name="ln180">void handle_gatt_data (void * p_data, uint16_t data_len);</a>
+<a name="ln181">void handle_gatt_connected (void * p_data, uint16_t data_len);</a>
+<a name="ln182">void handle_gatt_disconnected (void * p_data, uint16_t data_len);</a>
+<a name="ln183">void handle_nfc_connected (void * p_data, uint16_t data_len);</a>
+<a name="ln184">void handle_nfc_disconnected (void * p_data, uint16_t data_len);</a>
+<a name="ln185">void on_nfc_connected_isr (void * p_data, size_t data_len);</a>
+<a name="ln186">void on_nfc_disconnected_isr (void * p_data, size_t data_len);</a>
+<a name="ln187">void on_nfc_tx_done_isr (void * p_data, size_t data_len);</a>
+<a name="ln188">void comm_mode_change_isr (void * const p_context);</a>
+<a name="ln189">void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_len);</a>
+<a name="ln190">#endif</a>
+<a name="ln191"> </a>
+<a name="ln192"> </a>
+<a name="ln193">/** @} */</a>
+<a name="ln194">#endif // APP_COMMS_H</a>
+
+</code></pre>
+<div class="balloon" rel="109"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2614/" target="_blank">V2614</a> External identifiers should be distinct. The identifier must contain fewer than 32 characters.</p></div>
+
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>

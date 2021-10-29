@@ -17,6 +17,7 @@ var dir_68267d1309a1af8e8297ef4c3efbcdba =
     [ "app_power.h", "app__power_8h.html", "app__power_8h" ],
     [ "app_sensor.c", "app__sensor_8c.html", "app__sensor_8c" ],
     [ "app_sensor.h", "app__sensor_8h.html", "app__sensor_8h" ],
+    [ "app_testing.h", "app__testing_8h.html", "app__testing_8h" ],
     [ "main.c", "main_8c.html", "main_8c" ],
     [ "main.h", "main_8h.html", "main_8h" ],
     [ "run_integration_tests.c", "run__integration__tests_8c.html", "run__integration__tests_8c" ],

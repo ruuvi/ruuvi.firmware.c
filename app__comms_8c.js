@@ -8,5 +8,8 @@ var app__comms_8c =
     [ "app_comms_bleadv_send_count_get", "group__app__comms.html#gadf9324a5b1ef552828868dc315c51709", null ],
     [ "app_comms_bleadv_send_count_set", "group__app__comms.html#gab8aabb2f3ab27064adb4a74eeb1abd95", null ],
     [ "app_comms_blocking_send", "group__app__comms.html#ga3c2646bddc8fcf788f6944a3e82cec83", null ],
-    [ "app_comms_init", "group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c", null ]
+    [ "app_comms_init", "group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c", null ],
+    [ "comm_mode_change_isr", "group__app__comms.html#ga22c823276acf4533978af28b97e2dafb", null ],
+    [ "m_comm_timer", "group__app__comms.html#gaaf493485fe61819ea9b35c6bd25734fe", null ],
+    [ "m_mode_ops", "group__app__comms.html#ga83223cf1aaf234ca251e96b9a498d6b2", null ]
 ];

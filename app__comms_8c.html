@@ -84,7 +84,8 @@ $(document).ready(function(){initNavTree('app__comms_8c.html',''); initResizable
 <div class="header">
   <div class="summary">
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">app_comms.c File Reference<div class="ingroups"><a class="el" href="group__app.html">App</a> &raquo; <a class="el" href="group__app__comms.html">Application communication</a></div></div>  </div>
 </div><!--header-->
@@ -94,6 +95,7 @@ $(document).ready(function(){initNavTree('app__comms_8c.html',''); initResizable
 <code>#include &quot;<a class="el" href="app__heartbeat_8h_source.html">app_heartbeat.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__led_8h_source.html">app_led.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__sensor_8h_source.html">app_sensor.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="app__testing_8h_source.html">app_testing.h</a>&quot;</code><br />
 <code>#include &quot;ruuvi_boards.h&quot;</code><br />
 <code>#include &quot;ruuvi_endpoints.h&quot;</code><br />
 <code>#include &quot;ruuvi_interface_communication.h&quot;</code><br />
@@ -130,6 +132,8 @@ Functions</h2></td></tr>
 <tr class="memitem:gab8aabb2f3ab27064adb4a74eeb1abd95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gab8aabb2f3ab27064adb4a74eeb1abd95">app_comms_bleadv_send_count_set</a> (const uint8_t count)</td></tr>
 <tr class="memdesc:gab8aabb2f3ab27064adb4a74eeb1abd95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set number of time BLE advertisement should be sent.  <a href="group__app__comms.html#gab8aabb2f3ab27064adb4a74eeb1abd95">More...</a><br /></td></tr>
 <tr class="separator:gab8aabb2f3ab27064adb4a74eeb1abd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga22c823276acf4533978af28b97e2dafb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga22c823276acf4533978af28b97e2dafb">comm_mode_change_isr</a> (void *const p_context)</td></tr>
+<tr class="separator:ga22c823276acf4533978af28b97e2dafb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaca2cd30d1c09441ce5f23d31b156026c"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c">app_comms_init</a> (const bool secure)</td></tr>
 <tr class="memdesc:gaca2cd30d1c09441ce5f23d31b156026c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize communication methods supported by board.  <a href="group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c">More...</a><br /></td></tr>
 <tr class="separator:gaca2cd30d1c09441ce5f23d31b156026c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,6 +149,15 @@ Functions</h2></td></tr>
 <tr class="memitem:ga3c2646bddc8fcf788f6944a3e82cec83"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga3c2646bddc8fcf788f6944a3e82cec83">app_comms_blocking_send</a> (const ri_comm_xfer_fp_t reply_fp, ri_comm_message_t *const msg)</td></tr>
 <tr class="memdesc:ga3c2646bddc8fcf788f6944a3e82cec83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Blocking send message function.  <a href="group__app__comms.html#ga3c2646bddc8fcf788f6944a3e82cec83">More...</a><br /></td></tr>
 <tr class="separator:ga3c2646bddc8fcf788f6944a3e82cec83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:gaaf493485fe61819ea9b35c6bd25734fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> ri_timer_id_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gaaf493485fe61819ea9b35c6bd25734fe">m_comm_timer</a></td></tr>
+<tr class="memdesc:gaaf493485fe61819ea9b35c6bd25734fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timer for communication mode changes.  <a href="group__app__comms.html#gaaf493485fe61819ea9b35c6bd25734fe">More...</a><br /></td></tr>
+<tr class="separator:gaaf493485fe61819ea9b35c6bd25734fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga83223cf1aaf234ca251e96b9a498d6b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> mode_changes_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga83223cf1aaf234ca251e96b9a498d6b2">m_mode_ops</a></td></tr>
+<tr class="memdesc:ga83223cf1aaf234ca251e96b9a498d6b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pending mode changes.  <a href="group__app__comms.html#ga83223cf1aaf234ca251e96b9a498d6b2">More...</a><br /></td></tr>
+<tr class="separator:ga83223cf1aaf234ca251e96b9a498d6b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><dl class="section author"><dt>Author</dt><dd>Otso Jousimaa <a href="#" onclick="location.href='mai'+'lto:'+'ots'+'o@'+'ojo'+'us'+'ima'+'.n'+'et'; return false;">otso@<span style="display: none;">.nosp@m.</span>ojou<span style="display: none;">.nosp@m.</span>sima.<span style="display: none;">.nosp@m.</span>net</a> </dd></dl>

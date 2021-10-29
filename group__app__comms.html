@@ -85,7 +85,8 @@ $(document).ready(function(){initNavTree('group__app__comms.html',''); initResiz
   <div class="summary">
 <a href="#files">Files</a> &#124;
 <a href="#define-members">Macros</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle">
 <div class="title">Application communication<div class="ingroups"><a class="el" href="group__app.html">App</a></div></div>  </div>
 </div><!--header-->
@@ -127,6 +128,8 @@ Functions</h2></td></tr>
 <tr class="memitem:gab8aabb2f3ab27064adb4a74eeb1abd95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gab8aabb2f3ab27064adb4a74eeb1abd95">app_comms_bleadv_send_count_set</a> (const uint8_t count)</td></tr>
 <tr class="memdesc:gab8aabb2f3ab27064adb4a74eeb1abd95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set number of time BLE advertisement should be sent.  <a href="group__app__comms.html#gab8aabb2f3ab27064adb4a74eeb1abd95">More...</a><br /></td></tr>
 <tr class="separator:gab8aabb2f3ab27064adb4a74eeb1abd95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga22c823276acf4533978af28b97e2dafb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga22c823276acf4533978af28b97e2dafb">comm_mode_change_isr</a> (void *const p_context)</td></tr>
+<tr class="separator:ga22c823276acf4533978af28b97e2dafb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaca2cd30d1c09441ce5f23d31b156026c"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c">app_comms_init</a> (const bool secure)</td></tr>
 <tr class="memdesc:gaca2cd30d1c09441ce5f23d31b156026c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize communication methods supported by board.  <a href="group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c">More...</a><br /></td></tr>
 <tr class="separator:gaca2cd30d1c09441ce5f23d31b156026c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -145,6 +148,18 @@ Functions</h2></td></tr>
 <tr class="memitem:ga8b819ebf31bea1416c510055440420d5"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga8b819ebf31bea1416c510055440420d5">app_comms_configure_next_enable</a> (void)</td></tr>
 <tr class="memdesc:ga8b819ebf31bea1416c510055440420d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable security-sensitive configuration options.  <a href="group__app__comms.html#ga8b819ebf31bea1416c510055440420d5">More...</a><br /></td></tr>
 <tr class="separator:ga8b819ebf31bea1416c510055440420d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3662d740ce8db3642f6295ed84b00f31"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga3662d740ce8db3642f6295ed84b00f31">app_comms_configure_next_disable</a> (void)</td></tr>
+<tr class="memdesc:ga3662d740ce8db3642f6295ed84b00f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Kick current BLE connection (if any) and disable security-sensitive configuration options.  <a href="group__app__comms.html#ga3662d740ce8db3642f6295ed84b00f31">More...</a><br /></td></tr>
+<tr class="separator:ga3662d740ce8db3642f6295ed84b00f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:gaaf493485fe61819ea9b35c6bd25734fe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> ri_timer_id_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#gaaf493485fe61819ea9b35c6bd25734fe">m_comm_timer</a></td></tr>
+<tr class="memdesc:gaaf493485fe61819ea9b35c6bd25734fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timer for communication mode changes.  <a href="group__app__comms.html#gaaf493485fe61819ea9b35c6bd25734fe">More...</a><br /></td></tr>
+<tr class="separator:gaaf493485fe61819ea9b35c6bd25734fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga83223cf1aaf234ca251e96b9a498d6b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> mode_changes_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__app__comms.html#ga83223cf1aaf234ca251e96b9a498d6b2">m_mode_ops</a></td></tr>
+<tr class="memdesc:ga83223cf1aaf234ca251e96b9a498d6b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pending mode changes.  <a href="group__app__comms.html#ga83223cf1aaf234ca251e96b9a498d6b2">More...</a><br /></td></tr>
+<tr class="separator:ga83223cf1aaf234ca251e96b9a498d6b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Initialize and configure communication withoutside world. </p>
@@ -217,7 +232,7 @@ Functions</h2></td></tr>
 
 <p>Set to long enough to handle existing queue, then as short as possible. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00040">40</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00041">41</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -235,7 +250,7 @@ Functions</h2></td></tr>
 
 <p>Delay before switching to faster conn params in long ops. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00041">41</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00042">42</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -267,7 +282,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00574">574</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00671">671</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -299,7 +314,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00560">560</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00657">657</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -322,7 +337,7 @@ Functions</h2></td></tr>
 <p>Uninitialize GATT. </p>
 <p>After calling this function advertisements cannot be sent and GATT server is disabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00583">583</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00680">680</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -348,7 +363,7 @@ Functions</h2></td></tr>
 <dd>
 APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00074">74</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00064">64</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -379,7 +394,7 @@ APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 <dd>
 APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00079">79</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00069">69</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
@@ -427,7 +442,40 @@ APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>Timeout requires RTC and some process which brings thread out of yield. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00591">591</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00688">688</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+
+</div>
+</div>
+<a id="ga3662d740ce8db3642f6295ed84b00f31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3662d740ce8db3642f6295ed84b00f31">&#9670;&nbsp;</a></span>app_comms_configure_next_disable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">rd_status_t app_comms_configure_next_disable </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Kick current BLE connection (if any) and disable security-sensitive configuration options. </p>
+<p>After calling this function:</p><ul>
+<li>DFU service is disabled</li>
+<li>Device ID is not readable through DIS/Serial Number characteristic.</li>
+<li>Configuration commands are not allowed.</li>
+</ul>
+<p>This also calls app_led to indicate configuration is disabled.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">RD_SUCCESS</td><td>if configuration mode was entered. </td></tr>
+    <tr><td class="paramname">RD_ERROR_INVALID_STATE</td><td>if communications are not initialized. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -453,7 +501,7 @@ APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 <li>Device ID is readable through DIS/Serial Number characteristic.</li>
 <li>Configuration commands are allowed.</li>
 </ul>
-<p>The configuration is enabled for the next communication connection and is disabled after disconnection or once timeout is triggered.</p>
+<p>The configuration is enabled for the next communication connection and is disabled after disconnection or once timeout is triggered. This kicks current Bluetooth connection (if any).</p>
 <p>This also calls app_led to indicate configuration is enabled.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
@@ -498,7 +546,64 @@ APP_COMM_ADV_DISABLE means advertisement should not be sent at all. </dd></dl>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>error code from stack on error. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00534">534</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00631">631</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+
+</div>
+</div>
+<a id="ga22c823276acf4533978af28b97e2dafb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga22c823276acf4533978af28b97e2dafb">&#9670;&nbsp;</a></span>comm_mode_change_isr()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> void comm_mode_change_isr </td>
+          <td>(</td>
+          <td class="paramtype">void *const&#160;</td>
+          <td class="paramname"><em>p_context</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00560">560</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="gaaf493485fe61819ea9b35c6bd25734fe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaaf493485fe61819ea9b35c6bd25734fe">&#9670;&nbsp;</a></span>m_comm_timer</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> ri_timer_id_t m_comm_timer</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Timer for communication mode changes. </p>
+
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00061">61</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
+
+</div>
+</div>
+<a id="ga83223cf1aaf234ca251e96b9a498d6b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga83223cf1aaf234ca251e96b9a498d6b2">&#9670;&nbsp;</a></span>m_mode_ops</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="app__testing_8h.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a> mode_changes_t m_mode_ops</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Pending mode changes. </p>
+
+<p class="definition">Definition at line <a class="el" href="app__comms_8c_source.html#l00062">62</a> of file <a class="el" href="app__comms_8c_source.html">app_comms.c</a>.</p>
 
 </div>
 </div>
