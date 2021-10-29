@@ -183,16 +183,7 @@ static rd_status_t enable_config_on_next_conn (const bool enable)
     err_code |= app_comms_ble_uninit();
     err_code |= app_comms_ble_init (!enable);
     m_config_enabled_on_next_conn = enable;
-
-    if (enable)
-    {
-        app_led_configuration_signal (true);
-    }
-    else
-    {
-        app_led_configuration_signal (false);
-    }
-
+    app_led_configuration_signal (enable);
     return err_code;
 }
 
@@ -257,12 +248,21 @@ static rd_status_t password_check (const ri_comm_xfer_fp_t reply_fp,
     }
 
     err_code |= wait_for_tx_done (BLOCKING_COMM_TIMEOUT_MS);
-    enable_config_on_next_conn (auth_ok);
+
+    if (auth_ok)
+    {
+        app_comms_configure_next_enable ();
+    }
+    else
+    {
+        app_comms_configure_next_disable ();
+    }
+
     return  err_code;
 }
 
-static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
-                          size_t data_len)
+TESTABLE_STATIC void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
+                                   size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     const uint8_t * const raw_message = (uint8_t *) p_data;
@@ -466,6 +466,12 @@ TESTABLE_STATIC void on_nfc_disconnected_isr (void * p_data, size_t data_len)
                                         &handle_nfc_disconnected);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
+
+/** @brief Callback when NFC has sent data" */
+TESTABLE_STATIC void on_nfc_tx_done_isr (void * p_data, size_t data_len)
+{
+    m_tx_done = true;
+}
 #endif
 
 rd_status_t app_comms_configure_next_enable (void)
@@ -475,6 +481,13 @@ rd_status_t app_comms_configure_next_enable (void)
     err_code |= enable_config_on_next_conn (true);
     err_code |= ri_timer_stop (m_comm_timer);
     err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops);
+    return err_code;
+}
+
+rd_status_t app_comms_configure_next_disable (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= enable_config_on_next_conn (false);
     return err_code;
 }
 
@@ -540,6 +553,7 @@ static rd_status_t nfc_init (ri_comm_dis_init_t * const p_dis)
     err_code |= rt_nfc_init (p_dis);
     rt_nfc_set_on_connected_isr (&on_nfc_connected_isr);
     rt_nfc_set_on_disconn_isr (&on_nfc_disconnected_isr);
+    rt_nfc_set_on_sent_isr (&on_nfc_tx_done_isr);
 #endif
     return err_code;
 }

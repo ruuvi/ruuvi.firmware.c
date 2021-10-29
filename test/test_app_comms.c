@@ -155,6 +155,7 @@ static void nfc_init_Expect (ri_comm_dis_init_t * p_dis)
     rt_nfc_init_ExpectWithArrayAndReturn (p_dis, 1, RD_SUCCESS);
     rt_nfc_set_on_connected_isr_Expect (&on_nfc_connected_isr);
     rt_nfc_set_on_disconn_isr_Expect (&on_nfc_disconnected_isr);
+    rt_nfc_set_on_sent_isr_Expect (&on_nfc_tx_done_isr);
 #endif
 }
 
@@ -207,6 +208,15 @@ static void app_comms_configure_next_enable_Expect (void)
     ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
     ri_timer_start_ExpectAndReturn (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &m_mode_ops,
                                     RD_SUCCESS);
+}
+
+static void app_comms_configure_next_disable_Expect (void)
+{
+    static ri_comm_dis_init_t ble_dis;
+    memset (&ble_dis, 0, sizeof (ble_dis));
+    app_comms_ble_uninit_Expect();
+    app_comms_ble_init_Expect (true, &ble_dis);
+    app_led_configuration_signal_Expect (false);
 }
 
 static void connection_cleanup_Expect (void)
@@ -299,6 +309,66 @@ void test_handle_gatt_sensor_op_acc (void)
     RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
     handle_gatt_data (mock_data, sizeof (mock_data));
 }
+
+void test_handle_gatt_password_ok (void)
+{
+    uint64_t password = 0x1122334455667788;
+    uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_PASSWORD;
+    mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_READ;
+    mock_data[3] = 0x11;
+    mock_data[4] = 0x22;
+    mock_data[5] = 0x33;
+    mock_data[6] = 0x44;
+    mock_data[7] = 0x55;
+    mock_data[8] = 0x66;
+    mock_data[9] = 0x77;
+    mock_data[10] = 0x88;
+    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
+    ri_comm_id_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_comm_id_get_ReturnThruPtr_id (&password);
+    ri_rtc_millis_ExpectAndReturn (0);
+    app_comms_configure_next_enable_Expect ();
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_ERROR_INVALID_STATE);
+    app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
+    handle_comms (&dummy_comm, mock_data, sizeof (mock_data));
+    TEST_ASSERT (m_config_enabled_on_next_conn);
+}
+
+void test_handle_gatt_password_denied (void)
+{
+    uint64_t password = 0x1122334455667788;
+    uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_PASSWORD;
+    mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_READ;
+    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
+    ri_comm_id_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_comm_id_get_ReturnThruPtr_id (&password);
+    ri_rtc_millis_ExpectAndReturn (0);
+    app_comms_configure_next_disable_Expect ();
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_ERROR_INVALID_STATE);
+    app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
+    handle_comms (&dummy_comm, mock_data, sizeof (mock_data));
+    TEST_ASSERT (!m_config_enabled_on_next_conn);
+}
+
+#if 0
+void test_handle_gatt_unauthorized (void)
+{
+    uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_PASSWORD;
+    mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_READ;
+    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
+    ri_comm_id_get_ExpectAnyArgsAndReturn()
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_SUCCESS);
+    app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
+    RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
+    handle_gatt_data (mock_data, sizeof (mock_data));
+}
+#endif
 
 void test_handle_gatt_null_data (void)
 {
