@@ -202,7 +202,7 @@ static rd_status_t wait_for_tx_done (const uint32_t timeout_ms)
     const uint64_t start = ri_rtc_millis();
     const uint64_t timeout = start + timeout_ms;
 
-    while ((!m_tx_done) && (timeout > ri_rtc_millis()))
+    while ( (!m_tx_done) && (timeout > ri_rtc_millis()))
     {
         ri_yield();
     }
