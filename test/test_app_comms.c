@@ -54,6 +54,10 @@ static rd_status_t dummy_comm (ri_comm_message_t * const msg)
         m_dummy_timeouts--;
         err_code = RD_ERROR_NO_MEM;
     }
+    if(RD_SUCCESS == err_code)
+    {
+        on_gatt_tx_done_isr(NULL, 0);
+    }
 
     m_expect_sends++;
     return err_code;

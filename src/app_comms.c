@@ -127,7 +127,7 @@ static uint8_t initial_adv_send_count (void)
 // If Configuration is not allowed, command type must be read.
 static bool command_is_authorized (const uint8_t op)
 {
-    return (RE_STANDARD_OP_READ_BIT & op) | m_config_enabled_on_curr_conn;
+    return (RE_STANDARD_OP_READ_BIT & op) || m_config_enabled_on_curr_conn;
 }
 
 static rd_status_t reply_unauthorized (const ri_comm_xfer_fp_t reply_fp,
@@ -202,7 +202,7 @@ static rd_status_t wait_for_tx_done (const uint32_t timeout_ms)
     const uint64_t start = ri_rtc_millis();
     const uint64_t timeout = start + timeout_ms;
 
-    while (!m_tx_done && (timeout > ri_rtc_millis()))
+    while ((!m_tx_done) && (timeout > ri_rtc_millis()))
     {
         ri_yield();
     }
