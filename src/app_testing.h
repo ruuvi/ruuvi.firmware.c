@@ -1,5 +1,5 @@
 /**
- * @file testing.h
+ * @file app_testing.h
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  * @author DG12 <DGerman@eal-World-Systems.com>
  * @date 2021-10-22
