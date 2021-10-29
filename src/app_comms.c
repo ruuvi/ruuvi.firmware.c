@@ -304,9 +304,11 @@ static void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data,
             case RE_ENV_HUMI:
             case RE_ENV_PRES:
                 err_code |= app_sensor_handle (reply_fp, raw_message, data_len);
+                break;
 
             case RE_SEC_PASS:
                 err_code |= password_check (reply_fp, raw_message, data_len);
+                break;
 
             default:
                 break;

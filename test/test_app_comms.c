@@ -11,6 +11,7 @@
 #include "mock_ruuvi_interface_communication_ble_advertising.h"
 #include "mock_ruuvi_interface_communication_ble_gatt.h"
 #include "mock_ruuvi_interface_communication_radio.h"
+#include "mock_ruuvi_interface_communication.h"
 #include "mock_ruuvi_interface_rtc.h"
 #include "mock_ruuvi_interface_scheduler.h"
 #include "mock_ruuvi_interface_timer.h"
@@ -138,6 +139,7 @@ static void gatt_init_Expect (ri_comm_dis_init_t * p_dis, const bool secure)
     rt_gatt_set_on_connected_isr_Expect (&on_gatt_connected_isr);
     rt_gatt_set_on_disconn_isr_Expect (&on_gatt_disconnected_isr);
     rt_gatt_set_on_received_isr_Expect (&on_gatt_data_isr);
+    rt_gatt_set_on_sent_isr_Expect (&on_gatt_tx_done_isr);
     rt_gatt_adv_enable_ExpectAndReturn (RD_SUCCESS);
 #endif
 }
@@ -282,6 +284,7 @@ void test_handle_gatt_sensor_op_acc (void)
 {
     uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
     mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION;
+    mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_READ;
     app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
     ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
     app_sensor_handle_ExpectAndReturn (&rt_gatt_send_asynchronous, mock_data,
