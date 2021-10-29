@@ -433,10 +433,7 @@ static rd_status_t ble_name_string_create (char * const name_str, const size_t n
 
 #if APP_NFC_ENABLED
 
-#ifndef CEEDLING
-static
-#endif
-void handle_nfc_connected (void * p_data, uint16_t data_len)
+TESTABLE_STATIC void handle_nfc_connected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     // Kick BLE connection to not allow it to configure tag
@@ -446,20 +443,14 @@ void handle_nfc_connected (void * p_data, uint16_t data_len)
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
-#ifndef CEEDLING
-static
-#endif
-void on_nfc_connected_isr (void * p_data, size_t data_len)
+TESTABLE_STATIC void on_nfc_connected_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_nfc_connected);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
-#ifndef CEEDLING
-static
-#endif
-void handle_nfc_disconnected (void * p_data, uint16_t data_len)
+TESTABLE_STATIC void handle_nfc_disconnected (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     config_cleanup_on_disconnect();
@@ -468,10 +459,7 @@ void handle_nfc_disconnected (void * p_data, uint16_t data_len)
 }
 
 /** @brief Callback when NFC is disconnected" */
-#ifndef CEEDLING
-static
-#endif
-void on_nfc_disconnected_isr (void * p_data, size_t data_len)
+TESTABLE_STATIC void on_nfc_disconnected_isr (void * p_data, size_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,
@@ -490,10 +478,7 @@ rd_status_t app_comms_configure_next_enable (void)
     return err_code;
 }
 
-#ifndef CEEDLING
-static
-#endif
-void handle_config_disable (void * p_data, uint16_t data_len)
+TESTABLE_STATIC void handle_config_disable (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -559,10 +544,7 @@ static rd_status_t nfc_init (ri_comm_dis_init_t * const p_dis)
     return err_code;
 }
 
-#ifndef CEEDLING
-static
-#endif
-void comm_mode_change_isr (void * const p_context)
+TESTABLE_STATIC void comm_mode_change_isr (void * const p_context)
 {
     mode_changes_t * const p_change = (mode_changes_t *) p_context;
 
