@@ -94,7 +94,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     // Sensor read takes a long while, indicate activity once data is read.
     app_led_activity_signal (true);
     m_dataformat_state = app_dataformat_next (m_dataformats_enabled, m_dataformat_state);
-    app_dataformat_encode (msg.data, &buffer_len, m_dataformat_state);
+    app_dataformat_encode (msg.data, &buffer_len, &data, m_dataformat_state);
     msg.data_length = (uint8_t) buffer_len;
     err_code = send_adv (&msg);
     // Advertising should always be successful
@@ -131,8 +131,9 @@ void heartbeat (void * p_event, uint16_t event_size)
         last_heartbeat_timestamp_ms = ri_rtc_millis();
     }
 
-    err_code = app_log_process (&data);
+    // Turn LED off before starting lengthy flash operations
     app_led_activity_signal (false);
+    err_code = app_log_process (&data);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
 }
 

@@ -62,8 +62,8 @@ static void heartbeat_all_ok_Expect (void)
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     ri_rtc_millis_ExpectAndReturn (next_rtc_sim);
-    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_led_activity_signal_Expect (false);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
 }
 
 /**
@@ -184,8 +184,8 @@ void test_heartbeat_adv_ok (void)
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     ri_rtc_millis_ExpectAndReturn (1);
-    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_led_activity_signal_Expect (false);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -203,8 +203,8 @@ void test_heartbeat_adv_disabled (void)
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_watchdog_feed_ExpectAndReturn (RD_SUCCESS);
     ri_rtc_millis_ExpectAndReturn (1);
-    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_led_activity_signal_Expect (false);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 
@@ -220,8 +220,8 @@ void test_heartbeat_none_ok (void)
     rt_adv_send_data_ExpectAnyArgsAndReturn (RD_ERROR_INVALID_STATE);
     rt_gatt_send_asynchronous_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
     rt_nfc_send_ExpectAnyArgsAndReturn (RD_ERROR_NOT_ENABLED);
-    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     app_led_activity_signal_Expect (false);
+    app_log_process_ExpectAnyArgsAndReturn (RD_SUCCESS);
     heartbeat (NULL, 0);
 }
 

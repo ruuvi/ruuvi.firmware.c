@@ -63,10 +63,7 @@ void test_app_dataformat_encode_3_ok (void)
     app_dataformat_t format = DF_3;
     float voltage = 2.5F;
     rd_status_t status = RD_SUCCESS;
-    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -77,7 +74,7 @@ void test_app_dataformat_encode_3_ok (void)
     rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
     re_3_encode_ExpectAndReturn (output, NULL, NAN, RE_SUCCESS);
     re_3_encode_IgnoreArg_data();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_SUCCESS == status);
     TEST_ASSERT (RE_3_DATA_LENGTH == output_length);
 }
@@ -89,10 +86,7 @@ void test_app_dataformat_encode_3_error (void)
     app_dataformat_t format = DF_3;
     float voltage = 2.5F;
     rd_status_t status = RD_SUCCESS;
-    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -103,7 +97,7 @@ void test_app_dataformat_encode_3_error (void)
     rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
     re_3_encode_ExpectAndReturn (output, NULL, NAN, RE_ERROR_ENCODING);
     re_3_encode_IgnoreArg_data();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_ERROR_INTERNAL == status);
 }
 
@@ -117,10 +111,7 @@ void test_app_dataformat_encode_5_ok (void)
     uint64_t address = 0x0000AABBCCDDEEFF;
     int8_t power = 4;
     rd_status_t status = RD_SUCCESS;
-    rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -137,7 +128,7 @@ void test_app_dataformat_encode_5_ok (void)
     re_5_encode_ExpectAndReturn (NULL, NULL, RE_SUCCESS);
     re_5_encode_IgnoreArg_buffer();
     re_5_encode_IgnoreArg_data();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_SUCCESS == status);
     TEST_ASSERT (RE_5_DATA_LENGTH == output_length);
 }
@@ -151,10 +142,7 @@ void test_app_dataformat_encode_5_error (void)
     uint64_t address = 0x0000AABBCCDDEEFF;
     int8_t power = 4;
     rd_status_t status = RD_SUCCESS;
-    rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -171,7 +159,7 @@ void test_app_dataformat_encode_5_error (void)
     re_5_encode_ExpectAndReturn (NULL, NULL, RE_ERROR_ENCODING);
     re_5_encode_IgnoreArg_buffer();
     re_5_encode_IgnoreArg_data();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_ERROR_INTERNAL == status);
 }
 
@@ -184,10 +172,7 @@ void test_app_dataformat_encode_8_ok (void)
     uint64_t address = 0x0000AABBCCDDEEFF;
     int8_t power = 4;
     rd_status_t status = RD_SUCCESS;
-    rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -206,7 +191,7 @@ void test_app_dataformat_encode_8_ok (void)
     re_8_encode_IgnoreArg_cipher();
     re_8_encode_IgnoreArg_data();
     re_8_encode_IgnoreArg_key();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_SUCCESS == status);
     TEST_ASSERT (RE_8_DATA_LENGTH == output_length);
 }
@@ -220,10 +205,7 @@ void test_app_dataformat_encode_8_error (void)
     uint64_t address = 0x0000AABBCCDDEEFF;
     int8_t power = 4;
     rd_status_t status = RD_SUCCESS;
-    rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -242,7 +224,7 @@ void test_app_dataformat_encode_8_error (void)
     re_8_encode_IgnoreArg_cipher();
     re_8_encode_IgnoreArg_data();
     re_8_encode_IgnoreArg_key();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_SUCCESS == status);
     TEST_ASSERT (RE_8_DATA_LENGTH == output_length);
 }
@@ -255,10 +237,7 @@ void test_app_dataformat_encode_fa_ok (void)
     float voltage = 2.5F;
     uint64_t address = 0x0000AABBCCDDEEFF;
     rd_status_t status = RD_SUCCESS;
-    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -276,7 +255,7 @@ void test_app_dataformat_encode_fa_ok (void)
     re_fa_encode_IgnoreArg_data();
     re_fa_encode_IgnoreArg_cipher();
     re_fa_encode_IgnoreArg_key();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_ERROR_INTERNAL == status);
 }
 
@@ -288,10 +267,7 @@ void test_app_dataformat_encode_fa_error (void)
     float voltage = 2.5F;
     uint64_t address = 0x0000AABBCCDDEEFF;
     rd_status_t status = RD_SUCCESS;
-    static rd_sensor_data_fields_t fields = {0}; //!< Gets ignored in test.
-    app_sensor_available_data_ExpectAndReturn (fields);
-    rd_sensor_data_fieldcount_ExpectAnyArgsAndReturn (7);
-    app_sensor_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rd_sensor_data_t data = {0};
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
@@ -309,7 +285,7 @@ void test_app_dataformat_encode_fa_error (void)
     re_fa_encode_IgnoreArg_data();
     re_fa_encode_IgnoreArg_cipher();
     re_fa_encode_IgnoreArg_key();
-    status = app_dataformat_encode (output, &output_length, format);
+    status = app_dataformat_encode (output, &output_length, &data, format);
     TEST_ASSERT (RD_ERROR_INTERNAL == status);
 }
 

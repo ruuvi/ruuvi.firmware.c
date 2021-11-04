@@ -57,11 +57,13 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
  * @param[out] output Buffer to which data is encoded.
  * @param[in,out] output_length Input: Size of output buffer.
  *                              Output: Size of encoded data.
+ * @param[in] data Pointer to sensor data to encode.
  * @param[in] format Format to encode data into.
  *
  */
 rd_status_t app_dataformat_encode (uint8_t * const output,
                                    size_t * const output_length,
+                                   const rd_sensor_data_t * const data,
                                    const app_dataformat_t format);
 
 #endif // APP_DATAFORMATS_H
