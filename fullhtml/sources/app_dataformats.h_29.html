@@ -70,14 +70,16 @@
 <a name="ln57"> * @param[out] output Buffer to which data is encoded.</a>
 <a name="ln58"> * @param[in,out] output_length Input: Size of output buffer.</a>
 <a name="ln59"> *                              Output: Size of encoded data.</a>
-<a name="ln60"> * @param[in] format Format to encode data into.</a>
-<a name="ln61"> *</a>
-<a name="ln62"> */</a>
-<a name="ln63">rd_status_t app_dataformat_encode (uint8_t * const output,</a>
-<a name="ln64">                                   size_t * const output_length,</a>
-<a name="ln65">                                   const app_dataformat_t format);</a>
-<a name="ln66"> </a>
-<a name="ln67">#endif // APP_DATAFORMATS_H</a>
+<a name="ln60"> * @param[in] data Pointer to sensor data to encode.</a>
+<a name="ln61"> * @param[in] format Format to encode data into.</a>
+<a name="ln62"> *</a>
+<a name="ln63"> */</a>
+<a name="ln64">rd_status_t app_dataformat_encode (uint8_t * const output,</a>
+<a name="ln65">                                   size_t * const output_length,</a>
+<a name="ln66">                                   const rd_sensor_data_t * const data,</a>
+<a name="ln67">                                   const app_dataformat_t format);</a>
+<a name="ln68"> </a>
+<a name="ln69">#endif // APP_DATAFORMATS_H</a>
 
 </code></pre>
 <div class="balloon" rel="26"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(1U << 0U)' expression should not be converted from the essential 'unsigned' type to the essential 'signed' type.</p></div>

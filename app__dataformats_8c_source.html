@@ -314,66 +314,60 @@ $(document).ready(function(){initNavTree('app__dataformats_8c_source.html',''); 
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;}</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160; </div>
-<div class="line"><a name="l00229"></a><span class="lineno"><a class="line" href="app__dataformats_8h.html#abf284c4ef1f3236a146bc531f62b439d">  229</a></span>&#160;rd_status_t <a class="code" href="app__dataformats_8c.html#abf284c4ef1f3236a146bc531f62b439d">app_dataformat_encode</a> (uint8_t * <span class="keyword">const</span> output,</div>
+<div class="line"><a name="l00229"></a><span class="lineno"><a class="line" href="app__dataformats_8h.html#a1e7eea975317314d1ba399fa1759cd0c">  229</a></span>&#160;rd_status_t <a class="code" href="app__dataformats_8c.html#a24ee040f46b79677a4911aef89f9d759">app_dataformat_encode</a> (uint8_t * <span class="keyword">const</span> output,</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;                                   <span class="keywordtype">size_t</span> * <span class="keyword">const</span> output_length,</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                                   <span class="keyword">const</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a> format)</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;{</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    rd_status_t err_code = RD_SUCCESS;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    rd_sensor_data_t data = {0};</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    data.fields = <a class="code" href="group__app__sensor.html#ga7077aa82166808259f34de69d76e936f">app_sensor_available_data</a>();</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordtype">float</span> data_values[rd_sensor_data_fieldcount (&amp;data)];</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    data.data = data_values;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    err_code |= <a class="code" href="group__app__sensor.html#gaccb62302b11b6416a7c0b6af89106432">app_sensor_get</a> (&amp;data);</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                                   <span class="keyword">const</span> rd_sensor_data_t * <span class="keyword">const</span> p_data,</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                                   <span class="keyword">const</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a> format)</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;{</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    rd_status_t err_code = RD_SUCCESS;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160; </div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordflow">switch</span> (format)</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    {</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="preprocessor">#       if RE_3_ENABLED</span></div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160; </div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    <span class="keywordflow">switch</span> (format)</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    {</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="preprocessor">#       if RE_3_ENABLED</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160; </div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aafbf29fb134962bfe0704448fcd3e825f">DF_3</a>:</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            err_code |= encode_to_3 (output, output_length, &amp;data);</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="preprocessor">#       endif</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="preprocessor">#       if RE_5_ENABLED</span></div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160; </div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa9de35aca84e149582cf502e689e031a5">DF_5</a>:</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;            err_code |= encode_to_5 (output, output_length, &amp;data);</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="preprocessor">#       endif</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="preprocessor">#       if RE_8_ENABLED</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160; </div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9">DF_8</a>:</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;            err_code |= encode_to_8 (output, output_length, &amp;data);</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="preprocessor">#       endif</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="preprocessor">#       if RE_FA_ENABLED</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160; </div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19">DF_FA</a>:</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            err_code |= encode_to_fa (output, output_length, &amp;data);</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="preprocessor">#       endif</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aafbf29fb134962bfe0704448fcd3e825f">DF_3</a>:</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;            err_code |= encode_to_3 (output, output_length, p_data);</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="preprocessor">#       endif</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="preprocessor">#       if RE_5_ENABLED</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160; </div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa9de35aca84e149582cf502e689e031a5">DF_5</a>:</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;            err_code |= encode_to_5 (output, output_length, p_data);</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="preprocessor">#       endif</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="preprocessor">#       if RE_8_ENABLED</span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160; </div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9">DF_8</a>:</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;            err_code |= encode_to_8 (output, output_length, p_data);</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="preprocessor">#       endif</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="preprocessor">#       if RE_FA_ENABLED</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160; </div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        <span class="keywordflow">case</span> <a class="code" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19">DF_FA</a>:</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            err_code |= encode_to_fa (output, output_length, p_data);</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;            <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="preprocessor">#       endif</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160; </div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;        <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;            err_code |= RD_ERROR_NOT_ENABLED;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    }</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160; </div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;        <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;            err_code |= RD_ERROR_NOT_ENABLED;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    }</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160; </div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    <span class="keywordflow">return</span> err_code;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;}</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    <span class="keywordflow">return</span> err_code;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;}</div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <div class="ttc" id="aapp__sensor_8h_html"><div class="ttname"><a href="app__sensor_8h.html">app_sensor.h</a></div></div>
 <div class="ttc" id="aapp__dataformats_8h_html_af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19"><div class="ttname"><a href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19">DF_FA</a></div><div class="ttdeci">@ DF_FA</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8h_source.html#l00029">app_dataformats.h:29</a></div></div>
 <div class="ttc" id="aapp__dataformats_8h_html_af2622d100600a892b45980ca1b32e05aa9de35aca84e149582cf502e689e031a5"><div class="ttname"><a href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa9de35aca84e149582cf502e689e031a5">DF_5</a></div><div class="ttdeci">@ DF_5</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8h_source.html#l00027">app_dataformats.h:27</a></div></div>
-<div class="ttc" id="aapp__dataformats_8c_html_abf284c4ef1f3236a146bc531f62b439d"><div class="ttname"><a href="app__dataformats_8c.html#abf284c4ef1f3236a146bc531f62b439d">app_dataformat_encode</a></div><div class="ttdeci">rd_status_t app_dataformat_encode(uint8_t *const output, size_t *const output_length, const app_dataformat_t format)</div><div class="ttdoc">Encode data into given buffer with given format.</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8c_source.html#l00229">app_dataformats.c:229</a></div></div>
 <div class="ttc" id="astructapp__dataformats__t_html"><div class="ttname"><a href="structapp__dataformats__t.html">app_dataformats_t</a></div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8h_source.html#l00032">app_dataformats.h:32</a></div></div>
 <div class="ttc" id="aapp__dataformats_8h_html"><div class="ttname"><a href="app__dataformats_8h.html">app_dataformats.h</a></div></div>
 <div class="ttc" id="agroup__app__sensor_html_gada029e85b696279c1fa6f0ed942fee19"><div class="ttname"><a href="group__app__sensor.html#gada029e85b696279c1fa6f0ed942fee19">app_sensor_event_count_get</a></div><div class="ttdeci">uint32_t app_sensor_event_count_get(void)</div><div class="ttdoc">Get current event count.</div><div class="ttdef"><b>Definition:</b> <a href="app__sensor_8c_source.html#l00461">app_sensor.c:461</a></div></div>
+<div class="ttc" id="aapp__dataformats_8c_html_a24ee040f46b79677a4911aef89f9d759"><div class="ttname"><a href="app__dataformats_8c.html#a24ee040f46b79677a4911aef89f9d759">app_dataformat_encode</a></div><div class="ttdeci">rd_status_t app_dataformat_encode(uint8_t *const output, size_t *const output_length, const rd_sensor_data_t *const p_data, const app_dataformat_t format)</div><div class="ttdoc">Encode data into given buffer with given format.</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8c_source.html#l00229">app_dataformats.c:229</a></div></div>
 <div class="ttc" id="aapp__dataformats_8c_html_a2f63018251da5259db40a2cad4191ee6"><div class="ttname"><a href="app__dataformats_8c.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a></div><div class="ttdeci">#define TESTABLE_STATIC</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8c_source.html#l00020">app_dataformats.c:20</a></div></div>
 <div class="ttc" id="aapp__dataformats_8h_html_af2622d100600a892b45980ca1b32e05aafbf29fb134962bfe0704448fcd3e825f"><div class="ttname"><a href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aafbf29fb134962bfe0704448fcd3e825f">DF_3</a></div><div class="ttdeci">@ DF_3</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8h_source.html#l00026">app_dataformats.h:26</a></div></div>
 <div class="ttc" id="aapp__dataformats_8c_html_aba3a37e3de86440a0dac8769388aa8fb"><div class="ttname"><a href="app__dataformats_8c.html#aba3a37e3de86440a0dac8769388aa8fb">app_dataformat_next</a></div><div class="ttdeci">app_dataformat_t app_dataformat_next(const app_dataformats_t formats, const app_dataformat_t state)</div><div class="ttdoc">Return next dataformat to send.</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8c_source.html#l00055">app_dataformats.c:55</a></div></div>
 <div class="ttc" id="aapp__dataformats_8h_html_af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9"><div class="ttname"><a href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9">DF_8</a></div><div class="ttdeci">@ DF_8</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8h_source.html#l00028">app_dataformats.h:28</a></div></div>
-<div class="ttc" id="agroup__app__sensor_html_gaccb62302b11b6416a7c0b6af89106432"><div class="ttname"><a href="group__app__sensor.html#gaccb62302b11b6416a7c0b6af89106432">app_sensor_get</a></div><div class="ttdeci">rd_status_t app_sensor_get(rd_sensor_data_t *const data)</div><div class="ttdoc">Return last sampled data.</div><div class="ttdef"><b>Definition:</b> <a href="app__sensor_8c_source.html#l00425">app_sensor.c:425</a></div></div>
 <div class="ttc" id="aapp__dataformats_8h_html_af2622d100600a892b45980ca1b32e05a"><div class="ttname"><a href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a></div><div class="ttdeci">app_dataformat_t</div><div class="ttdef"><b>Definition:</b> <a href="app__dataformats_8h_source.html#l00023">app_dataformats.h:23</a></div></div>
-<div class="ttc" id="agroup__app__sensor_html_ga7077aa82166808259f34de69d76e936f"><div class="ttname"><a href="group__app__sensor.html#ga7077aa82166808259f34de69d76e936f">app_sensor_available_data</a></div><div class="ttdeci">rd_sensor_data_fields_t app_sensor_available_data(void)</div><div class="ttdoc">Return available data types.</div><div class="ttdef"><b>Definition:</b> <a href="app__sensor_8c_source.html#l00410">app_sensor.c:410</a></div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>

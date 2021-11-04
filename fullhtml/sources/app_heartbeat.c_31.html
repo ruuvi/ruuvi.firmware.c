@@ -107,7 +107,7 @@
 <a name="ln94">    // Sensor read takes a long while, indicate activity once data is read.</a>
 <a name="ln95">    app_led_activity_signal (true);</a>
 <a name="ln96">    m_dataformat_state = app_dataformat_next (m_dataformats_enabled, m_dataformat_state);</a>
-<a name="ln97">    app_dataformat_encode (msg.data, &amp;buffer_len, m_dataformat_state);</a>
+<a name="ln97">    app_dataformat_encode (msg.data, &amp;buffer_len, &amp;data, m_dataformat_state);</a>
 <a name="ln98">    msg.data_length = (uint8_t) buffer_len;</a>
 <a name="ln99">    err_code = send_adv (&amp;msg);</a>
 <a name="ln100">    // Advertising should always be successful</a>
@@ -144,92 +144,93 @@
 <a name="ln131">        last_heartbeat_timestamp_ms = ri_rtc_millis();</a>
 <a name="ln132">    }</a>
 <a name="ln133"> </a>
-<a name="ln134">    err_code = app_log_process (&amp;data);</a>
+<a name="ln134">    // Turn LED off before starting lengthy flash operations</a>
 <a name="ln135">    app_led_activity_signal (false);</a>
-<a name="ln136">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln137">}</a>
-<a name="ln138"> </a>
-<a name="ln139">/**</a>
-<a name="ln140"> * @brief When timer triggers, schedule reading sensors and sending data.</a>
-<a name="ln141"> *</a>
-<a name="ln142"> * @param[in] p_context Always NULL.</a>
-<a name="ln143"> */</a>
-<a name="ln144">#ifndef CEEDLING</a>
-<a name="ln145">static</a>
-<a name="ln146">#endif</a>
-<a name="ln147">void schedule_heartbeat_isr (void * const p_context)</a>
-<a name="ln148">{</a>
-<a name="ln149">    ri_scheduler_event_put (NULL, 0U, &amp;heartbeat);</a>
-<a name="ln150">}</a>
-<a name="ln151"> </a>
-<a name="ln152">rd_status_t app_heartbeat_init (void)</a>
-<a name="ln153">{</a>
-<a name="ln154">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln155"> </a>
-<a name="ln156">    if ( (!ri_timer_is_init()) || (!ri_scheduler_is_init()))</a>
-<a name="ln157">    {</a>
-<a name="ln158">        err_code |= RD_ERROR_INVALID_STATE;</a>
-<a name="ln159">    }</a>
-<a name="ln160">    else</a>
-<a name="ln161">    {</a>
-<a name="ln162">        err_code |= ri_timer_create (&amp;heart_timer, RI_TIMER_MODE_REPEATED,</a>
-<a name="ln163">                                     &amp;schedule_heartbeat_isr);</a>
-<a name="ln164"> </a>
-<a name="ln165">        if (RD_SUCCESS == err_code)</a>
-<a name="ln166">        {</a>
-<a name="ln167">            err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);</a>
-<a name="ln168">        }</a>
-<a name="ln169">    }</a>
-<a name="ln170"> </a>
-<a name="ln171">    return err_code;</a>
-<a name="ln172">}</a>
-<a name="ln173"> </a>
-<a name="ln174">rd_status_t app_heartbeat_start (void)</a>
-<a name="ln175">{</a>
-<a name="ln176">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln177"> </a>
-<a name="ln178">    if (NULL == heart_timer)</a>
-<a name="ln179">    {</a>
-<a name="ln180">        err_code |= RD_ERROR_INVALID_STATE;</a>
-<a name="ln181">    }</a>
-<a name="ln182">    else</a>
-<a name="ln183">    {</a>
-<a name="ln184">        heartbeat (NULL, 0);</a>
-<a name="ln185">        err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);</a>
-<a name="ln186">    }</a>
-<a name="ln187"> </a>
-<a name="ln188">    return err_code;</a>
-<a name="ln189">}</a>
-<a name="ln190"> </a>
-<a name="ln191">rd_status_t app_heartbeat_stop (void)</a>
-<a name="ln192">{</a>
-<a name="ln193">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln194"> </a>
-<a name="ln195">    if (NULL == heart_timer)</a>
-<a name="ln196">    {</a>
-<a name="ln197">        err_code |= RD_ERROR_INVALID_STATE;</a>
-<a name="ln198">    }</a>
-<a name="ln199">    else</a>
-<a name="ln200">    {</a>
-<a name="ln201">        err_code |= ri_timer_stop (heart_timer);</a>
-<a name="ln202">    }</a>
-<a name="ln203"> </a>
-<a name="ln204">    return err_code;</a>
-<a name="ln205">}</a>
-<a name="ln206"> </a>
-<a name="ln207">bool app_heartbeat_overdue (void)</a>
-<a name="ln208">{</a>
-<a name="ln209">    return ri_rtc_millis() &gt; (last_heartbeat_timestamp_ms +</a>
-<a name="ln210">                              APP_HEARTBEAT_OVERDUE_INTERVAL_MS);</a>
-<a name="ln211">}</a>
-<a name="ln212"> </a>
-<a name="ln213">#ifdef CEEDLING</a>
-<a name="ln214">// Give CEEDLING a handle to state of module.</a>
-<a name="ln215">ri_timer_id_t * get_heart_timer (void)</a>
-<a name="ln216">{</a>
-<a name="ln217">    return &amp;heart_timer;</a>
-<a name="ln218">}</a>
-<a name="ln219">#endif</a>
+<a name="ln136">    err_code = app_log_process (&amp;data);</a>
+<a name="ln137">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln138">}</a>
+<a name="ln139"> </a>
+<a name="ln140">/**</a>
+<a name="ln141"> * @brief When timer triggers, schedule reading sensors and sending data.</a>
+<a name="ln142"> *</a>
+<a name="ln143"> * @param[in] p_context Always NULL.</a>
+<a name="ln144"> */</a>
+<a name="ln145">#ifndef CEEDLING</a>
+<a name="ln146">static</a>
+<a name="ln147">#endif</a>
+<a name="ln148">void schedule_heartbeat_isr (void * const p_context)</a>
+<a name="ln149">{</a>
+<a name="ln150">    ri_scheduler_event_put (NULL, 0U, &amp;heartbeat);</a>
+<a name="ln151">}</a>
+<a name="ln152"> </a>
+<a name="ln153">rd_status_t app_heartbeat_init (void)</a>
+<a name="ln154">{</a>
+<a name="ln155">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln156"> </a>
+<a name="ln157">    if ( (!ri_timer_is_init()) || (!ri_scheduler_is_init()))</a>
+<a name="ln158">    {</a>
+<a name="ln159">        err_code |= RD_ERROR_INVALID_STATE;</a>
+<a name="ln160">    }</a>
+<a name="ln161">    else</a>
+<a name="ln162">    {</a>
+<a name="ln163">        err_code |= ri_timer_create (&amp;heart_timer, RI_TIMER_MODE_REPEATED,</a>
+<a name="ln164">                                     &amp;schedule_heartbeat_isr);</a>
+<a name="ln165"> </a>
+<a name="ln166">        if (RD_SUCCESS == err_code)</a>
+<a name="ln167">        {</a>
+<a name="ln168">            err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);</a>
+<a name="ln169">        }</a>
+<a name="ln170">    }</a>
+<a name="ln171"> </a>
+<a name="ln172">    return err_code;</a>
+<a name="ln173">}</a>
+<a name="ln174"> </a>
+<a name="ln175">rd_status_t app_heartbeat_start (void)</a>
+<a name="ln176">{</a>
+<a name="ln177">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln178"> </a>
+<a name="ln179">    if (NULL == heart_timer)</a>
+<a name="ln180">    {</a>
+<a name="ln181">        err_code |= RD_ERROR_INVALID_STATE;</a>
+<a name="ln182">    }</a>
+<a name="ln183">    else</a>
+<a name="ln184">    {</a>
+<a name="ln185">        heartbeat (NULL, 0);</a>
+<a name="ln186">        err_code |= ri_timer_start (heart_timer, APP_HEARTBEAT_INTERVAL_MS, NULL);</a>
+<a name="ln187">    }</a>
+<a name="ln188"> </a>
+<a name="ln189">    return err_code;</a>
+<a name="ln190">}</a>
+<a name="ln191"> </a>
+<a name="ln192">rd_status_t app_heartbeat_stop (void)</a>
+<a name="ln193">{</a>
+<a name="ln194">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln195"> </a>
+<a name="ln196">    if (NULL == heart_timer)</a>
+<a name="ln197">    {</a>
+<a name="ln198">        err_code |= RD_ERROR_INVALID_STATE;</a>
+<a name="ln199">    }</a>
+<a name="ln200">    else</a>
+<a name="ln201">    {</a>
+<a name="ln202">        err_code |= ri_timer_stop (heart_timer);</a>
+<a name="ln203">    }</a>
+<a name="ln204"> </a>
+<a name="ln205">    return err_code;</a>
+<a name="ln206">}</a>
+<a name="ln207"> </a>
+<a name="ln208">bool app_heartbeat_overdue (void)</a>
+<a name="ln209">{</a>
+<a name="ln210">    return ri_rtc_millis() &gt; (last_heartbeat_timestamp_ms +</a>
+<a name="ln211">                              APP_HEARTBEAT_OVERDUE_INTERVAL_MS);</a>
+<a name="ln212">}</a>
+<a name="ln213"> </a>
+<a name="ln214">#ifdef CEEDLING</a>
+<a name="ln215">// Give CEEDLING a handle to state of module.</a>
+<a name="ln216">ri_timer_id_t * get_heart_timer (void)</a>
+<a name="ln217">{</a>
+<a name="ln218">    return &amp;heart_timer;</a>
+<a name="ln219">}</a>
+<a name="ln220">#endif</a>
 
 </code></pre>
 <div class="balloon" rel="91"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2598/" target="_blank">V2598</a> Variable-length array types should not be used. Check the array size expression: '[rd_sensor_data_fieldcount(& data)]'.</p></div>
@@ -240,9 +241,9 @@
 <div class="balloon" rel="125"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
 <div class="balloon" rel="81"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'event_size'.</p></div>
 <div class="balloon" rel="81"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_event'.</p></div>
-<div class="balloon" rel="145"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_context'.</p></div>
-<div class="balloon" rel="167"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '*' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="185"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '*' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="146"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_context'.</p></div>
+<div class="balloon" rel="168"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '*' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="186"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '*' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

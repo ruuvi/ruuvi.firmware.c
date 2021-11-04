@@ -241,48 +241,44 @@
 <a name="ln228"> </a>
 <a name="ln229">rd_status_t app_dataformat_encode (uint8_t * const output,</a>
 <a name="ln230">                                   size_t * const output_length,</a>
-<a name="ln231">                                   const app_dataformat_t format)</a>
-<a name="ln232">{</a>
-<a name="ln233">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln234">    rd_sensor_data_t data = {0};</a>
-<a name="ln235">    data.fields = app_sensor_available_data();</a>
-<a name="ln236">    float data_values[rd_sensor_data_fieldcount (&amp;data)];</a>
-<a name="ln237">    data.data = data_values;</a>
-<a name="ln238">    err_code |= app_sensor_get (&amp;data);</a>
+<a name="ln231">                                   const rd_sensor_data_t * const p_data,</a>
+<a name="ln232">                                   const app_dataformat_t format)</a>
+<a name="ln233">{</a>
+<a name="ln234">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln235"> </a>
+<a name="ln236">    switch (format)</a>
+<a name="ln237">    {</a>
+<a name="ln238">#       if RE_3_ENABLED</a>
 <a name="ln239"> </a>
-<a name="ln240">    switch (format)</a>
-<a name="ln241">    {</a>
-<a name="ln242">#       if RE_3_ENABLED</a>
-<a name="ln243"> </a>
-<a name="ln244">        case DF_3:</a>
-<a name="ln245">            err_code |= encode_to_3 (output, output_length, &amp;data);</a>
-<a name="ln246">            break;</a>
-<a name="ln247">#       endif</a>
-<a name="ln248">#       if RE_5_ENABLED</a>
-<a name="ln249"> </a>
-<a name="ln250">        case DF_5:</a>
-<a name="ln251">            err_code |= encode_to_5 (output, output_length, &amp;data);</a>
-<a name="ln252">            break;</a>
-<a name="ln253">#       endif</a>
-<a name="ln254">#       if RE_8_ENABLED</a>
-<a name="ln255"> </a>
-<a name="ln256">        case DF_8:</a>
-<a name="ln257">            err_code |= encode_to_8 (output, output_length, &amp;data);</a>
-<a name="ln258">            break;</a>
-<a name="ln259">#       endif</a>
-<a name="ln260">#       if RE_FA_ENABLED</a>
-<a name="ln261"> </a>
-<a name="ln262">        case DF_FA:</a>
-<a name="ln263">            err_code |= encode_to_fa (output, output_length, &amp;data);</a>
-<a name="ln264">            break;</a>
-<a name="ln265">#       endif</a>
+<a name="ln240">        case DF_3:</a>
+<a name="ln241">            err_code |= encode_to_3 (output, output_length, p_data);</a>
+<a name="ln242">            break;</a>
+<a name="ln243">#       endif</a>
+<a name="ln244">#       if RE_5_ENABLED</a>
+<a name="ln245"> </a>
+<a name="ln246">        case DF_5:</a>
+<a name="ln247">            err_code |= encode_to_5 (output, output_length, p_data);</a>
+<a name="ln248">            break;</a>
+<a name="ln249">#       endif</a>
+<a name="ln250">#       if RE_8_ENABLED</a>
+<a name="ln251"> </a>
+<a name="ln252">        case DF_8:</a>
+<a name="ln253">            err_code |= encode_to_8 (output, output_length, p_data);</a>
+<a name="ln254">            break;</a>
+<a name="ln255">#       endif</a>
+<a name="ln256">#       if RE_FA_ENABLED</a>
+<a name="ln257"> </a>
+<a name="ln258">        case DF_FA:</a>
+<a name="ln259">            err_code |= encode_to_fa (output, output_length, p_data);</a>
+<a name="ln260">            break;</a>
+<a name="ln261">#       endif</a>
+<a name="ln262"> </a>
+<a name="ln263">        default:</a>
+<a name="ln264">            err_code |= RD_ERROR_NOT_ENABLED;</a>
+<a name="ln265">    }</a>
 <a name="ln266"> </a>
-<a name="ln267">        default:</a>
-<a name="ln268">            err_code |= RD_ERROR_NOT_ENABLED;</a>
-<a name="ln269">    }</a>
-<a name="ln270"> </a>
-<a name="ln271">    return err_code;</a>
-<a name="ln272">}</a>
+<a name="ln267">    return err_code;</a>
+<a name="ln268">}</a>
 
 </code></pre>
 <div class="balloon" rel="47"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
@@ -297,8 +293,7 @@
 <div class="balloon" rel="160"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '((0xFFFEU) + 1)' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
 <div class="balloon" rel="165"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="203"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '0xFFU' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="236"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2598/" target="_blank">V2598</a> Variable-length array types should not be used. Check the array size expression: '[rd_sensor_data_fieldcount(& data)]'.</p></div>
-<div class="balloon" rel="240"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2520/" target="_blank">V2520</a> Every switch-clause should be terminated by an unconditional 'break' statement.</p></div>
+<div class="balloon" rel="236"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2520/" target="_blank">V2520</a> Every switch-clause should be terminated by an unconditional 'break' statement.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

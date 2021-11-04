@@ -116,9 +116,9 @@ Functions</h2></td></tr>
 <tr class="memitem:aba3a37e3de86440a0dac8769388aa8fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="app__dataformats_8c.html#aba3a37e3de86440a0dac8769388aa8fb">app_dataformat_next</a> (const <a class="el" href="structapp__dataformats__t.html">app_dataformats_t</a> formats, const <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a> state)</td></tr>
 <tr class="memdesc:aba3a37e3de86440a0dac8769388aa8fb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return next dataformat to send.  <a href="app__dataformats_8c.html#aba3a37e3de86440a0dac8769388aa8fb">More...</a><br /></td></tr>
 <tr class="separator:aba3a37e3de86440a0dac8769388aa8fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf284c4ef1f3236a146bc531f62b439d"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="app__dataformats_8c.html#abf284c4ef1f3236a146bc531f62b439d">app_dataformat_encode</a> (uint8_t *const output, size_t *const output_length, const <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a> format)</td></tr>
-<tr class="memdesc:abf284c4ef1f3236a146bc531f62b439d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode data into given buffer with given format.  <a href="app__dataformats_8c.html#abf284c4ef1f3236a146bc531f62b439d">More...</a><br /></td></tr>
-<tr class="separator:abf284c4ef1f3236a146bc531f62b439d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24ee040f46b79677a4911aef89f9d759"><td class="memItemLeft" align="right" valign="top">rd_status_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="app__dataformats_8c.html#a24ee040f46b79677a4911aef89f9d759">app_dataformat_encode</a> (uint8_t *const output, size_t *const output_length, const rd_sensor_data_t *const p_data, const <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a> format)</td></tr>
+<tr class="memdesc:a24ee040f46b79677a4911aef89f9d759"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encode data into given buffer with given format.  <a href="app__dataformats_8c.html#a24ee040f46b79677a4911aef89f9d759">More...</a><br /></td></tr>
+<tr class="separator:a24ee040f46b79677a4911aef89f9d759"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="a2f63018251da5259db40a2cad4191ee6"></a>
@@ -138,8 +138,8 @@ Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="abf284c4ef1f3236a146bc531f62b439d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abf284c4ef1f3236a146bc531f62b439d">&#9670;&nbsp;</a></span>app_dataformat_encode()</h2>
+<a id="a24ee040f46b79677a4911aef89f9d759"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a24ee040f46b79677a4911aef89f9d759">&#9670;&nbsp;</a></span>app_dataformat_encode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -155,6 +155,12 @@ Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">size_t *const&#160;</td>
           <td class="paramname"><em>output_length</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const rd_sensor_data_t *const&#160;</td>
+          <td class="paramname"><em>data</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -176,6 +182,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramdir">[out]</td><td class="paramname">output</td><td>Buffer to which data is encoded. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">output_length</td><td>Input: Size of output buffer. Output: Size of encoded data. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Pointer to sensor data to encode. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">format</td><td>Format to encode data into. </td></tr>
   </table>
   </dd>
