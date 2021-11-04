@@ -1,5 +1,5 @@
 # Changelog
-## 3.31.0 (in progress)
+## 3.31.0
  - Add encrypted dataformats 0x08 (recommended) and 0xFA (legacy). 
  - Add contactless bootloader entry through endpoint 0x2A
  - Fix resource leak in flash storage
