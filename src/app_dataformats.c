@@ -228,39 +228,35 @@ encode_to_fa (uint8_t * const output,
 
 rd_status_t app_dataformat_encode (uint8_t * const output,
                                    size_t * const output_length,
+                                   const rd_sensor_data_t * const p_data,
                                    const app_dataformat_t format)
 {
     rd_status_t err_code = RD_SUCCESS;
-    rd_sensor_data_t data = {0};
-    data.fields = app_sensor_available_data();
-    float data_values[rd_sensor_data_fieldcount (&data)];
-    data.data = data_values;
-    err_code |= app_sensor_get (&data);
 
     switch (format)
     {
 #       if RE_3_ENABLED
 
         case DF_3:
-            err_code |= encode_to_3 (output, output_length, &data);
+            err_code |= encode_to_3 (output, output_length, p_data);
             break;
 #       endif
 #       if RE_5_ENABLED
 
         case DF_5:
-            err_code |= encode_to_5 (output, output_length, &data);
+            err_code |= encode_to_5 (output, output_length, p_data);
             break;
 #       endif
 #       if RE_8_ENABLED
 
         case DF_8:
-            err_code |= encode_to_8 (output, output_length, &data);
+            err_code |= encode_to_8 (output, output_length, p_data);
             break;
 #       endif
 #       if RE_FA_ENABLED
 
         case DF_FA:
-            err_code |= encode_to_fa (output, output_length, &data);
+            err_code |= encode_to_fa (output, output_length, p_data);
             break;
 #       endif
 

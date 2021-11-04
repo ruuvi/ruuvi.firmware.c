@@ -62,6 +62,7 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
  */
 rd_status_t app_dataformat_encode (uint8_t * const output,
                                    size_t * const output_length,
+                                   const rd_sensor_data_t * const data,
                                    const app_dataformat_t format);
 
 #endif // APP_DATAFORMATS_H
