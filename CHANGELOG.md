@@ -1,4 +1,7 @@
 # Changelog
+## 3.31.1
+ - Fix RE5 negative temperatures being broadcasted out as zero
+
 ## 3.31.0
  - Add encrypted dataformats 0x08 (recommended) and 0xFA (legacy). 
  - Add contactless bootloader entry through endpoint 0x2A
