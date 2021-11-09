@@ -346,7 +346,7 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
         rd_sensor_data_set (sample, RD_SENSOR_TEMP_FIELD, p_el->temperature_c);
         rd_sensor_data_set (sample, RD_SENSOR_HUMI_FIELD, p_el->humidity_rh);
         rd_sensor_data_set (sample, RD_SENSOR_PRES_FIELD, p_el->pressure_pa);
-        sample->timestamp_ms = (uint64_t) (p_el->timestamp_s) * 1000U;
+        sample->timestamp_ms = ( (uint64_t) (p_el->timestamp_s)) * 1000LLU;
         p_rs->element_idx++;
     }
     else

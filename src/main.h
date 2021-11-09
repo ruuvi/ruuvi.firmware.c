@@ -10,7 +10,7 @@
 /**
  * @addtogroup main
  */
-/*@{*/
+/** @{ */
 /**
  * @file main.h
  * @author Otso Jousimaa <otso@ojousima.net>
@@ -24,7 +24,7 @@
 // Submodule requirements
 #define RUUVI_BOARDS_REQ "3.7.1"
 #define RUUVI_DRIVERS_REQ "3.9.0"
-#define RUUVI_ENDPOINTS_REQ "3.0.0"
+#define RUUVI_ENDPOINTS_REQ "3.2.1"
 #define RUUVI_LIBRARIES_REQ "3.0.0"
 
 #define APP_SELFTEST_OK_DELAY_MS (1000U) //!< time to show "ok" led.
@@ -42,5 +42,5 @@ int app_main (void);
 #define LOOP_FOREVER 1 //!< Normal run does not exit.
 #endif
 
-/*@}*/
+/** @} */
 #endif // MAIN_H

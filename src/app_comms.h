@@ -83,7 +83,8 @@ void app_comms_bleadv_send_count_set (const uint8_t count);
  *   - Configuration commands are allowed.
  *
  * The configuration is enabled for the next communication connection and is disabled
- * after disconnection or once timeout is triggered.
+ * after disconnection or once timeout is triggered. This kicks current Bluetooth
+ * connection (if any).
  *
  * This also calls app_led to indicate configuration is enabled.
  *
@@ -91,6 +92,21 @@ void app_comms_bleadv_send_count_set (const uint8_t count);
  * @retval RD_ERROR_INVALID_STATE if communications are not initialized.
  */
 rd_status_t app_comms_configure_next_enable (void);
+
+/**
+ * @brief Kick current BLE connection (if any) and disable security-sensitive configuration options.
+ *
+ * After calling this function:
+ *   - DFU service is disabled
+ *   - Device ID is not readable through DIS/Serial Number characteristic.
+ *   - Configuration commands are not allowed.
+ *
+ * This also calls app_led to indicate configuration is disabled.
+ *
+ * @retval RD_SUCCESS if configuration mode was entered.
+ * @retval RD_ERROR_INVALID_STATE if communications are not initialized.
+ */
+rd_status_t app_comms_configure_next_disable (void);
 
 /**
  * @brief Enable Bluetooth on device
@@ -159,6 +175,7 @@ typedef struct
 void on_gatt_connected_isr (void * p_data, size_t data_len);
 void on_gatt_disconnected_isr (void * p_data, size_t data_len);
 void on_gatt_data_isr (void * p_data, size_t data_len);
+void on_gatt_tx_done_isr (void * p_data, size_t data_len);
 void handle_config_disable (void * p_data, uint16_t data_len);
 void handle_gatt_data (void * p_data, uint16_t data_len);
 void handle_gatt_connected (void * p_data, uint16_t data_len);
@@ -167,7 +184,9 @@ void handle_nfc_connected (void * p_data, uint16_t data_len);
 void handle_nfc_disconnected (void * p_data, uint16_t data_len);
 void on_nfc_connected_isr (void * p_data, size_t data_len);
 void on_nfc_disconnected_isr (void * p_data, size_t data_len);
+void on_nfc_tx_done_isr (void * p_data, size_t data_len);
 void comm_mode_change_isr (void * const p_context);
+void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_len);
 #endif
 
 

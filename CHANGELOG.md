@@ -1,4 +1,12 @@
 # Changelog
+## 3.31.1
+ - Fix RE5 negative temperatures being broadcasted out as zero
+
+## 3.31.0
+ - Add encrypted dataformats 0x08 (recommended) and 0xFA (legacy). 
+ - Add contactless bootloader entry through endpoint 0x2A
+ - Fix resource leak in flash storage
+
 ## 3.30.4
  - Fix overflow in timer causing tag to stop logging in 50 days. 
  - Fix overflow in data encoding, causing pressure to jump 115 534 Pa -> 50 000 Pa 
