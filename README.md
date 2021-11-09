@@ -40,7 +40,7 @@ The project is in beta stage, no breaking changes are expected
 
 ## SDK 15.3.
 Download [Nordic SDK15.3](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/) (.8GB)and install it at the project root.
-If you're working on multiple nRF projects, use soft linking to have only one copy.
+If you're working on multiple nRF projects, use symbolic linking to have only one copy.
 
 # Creating your fork
 ### Use git to include all Submodules ( ruuvi.drivers.c, ruuvi.endpoint.c, etc )
