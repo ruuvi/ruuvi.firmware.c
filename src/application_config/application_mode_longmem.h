@@ -1,7 +1,6 @@
 /**
  * @file  application_config/application_mode_longmem.h
  * @author Otso Jousimaa <otso@ojousima.net>
- *         DGerman@Real-World-Systems.com
  * @date 2019-01-31
  * @brief   Override defaults from app_config.h.
  * Historical log will cover a longer time period then the default
