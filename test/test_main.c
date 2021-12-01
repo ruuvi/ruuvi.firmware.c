@@ -1,7 +1,6 @@
 /* @file ../test/test_main.c
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2019-12-24
- *       2021-07-30 Otso Change activate to error_signal Pull Request #270
  * @brief
  * Provide main_ok and main_error for testing:
  *    _comms, _heartbeat, _log, _sensor, _button ,_dataformats, _led  and _power.
@@ -9,25 +8,9 @@
  *  for _boards, _drivers, _endpoints and _libraries
  *  used in run_integration_tests.c LOG message for example:
  *      #define RUUVI_BOARDS_SEMVER "3.8.0"
+ * semver.c is directly sourced from the repository https://github.com/h2non/semver.c
  *
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- */
-/*
- * @file semver/semver.c
- * @date 2020-01-28
- * @author Tom h2non
- * @brief Semantic version v2.0
- *   Functions to maintain version numbers of the form MAJOR.MINOR.PATCH,
-      where the significance of the change in
-    - MAJOR reflects an incompatible API changes,
-    - MINOR reflects added functionality in a backwards compatible manner,
-    - PATCH reflects backwards compatible bug fixes.
-    - Labels reflect pre-release and build extensions.
-
-    As semver.c is directly sourced from the repository https://github.com/h2non/semver.c
-    No comments can be added.
-
-    This is only used in ../test/test_main.c
 */
 /** @{ */
 
