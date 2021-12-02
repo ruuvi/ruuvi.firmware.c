@@ -88,8 +88,12 @@ $(document).ready(function(){initNavTree('app__log_8c.html',''); initResizable()
 <div class="title">app_log.c File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Save and retrieve sensor readings to/from flash for transmitting to station for sync. Allocate static input, output and config memory. Readings are blocked into a nearly page size buffer. store_block by bumping index up to _DATA_RECORDS_NUM then wrap. _log_process establish time for next sample if it's time, collect sensor data and add to input_block and if full write it to flash _init log config_set/get to/from flash. and boot_count and _purge_logs erases all log records then garbage collection. Use FDS record access routines (not fstore page routines) via rt_flash_free, _store, _load and _flash_gc_run Possible fatal error from FDS: delete SPACE_IN_QUEUES, <a href="https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_fds_functionality.html">https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_fds_functionality.html</a>.  
+<a href="#details">More...</a></p>
 <div class="textblock"><code>#include &quot;<a class="el" href="app__log_8h_source.html">app_log.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="app__config_8h_source.html">app_config.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="app__testing_8h_source.html">app_testing.h</a>&quot;</code><br />
 <code>#include &quot;ruuvi_driver_error.h&quot;</code><br />
 <code>#include &quot;ruuvi_driver_sensor.h&quot;</code><br />
 <code>#include &quot;ruuvi_library.h&quot;</code><br />
@@ -121,7 +125,14 @@ Functions</h2></td></tr>
 <tr class="memdesc:ga436adedb3c8dddc9b1a8a549487b0d80"><td class="mdescLeft">&#160;</td><td class="mdescRight">Purge everything stored to flash.  <a href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">More...</a><br /></td></tr>
 <tr class="separator:ga436adedb3c8dddc9b1a8a549487b0d80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-</div><!-- contents -->
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Save and retrieve sensor readings to/from flash for transmitting to station for sync. Allocate static input, output and config memory. Readings are blocked into a nearly page size buffer. store_block by bumping index up to _DATA_RECORDS_NUM then wrap. _log_process establish time for next sample if it's time, collect sensor data and add to input_block and if full write it to flash _init log config_set/get to/from flash. and boot_count and _purge_logs erases all log records then garbage collection. Use FDS record access routines (not fstore page routines) via rt_flash_free, _store, _load and _flash_gc_run Possible fatal error from FDS: delete SPACE_IN_QUEUES, <a href="https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_fds_functionality.html">https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_fds_functionality.html</a>. </p>
+<dl class="section author"><dt>Author</dt><dd>Otso Jousimaa <a href="#" onclick="location.href='mai'+'lto:'+'ots'+'o@'+'ojo'+'us'+'ima'+'.n'+'et'; return false;">otso@<span style="display: none;">.nosp@m.</span>ojou<span style="display: none;">.nosp@m.</span>sima.<span style="display: none;">.nosp@m.</span>net</a> </dd></dl>
+<dl class="section date"><dt>Date</dt><dd>2020-07-17 2021-11-29 DG12 Change m_boot_count from uint16 to 32 Use TESTABLE_STATIC 2021-05-06 includes Potential fix for #255 (#256) (_) ToDo Save RAM by fetchihng sync data directly from flash and elimitating input_block buffer.</dd></dl>
+<dl class="section copyright"><dt>Copyright</dt><dd>Ruuvi Innovations Ltd, license BSD-3-Clause. </dd></dl>
+
+<p class="definition">Definition in file <a class="el" href="app__log_8c_source.html">app_log.c</a>.</p>
+</div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
