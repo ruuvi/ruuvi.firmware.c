@@ -1,4 +1,3 @@
-ruuvi/firmware/3.31.1/304../src > cat app_log.c
 /**
  * @file app_log.c
  * @author Otso Jousimaa <otso@ojousima.net>
