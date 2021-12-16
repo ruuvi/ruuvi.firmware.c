@@ -1,6 +1,34 @@
+/**
+ * @file app_log.c
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2020-07-17
+ *       2021-11-29 DG12 Change m_boot_count from uint16 to 32
+ *                  Use TESTABLE_STATIC
+ *       2021-05-06 includes Potential fix for #255 (#256)
+ * @brief
+ * Save and retrieve sensor readings to/from flash
+ *  for transmitting to station for sync.
+ * Allocate static input, output and config memory.
+ * Readings are blocked into a nearly page size buffer.
+ * store_block by bumping index up to _DATA_RECORDS_NUM then wrap.
+ * _log_process establish time for next sample
+ *              if it's time, collect sensor data and add to input_block and
+ *              if full write it to flash
+ * _init log config_set/get to/from flash. and boot_count and
+ *          _purge_logs erases all log records then garbage collection.
+ * Use FDS record access routines (not fstore page routines)
+ *  via rt_flash_free, _store, _load and _flash_gc_run
+ * Possible fatal error from FDS: delete SPACE_IN_QUEUES,
+ * https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_fds_functionality.html
+ *
+ * (_) ToDo Save RAM by fetchihng sync data directly from flash and elimitating input_block buffer.
+ *
+ * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+ */
 #include "app_log.h"
 
 #include "app_config.h"
+#include "app_testing.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_library.h"
@@ -8,162 +36,140 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_flash.h"
+
 #if RT_FLASH_ENABLED
 
-static inline void LOG (const char * const msg)
+#ifndef LOGI
+static inline void LOGI (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
 }
+#endif
 
+#ifndef LOGD
 static inline void LOGD (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_DEBUG, msg);
 }
-
+#endif
 
 /**
  * @addtogroup app_log
  */
 /** @{ */
-/**
- * @file app_log.c
- * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2020-07-17
- * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
- */
 
-#ifndef CEEDLING
-static
-#endif
-app_log_record_t m_log_input_block;   //!< Block to be stored to flash.
+TESTABLE_STATIC app_log_record_t m_log_input_block;     //!< Block to be stored to flash.
+TESTABLE_STATIC app_log_record_t
+m_log_output_block;    //!< Block read from flash for examination.
 
-#ifndef CEEDLING
-static
-#endif
-app_log_record_t m_log_output_block;   //!< Block read from flash for examination.
+TESTABLE_STATIC app_log_config_t m_log_config;          //!< Configuration for logging.
+TESTABLE_STATIC uint64_t
+m_last_sample_ms;      //!< Timestamp of last processed sample.
+TESTABLE_STATIC uint32_t         m_boot_count = 0;
 
-#ifndef CEEDLING
-static
-#endif
-app_log_config_t m_log_config; //!< Configuration for logging.
 
-#ifndef CEEDLING
-static
-#endif
-uint64_t m_last_sample_ms; //!< Timestamp of last processed sample.
-
-#ifndef CEEDLING
-static
-#endif
-uint16_t m_boot_count = 0;
-
+/* @brief Start at next block number from where we left off.
+ *          Free, GC, Store */        /* this code is kind "hinky" ?? DG */
+// // // // // // /           // // // // // // // // // //
 static rd_status_t store_block (const app_log_record_t * const p_record)
 {
-    static uint8_t record_idx = 0;
-    uint8_t num_tries = 0;
     rd_status_t err_code = RD_SUCCESS;
+    uint8_t num_tries = 0;
+    static uint8_t record_idx = 0;
 
     do
     {
+        uint8_t  record_slot = (record_idx + num_tries) %
+                               APP_FLASH_LOG_DATA_RECORDS_NUM; // if while went past the end, wrap
+        uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8u) + record_slot;
+        err_code = rt_flash_free (APP_FLASH_LOG_FILE,
+                                  target_record);                       //  free old one to GC and wait
         char msg[128];
-        uint8_t record_slot = (record_idx + num_tries) % APP_FLASH_LOG_DATA_RECORDS_NUM;
-        uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_slot;
-        err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);
 
-        // It's not a problem if there wasn't old block to erase.
-        if (RD_SUCCESS == err_code)
+        if (RD_SUCCESS == err_code) // It's not a problem if there wasn't old block to erase.
         {
-            snprintf (msg, sizeof (msg), "store_block:freed old record #%d\r\n", target_record);
-            LOG (msg);
+            snprintf (msg, sizeof (msg), "store_block:freed old record #%04X\n", target_record);
+            LOGI (msg);
         }
         else
         {
-            snprintf (msg, sizeof (msg), "store_block:creating new record #%d\r\n", target_record);
-            LOG (msg);
+            snprintf (msg, sizeof (msg), "store_block:creating new record #%04X\n", target_record);
+            LOGI (msg);
         }
 
-        err_code &= ~RD_ERROR_NOT_FOUND;
+        err_code &=
+            ~RD_ERROR_NOT_FOUND;    // clear NOT_FOUND      ?? shouldn't we wait until it done ??
 
-        while (rt_flash_busy())
-        {
-            ri_yield();
-        }
+        while (rt_flash_busy()) { ri_yield(); }
 
-        err_code |= rt_flash_gc_run ();
+        err_code |=
+            rt_flash_gc_run ();                                                     // Garabage Collection and wait
 
-        while (rt_flash_busy())
-        {
-            ri_yield();
-        }
+        while (rt_flash_busy()) { ri_yield(); }
 
         err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
-                                    target_record,
+                                    target_record,                      // store it and wait
                                     p_record, sizeof (app_log_record_t));
 
-        while (rt_flash_busy())
-        {
-            ri_yield();
-        }
+        while (rt_flash_busy()) { ri_yield(); }
 
         RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
-        // Erase another block and try again if there was error.
-        num_tries++;
+        num_tries++;             // Try the next block if there was error.
     } while ( (RD_SUCCESS != err_code) && (num_tries < APP_FLASH_LOG_DATA_RECORDS_NUM));
 
     if (RD_SUCCESS == err_code)
     {
-        record_idx += num_tries;
-        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
+        record_idx +=
+            num_tries;                                    // next time start at next page the one we used
+        record_idx = record_idx %
+                     APP_FLASH_LOG_DATA_RECORDS_NUM;   // start back at 0 if we went too far
     }
 
     return err_code;
 }
-
-
+// // // // // // /           // // // // // // // // // //
 static rd_status_t purge_logs (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+    LOGI ("Free all & GC\n");
 
     for (uint8_t record_idx = 0; record_idx < APP_FLASH_LOG_DATA_RECORDS_NUM; record_idx++)
     {
         err_code |= rt_flash_free (APP_FLASH_LOG_FILE,
-                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + record_idx);
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8u) + record_idx);
 
-        while (rt_flash_busy())
-        {
-            ri_yield();
-        }
+        while (rt_flash_busy()) { ri_yield(); }
     }
 
-    // It doesn't matter if there was no data to erase.
-    err_code &= ~RD_ERROR_NOT_FOUND;
+    err_code &= ~RD_ERROR_NOT_FOUND; // It doesn't matter if there was no data to erase.
     err_code |= rt_flash_gc_run ();
     return err_code;
 }
-
-#ifndef CEEDLING
-static
-#endif
-rd_status_t app_log_read_boot_count (void)
+// // // // // // // // // // // //                // // //
+TESTABLE_STATIC rd_status_t app_log_read_boot_count (
+    void)   // should be called load, bump, store
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                               &m_boot_count, sizeof (uint32_t));
+    err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
+                               APP_FLASH_LOG_BOOT_COUNTER_RECORD,           // load
+                               &m_boot_count, sizeof (m_boot_count));
 
     if ( (RD_SUCCESS == err_code) || (RD_ERROR_NOT_FOUND == err_code))
     {
         m_boot_count++;
-        err_code = rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
-                                   &m_boot_count, sizeof (uint32_t));
+        err_code = rt_flash_store (APP_FLASH_LOG_FILE,
+                                   APP_FLASH_LOG_BOOT_COUNTER_RECORD,       // bump and store
+                                   &m_boot_count, sizeof (m_boot_count));
     }
 
     char msg[128];
-    snprintf (msg, sizeof (msg), "LOG: Boot count: %d\r\n", m_boot_count);
-    LOG (msg);
+    snprintf (msg, sizeof (msg), "Boot count: %ld\n", m_boot_count);
+    LOGI (msg);
     return err_code;
 }
 
-
+// // // // // /         / // // // // // // // // // // //
+/* @brief load config (stores defaults the first time)  */
 rd_status_t app_log_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -174,78 +180,66 @@ rd_status_t app_log_init (void)
         .overflow   = APP_LOG_OVERFLOW,
         .fields = {
             .datas.temperature_c = APP_LOG_TEMPERATURE_ENABLED,
-            .datas.humidity_rh = APP_LOG_HUMIDITY_ENABLED,
-            .datas.pressure_pa = APP_LOG_PRESSURE_ENABLED
+            .datas.humidity_rh   = APP_LOG_HUMIDITY_ENABLED,
+            .datas.pressure_pa   = APP_LOG_PRESSURE_ENABLED
         }
     };
 #   if APP_FLASH_LOG_CONFIG_NVM_ENABLED
-    err_code = rt_flash_load (APP_FLASH_LOG_FILE,
-                              APP_FLASH_LOG_CONFIG_RECORD,
+    err_code = rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_CONFIG_RECORD,
                               &config, sizeof (config));
 #   endif
 
     if (RD_ERROR_NOT_FOUND == err_code) //-V547
     {
-        err_code = rt_flash_store (APP_FLASH_LOG_FILE,
-                                   APP_FLASH_LOG_CONFIG_RECORD,
+        err_code = rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_CONFIG_RECORD,
                                    &config, sizeof (config));
     }
 
     if (RD_SUCCESS == err_code) //-V547
     {
         memcpy (&m_log_config, &config, sizeof (config));
+        LOGI ("purge\n");
         err_code |= purge_logs();
     }
 
     err_code |= app_log_read_boot_count();
     return err_code;
 }
-
+// // // // // //             // // // // // // // // // //
 rd_status_t app_log_process (const rd_sensor_data_t * const sample)
 {
     rd_status_t err_code = RD_SUCCESS;
-    uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000U);
+    uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000u);
     uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
-    LOGD ("LOG: Sample received\r\n");
+    LOGD ("Sample received\n");
 
-    // Always store first sample.
-    if (0 == m_last_sample_ms)
-    {
-        next_sample_ms = 0;
-    }
+    if (0 == m_last_sample_ms) { next_sample_ms = 0; } // Always store first sample.
 
-    //Check if new sample should be processed
-    if (next_sample_ms <= sample->timestamp_ms)
+    if (next_sample_ms <= sample->timestamp_ms) //Check if new sample should be processed
     {
-        LOGD ("LOG: Storing sample\r\n");
+        LOGD ("Storing sample\n");
         app_log_element_t element =
         {
-            .timestamp_s = sample->timestamp_ms / 1000U,
+            .timestamp_s   = sample->timestamp_ms / 1000u,
             .temperature_c = rd_sensor_data_parse (sample, RD_SENSOR_TEMP_FIELD),
-            .humidity_rh = rd_sensor_data_parse (sample, RD_SENSOR_HUMI_FIELD),
-            .pressure_pa = rd_sensor_data_parse (sample, RD_SENSOR_PRES_FIELD),
+            .humidity_rh   = rd_sensor_data_parse (sample, RD_SENSOR_HUMI_FIELD),
+            .pressure_pa   = rd_sensor_data_parse (sample, RD_SENSOR_PRES_FIELD),
         };
 
         if (APP_LOG_MAX_SAMPLES > m_log_input_block.num_samples)
-        {
-            m_log_input_block.storage[m_log_input_block.num_samples++] = element;
-        }
+        { m_log_input_block.storage[m_log_input_block.num_samples++] = element; }
 
         if (m_log_input_block.num_samples >= APP_LOG_MAX_SAMPLES)
         {
-            LOG ("LOG: Storing block\r\n");
+            LOGI ("Storing block\n");
             err_code |= store_block (&m_log_input_block);
             RD_ERROR_CHECK (err_code, RD_SUCCESS);
-            memset (&m_log_input_block, 0, sizeof (m_log_input_block));
+            memset (&m_log_input_block, 0, sizeof (m_log_input_block));         // zero input_block
             m_log_input_block.start_timestamp_s = end_timestamp;
         }
 
         m_last_sample_ms = sample->timestamp_ms;
         m_log_input_block.end_timestamp_s = sample->timestamp_ms / 1000U;
-    }
-    else
-    {
-        // No action needed.
     }
 
     return err_code;
@@ -257,6 +251,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
  * Can also copy input block to
  * output block if there's no more stored blocks in flash.
  */
+// // // // // // // // // /              // // // // // //
 static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -266,7 +261,7 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
     {
         // Clear out previous state
         err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
-                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + p_rs->page_idx,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8u) + p_rs->page_idx,
                                    &m_log_output_block, sizeof (m_log_output_block));
         p_rs->page_idx++;
     }
@@ -275,7 +270,7 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
     {
         // Returns NOT_FOUND if page IDX is not in flash.
         err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
-                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + p_rs->page_idx,
+                                   (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8u) + p_rs->page_idx,
                                    &m_log_output_block, sizeof (m_log_output_block));
         p_rs->page_idx++;
         p_rs->element_idx = 0;
@@ -287,12 +282,9 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
         p_rs->page_idx++;
         p_rs->element_idx = 0;
     }
-    else
-    {
-        // No action needed.
-    }
+    else {} // No action needed.
 
-    // Clear out state if block was not found
+    // Zero out state if block was not found
     if (RD_ERROR_NOT_FOUND == err_code)
     {
         memset (&m_log_output_block, 0, sizeof (m_log_output_block));
@@ -303,10 +295,11 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
 
 /**
  * @brief Forward read state to first next valid element.
- *
+ *  internal
  * @retval RD_SUCCESS p_rs points to a valid element
  * @retval RD_ERROR_NOT_FOUND if block doesn't have a valid element.
  */
+// // // // // // // // //                   // // // // //
 static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -321,14 +314,11 @@ static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
         p_rs->element_idx++;
     }
 
-    if (p_rs->element_idx >= m_log_output_block.num_samples)
-    {
-        err_code |= RD_ERROR_NOT_FOUND;
-    }
+    if (p_rs->element_idx >= m_log_output_block.num_samples) { err_code |= RD_ERROR_NOT_FOUND; }
 
     return err_code;
 }
-
+// // // // // // // // //                // // // // // //
 static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
         app_log_read_state_t * const p_rs)
 {
@@ -349,14 +339,11 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
         sample->timestamp_ms = ( (uint64_t) (p_el->timestamp_s)) * 1000LLU;
         p_rs->element_idx++;
     }
-    else
-    {
-        // No action required.
-    }
+    else {} // No action required.
 
     return err_code;
 }
-
+// // // // // // //       // // // // // // // // // // //
 rd_status_t app_log_read (rd_sensor_data_t * const sample,
                           app_log_read_state_t * const p_rs)
 {
@@ -372,39 +359,27 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
             // Decompress block -todo.
             // Check if ths block contains data in desired time range - TODO
             // Fast forward to start of desired time range.
-            if (RD_SUCCESS == err_code)
-            {
-                err_code |= app_log_read_fast_forward (p_rs);
-            }
+            if (RD_SUCCESS == err_code) { err_code |= app_log_read_fast_forward (p_rs); }
         } while ( (err_code != RD_SUCCESS)
 
                   && (p_rs->page_idx <= APP_FLASH_LOG_DATA_RECORDS_NUM));
 
-        // AStyle fails here. ^
-        // Populate record
-        err_code |= app_log_read_populate (sample, p_rs);
+        err_code |= app_log_read_populate (sample, p_rs); // Populate record
     }
-    else
-    {
-        err_code = RD_ERROR_NULL;
-    }
+    else { err_code = RD_ERROR_NULL; }
 
     return err_code;
 }
-
+// // // // // // //          // // // // // // // // // //
 rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
     uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
 
-    if (NULL == configuration)
-    {
-        err_code |= RD_ERROR_NULL;
-    }
+    if (NULL == configuration) { err_code |= RD_ERROR_NULL; }
     else
     {
-        err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
-                                    APP_FLASH_LOG_CONFIG_RECORD,
+        err_code |= rt_flash_store (APP_FLASH_LOG_FILE, APP_FLASH_LOG_CONFIG_RECORD,
                                     &configuration, sizeof (configuration));
 
         if (RD_SUCCESS == err_code)
@@ -419,48 +394,47 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 
     return err_code;
 }
-
+// // // // // // //             // // // // // // // // //
 rd_status_t app_log_config_get (app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
-    err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
-                               APP_FLASH_LOG_CONFIG_RECORD,
+    err_code |= rt_flash_load (APP_FLASH_LOG_FILE, APP_FLASH_LOG_CONFIG_RECORD,
                                configuration, sizeof (app_log_config_t));
     memcpy (configuration, &m_log_config, sizeof (m_log_config));
     return err_code;
 }
-
+/* @brief user request system reset via button  */
+// // // // /            / // // // // // // // // // // //
 void app_log_purge_flash (void)
 {
     ri_flash_purge();
 }
 
-#else
-//Dummy implementation to save flash space
-rd_status_t app_log_init (void)
+#else     // RT_FLASH_ENABLED  
+rd_status_t app_log_init (void)                                                 // dummy
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_process (const rd_sensor_data_t * const sample)
+rd_status_t app_log_process (const rd_sensor_data_t * const sample)             // dummy
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_config_get (app_log_config_t * const configuration)
+rd_status_t app_log_config_get (app_log_config_t * const configuration)         // dummy
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_config_set (const app_log_config_t * const configuration)
+rd_status_t app_log_config_set (const app_log_config_t * const configuration)  // dummy
 {
     return RD_SUCCESS;
 }
-rd_status_t app_log_read (rd_sensor_data_t * const sample,
+rd_status_t app_log_read (rd_sensor_data_t * const sample,                     // dummy
                           app_log_read_state_t * const p_read_state)
 {
     return RD_ERROR_NOT_FOUND;
 }
 
-void app_log_purge_flash (void)
+void app_log_purge_flash (void)                                                 // dummy
 {
     return;
 }
-#endif
+#endif    // RT_FLASH_ENABLED
