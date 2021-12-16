@@ -6,7 +6,7 @@
  *       2021-05-06 includes Potential fix for #255 (#256)
  * @brief
  * Save and retrieve sensor readings to/from flash
- *  for transmitting to station for sync.
+ *   for transmitting to station for sync.
  * @detail
  * Allocate static input, output and config memory.
  * Readings are blocked into a nearly page size buffer.
