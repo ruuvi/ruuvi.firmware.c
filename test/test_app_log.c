@@ -1,7 +1,7 @@
 /* @file test/test_app_log.c
  * @date 
  *       2021-12-15 DG remove test for unused functions:
- *                      app_log_config_get/set
+ *                     app_log_config_get/set
  */
 #include "unity.h"
 
