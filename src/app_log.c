@@ -108,7 +108,7 @@ static rd_status_t store_block (const app_log_record_t * const p_record)
     if (RD_SUCCESS == err_code)
     {
         record_idx += num_tries;         // next time start where we left off
-        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;     // wrap back to zero
+        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;         // wrap back to zero
     }
 
     return err_code;
