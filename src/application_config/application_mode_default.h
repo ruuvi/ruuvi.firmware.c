@@ -1,3 +1,16 @@
+/**
+ * @file application_mode_default.h
+ * @author Otso Jousimaa <otso@ojousima.net>
+ * @date 2020-06-12
+ * @brief Default configuration for Ruuvi Firmware.
+ *        Predefine  values     defined in config.h
+ *        or provide values not defined in config.h
+ *        This is always included by _modes followed _config
+ *
+ *        CUSTOMIZATIONS SHOULD NOT BE HERE
+ *
+ * @copyright Ruuvi Innovations Ltd, License BSD-3-Clause
+ */
 #ifndef APPLICATION_MODE_DEFAULT_H
 #define APPLICATION_MODE_DEFAULT_H
 
@@ -15,10 +28,6 @@
  */
 #ifndef APP_FW_NAME
 #define APP_FW_NAME "Ruuvi FW "
-#endif
-
-#ifndef APP_FW_VERSION
-#define APP_FW_VERSION "v0.0.1"
 #endif
 
 #ifndef APP_FW_VARIANT
@@ -62,4 +71,5 @@
 #ifndef APP_LOCKED_AT_BOOT
 #   define APP_LOCKED_AT_BOOT (true)
 #endif
-#endif
+
+#endif //  APPLICATION_MODE_DEFAULT_H
