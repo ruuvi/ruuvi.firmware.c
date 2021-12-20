@@ -78,7 +78,7 @@ static rd_status_t store_block (const app_log_record_t * const p_record)
         // Free space for new record if there already is one.
         err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);
         char msg[128];
-        snprintf (msg, sizeof (msg), "Storing logs in record #%04X.\n", target_record); //-V576
+        snprintf (msg, sizeof (msg), "Storing logs in record #%04X.\n", target_record);
         LOGD (msg);
         // Clear out error if there was no record to erase out of way.
         err_code &= ~RD_ERROR_NOT_FOUND;
@@ -143,7 +143,7 @@ TESTABLE_STATIC rd_status_t app_log_increment_boot_count (void)
     }
 
     char msg[128];
-    snprintf (msg, sizeof (msg), "Boot count: %lu\n", m_boot_count);
+    snprintf (msg, sizeof (msg), "Boot count: %lu\n", m_boot_count); //-V576
     LOGI (msg);
     return err_code;
 }
