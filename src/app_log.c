@@ -210,7 +210,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         if (m_log_input_block.num_samples >= APP_LOG_MAX_SAMPLES)
         {
             LOGI ("Storing block\n");
-            m_log_input_block.end_timestamp_s = sample->timestamp_ms / 1000U;
+            m_log_input_block.end_timestamp_s = end_timestamp;
             err_code |= store_block (&m_log_input_block);
             RD_ERROR_CHECK (err_code, RD_SUCCESS);
             memset (&m_log_input_block, 0, sizeof (m_log_input_block));         // zero input_block
