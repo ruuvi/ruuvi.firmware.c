@@ -143,7 +143,7 @@ TESTABLE_STATIC rd_status_t app_log_increment_boot_count (void)
     }
 
     char msg[128];
-    snprintf (msg, sizeof (msg), "Boot count: %u\n", m_boot_count);
+    snprintf (msg, sizeof (msg), "Boot count: %lu\n", m_boot_count);
     LOGI (msg);
     return err_code;
 }
