@@ -180,7 +180,7 @@ rd_status_t app_log_init (void)
         err_code |= purge_logs();
     }
 
-    err_code |= app_log_read_boot_count();
+    err_code |= app_log_increment_boot_count();
     return err_code;
 }
 
@@ -188,6 +188,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
 {
     rd_status_t err_code = RD_SUCCESS;
     uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000u);
+    uint32_t end_timestamp = sample->timestamp_ms / 1000U;
     LOGD ("Sample received\n");
 
     if (0 == m_last_sample_ms) { next_sample_ms = 0; } // Always store first sample.
@@ -209,6 +210,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         if (m_log_input_block.num_samples >= APP_LOG_MAX_SAMPLES)
         {
             LOGI ("Storing block\n");
+            m_log_input_block.end_timestamp_s = sample->timestamp_ms / 1000U;
             err_code |= store_block (&m_log_input_block);
             RD_ERROR_CHECK (err_code, RD_SUCCESS);
             memset (&m_log_input_block, 0, sizeof (m_log_input_block));         // zero input_block
@@ -216,7 +218,6 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         }
 
         m_last_sample_ms = sample->timestamp_ms;
-        m_log_input_block.end_timestamp_s = sample->timestamp_ms / 1000U;
     }
 
     return err_code;
