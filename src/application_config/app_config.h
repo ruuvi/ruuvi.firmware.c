@@ -14,6 +14,11 @@
  * @brief Configure application enabled modules and parameters.
  */
 /** @}*/
+
+#ifndef APP_FW_VERSION
+#define APP_FW_VERSION "v0.0.1"
+#endif
+
 /**
  * @addtogroup SDK15
  */
