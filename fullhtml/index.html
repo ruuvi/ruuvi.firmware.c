@@ -36,13 +36,13 @@
   </div>
 
   <table cellpadding="0" cellspacing="0" border="0" class="infotopic">
-     <tr><th id="col_info">Date:</th><td>Thu Dec 16 15:40:54 2021</td></tr>
+     <tr><th id="col_info">Date:</th><td>Mon Dec 20 17:04:52 2021</td></tr>
      <tr><th id="col_info">PVS-Studio Version:</th><td>7.16.55312.179</td></tr>
      <tr><th id="col_info">Command Line:</th><td>plog-converter -a GA\:1,2,3\;OP\:1,2,3\;CS\:1,2,3\;MISRA\:1,2,3 -t fullhtml src/main.o.PVS-Studio.log src/run_integration_tests.o.PVS-Studio.log src/app_button.o.PVS-Studio.log src/app_comms.o.PVS-Studio.log src/app_dataformats.o.PVS-Studio.log src/app_heartbeat.o.PVS-Studio.log src/app_led.o.PVS-Studio.log src/app_log.o.PVS-Studio.log src/app_power.o.PVS-Studio.log src/app_sensor.o.PVS-Studio.log -o ./doxygen/html </td></tr>
-     <tr><th id="col_info">Total Warnings (GA):</th><td>4</td></tr>
+     <tr><th id="col_info">Total Warnings (GA):</th><td>3</td></tr>
      <tr><th id="col_info">Total Warnings (OP):</th><td>1</td></tr>
      <tr><th id="col_info">Total Warnings (CS):</th><td>6</td></tr>
-     <tr><th id="col_info">Total Warnings (MISRA):</th><td>522</td></tr>
+     <tr><th id="col_info">Total Warnings (MISRA):</th><td>521</td></tr>
   </table>
   <table cellpadding="0" cellspacing="0" border="0" class="sortable" id="sorter">
     <tr>
@@ -1713,280 +1713,266 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln82">app_log.c:82</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln76">app_log.c:76</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '%' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln82">app_log.c:82</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln76">app_log.c:76</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(record_idx + num_tries) % ((16U) - 2U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln84">app_log.c:84</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln77">app_log.c:77</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '((0xF0U) &lt;&lt; 8u) + record_slot' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln85">app_log.c:85</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln79">app_log.c:79</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln91">app_log.c:91</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln81">app_log.c:81</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2600/">V2600</td>
       <td id="col_message">The function with the 'snprintf' name should not be used.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln96">app_log.c:96</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2600/">V2600</td>
-      <td id="col_message">The function with the 'snprintf' name should not be used.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln110">app_log.c:110</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln93">app_log.c:93</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln112">app_log.c:112</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln94">app_log.c:94</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'sizeof (app_log_record_t)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln124">app_log.c:124</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln106">app_log.c:106</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'record_idx % ((16U) - 2U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln138">app_log.c:138</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln119">app_log.c:119</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln139">app_log.c:139</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln120">app_log.c:120</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '((0xF0U) &lt;&lt; 8u) + record_idx' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln153">app_log.c:153</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln133">app_log.c:133</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln154">app_log.c:154</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln134">app_log.c:134</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xEFU)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln160">app_log.c:160</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln140">app_log.c:140</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln161">app_log.c:161</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln141">app_log.c:141</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xEFU)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln166">app_log.c:166</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln146">app_log.c:146</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2600/">V2600</td>
       <td id="col_message">The function with the 'snprintf' name should not be used.</td>
     </tr>
     <tr>
-      <td id="col_group">General Analysis</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln166">app_log.c:166</a></td>
-      <td id="col_level" style="color:#FF0000"><b>High</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v576/">V576</td>
-      <td id="col_message">Incorrect format. Consider checking the fourth actual argument of the 'snprintf' function. The memsize type argument is expected.</td>
-    </tr>
-    <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln192">app_log.c:192</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln170">app_log.c:170</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2594/">V2594</td>
       <td id="col_message">Controlling expressions should not be invariant. The result of the '(1U &lt;&lt; 2U) == err_code' expression in the 'if' statement is always false.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln194">app_log.c:194</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln172">app_log.c:172</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln194">app_log.c:194</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln172">app_log.c:172</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln198">app_log.c:198</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln176">app_log.c:176</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2594/">V2594</td>
       <td id="col_message">Controlling expressions should not be invariant. The result of the '(0U) == err_code' expression in the 'if' statement is always true.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln212">app_log.c:212</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln190">app_log.c:190</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2613/">V2613</td>
       <td id="col_message">Operand that is a composite expression has more narrow essential type than the other operand.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln216">app_log.c:216</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln216">app_log.c:216</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln229">app_log.c:229</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln232">app_log.c:232</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln242">app_log.c:242</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln191">app_log.c:191</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the 'sample-&gt;timestamp_ms / 1000U' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln259">app_log.c:259</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln194">app_log.c:194</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln194">app_log.c:194</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln207">app_log.c:207</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln210">app_log.c:210</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '-' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln236">app_log.c:236</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln237">app_log.c:237</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln240">app_log.c:240</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
+      <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln241">app_log.c:241</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
+      <td id="col_message">The value of the '((0xF0U) &lt;&lt; 8u) + p_rs-&gt;page_idx' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln249">app_log.c:249</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
+      <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln250">app_log.c:250</a></td>
+      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
+      <td id="col_message">The value of the '((0xF0U) &lt;&lt; 8u) + p_rs-&gt;page_idx' expression should not be converted to the narrower essential 'unsigned' type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">MISRA</td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln253">app_log.c:253</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
+      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
       <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln260">app_log.c:260</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '==' operator should have the same essential type. The current types are: 'signed' and 'unsigned'.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln263">app_log.c:263</a></td>
-      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
-      <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln264">app_log.c:264</a></td>
-      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
-      <td id="col_message">The value of the '((0xF0U) &lt;&lt; 8u) + p_rs-&gt;page_idx' expression should not be converted to the narrower essential 'unsigned' type.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln272">app_log.c:272</a></td>
-      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
-      <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln273">app_log.c:273</a></td>
-      <td id="col_level" style="color:#CACA00"><b>Low</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
-      <td id="col_message">The value of the '((0xF0U) &lt;&lt; 8u) + p_rs-&gt;page_idx' expression should not be converted to the narrower essential 'unsigned' type.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln276">app_log.c:276</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln283">app_log.c:283</a></td>
-      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
-      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
-      <td id="col_message">Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
-    </tr>
-    <tr>
-      <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln329">app_log.c:329</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln306">app_log.c:306</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2568/">V2568</td>
       <td id="col_message">Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln382">app_log.c:382</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln359">app_log.c:359</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln382">app_log.c:382</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln359">app_log.c:359</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln401">app_log.c:401</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln378">app_log.c:378</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0xF0U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln401">app_log.c:401</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln378">app_log.c:378</a></td>
       <td id="col_level" style="color:#CACA00"><b>Low</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2572/">V2572</td>
       <td id="col_message">The value of the '(0x01U)' expression should not be converted to the narrower essential 'unsigned' type.</td>
@@ -2014,7 +2000,7 @@
     </tr>
     <tr>
       <td id="col_group">MISRA</td>
-      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln22">app_log.c:22</a></td>
+      <td id="col_file"><a target="_blank" href="sources/app_log.c_36.html#ln19">app_log.c:19</a></td>
       <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
       <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v2587/">V2587</td>
       <td id="col_message">The '//' and '/*' character sequences should not appear within comments.</td>
