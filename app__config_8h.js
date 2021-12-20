@@ -18,6 +18,7 @@ var app__config_8h =
     [ "APP_FLASH_SENSOR_PHOTO_RECORD", "group___s_d_k15.html#ga93a3cea889f53a80a955ccefa7f4244b", null ],
     [ "APP_FLASH_SENSOR_SHTCX_RECORD", "group___s_d_k15.html#ga184618eae0771a6809632edf433d5945", null ],
     [ "APP_FLASH_SENSOR_TMP117_RECORD", "group___s_d_k15.html#gaff0527657d77db54348457e37cbf02db", null ],
+    [ "APP_FW_VERSION", "app__config_8h.html#a71eb63bb1b50095239691efa80769e72", null ],
     [ "APP_GATT_ENABLED", "group___s_d_k15.html#gaf4f07ba7444b77e2197c660596ba492b", null ],
     [ "APP_HEARTBEAT_OVERDUE_INTERVAL_MS", "group___s_d_k15.html#ga0fd00b12b6abeed42fbccbc94ba65447", null ],
     [ "APP_LOG_HUMIDITY_ENABLED", "group___s_d_k15.html#gae23060f71c179bbbae2c51121aa0cf6b", null ],
