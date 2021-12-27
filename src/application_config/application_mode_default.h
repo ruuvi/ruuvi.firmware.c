@@ -17,10 +17,6 @@
 #define APP_FW_NAME "Ruuvi FW "
 #endif
 
-#ifndef APP_FW_VERSION
-#define APP_FW_VERSION "v0.0.1"
-#endif
-
 #ifndef APP_FW_VARIANT
 #define APP_FW_VARIANT "+default"
 #endif
