@@ -3,13 +3,13 @@
 # @date 2021-03-30
 # @brief Setup compile of sources for BOARDS and Variants.
 #        Set up directory names and call targets/ruuvitag_b/armgcc/Makefile
-#          which sets up options and calls Makefile.common which does compile & link
+#        which sets up options and calls Makefile.common which does compile & link
 #
-# @detail       There MUST be tab characters in this Makefile (Other wise error: missing separator)
-#
-# There is a seperate version of the for the
+# There is a seperate version of the project configuration for the
 # Segger Embedded Studio at ruuvi.firmware.c.emProject.
-# Changes to this should be made there as well.
+# Changes to this makefile should be made there as well.
+#
+#	The -Dxxx generates a #define xxx in C preprocessor.
 #
 # @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
 
@@ -19,7 +19,7 @@ TAG := $(shell git describe --tags --exact-match)
 # For example 24cbe77 (the hash)
 COMMIT := $(shell git rev-parse --short HEAD)
 
-# VERSION will be the TAG if it's good, other the ugly commit hash
+# VERSION will be the tag if one exists for current commit, otherwise the commit hash.
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
 
 BOARDS = ruuvitag_b kaarle kalervo keijo
@@ -38,11 +38,10 @@ sync:
 
 
 ruuvitag_b:
-	@echo build FW ${VERSION} $@  ++++++++++++++++++++++++++++++++++++++=
+	@echo build FW ${VERSION} for board $@
 
 	@echo + Calling targets/ruuvitag_b/armgcc/Makefile
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-    #            The NAME=-Dxxx generate a #define xxx
 	$(MAKE) -C targets/ruuvitag_b/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT   
 	@echo + package next
 	targets/$@/armgcc/package.sh -n ruuvifw_default
@@ -57,7 +56,6 @@ ruuvitag_b:
 	@echo + package next
 	targets/$@/armgcc/package.sh -n ruuvifw_longmem
 
-    # DEBUG used by Ruuvi and Nordic
 	$(MAKE) -C targets/$@/armgcc clean
 	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DDEBUG   MODE=-DAPPLICATION_MODE_DEBUG \
 											RUN_TESTS=-DRUUVI_RUN_TESTS OPT="-Og -g3" # gdb information included 
@@ -65,7 +63,7 @@ ruuvitag_b:
 	targets/$@/armgcc/package.sh -n ruuvifw_test
 
 kaarle:
-	@echo build FW ${VERSION} $@  ++++++++++++++++++++++++++++++++++++++=
+	@echo build FW ${VERSION} for board $@
 	$(MAKE) -C targets/$@/armgcc clean
 	$(MAKE) -C targets/$@/armgcc 		FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT 
 	targets/$@/armgcc/package.sh -n ruuvifw_default
@@ -80,7 +78,7 @@ kaarle:
 	targets/$@/armgcc/package.sh -n ruuvifw_test
 
 kalervo:
-	@echo build FW ${VERSION} $@  ++++++++++++++++++++++++++++++++++++++=
+	@echo build FW ${VERSION} for board $@
 	$(MAKE) -C targets/$@/armgcc clean
 	$(MAKE) -C targets/$@/armgcc 		FW_VERSION=-DAPP_FW_VERSION=${VERSION}  DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT 
 	targets/$@/armgcc/package.sh -n ruuvifw_default
@@ -90,7 +88,7 @@ kalervo:
 	targets/$@/armgcc/package.sh -n ruuvifw_longlife
 
 keijo:
-	@echo build FW ${VERSION} $@  ++++++++++++++++++++++++++++++++++++++=
+	@echo build FW ${VERSION} for board $@
 	$(MAKE) -C targets/$@/armgcc clean
 	$(MAKE) -C targets/$@/armgcc			FW_VERSION=-DAPP_FW_VERSION=${VERSION}  DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT
 	targets/$@/armgcc/package.sh -n ruuvifw_default
@@ -115,5 +113,3 @@ clean:
 	$(MAKE) -C targets/kaarle/armgcc clean
 	$(MAKE) -C targets/kalervo/armgcc clean
 	$(MAKE) -C targets/keijo/armgcc clean
-
-# } The end!
