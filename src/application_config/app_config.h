@@ -2,7 +2,6 @@
  * @file application_config /app_config.h
  * @author Otso Jousimaa <otso@ojousima.net>
  * @date 2020-04-16
- *       2021-12-10 DG12 correct _FLASH_PAGES from 16 to 0x15000/4096-1 see loader configuration.
  * @brief Master configuration base
  * @details Variables which can be adjusted by application_mode_xxxxx.h are preceeded by #ifdef
  *
@@ -20,10 +19,11 @@
 #ifndef APP_CONFIG_H
 #define APP_CONFIG_H
 
-/* Select and include a customization file for example:
-   application_mode_longlife,h       
-  Then always includes  application_default.h  */
+/* application_modes.h will select and include a customization file for example:
+   application_mode_longlife.h
+   application_default.h  is finally included in all configurations */
 #include "application_modes.h"
+
 #include "ruuvi_boards.h"         // include appropriate ruuvi_board_xxxxx_b.h and RUUVI_BOARDS_SEMVER
 #include "ruuvi_driver_sensor.h"  // Provide functions to init/uninit,
 /*                                         set/get samplerate, dsp, scale, resolution. mode & get data  */
@@ -82,9 +82,9 @@
 #define APP_LOG_INTERVAL_S                  (5U * 60U)                           // 5 MINUTES!
 #endif
 
-// Not yet implemented 3.31.1 2021-12-14
+// false not yet implemented 3.31.1 2021-12-14
 #ifndef APP_LOG_OVERFLOW          //<! When history log fills flash: OVERFLOW true wrap around i.e. save most recent readings
-#define APP_LOG_OVERFLOW true     //                                          false  save oldest reading and loose recent ones
+#define APP_LOG_OVERFLOW (true)   //                                          false  save oldest reading and loose recent ones
 #endif
 
 /* brief LED blinking heart beat timing */
@@ -92,9 +92,12 @@
 #   define APP_HEARTBEAT_OVERDUE_INTERVAL_MS (5U * 60U * 1000U)
 #endif
 
-/* @brief ******* Sensor avalibility and parameters ******** */
+/* @brief ******* Sensor availability ********
+ *        (Defauted to the presence as defined in _board.h.)      
+ *         and parameters                                 
+ */
 
-/** @brief photosensor */
+/** @brief Photosensor */
 #ifndef APP_SENSOR_PHOTO_ENABLED
 #   define APP_SENSOR_PHOTO_ENABLED RB_ENVIRONMENTAL_PHOTO_PRESENT
 #endif
@@ -178,7 +181,7 @@
 #   define APP_SENSOR_SHTCX_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
 #endif
 #ifndef APP_SENSOR_SHTCX_DSP_PARAM
-#   define APP_SENSOR_SHTCX_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#   define APP_SENSOR_SHTCX_DSP_PARAM (1U) //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_SHTCX_MODE
 #   define APP_SENSOR_SHTCX_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
@@ -205,7 +208,7 @@
 #   define APP_SENSOR_TMP117_DSP_FUNC RD_SENSOR_DSP_LAST //!< Do not use DSP by default
 #endif
 #ifndef APP_SENSOR_TMP117_DSP_PARAM
-#   define APP_SENSOR_TMP117_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#   define APP_SENSOR_TMP117_DSP_PARAM (1U) //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_TMP117_MODE
 #   define APP_SENSOR_TMP117_MODE RD_SENSOR_CFG_CONTINUOUS    //!< TMP117 runs continuously internally.
@@ -235,7 +238,7 @@
 #   define APP_SENSOR_NRF52_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
 #endif
 #ifndef APP_SENSOR_NRF52_DSP_PARAM
-#   define APP_SENSOR_NRF52_DSP_PARAM (1u) //!< Only 1 is valid with LAST
+#   define APP_SENSOR_NRF52_DSP_PARAM (1U) //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_NRF52_MODE
 #   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
@@ -254,7 +257,7 @@
 #ifndef APP_SENSOR_DPS310_ENABLED
 #   define APP_SENSOR_DPS310_ENABLED RB_ENVIRONMENTAL_DPS310_PRESENT
 #   ifndef RI_DPS310_SPI_ENABLED
-#       define RI_DPS310_SPI_ENABLED (1U)
+#       define RI_DPS310_SPI_ENABLED (true)
 #   endif
 #endif
 
@@ -262,7 +265,7 @@
 #   define APP_SENSOR_DPS310_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, LAST and OVERSAMPLING supported.
 #endif
 #ifndef APP_SENSOR_DPS310_DSP_PARAM
-#   define APP_SENSOR_DPS310_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#   define APP_SENSOR_DPS310_DSP_PARAM (1U) //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_DPS310_MODE
 #   define APP_SENSOR_DPS310_MODE RD_SENSOR_CFG_CONTINUOUS //!< Run in background
@@ -346,9 +349,12 @@
 
 /* ***** logging flash storage  **** */
 
+#ifndef APP_FLASH_PAGES 
+//  From .ld:       stop_storage_flash =.+0x15000
+#define APP_FLASH_PAGES                  (0x15000/4096)-1     
+#endif
+
 /* @ brief Caculate _RECORDS_NUM (actually blocks of log elements)  */
-//  From .ld:      stop_storage_flash =.+0x15000
-#define APP_FLASH_PAGES                 (0x15000/4096)-1             //!<  page size is 4 kB
 #define APP_FLASH_LOG_DATA_RECORDS_NUM  (APP_FLASH_PAGES - 1U -1U )  //!< GarbageCollection swap page; settings and config
 
 //                                                  As seen in memory:
