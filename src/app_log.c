@@ -1,13 +1,10 @@
 /**
  * @file app_log.c
  * @author Otso Jousimaa <otso@ojousima.net>
- * @date 2020-07-17
- *       2021-11-29 DG12 Change m_boot_count from uint16 to 32
- *                  Use TESTABLE_STATIC
- *       2021-05-06 includes Potential fix for #255 (#256)
+ * @date 2021-12-16
  * @brief
  * Save and retrieve sensor readings to/from flash
- *   for transmitting to station for sync.
+ * for transmitting to station for sync.
  * Allocate static input, output and config memory.
  * Readings are blocked into a nearly page size buffer.
  * store_block by bumping index up to _DATA_RECORDS_NUM then wrap.
@@ -20,8 +17,8 @@
  *  via rt_flash_free, _store, _load and _flash_gc_run
  * Possible fatal error from FDS: delete SPACE_IN_QUEUES,
  * https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.0.0/lib_fds_functionality.html
+ * Occurs if flash operations are queued faster than executed.
  *
- * (_) ToDo Save RAM by fetchihng sync data directly from flash and elimitating input_block buffer.
  *
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  */
@@ -39,19 +36,15 @@
 
 #if RT_FLASH_ENABLED
 
-#ifndef LOGI
 static inline void LOGI (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_INFO, msg);
 }
-#endif
 
-#ifndef LOGD
 static inline void LOGD (const char * const msg)
 {
     ri_log (RI_LOG_LEVEL_DEBUG, msg);
 }
-#endif
 
 /**
  * @addtogroup app_log
@@ -68,9 +61,9 @@ m_last_sample_ms;      //!< Timestamp of last processed sample.
 TESTABLE_STATIC uint32_t         m_boot_count = 0;
 
 
-/* @brief Start at next block number from where we left off.
- *          Free, GC, Store */        /* this code is kind "hinky" ?? DG */
-// // // // // // /           // // // // // // // // // //
+/*
+ * Store given log record to flash. Keeps track of slots via state variables.
+ */
 static rd_status_t store_block (const app_log_record_t * const p_record)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -79,36 +72,25 @@ static rd_status_t store_block (const app_log_record_t * const p_record)
 
     do
     {
-        uint8_t  record_slot = (record_idx + num_tries) %
-                               APP_FLASH_LOG_DATA_RECORDS_NUM; // if while went past the end, wrap
+        // If loop went past the last record, wrap.
+        uint8_t  record_slot = (record_idx + num_tries) % APP_FLASH_LOG_DATA_RECORDS_NUM;
         uint16_t target_record = (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8u) + record_slot;
-        err_code = rt_flash_free (APP_FLASH_LOG_FILE,
-                                  target_record);                       //  free old one to GC and wait
+        // Free space for new record if there already is one.
+        err_code = rt_flash_free (APP_FLASH_LOG_FILE, target_record);
         char msg[128];
-
-        if (RD_SUCCESS == err_code) // It's not a problem if there wasn't old block to erase.
-        {
-            snprintf (msg, sizeof (msg), "store_block:freed old record #%04X\n", target_record);
-            LOGI (msg);
-        }
-        else
-        {
-            snprintf (msg, sizeof (msg), "store_block:creating new record #%04X\n", target_record);
-            LOGI (msg);
-        }
-
-        err_code &=
-            ~RD_ERROR_NOT_FOUND;    // clear NOT_FOUND      ?? shouldn't we wait until it done ??
+        snprintf (msg, sizeof (msg), "Storing logs in record #%04X.\n", target_record);
+        LOGD (msg);
+        // Clear out error if there was no record to erase out of way.
+        err_code &= ~RD_ERROR_NOT_FOUND;
 
         while (rt_flash_busy()) { ri_yield(); }
 
-        err_code |=
-            rt_flash_gc_run ();                                                     // Garabage Collection and wait
+        // Run GC to actually release the space of old record.
+        err_code |= rt_flash_gc_run ();
 
         while (rt_flash_busy()) { ri_yield(); }
 
-        err_code |= rt_flash_store (APP_FLASH_LOG_FILE,
-                                    target_record,                      // store it and wait
+        err_code |= rt_flash_store (APP_FLASH_LOG_FILE, target_record,
                                     p_record, sizeof (app_log_record_t));
 
         while (rt_flash_busy()) { ri_yield(); }
@@ -119,15 +101,14 @@ static rd_status_t store_block (const app_log_record_t * const p_record)
 
     if (RD_SUCCESS == err_code)
     {
-        record_idx +=
-            num_tries;                                    // next time start at next page the one we used
-        record_idx = record_idx %
-                     APP_FLASH_LOG_DATA_RECORDS_NUM;   // start back at 0 if we went too far
+        // Increment the record to the slot that was successful
+        record_idx += num_tries;
+        record_idx = record_idx % APP_FLASH_LOG_DATA_RECORDS_NUM;
     }
 
     return err_code;
 }
-// // // // // // /           // // // // // // // // // //
+
 static rd_status_t purge_logs (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -145,31 +126,28 @@ static rd_status_t purge_logs (void)
     err_code |= rt_flash_gc_run ();
     return err_code;
 }
-// // // // // // // // // // // //                // // //
-TESTABLE_STATIC rd_status_t app_log_read_boot_count (
-    void)   // should be called load, bump, store
+
+TESTABLE_STATIC rd_status_t app_log_increment_boot_count (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_flash_load (APP_FLASH_LOG_FILE,
-                               APP_FLASH_LOG_BOOT_COUNTER_RECORD,           // load
+                               APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                &m_boot_count, sizeof (m_boot_count));
 
     if ( (RD_SUCCESS == err_code) || (RD_ERROR_NOT_FOUND == err_code))
     {
         m_boot_count++;
         err_code = rt_flash_store (APP_FLASH_LOG_FILE,
-                                   APP_FLASH_LOG_BOOT_COUNTER_RECORD,       // bump and store
+                                   APP_FLASH_LOG_BOOT_COUNTER_RECORD,
                                    &m_boot_count, sizeof (m_boot_count));
     }
 
     char msg[128];
-    snprintf (msg, sizeof (msg), "Boot count: %ld\n", m_boot_count);
+    snprintf (msg, sizeof (msg), "Boot count: %lu\n", m_boot_count); //-V576
     LOGI (msg);
     return err_code;
 }
 
-// // // // // /         / // // // // // // // // // // //
-/* @brief load config (stores defaults the first time)  */
 rd_status_t app_log_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -202,15 +180,15 @@ rd_status_t app_log_init (void)
         err_code |= purge_logs();
     }
 
-    err_code |= app_log_read_boot_count();
+    err_code |= app_log_increment_boot_count();
     return err_code;
 }
-// // // // // //             // // // // // // // // // //
+
 rd_status_t app_log_process (const rd_sensor_data_t * const sample)
 {
     rd_status_t err_code = RD_SUCCESS;
     uint64_t next_sample_ms = m_last_sample_ms + (m_log_config.interval_s * 1000u);
-    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;
+    uint32_t end_timestamp = sample->timestamp_ms / 1000U;
     LOGD ("Sample received\n");
 
     if (0 == m_last_sample_ms) { next_sample_ms = 0; } // Always store first sample.
@@ -232,6 +210,7 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         if (m_log_input_block.num_samples >= APP_LOG_MAX_SAMPLES)
         {
             LOGI ("Storing block\n");
+            m_log_input_block.end_timestamp_s = end_timestamp;
             err_code |= store_block (&m_log_input_block);
             RD_ERROR_CHECK (err_code, RD_SUCCESS);
             memset (&m_log_input_block, 0, sizeof (m_log_input_block));         // zero input_block
@@ -239,7 +218,6 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
         }
 
         m_last_sample_ms = sample->timestamp_ms;
-        m_log_input_block.end_timestamp_s = sample->timestamp_ms / 1000U;
     }
 
     return err_code;
@@ -251,7 +229,6 @@ rd_status_t app_log_process (const rd_sensor_data_t * const sample)
  * Can also copy input block to
  * output block if there's no more stored blocks in flash.
  */
-// // // // // // // // // /              // // // // // //
 static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -295,11 +272,11 @@ static rd_status_t app_log_read_load_block (app_log_read_state_t * const p_rs)
 
 /**
  * @brief Forward read state to first next valid element.
- *  internal
+ *
+ * @param [in, out] p_rs State of log read operation. Updated to next valid element.
  * @retval RD_SUCCESS p_rs points to a valid element
  * @retval RD_ERROR_NOT_FOUND if block doesn't have a valid element.
  */
-// // // // // // // // //                   // // // // //
 static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -318,7 +295,7 @@ static rd_status_t app_log_read_fast_forward (app_log_read_state_t * const p_rs)
 
     return err_code;
 }
-// // // // // // // // //                // // // // // //
+
 static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
         app_log_read_state_t * const p_rs)
 {
@@ -343,7 +320,7 @@ static rd_status_t app_log_read_populate (rd_sensor_data_t * const sample,
 
     return err_code;
 }
-// // // // // // //       // // // // // // // // // // //
+
 rd_status_t app_log_read (rd_sensor_data_t * const sample,
                           app_log_read_state_t * const p_rs)
 {
@@ -370,7 +347,7 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
 
     return err_code;
 }
-// // // // // // //          // // // // // // // // // //
+
 rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -394,7 +371,7 @@ rd_status_t app_log_config_set (const app_log_config_t * const configuration)
 
     return err_code;
 }
-// // // // // // //             // // // // // // // // //
+
 rd_status_t app_log_config_get (app_log_config_t * const configuration)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -403,8 +380,7 @@ rd_status_t app_log_config_get (app_log_config_t * const configuration)
     memcpy (configuration, &m_log_config, sizeof (m_log_config));
     return err_code;
 }
-/* @brief user request system reset via button  */
-// // // // /            / // // // // // // // // // // //
+
 void app_log_purge_flash (void)
 {
     ri_flash_purge();
