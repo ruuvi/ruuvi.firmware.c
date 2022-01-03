@@ -35,9 +35,9 @@
 /* This will result in writing FLASH log block every 7.36 minutes ie: 07:21 */
 #define APP_LOG_INTERVAL_S (1U) //!< Gets limited to heartbeat rate.
 
-/* Not enough flash to load debug with all drivers so don't enable rarely needed ones */
+/* If there is not enough flash to load debug with all drivers 
+    don't enable rarely needed ones */
 #define APP_SENSOR_PHOTO_ENABLED  (false)    
 #define APP_SENSOR_NTC_ENABLED    (false)
-#define APP_SENSOR_DPS310_ENABLE  (false)
 
 #endif //APPLICATION_MODE_DEBUG_H
