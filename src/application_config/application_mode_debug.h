@@ -8,7 +8,7 @@
  * @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
  *
  *  EDIT THIS file to customize
- */ 
+ */
 #ifndef APPLICATION_MODE_DEBUG_H
 #define APPLICATION_MODE_DEBUG_H
 
@@ -16,9 +16,9 @@
 #define RI_LOG_ENABLED (true)
 #define APP_LOG_LEVEL RI_LOG_LEVEL_INFO
 
-// If RTT LOG buffer is full: block 2; trim 1; skip 0  
+// If RTT LOG buffer is full: block 2; trim 1; skip 0
 // block will stop application if no RealTimeTerminal (RTT) is connected.
-#define SEGGER_RTT_CONFIG_DEFAULT_MODE (1U) 
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE (1U)
 
 #define APP_WDT_INTERVAL_MS (10U*60U*1000U)
 
@@ -35,9 +35,9 @@
 /* This will result in writing FLASH log block every 7.36 minutes ie: 07:21 */
 #define APP_LOG_INTERVAL_S (1U) //!< Gets limited to heartbeat rate.
 
-/* If there is not enough flash to load debug with all drivers 
+/* If there is not enough flash to load debug with all drivers
     don't enable rarely needed ones */
-#define APP_SENSOR_PHOTO_ENABLED  (false)    
+#define APP_SENSOR_PHOTO_ENABLED  (false)
 #define APP_SENSOR_NTC_ENABLED    (false)
 
 #endif //APPLICATION_MODE_DEBUG_H
