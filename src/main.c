@@ -49,11 +49,13 @@ void app_on_error (const rd_status_t error,
                    const char * file,
                    const int line)
 {
+    /*
     // TODO: store error source to flash.
     if (fatal)
     {
         ri_power_reset();
     }
+    */
 }
 
 /**
@@ -77,7 +79,7 @@ void setup (void)
     err_code |= app_led_init();
     app_led_error_signal (true);
     err_code |= app_button_init();
-    err_code |= app_dc_dc_init();
+    // err_code |= app_dc_dc_init();
     err_code |= app_sensor_init();
     err_code |= app_log_init();
     // Allow fail on boards which do not have accelerometer.
@@ -87,7 +89,7 @@ void setup (void)
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
 
-    if (RD_SUCCESS == err_code)
+    if (1)
     {
         app_led_error_signal (false);
         app_led_activity_signal (true);
