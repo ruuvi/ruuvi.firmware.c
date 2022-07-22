@@ -282,8 +282,10 @@ TESTABLE_STATIC void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_da
     {
         // Stop heartbeat processing.
         err_code |= app_heartbeat_stop();
+#if APP_GATT_ENABLED
         // Switch GATT to faster params.
         err_code |= ri_gatt_params_request (RI_GATT_TURBO, CONN_PARAM_UPDATE_DELAY_MS);
+#endif 
         // Parse message type.
         re_type_t type = raw_message[RE_STANDARD_DESTINATION_INDEX];
 
@@ -314,7 +316,9 @@ TESTABLE_STATIC void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_da
         }
 
         // Switch GATT to slower params.
+#if APP_GATT_ENABLED
         err_code |= ri_gatt_params_request (RI_GATT_LOW_POWER, 0);
+#endif
         // Resume heartbeat processing.
         err_code |= app_heartbeat_start();
     }
@@ -471,6 +475,18 @@ TESTABLE_STATIC void on_nfc_tx_done_isr (void * p_data, size_t data_len)
 {
     m_tx_done = true;
 }
+
+TESTABLE_STATIC void handle_nfc_data (void * p_data, uint16_t data_len)
+{
+    handle_comms (&rt_nfc_send, p_data, data_len);
+}
+
+TESTABLE_STATIC void on_nfc_data_isr (void * p_data, size_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_nfc_data);
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
+}
 #endif
 
 rd_status_t app_comms_configure_next_enable (void)
@@ -555,6 +571,7 @@ static rd_status_t nfc_init (ri_comm_dis_init_t * const p_dis)
     rt_nfc_set_on_connected_isr (&on_nfc_connected_isr);
     rt_nfc_set_on_disconn_isr (&on_nfc_disconnected_isr);
     rt_nfc_set_on_sent_isr (&on_nfc_tx_done_isr);
+    rt_nfc_set_on_received_isr (&on_nfc_data_isr);
 #endif
     return err_code;
 }
