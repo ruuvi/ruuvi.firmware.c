@@ -493,14 +493,16 @@ rd_status_t app_comms_configure_next_disable (void)
 TESTABLE_STATIC void handle_config_disable (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-
     // Do not kick out current connection, disconnect handler
     // will disable config.
+#if APP_GATT_ENABLED
+
     if (!rt_gatt_nus_is_connected())
     {
         err_code |= enable_config_on_next_conn (false);
     }
 
+#endif
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -681,7 +683,9 @@ rd_status_t app_comms_ble_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_adv_uninit();
+#if APP_GATT_ENABLED
     err_code |= rt_gatt_uninit();
+#endif
     return err_code;
 }
 
