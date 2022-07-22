@@ -9,6 +9,6 @@
 
 #define APP_GATT_ENABLED (0U)
 
-#define RT_FLASH_ENABLED (o)
+#define RT_FLASH_ENABLED (0U)
 
 #endif
