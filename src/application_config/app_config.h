@@ -316,7 +316,7 @@
 
 /** @brief Enable Flash tasks if there is storage space. GATT also requires flash */
 #ifndef RT_FLASH_ENABLED
-#   define RT_FLASH_ENABLED (0)
+#   define RT_FLASH_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)
 #endif
 
 /** @brief Enable Ruuvi Flash interface. */
