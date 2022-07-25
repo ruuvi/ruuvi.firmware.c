@@ -466,7 +466,7 @@ void test_handle_nfc_data_acceleration (void)
                                        sizeof (mock_data), RD_SUCCESS);
     ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_SUCCESS);
     app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
-    handle_comms (&rt_nfc_send, mock_data, sizeof (mock_data));
+    handle_nfc_data (mock_data, sizeof (mock_data));
 }
 
 void test_app_comm_configurable_gatt_after_nfc (void)
