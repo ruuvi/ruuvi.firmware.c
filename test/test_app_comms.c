@@ -156,7 +156,7 @@ static void nfc_init_Expect (ri_comm_dis_init_t * p_dis)
     rt_nfc_set_on_connected_isr_Expect (&on_nfc_connected_isr);
     rt_nfc_set_on_disconn_isr_Expect (&on_nfc_disconnected_isr);
     rt_nfc_set_on_sent_isr_Expect (&on_nfc_tx_done_isr);
-    rt_nfc_set_on_sent_isr_Expect (&on_nfc_data_isr);
+    rt_nfc_set_on_received_isr_Expect (&on_nfc_data_isr);
 #endif
 }
 
