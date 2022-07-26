@@ -201,7 +201,7 @@
 #   define APP_SENSOR_NRF52_DSP_PARAM (1U) //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_NRF52_MODE
-#   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
+#   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< NRF runs in single-shot mode internally, update data automatically on fetch.
 #endif
 #ifndef APP_SENSOR_NRF52_RESOLUTION
 #   define APP_SENSOR_NRF52_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
