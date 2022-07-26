@@ -195,16 +195,18 @@
 <a name="ln182">void handle_gatt_disconnected (void * p_data, uint16_t data_len);</a>
 <a name="ln183">void handle_nfc_connected (void * p_data, uint16_t data_len);</a>
 <a name="ln184">void handle_nfc_disconnected (void * p_data, uint16_t data_len);</a>
-<a name="ln185">void on_nfc_connected_isr (void * p_data, size_t data_len);</a>
-<a name="ln186">void on_nfc_disconnected_isr (void * p_data, size_t data_len);</a>
-<a name="ln187">void on_nfc_tx_done_isr (void * p_data, size_t data_len);</a>
-<a name="ln188">void comm_mode_change_isr (void * const p_context);</a>
-<a name="ln189">void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_len);</a>
-<a name="ln190">#endif</a>
-<a name="ln191"> </a>
-<a name="ln192"> </a>
-<a name="ln193">/** @} */</a>
-<a name="ln194">#endif // APP_COMMS_H</a>
+<a name="ln185">void handle_nfc_data (void * p_data, uint16_t data_len);</a>
+<a name="ln186">void on_nfc_connected_isr (void * p_data, size_t data_len);</a>
+<a name="ln187">void on_nfc_disconnected_isr (void * p_data, size_t data_len);</a>
+<a name="ln188">void on_nfc_tx_done_isr (void * p_data, size_t data_len);</a>
+<a name="ln189">void on_nfc_data_isr (void * p_data, size_t data_len);</a>
+<a name="ln190">void comm_mode_change_isr (void * const p_context);</a>
+<a name="ln191">void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_len);</a>
+<a name="ln192">#endif</a>
+<a name="ln193"> </a>
+<a name="ln194"> </a>
+<a name="ln195">/** @} */</a>
+<a name="ln196">#endif // APP_COMMS_H</a>
 
 </code></pre>
 <div class="balloon" rel="109"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2614/" target="_blank">V2614</a> External identifiers should be distinct. The identifier must contain fewer than 32 characters.</p></div>

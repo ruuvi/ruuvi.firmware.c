@@ -295,440 +295,461 @@
 <a name="ln282">    {</a>
 <a name="ln283">        // Stop heartbeat processing.</a>
 <a name="ln284">        err_code |= app_heartbeat_stop();</a>
-<a name="ln285">        // Switch GATT to faster params.</a>
-<a name="ln286">        err_code |= ri_gatt_params_request (RI_GATT_TURBO, CONN_PARAM_UPDATE_DELAY_MS);</a>
-<a name="ln287">        // Parse message type.</a>
-<a name="ln288">        re_type_t type = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
-<a name="ln289"> </a>
-<a name="ln290">        // Route message to proper handler.</a>
-<a name="ln291">        switch (type)</a>
-<a name="ln292">        {</a>
-<a name="ln293">            case RE_ACC_XYZ:</a>
-<a name="ln294">            case RE_ACC_X:</a>
-<a name="ln295">            case RE_ACC_Y:</a>
-<a name="ln296">            case RE_ACC_Z:</a>
-<a name="ln297">            case RE_GYR_XYZ:</a>
-<a name="ln298">            case RE_GYR_X:</a>
-<a name="ln299">            case RE_GYR_Y:</a>
-<a name="ln300">            case RE_GYR_Z:</a>
-<a name="ln301">            case RE_ENV_ALL:</a>
-<a name="ln302">            case RE_ENV_TEMP:</a>
-<a name="ln303">            case RE_ENV_HUMI:</a>
-<a name="ln304">            case RE_ENV_PRES:</a>
-<a name="ln305">                err_code |= app_sensor_handle (reply_fp, raw_message, data_len);</a>
-<a name="ln306">                break;</a>
-<a name="ln307"> </a>
-<a name="ln308">            case RE_SEC_PASS:</a>
-<a name="ln309">                err_code |= password_check (reply_fp, raw_message);</a>
-<a name="ln310">                break;</a>
-<a name="ln311"> </a>
-<a name="ln312">            default:</a>
-<a name="ln313">                break;</a>
-<a name="ln314">        }</a>
-<a name="ln315"> </a>
-<a name="ln316">        // Switch GATT to slower params.</a>
-<a name="ln317">        err_code |= ri_gatt_params_request (RI_GATT_LOW_POWER, 0);</a>
-<a name="ln318">        // Resume heartbeat processing.</a>
-<a name="ln319">        err_code |= app_heartbeat_start();</a>
-<a name="ln320">    }</a>
-<a name="ln321"> </a>
-<a name="ln322">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln323">}</a>
-<a name="ln324"> </a>
-<a name="ln325">/**</a>
-<a name="ln326"> * @brief Configures this connection, call this in on_connected handler.</a>
-<a name="ln327"> */</a>
-<a name="ln328">static void config_setup_on_this_conn (void)</a>
-<a name="ln329">{</a>
-<a name="ln330">    m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;</a>
-<a name="ln331">    m_config_enabled_on_next_conn = false;</a>
-<a name="ln332">    m_mode_ops.disable_config = 0;</a>
-<a name="ln333">}</a>
-<a name="ln334"> </a>
-<a name="ln335"> </a>
-<a name="ln336">/**</a>
-<a name="ln337"> * @brief Cleans up configuration related to closing connection, call this</a>
-<a name="ln338"> * in on_disconnected handler</a>
-<a name="ln339"> */</a>
-<a name="ln340">static void config_cleanup_on_disconnect (void)</a>
-<a name="ln341">{</a>
-<a name="ln342">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln343">    m_config_enabled_on_curr_conn = false;</a>
-<a name="ln344">    err_code |= enable_config_on_next_conn (false);</a>
-<a name="ln345">    m_mode_ops.disable_config = 0; // No need to disable config again.</a>
-<a name="ln346">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln347">}</a>
-<a name="ln348"> </a>
-<a name="ln349">#if APP_GATT_ENABLED</a>
-<a name="ln350"> </a>
-<a name="ln351">TESTABLE_STATIC void handle_gatt_data (void * p_data, uint16_t data_len)</a>
-<a name="ln352">{</a>
-<a name="ln353">    handle_comms (&amp;rt_gatt_send_asynchronous, p_data, data_len);</a>
-<a name="ln354">}</a>
-<a name="ln355"> </a>
-<a name="ln356">/**</a>
-<a name="ln357"> * @brief Disable advertising for GATT connection and setup current connection.</a>
-<a name="ln358"> */</a>
-<a name="ln359">TESTABLE_STATIC void handle_gatt_connected (void * p_data, uint16_t data_len)</a>
-<a name="ln360">{</a>
-<a name="ln361">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln362">    // Disables advertising for GATT, does not kick current connetion out.</a>
-<a name="ln363">    err_code |= rt_gatt_adv_disable ();</a>
-<a name="ln364">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln365">    err_code |= app_comms_ble_adv_init ();</a>
-<a name="ln366">    config_setup_on_this_conn ();</a>
-<a name="ln367">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln368">}</a>
-<a name="ln369"> </a>
-<a name="ln370">/**</a>
-<a name="ln371"> * @brief Callback when GATT is connected</a>
-<a name="ln372"> */</a>
-<a name="ln373">TESTABLE_STATIC void on_gatt_connected_isr (void * p_data, size_t data_len)</a>
-<a name="ln374">{</a>
-<a name="ln375">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln376">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,</a>
-<a name="ln377">                                        &amp;handle_gatt_connected);</a>
-<a name="ln378">    // Configuration will be disabled on disconnection, no need to trigger timer action.</a>
-<a name="ln379">    m_mode_ops.disable_config = 0;</a>
-<a name="ln380">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln381">}</a>
-<a name="ln382"> </a>
-<a name="ln383">TESTABLE_STATIC void handle_gatt_disconnected (void * p_data, uint16_t data_len)</a>
-<a name="ln384">{</a>
-<a name="ln385">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln386">    config_cleanup_on_disconnect();</a>
-<a name="ln387">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln388">}</a>
-<a name="ln389"> </a>
-<a name="ln390">/** @brief Callback when GATT is disconnected&quot; */</a>
-<a name="ln391">TESTABLE_STATIC void on_gatt_disconnected_isr (void * p_data, size_t data_len)</a>
-<a name="ln392">{</a>
-<a name="ln393">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln394">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,</a>
-<a name="ln395">                                        &amp;handle_gatt_disconnected);</a>
-<a name="ln396">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln397">}</a>
-<a name="ln398"> </a>
-<a name="ln399">/**</a>
-<a name="ln400"> * @brief Callback when data is received via GATT</a>
-<a name="ln401"> *</a>
-<a name="ln402"> * Schedule handling incoming message and replying back via given function pointer.</a>
-<a name="ln403"> */</a>
-<a name="ln404">TESTABLE_STATIC void on_gatt_data_isr (void * p_data, size_t data_len)</a>
-<a name="ln405">{</a>
-<a name="ln406">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln407">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &amp;handle_gatt_data);</a>
-<a name="ln408">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln409">}</a>
-<a name="ln410"> </a>
-<a name="ln411">/**</a>
-<a name="ln412"> * @brief Callback when data is sent via GATT</a>
-<a name="ln413"> *</a>
-<a name="ln414"> * Schedule handling incoming message and replying back via given function pointer.</a>
-<a name="ln415"> */</a>
-<a name="ln416">TESTABLE_STATIC void on_gatt_tx_done_isr (void * p_data, size_t data_len)</a>
-<a name="ln417">{</a>
-<a name="ln418">    m_tx_done = true;</a>
-<a name="ln419">}</a>
-<a name="ln420"> </a>
-<a name="ln421"> </a>
-<a name="ln422">static rd_status_t ble_name_string_create (char * const name_str, const size_t name_len)</a>
-<a name="ln423">{</a>
-<a name="ln424">    uint64_t radio_addr = 0;</a>
-<a name="ln425">    rd_status_t err_code = ri_radio_address_get (&amp;radio_addr);</a>
-<a name="ln426">    radio_addr &amp;= 0xFFFF;</a>
-<a name="ln427">    snprintf (name_str, name_len, &quot;%s %04X&quot;, RB_BLE_NAME_STRING, (uint16_t) radio_addr);</a>
-<a name="ln428">    return err_code;</a>
-<a name="ln429">}</a>
-<a name="ln430"> </a>
-<a name="ln431">#endif //!&lt; if GATT ENABLED</a>
-<a name="ln432"> </a>
-<a name="ln433">#if APP_NFC_ENABLED</a>
+<a name="ln285">#if APP_GATT_ENABLED</a>
+<a name="ln286">        // Switch GATT to faster params.</a>
+<a name="ln287">        err_code |= ri_gatt_params_request (RI_GATT_TURBO, CONN_PARAM_UPDATE_DELAY_MS);</a>
+<a name="ln288">#endif</a>
+<a name="ln289">        // Parse message type.</a>
+<a name="ln290">        re_type_t type = raw_message[RE_STANDARD_DESTINATION_INDEX];</a>
+<a name="ln291"> </a>
+<a name="ln292">        // Route message to proper handler.</a>
+<a name="ln293">        switch (type)</a>
+<a name="ln294">        {</a>
+<a name="ln295">            case RE_ACC_XYZ:</a>
+<a name="ln296">            case RE_ACC_X:</a>
+<a name="ln297">            case RE_ACC_Y:</a>
+<a name="ln298">            case RE_ACC_Z:</a>
+<a name="ln299">            case RE_GYR_XYZ:</a>
+<a name="ln300">            case RE_GYR_X:</a>
+<a name="ln301">            case RE_GYR_Y:</a>
+<a name="ln302">            case RE_GYR_Z:</a>
+<a name="ln303">            case RE_ENV_ALL:</a>
+<a name="ln304">            case RE_ENV_TEMP:</a>
+<a name="ln305">            case RE_ENV_HUMI:</a>
+<a name="ln306">            case RE_ENV_PRES:</a>
+<a name="ln307">                err_code |= app_sensor_handle (reply_fp, raw_message, data_len);</a>
+<a name="ln308">                break;</a>
+<a name="ln309"> </a>
+<a name="ln310">            case RE_SEC_PASS:</a>
+<a name="ln311">                err_code |= password_check (reply_fp, raw_message);</a>
+<a name="ln312">                break;</a>
+<a name="ln313"> </a>
+<a name="ln314">            default:</a>
+<a name="ln315">                break;</a>
+<a name="ln316">        }</a>
+<a name="ln317"> </a>
+<a name="ln318">        // Switch GATT to slower params.</a>
+<a name="ln319">#if APP_GATT_ENABLED</a>
+<a name="ln320">        err_code |= ri_gatt_params_request (RI_GATT_LOW_POWER, 0);</a>
+<a name="ln321">#endif</a>
+<a name="ln322">        // Resume heartbeat processing.</a>
+<a name="ln323">        err_code |= app_heartbeat_start();</a>
+<a name="ln324">    }</a>
+<a name="ln325"> </a>
+<a name="ln326">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln327">}</a>
+<a name="ln328"> </a>
+<a name="ln329">/**</a>
+<a name="ln330"> * @brief Configures this connection, call this in on_connected handler.</a>
+<a name="ln331"> */</a>
+<a name="ln332">static void config_setup_on_this_conn (void)</a>
+<a name="ln333">{</a>
+<a name="ln334">    m_config_enabled_on_curr_conn = m_config_enabled_on_next_conn;</a>
+<a name="ln335">    m_config_enabled_on_next_conn = false;</a>
+<a name="ln336">    m_mode_ops.disable_config = 0;</a>
+<a name="ln337">}</a>
+<a name="ln338"> </a>
+<a name="ln339"> </a>
+<a name="ln340">/**</a>
+<a name="ln341"> * @brief Cleans up configuration related to closing connection, call this</a>
+<a name="ln342"> * in on_disconnected handler</a>
+<a name="ln343"> */</a>
+<a name="ln344">static void config_cleanup_on_disconnect (void)</a>
+<a name="ln345">{</a>
+<a name="ln346">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln347">    m_config_enabled_on_curr_conn = false;</a>
+<a name="ln348">    err_code |= enable_config_on_next_conn (false);</a>
+<a name="ln349">    m_mode_ops.disable_config = 0; // No need to disable config again.</a>
+<a name="ln350">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln351">}</a>
+<a name="ln352"> </a>
+<a name="ln353">#if APP_GATT_ENABLED</a>
+<a name="ln354"> </a>
+<a name="ln355">TESTABLE_STATIC void handle_gatt_data (void * p_data, uint16_t data_len)</a>
+<a name="ln356">{</a>
+<a name="ln357">    handle_comms (&amp;rt_gatt_send_asynchronous, p_data, data_len);</a>
+<a name="ln358">}</a>
+<a name="ln359"> </a>
+<a name="ln360">/**</a>
+<a name="ln361"> * @brief Disable advertising for GATT connection and setup current connection.</a>
+<a name="ln362"> */</a>
+<a name="ln363">TESTABLE_STATIC void handle_gatt_connected (void * p_data, uint16_t data_len)</a>
+<a name="ln364">{</a>
+<a name="ln365">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln366">    // Disables advertising for GATT, does not kick current connetion out.</a>
+<a name="ln367">    err_code |= rt_gatt_adv_disable ();</a>
+<a name="ln368">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln369">    err_code |= app_comms_ble_adv_init ();</a>
+<a name="ln370">    config_setup_on_this_conn ();</a>
+<a name="ln371">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln372">}</a>
+<a name="ln373"> </a>
+<a name="ln374">/**</a>
+<a name="ln375"> * @brief Callback when GATT is connected</a>
+<a name="ln376"> */</a>
+<a name="ln377">TESTABLE_STATIC void on_gatt_connected_isr (void * p_data, size_t data_len)</a>
+<a name="ln378">{</a>
+<a name="ln379">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln380">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,</a>
+<a name="ln381">                                        &amp;handle_gatt_connected);</a>
+<a name="ln382">    // Configuration will be disabled on disconnection, no need to trigger timer action.</a>
+<a name="ln383">    m_mode_ops.disable_config = 0;</a>
+<a name="ln384">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln385">}</a>
+<a name="ln386"> </a>
+<a name="ln387">TESTABLE_STATIC void handle_gatt_disconnected (void * p_data, uint16_t data_len)</a>
+<a name="ln388">{</a>
+<a name="ln389">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln390">    config_cleanup_on_disconnect();</a>
+<a name="ln391">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln392">}</a>
+<a name="ln393"> </a>
+<a name="ln394">/** @brief Callback when GATT is disconnected&quot; */</a>
+<a name="ln395">TESTABLE_STATIC void on_gatt_disconnected_isr (void * p_data, size_t data_len)</a>
+<a name="ln396">{</a>
+<a name="ln397">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln398">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,</a>
+<a name="ln399">                                        &amp;handle_gatt_disconnected);</a>
+<a name="ln400">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln401">}</a>
+<a name="ln402"> </a>
+<a name="ln403">/**</a>
+<a name="ln404"> * @brief Callback when data is received via GATT</a>
+<a name="ln405"> *</a>
+<a name="ln406"> * Schedule handling incoming message and replying back via given function pointer.</a>
+<a name="ln407"> */</a>
+<a name="ln408">TESTABLE_STATIC void on_gatt_data_isr (void * p_data, size_t data_len)</a>
+<a name="ln409">{</a>
+<a name="ln410">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln411">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &amp;handle_gatt_data);</a>
+<a name="ln412">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln413">}</a>
+<a name="ln414"> </a>
+<a name="ln415">/**</a>
+<a name="ln416"> * @brief Callback when data is sent via GATT</a>
+<a name="ln417"> *</a>
+<a name="ln418"> * Schedule handling incoming message and replying back via given function pointer.</a>
+<a name="ln419"> */</a>
+<a name="ln420">TESTABLE_STATIC void on_gatt_tx_done_isr (void * p_data, size_t data_len)</a>
+<a name="ln421">{</a>
+<a name="ln422">    m_tx_done = true;</a>
+<a name="ln423">}</a>
+<a name="ln424"> </a>
+<a name="ln425"> </a>
+<a name="ln426">static rd_status_t ble_name_string_create (char * const name_str, const size_t name_len)</a>
+<a name="ln427">{</a>
+<a name="ln428">    uint64_t radio_addr = 0;</a>
+<a name="ln429">    rd_status_t err_code = ri_radio_address_get (&amp;radio_addr);</a>
+<a name="ln430">    radio_addr &amp;= 0xFFFF;</a>
+<a name="ln431">    snprintf (name_str, name_len, &quot;%s %04X&quot;, RB_BLE_NAME_STRING, (uint16_t) radio_addr);</a>
+<a name="ln432">    return err_code;</a>
+<a name="ln433">}</a>
 <a name="ln434"> </a>
-<a name="ln435">TESTABLE_STATIC void handle_nfc_connected (void * p_data, uint16_t data_len)</a>
-<a name="ln436">{</a>
-<a name="ln437">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln438">    // Kick BLE connection to not allow it to configure tag</a>
-<a name="ln439">    app_comms_ble_uninit();</a>
-<a name="ln440">    m_config_enabled_on_next_conn = true;</a>
-<a name="ln441">    config_setup_on_this_conn();</a>
-<a name="ln442">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln443">}</a>
-<a name="ln444"> </a>
-<a name="ln445">TESTABLE_STATIC void on_nfc_connected_isr (void * p_data, size_t data_len)</a>
-<a name="ln446">{</a>
-<a name="ln447">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln448">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &amp;handle_nfc_connected);</a>
-<a name="ln449">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln450">}</a>
-<a name="ln451"> </a>
-<a name="ln452">TESTABLE_STATIC void handle_nfc_disconnected (void * p_data, uint16_t data_len)</a>
-<a name="ln453">{</a>
-<a name="ln454">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln455">    config_cleanup_on_disconnect();</a>
-<a name="ln456">    err_code |= app_comms_configure_next_enable();</a>
-<a name="ln457">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln458">}</a>
-<a name="ln459"> </a>
-<a name="ln460">/** @brief Callback when NFC is disconnected&quot; */</a>
-<a name="ln461">TESTABLE_STATIC void on_nfc_disconnected_isr (void * p_data, size_t data_len)</a>
-<a name="ln462">{</a>
-<a name="ln463">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln464">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,</a>
-<a name="ln465">                                        &amp;handle_nfc_disconnected);</a>
-<a name="ln466">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln467">}</a>
-<a name="ln468"> </a>
-<a name="ln469">/** @brief Callback when NFC has sent data&quot; */</a>
-<a name="ln470">TESTABLE_STATIC void on_nfc_tx_done_isr (void * p_data, size_t data_len)</a>
-<a name="ln471">{</a>
-<a name="ln472">    m_tx_done = true;</a>
-<a name="ln473">}</a>
-<a name="ln474">#endif</a>
-<a name="ln475"> </a>
-<a name="ln476">rd_status_t app_comms_configure_next_enable (void)</a>
-<a name="ln477">{</a>
-<a name="ln478">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln479">    m_mode_ops.disable_config = 1;</a>
-<a name="ln480">    err_code |= enable_config_on_next_conn (true);</a>
-<a name="ln481">    err_code |= ri_timer_stop (m_comm_timer);</a>
-<a name="ln482">    err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &amp;m_mode_ops);</a>
-<a name="ln483">    return err_code;</a>
-<a name="ln484">}</a>
-<a name="ln485"> </a>
-<a name="ln486">rd_status_t app_comms_configure_next_disable (void)</a>
-<a name="ln487">{</a>
-<a name="ln488">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln489">    err_code |= enable_config_on_next_conn (false);</a>
-<a name="ln490">    return err_code;</a>
-<a name="ln491">}</a>
-<a name="ln492"> </a>
-<a name="ln493">TESTABLE_STATIC void handle_config_disable (void * p_data, uint16_t data_len)</a>
-<a name="ln494">{</a>
-<a name="ln495">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln496"> </a>
-<a name="ln497">    // Do not kick out current connection, disconnect handler</a>
-<a name="ln498">    // will disable config.</a>
-<a name="ln499">    if (!rt_gatt_nus_is_connected())</a>
-<a name="ln500">    {</a>
-<a name="ln501">        err_code |= enable_config_on_next_conn (false);</a>
-<a name="ln502">    }</a>
-<a name="ln503"> </a>
-<a name="ln504">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
-<a name="ln505">}</a>
-<a name="ln506"> </a>
-<a name="ln507">#else</a>
-<a name="ln508">rd_status_t app_comms_configure_next_enable (void)</a>
-<a name="ln509">{</a>
-<a name="ln510">    return RD_ERROR_NOT_ENABLED;</a>
-<a name="ln511">}</a>
-<a name="ln512">#endif //!&lt; APP_COMMS_BIDIR_ENABLED</a>
-<a name="ln513"> </a>
-<a name="ln514">/**</a>
-<a name="ln515"> * @brief Initialize Device information data.</a>
-<a name="ln516"> *</a>
-<a name="ln517"> * @param[in] secure If true, security sensitive data will be NULL/0-length.</a>
-<a name="ln518"> * @retval RD_SUCCESS necessary data was available and is printed on p_dis.</a>
-<a name="ln519"> * @return Error code from driver in case some data cannot be printed.</a>
-<a name="ln520"> */</a>
-<a name="ln521">static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis, const bool secure)</a>
-<a name="ln522">{</a>
-<a name="ln523">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln524">    memset (p_dis, 0, sizeof (ri_comm_dis_init_t));</a>
-<a name="ln525">#if APP_COMMS_BIDIR_ENABLED</a>
-<a name="ln526">    size_t name_idx = 0;</a>
-<a name="ln527">    err_code |= rt_com_get_mac_str (p_dis-&gt;deviceaddr, sizeof (p_dis-&gt;deviceaddr));</a>
-<a name="ln528"> </a>
-<a name="ln529">    if (!secure)</a>
-<a name="ln530">    {</a>
-<a name="ln531">        err_code |= rt_com_get_id_str (p_dis-&gt;deviceid, sizeof (p_dis-&gt;deviceid));</a>
-<a name="ln532">    }</a>
-<a name="ln533"> </a>
-<a name="ln534">    name_idx =  snprintf (p_dis-&gt;fw_version, sizeof (p_dis-&gt;fw_version), APP_FW_NAME);</a>
-<a name="ln535">    name_idx += snprintf (p_dis-&gt;fw_version + name_idx,</a>
-<a name="ln536">                          sizeof (p_dis-&gt;fw_version) - name_idx,</a>
-<a name="ln537">                          APP_FW_VERSION);</a>
-<a name="ln538">    snprintf (p_dis-&gt;fw_version + name_idx,</a>
-<a name="ln539">              sizeof (p_dis-&gt;fw_version) - name_idx,</a>
-<a name="ln540">              APP_FW_VARIANT);</a>
-<a name="ln541">    snprintf (p_dis-&gt;hw_version, sizeof (p_dis-&gt;hw_version), &quot;Check PCB&quot;);</a>
-<a name="ln542">    snprintf (p_dis-&gt;manufacturer, sizeof (p_dis-&gt;manufacturer), RB_MANUFACTURER_STRING);</a>
-<a name="ln543">    snprintf (p_dis-&gt;model, sizeof (p_dis-&gt;model), RB_MODEL_STRING);</a>
-<a name="ln544">#endif</a>
-<a name="ln545">    return err_code;</a>
-<a name="ln546">}</a>
-<a name="ln547"> </a>
-<a name="ln548">static rd_status_t nfc_init (ri_comm_dis_init_t * const p_dis)</a>
-<a name="ln549">{</a>
-<a name="ln550">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln551">#if APP_NFC_ENABLED</a>
-<a name="ln552">    err_code |= rt_nfc_init (p_dis);</a>
-<a name="ln553">    rt_nfc_set_on_connected_isr (&amp;on_nfc_connected_isr);</a>
-<a name="ln554">    rt_nfc_set_on_disconn_isr (&amp;on_nfc_disconnected_isr);</a>
-<a name="ln555">    rt_nfc_set_on_sent_isr (&amp;on_nfc_tx_done_isr);</a>
-<a name="ln556">#endif</a>
-<a name="ln557">    return err_code;</a>
-<a name="ln558">}</a>
-<a name="ln559"> </a>
-<a name="ln560">TESTABLE_STATIC void comm_mode_change_isr (void * const p_context)</a>
-<a name="ln561">{</a>
-<a name="ln562">    mode_changes_t * const p_change = (mode_changes_t *) p_context;</a>
-<a name="ln563"> </a>
-<a name="ln564">    if (p_change-&gt;switch_to_normal)</a>
-<a name="ln565">    {</a>
-<a name="ln566">        app_comms_bleadv_send_count_set (APP_NUM_REPEATS);</a>
-<a name="ln567">        ri_adv_tx_interval_set (APP_BLE_INTERVAL_MS);</a>
-<a name="ln568">        p_change-&gt;switch_to_normal = 0;</a>
-<a name="ln569">    }</a>
-<a name="ln570"> </a>
-<a name="ln571">#if APP_COMMS_BIDIR_ENABLED</a>
-<a name="ln572"> </a>
-<a name="ln573">    if (p_change-&gt;disable_config)</a>
-<a name="ln574">    {</a>
-<a name="ln575">        ri_scheduler_event_put (NULL, 0, &amp;handle_config_disable);</a>
-<a name="ln576">        p_change-&gt;disable_config = 0;</a>
-<a name="ln577">    }</a>
+<a name="ln435">#endif //!&lt; if GATT ENABLED</a>
+<a name="ln436"> </a>
+<a name="ln437">#if APP_NFC_ENABLED</a>
+<a name="ln438"> </a>
+<a name="ln439">TESTABLE_STATIC void handle_nfc_connected (void * p_data, uint16_t data_len)</a>
+<a name="ln440">{</a>
+<a name="ln441">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln442">    // Kick BLE connection to not allow it to configure tag</a>
+<a name="ln443">    app_comms_ble_uninit();</a>
+<a name="ln444">    m_config_enabled_on_next_conn = true;</a>
+<a name="ln445">    config_setup_on_this_conn();</a>
+<a name="ln446">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln447">}</a>
+<a name="ln448"> </a>
+<a name="ln449">TESTABLE_STATIC void on_nfc_connected_isr (void * p_data, size_t data_len)</a>
+<a name="ln450">{</a>
+<a name="ln451">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln452">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &amp;handle_nfc_connected);</a>
+<a name="ln453">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln454">}</a>
+<a name="ln455"> </a>
+<a name="ln456">TESTABLE_STATIC void handle_nfc_disconnected (void * p_data, uint16_t data_len)</a>
+<a name="ln457">{</a>
+<a name="ln458">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln459">    config_cleanup_on_disconnect();</a>
+<a name="ln460">    err_code |= app_comms_configure_next_enable();</a>
+<a name="ln461">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln462">}</a>
+<a name="ln463"> </a>
+<a name="ln464">/** @brief Callback when NFC is disconnected&quot; */</a>
+<a name="ln465">TESTABLE_STATIC void on_nfc_disconnected_isr (void * p_data, size_t data_len)</a>
+<a name="ln466">{</a>
+<a name="ln467">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln468">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len,</a>
+<a name="ln469">                                        &amp;handle_nfc_disconnected);</a>
+<a name="ln470">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln471">}</a>
+<a name="ln472"> </a>
+<a name="ln473">/** @brief Callback when NFC has sent data&quot; */</a>
+<a name="ln474">TESTABLE_STATIC void on_nfc_tx_done_isr (void * p_data, size_t data_len)</a>
+<a name="ln475">{</a>
+<a name="ln476">    m_tx_done = true;</a>
+<a name="ln477">}</a>
+<a name="ln478"> </a>
+<a name="ln479">TESTABLE_STATIC void handle_nfc_data (void * p_data, uint16_t data_len)</a>
+<a name="ln480">{</a>
+<a name="ln481">    handle_comms (&amp;rt_nfc_send, p_data, data_len);</a>
+<a name="ln482">}</a>
+<a name="ln483"> </a>
+<a name="ln484">TESTABLE_STATIC void on_nfc_data_isr (void * p_data, size_t data_len)</a>
+<a name="ln485">{</a>
+<a name="ln486">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln487">    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &amp;handle_nfc_data);</a>
+<a name="ln488">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln489">}</a>
+<a name="ln490">#endif</a>
+<a name="ln491"> </a>
+<a name="ln492">rd_status_t app_comms_configure_next_enable (void)</a>
+<a name="ln493">{</a>
+<a name="ln494">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln495">    m_mode_ops.disable_config = 1;</a>
+<a name="ln496">    err_code |= enable_config_on_next_conn (true);</a>
+<a name="ln497">    err_code |= ri_timer_stop (m_comm_timer);</a>
+<a name="ln498">    err_code |= ri_timer_start (m_comm_timer, APP_CONFIG_ENABLED_TIME_MS, &amp;m_mode_ops);</a>
+<a name="ln499">    return err_code;</a>
+<a name="ln500">}</a>
+<a name="ln501"> </a>
+<a name="ln502">rd_status_t app_comms_configure_next_disable (void)</a>
+<a name="ln503">{</a>
+<a name="ln504">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln505">    err_code |= enable_config_on_next_conn (false);</a>
+<a name="ln506">    return err_code;</a>
+<a name="ln507">}</a>
+<a name="ln508"> </a>
+<a name="ln509">TESTABLE_STATIC void handle_config_disable (void * p_data, uint16_t data_len)</a>
+<a name="ln510">{</a>
+<a name="ln511">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln512">    // Do not kick out current connection, disconnect handler</a>
+<a name="ln513">    // will disable config.</a>
+<a name="ln514">#if APP_GATT_ENABLED</a>
+<a name="ln515"> </a>
+<a name="ln516">    if (!rt_gatt_nus_is_connected())</a>
+<a name="ln517">    {</a>
+<a name="ln518">        err_code |= enable_config_on_next_conn (false);</a>
+<a name="ln519">    }</a>
+<a name="ln520"> </a>
+<a name="ln521">#endif</a>
+<a name="ln522">    RD_ERROR_CHECK (err_code, RD_SUCCESS);</a>
+<a name="ln523">}</a>
+<a name="ln524"> </a>
+<a name="ln525">#else</a>
+<a name="ln526">rd_status_t app_comms_configure_next_enable (void)</a>
+<a name="ln527">{</a>
+<a name="ln528">    return RD_ERROR_NOT_ENABLED;</a>
+<a name="ln529">}</a>
+<a name="ln530">#endif //!&lt; APP_COMMS_BIDIR_ENABLED</a>
+<a name="ln531"> </a>
+<a name="ln532">/**</a>
+<a name="ln533"> * @brief Initialize Device information data.</a>
+<a name="ln534"> *</a>
+<a name="ln535"> * @param[in] secure If true, security sensitive data will be NULL/0-length.</a>
+<a name="ln536"> * @retval RD_SUCCESS necessary data was available and is printed on p_dis.</a>
+<a name="ln537"> * @return Error code from driver in case some data cannot be printed.</a>
+<a name="ln538"> */</a>
+<a name="ln539">static rd_status_t dis_init (ri_comm_dis_init_t * const p_dis, const bool secure)</a>
+<a name="ln540">{</a>
+<a name="ln541">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln542">    memset (p_dis, 0, sizeof (ri_comm_dis_init_t));</a>
+<a name="ln543">#if APP_COMMS_BIDIR_ENABLED</a>
+<a name="ln544">    size_t name_idx = 0;</a>
+<a name="ln545">    err_code |= rt_com_get_mac_str (p_dis-&gt;deviceaddr, sizeof (p_dis-&gt;deviceaddr));</a>
+<a name="ln546"> </a>
+<a name="ln547">    if (!secure)</a>
+<a name="ln548">    {</a>
+<a name="ln549">        err_code |= rt_com_get_id_str (p_dis-&gt;deviceid, sizeof (p_dis-&gt;deviceid));</a>
+<a name="ln550">    }</a>
+<a name="ln551"> </a>
+<a name="ln552">    name_idx =  snprintf (p_dis-&gt;fw_version, sizeof (p_dis-&gt;fw_version), APP_FW_NAME);</a>
+<a name="ln553">    name_idx += snprintf (p_dis-&gt;fw_version + name_idx,</a>
+<a name="ln554">                          sizeof (p_dis-&gt;fw_version) - name_idx,</a>
+<a name="ln555">                          APP_FW_VERSION);</a>
+<a name="ln556">    snprintf (p_dis-&gt;fw_version + name_idx,</a>
+<a name="ln557">              sizeof (p_dis-&gt;fw_version) - name_idx,</a>
+<a name="ln558">              APP_FW_VARIANT);</a>
+<a name="ln559">    snprintf (p_dis-&gt;hw_version, sizeof (p_dis-&gt;hw_version), &quot;Check PCB&quot;);</a>
+<a name="ln560">    snprintf (p_dis-&gt;manufacturer, sizeof (p_dis-&gt;manufacturer), RB_MANUFACTURER_STRING);</a>
+<a name="ln561">    snprintf (p_dis-&gt;model, sizeof (p_dis-&gt;model), RB_MODEL_STRING);</a>
+<a name="ln562">#endif</a>
+<a name="ln563">    return err_code;</a>
+<a name="ln564">}</a>
+<a name="ln565"> </a>
+<a name="ln566">static rd_status_t nfc_init (ri_comm_dis_init_t * const p_dis)</a>
+<a name="ln567">{</a>
+<a name="ln568">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln569">#if APP_NFC_ENABLED</a>
+<a name="ln570">    err_code |= rt_nfc_init (p_dis);</a>
+<a name="ln571">    rt_nfc_set_on_connected_isr (&amp;on_nfc_connected_isr);</a>
+<a name="ln572">    rt_nfc_set_on_disconn_isr (&amp;on_nfc_disconnected_isr);</a>
+<a name="ln573">    rt_nfc_set_on_sent_isr (&amp;on_nfc_tx_done_isr);</a>
+<a name="ln574">    rt_nfc_set_on_received_isr (&amp;on_nfc_data_isr);</a>
+<a name="ln575">#endif</a>
+<a name="ln576">    return err_code;</a>
+<a name="ln577">}</a>
 <a name="ln578"> </a>
-<a name="ln579">#endif</a>
-<a name="ln580">}</a>
-<a name="ln581"> </a>
-<a name="ln582">static rd_status_t adv_init (void)</a>
-<a name="ln583">{</a>
-<a name="ln584">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln585">#if APP_ADV_ENABLED</a>
-<a name="ln586">    ri_radio_channels_t channels = {0};</a>
-<a name="ln587">    channels.channel_37 = 1;</a>
-<a name="ln588">    channels.channel_38 = 1;</a>
-<a name="ln589">    channels.channel_39 = 1;</a>
-<a name="ln590">    rt_adv_init_t adv_settings = {0};</a>
-<a name="ln591">    adv_settings.adv_interval_ms = 100U;</a>
-<a name="ln592">    adv_settings.adv_pwr_dbm = RB_TX_POWER_MAX;</a>
-<a name="ln593">    adv_settings.channels = channels;</a>
-<a name="ln594">    adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;</a>
-<a name="ln595">    err_code |= rt_adv_init (&amp;adv_settings);</a>
-<a name="ln596">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln597">    err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);</a>
-<a name="ln598">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln599">    app_comms_bleadv_send_count_set (initial_adv_send_count());</a>
-<a name="ln600">    m_mode_ops.switch_to_normal = 1;</a>
-<a name="ln601">    err_code |= prepare_mode_change (&amp;m_mode_ops);</a>
-<a name="ln602">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln603">#endif</a>
-<a name="ln604">    return err_code;</a>
-<a name="ln605">}</a>
-<a name="ln606"> </a>
-<a name="ln607">static rd_status_t gatt_init (const ri_comm_dis_init_t * const p_dis, const bool secure)</a>
-<a name="ln608">{</a>
-<a name="ln609">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln610">#if APP_GATT_ENABLED</a>
-<a name="ln611">    char name[SCAN_RSP_NAME_MAX_LEN + 1] = {0};</a>
-<a name="ln612">    ble_name_string_create (name, sizeof (name));</a>
-<a name="ln613">    err_code |= rt_gatt_init (name);</a>
-<a name="ln614"> </a>
-<a name="ln615">    if (!secure)</a>
-<a name="ln616">    {</a>
-<a name="ln617">        err_code |= rt_gatt_dfu_init();</a>
-<a name="ln618">    }</a>
-<a name="ln619"> </a>
-<a name="ln620">    err_code |= rt_gatt_dis_init (p_dis);</a>
-<a name="ln621">    err_code |= rt_gatt_nus_init ();</a>
-<a name="ln622">    rt_gatt_set_on_connected_isr (&amp;on_gatt_connected_isr);</a>
-<a name="ln623">    rt_gatt_set_on_disconn_isr (&amp;on_gatt_disconnected_isr);</a>
-<a name="ln624">    rt_gatt_set_on_received_isr (&amp;on_gatt_data_isr);</a>
-<a name="ln625">    rt_gatt_set_on_sent_isr (&amp;on_gatt_tx_done_isr);</a>
-<a name="ln626">    err_code |= rt_gatt_adv_enable();</a>
-<a name="ln627">#endif</a>
-<a name="ln628">    return err_code;</a>
-<a name="ln629">}</a>
-<a name="ln630"> </a>
-<a name="ln631">rd_status_t app_comms_init (const bool secure)</a>
-<a name="ln632">{</a>
-<a name="ln633">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln634">    err_code |= ri_radio_init (APP_MODULATION);</a>
-<a name="ln635">    err_code |= ri_timer_create (&amp;m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,</a>
-<a name="ln636">                                 &amp;comm_mode_change_isr);</a>
-<a name="ln637"> </a>
-<a name="ln638">    if (RD_SUCCESS == err_code)</a>
-<a name="ln639">    {</a>
-<a name="ln640">        if (!secure)</a>
-<a name="ln641">        {</a>
-<a name="ln642">            err_code |= app_comms_configure_next_enable();</a>
-<a name="ln643">        }</a>
-<a name="ln644"> </a>
-<a name="ln645">        ri_comm_dis_init_t dis = {0};</a>
-<a name="ln646">        err_code |= dis_init (&amp;dis, false);</a>
-<a name="ln647">        err_code |= nfc_init (&amp;dis);</a>
-<a name="ln648">        err_code |= adv_init();</a>
-<a name="ln649">        err_code |= dis_init (&amp;dis, secure);</a>
-<a name="ln650">        err_code |= gatt_init (&amp;dis, secure);</a>
-<a name="ln651">        ri_radio_activity_callback_set (&amp;app_sensor_vdd_measure_isr);</a>
-<a name="ln652">    }</a>
-<a name="ln653"> </a>
-<a name="ln654">    return err_code;</a>
-<a name="ln655">}</a>
+<a name="ln579">TESTABLE_STATIC void comm_mode_change_isr (void * const p_context)</a>
+<a name="ln580">{</a>
+<a name="ln581">    mode_changes_t * const p_change = (mode_changes_t *) p_context;</a>
+<a name="ln582"> </a>
+<a name="ln583">    if (p_change-&gt;switch_to_normal)</a>
+<a name="ln584">    {</a>
+<a name="ln585">        app_comms_bleadv_send_count_set (APP_NUM_REPEATS);</a>
+<a name="ln586">        ri_adv_tx_interval_set (APP_BLE_INTERVAL_MS);</a>
+<a name="ln587">        p_change-&gt;switch_to_normal = 0;</a>
+<a name="ln588">    }</a>
+<a name="ln589"> </a>
+<a name="ln590">#if APP_COMMS_BIDIR_ENABLED</a>
+<a name="ln591"> </a>
+<a name="ln592">    if (p_change-&gt;disable_config)</a>
+<a name="ln593">    {</a>
+<a name="ln594">        ri_scheduler_event_put (NULL, 0, &amp;handle_config_disable);</a>
+<a name="ln595">        p_change-&gt;disable_config = 0;</a>
+<a name="ln596">    }</a>
+<a name="ln597"> </a>
+<a name="ln598">#endif</a>
+<a name="ln599">}</a>
+<a name="ln600"> </a>
+<a name="ln601">static rd_status_t adv_init (void)</a>
+<a name="ln602">{</a>
+<a name="ln603">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln604">#if APP_ADV_ENABLED</a>
+<a name="ln605">    ri_radio_channels_t channels = {0};</a>
+<a name="ln606">    channels.channel_37 = 1;</a>
+<a name="ln607">    channels.channel_38 = 1;</a>
+<a name="ln608">    channels.channel_39 = 1;</a>
+<a name="ln609">    rt_adv_init_t adv_settings = {0};</a>
+<a name="ln610">    adv_settings.adv_interval_ms = 100U;</a>
+<a name="ln611">    adv_settings.adv_pwr_dbm = RB_TX_POWER_MAX;</a>
+<a name="ln612">    adv_settings.channels = channels;</a>
+<a name="ln613">    adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;</a>
+<a name="ln614">    err_code |= rt_adv_init (&amp;adv_settings);</a>
+<a name="ln615">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln616">    err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);</a>
+<a name="ln617">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln618">    app_comms_bleadv_send_count_set (initial_adv_send_count());</a>
+<a name="ln619">    m_mode_ops.switch_to_normal = 1;</a>
+<a name="ln620">    err_code |= prepare_mode_change (&amp;m_mode_ops);</a>
+<a name="ln621">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln622">#endif</a>
+<a name="ln623">    return err_code;</a>
+<a name="ln624">}</a>
+<a name="ln625"> </a>
+<a name="ln626">static rd_status_t gatt_init (const ri_comm_dis_init_t * const p_dis, const bool secure)</a>
+<a name="ln627">{</a>
+<a name="ln628">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln629">#if APP_GATT_ENABLED</a>
+<a name="ln630">    char name[SCAN_RSP_NAME_MAX_LEN + 1] = {0};</a>
+<a name="ln631">    ble_name_string_create (name, sizeof (name));</a>
+<a name="ln632">    err_code |= rt_gatt_init (name);</a>
+<a name="ln633"> </a>
+<a name="ln634">    if (!secure)</a>
+<a name="ln635">    {</a>
+<a name="ln636">        err_code |= rt_gatt_dfu_init();</a>
+<a name="ln637">    }</a>
+<a name="ln638"> </a>
+<a name="ln639">    err_code |= rt_gatt_dis_init (p_dis);</a>
+<a name="ln640">    err_code |= rt_gatt_nus_init ();</a>
+<a name="ln641">    rt_gatt_set_on_connected_isr (&amp;on_gatt_connected_isr);</a>
+<a name="ln642">    rt_gatt_set_on_disconn_isr (&amp;on_gatt_disconnected_isr);</a>
+<a name="ln643">    rt_gatt_set_on_received_isr (&amp;on_gatt_data_isr);</a>
+<a name="ln644">    rt_gatt_set_on_sent_isr (&amp;on_gatt_tx_done_isr);</a>
+<a name="ln645">    err_code |= rt_gatt_adv_enable();</a>
+<a name="ln646">#endif</a>
+<a name="ln647">    return err_code;</a>
+<a name="ln648">}</a>
+<a name="ln649"> </a>
+<a name="ln650">rd_status_t app_comms_init (const bool secure)</a>
+<a name="ln651">{</a>
+<a name="ln652">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln653">    err_code |= ri_radio_init (APP_MODULATION);</a>
+<a name="ln654">    err_code |= ri_timer_create (&amp;m_comm_timer, RI_TIMER_MODE_SINGLE_SHOT,</a>
+<a name="ln655">                                 &amp;comm_mode_change_isr);</a>
 <a name="ln656"> </a>
-<a name="ln657">rd_status_t app_comms_ble_init (const bool secure)</a>
-<a name="ln658">{</a>
-<a name="ln659">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln660">    ri_comm_dis_init_t dis = {0};</a>
-<a name="ln661">    err_code |= dis_init (&amp;dis, secure);</a>
-<a name="ln662">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln663">    err_code |= adv_init();</a>
-<a name="ln664">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln665">    err_code |= gatt_init (&amp;dis, secure);</a>
-<a name="ln666">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln667">    ri_radio_activity_callback_set (&amp;app_sensor_vdd_measure_isr);</a>
-<a name="ln668">    return err_code;</a>
-<a name="ln669">}</a>
-<a name="ln670"> </a>
-<a name="ln671">rd_status_t app_comms_ble_adv_init (void)</a>
-<a name="ln672">{</a>
-<a name="ln673">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln674">    err_code |= rt_adv_uninit();</a>
-<a name="ln675">    err_code |= adv_init();</a>
-<a name="ln676">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
-<a name="ln677">    return err_code;</a>
-<a name="ln678">}</a>
-<a name="ln679"> </a>
-<a name="ln680">rd_status_t app_comms_ble_uninit (void)</a>
-<a name="ln681">{</a>
-<a name="ln682">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln683">    err_code |= rt_adv_uninit();</a>
-<a name="ln684">    err_code |= rt_gatt_uninit();</a>
-<a name="ln685">    return err_code;</a>
-<a name="ln686">}</a>
-<a name="ln687"> </a>
-<a name="ln688">rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,</a>
-<a name="ln689">                                     ri_comm_message_t * const msg)</a>
-<a name="ln690">{</a>
-<a name="ln691">    rd_status_t err_code = RD_SUCCESS;</a>
-<a name="ln692">    const uint64_t start = ri_rtc_millis();</a>
-<a name="ln693"> </a>
-<a name="ln694">    do</a>
-<a name="ln695">    {</a>
-<a name="ln696">        if (ri_rtc_millis() &gt; (start + BLOCKING_COMM_TIMEOUT_MS))</a>
-<a name="ln697">        {</a>
-<a name="ln698">            err_code |= RD_ERROR_TIMEOUT;</a>
-<a name="ln699">        }</a>
-<a name="ln700">        else</a>
-<a name="ln701">        {</a>
-<a name="ln702">            err_code = RD_SUCCESS;</a>
-<a name="ln703">        }</a>
-<a name="ln704"> </a>
-<a name="ln705">        if (RD_SUCCESS == err_code)</a>
-<a name="ln706">        {</a>
-<a name="ln707">            err_code |= reply_fp (msg);</a>
-<a name="ln708">        }</a>
-<a name="ln709"> </a>
-<a name="ln710">        if (RD_ERROR_NO_MEM == err_code)</a>
-<a name="ln711">        {</a>
-<a name="ln712">            ri_yield();</a>
-<a name="ln713">        }</a>
-<a name="ln714">    } while ( (RD_SUCCESS != err_code) &amp;&amp; ! (RD_ERROR_TIMEOUT &amp; err_code));</a>
-<a name="ln715"> </a>
-<a name="ln716">    return err_code;</a>
-<a name="ln717">}</a>
-<a name="ln718">/** @} */</a>
+<a name="ln657">    if (RD_SUCCESS == err_code)</a>
+<a name="ln658">    {</a>
+<a name="ln659">        if (!secure)</a>
+<a name="ln660">        {</a>
+<a name="ln661">            err_code |= app_comms_configure_next_enable();</a>
+<a name="ln662">        }</a>
+<a name="ln663"> </a>
+<a name="ln664">        ri_comm_dis_init_t dis = {0};</a>
+<a name="ln665">        err_code |= dis_init (&amp;dis, false);</a>
+<a name="ln666">        err_code |= nfc_init (&amp;dis);</a>
+<a name="ln667">        err_code |= adv_init();</a>
+<a name="ln668">        err_code |= dis_init (&amp;dis, secure);</a>
+<a name="ln669">        err_code |= gatt_init (&amp;dis, secure);</a>
+<a name="ln670">        ri_radio_activity_callback_set (&amp;app_sensor_vdd_measure_isr);</a>
+<a name="ln671">    }</a>
+<a name="ln672"> </a>
+<a name="ln673">    return err_code;</a>
+<a name="ln674">}</a>
+<a name="ln675"> </a>
+<a name="ln676">rd_status_t app_comms_ble_init (const bool secure)</a>
+<a name="ln677">{</a>
+<a name="ln678">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln679">    ri_comm_dis_init_t dis = {0};</a>
+<a name="ln680">    err_code |= dis_init (&amp;dis, secure);</a>
+<a name="ln681">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln682">    err_code |= adv_init();</a>
+<a name="ln683">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln684">    err_code |= gatt_init (&amp;dis, secure);</a>
+<a name="ln685">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln686">    ri_radio_activity_callback_set (&amp;app_sensor_vdd_measure_isr);</a>
+<a name="ln687">    return err_code;</a>
+<a name="ln688">}</a>
+<a name="ln689"> </a>
+<a name="ln690">rd_status_t app_comms_ble_adv_init (void)</a>
+<a name="ln691">{</a>
+<a name="ln692">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln693">    err_code |= rt_adv_uninit();</a>
+<a name="ln694">    err_code |= adv_init();</a>
+<a name="ln695">    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);</a>
+<a name="ln696">    return err_code;</a>
+<a name="ln697">}</a>
+<a name="ln698"> </a>
+<a name="ln699">rd_status_t app_comms_ble_uninit (void)</a>
+<a name="ln700">{</a>
+<a name="ln701">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln702">    err_code |= rt_adv_uninit();</a>
+<a name="ln703">#if APP_GATT_ENABLED</a>
+<a name="ln704">    err_code |= rt_gatt_uninit();</a>
+<a name="ln705">#endif</a>
+<a name="ln706">    return err_code;</a>
+<a name="ln707">}</a>
+<a name="ln708"> </a>
+<a name="ln709">rd_status_t app_comms_blocking_send (const ri_comm_xfer_fp_t reply_fp,</a>
+<a name="ln710">                                     ri_comm_message_t * const msg)</a>
+<a name="ln711">{</a>
+<a name="ln712">    rd_status_t err_code = RD_SUCCESS;</a>
+<a name="ln713">    const uint64_t start = ri_rtc_millis();</a>
+<a name="ln714"> </a>
+<a name="ln715">    do</a>
+<a name="ln716">    {</a>
+<a name="ln717">        if (ri_rtc_millis() &gt; (start + BLOCKING_COMM_TIMEOUT_MS))</a>
+<a name="ln718">        {</a>
+<a name="ln719">            err_code |= RD_ERROR_TIMEOUT;</a>
+<a name="ln720">        }</a>
+<a name="ln721">        else</a>
+<a name="ln722">        {</a>
+<a name="ln723">            err_code = RD_SUCCESS;</a>
+<a name="ln724">        }</a>
+<a name="ln725"> </a>
+<a name="ln726">        if (RD_SUCCESS == err_code)</a>
+<a name="ln727">        {</a>
+<a name="ln728">            err_code |= reply_fp (msg);</a>
+<a name="ln729">        }</a>
+<a name="ln730"> </a>
+<a name="ln731">        if (RD_ERROR_NO_MEM == err_code)</a>
+<a name="ln732">        {</a>
+<a name="ln733">            ri_yield();</a>
+<a name="ln734">        }</a>
+<a name="ln735">    } while ( (RD_SUCCESS != err_code) &amp;&amp; ! (RD_ERROR_TIMEOUT &amp; err_code));</a>
+<a name="ln736"> </a>
+<a name="ln737">    return err_code;</a>
+<a name="ln738">}</a>
+<a name="ln739">/** @} */</a>
 
 </code></pre>
 <div class="balloon" rel="80"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
@@ -762,68 +783,69 @@
 <div class="balloon" rel="241"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
 <div class="balloon" rel="246"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
 <div class="balloon" rel="267"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(uint8_t *) p_data'.</p></div>
-<div class="balloon" rel="286"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(30U * 1000U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gatt_params_t' type.</p></div>
-<div class="balloon" rel="288"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'raw_message[(0U)]' expression should not be converted from the essential 'unsigned' type to the essential 're_type_t' type.</p></div>
-<div class="balloon" rel="312"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2519/" target="_blank">V2519</a> The 'default' label should, besides a 'break' statement, contain either a statement or a comment.</p></div>
-<div class="balloon" rel="331"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
-<div class="balloon" rel="332"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="343"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
-<div class="balloon" rel="345"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="359"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
-<div class="balloon" rel="359"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
-<div class="balloon" rel="379"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="373"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
-<div class="balloon" rel="383"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
-<div class="balloon" rel="383"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
-<div class="balloon" rel="391"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
-<div class="balloon" rel="404"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
-<div class="balloon" rel="418"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
-<div class="balloon" rel="416"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
-<div class="balloon" rel="416"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
-<div class="balloon" rel="426"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The right operand '0xFFFF' of the '&=' operator should not have the essential 'signed' type.</p></div>
-<div class="balloon" rel="426"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '&=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="427"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="440"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
-<div class="balloon" rel="435"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
-<div class="balloon" rel="435"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
-<div class="balloon" rel="445"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
-<div class="balloon" rel="452"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
-<div class="balloon" rel="452"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
-<div class="balloon" rel="461"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
-<div class="balloon" rel="472"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
-<div class="balloon" rel="470"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
-<div class="balloon" rel="470"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
-<div class="balloon" rel="479"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="493"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
-<div class="balloon" rel="493"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
-<div class="balloon" rel="534"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="534"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Value of the expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="534"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="535"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2562/" target="_blank">V2562</a> Expressions with pointer type should not be used in the '+', '-', '+=' and '-=' operations.</p></div>
-<div class="balloon" rel="535"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="535"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Value of the expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="535"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="538"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2562/" target="_blank">V2562</a> Expressions with pointer type should not be used in the '+', '-', '+=' and '-=' operations.</p></div>
-<div class="balloon" rel="538"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="541"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="542"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="543"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
-<div class="balloon" rel="562"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(mode_changes_t *) p_context'.</p></div>
-<div class="balloon" rel="568"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="564"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'p_change->switch_to_normal' expression used in condition should have essential Boolean type.</p></div>
-<div class="balloon" rel="576"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="573"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'p_change->disable_config' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="287"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '(30U * 1000U)' expression should not be converted from the essential 'unsigned' type to the essential 'ri_gatt_params_t' type.</p></div>
+<div class="balloon" rel="290"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the 'raw_message[(0U)]' expression should not be converted from the essential 'unsigned' type to the essential 're_type_t' type.</p></div>
+<div class="balloon" rel="314"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2519/" target="_blank">V2519</a> The 'default' label should, besides a 'break' statement, contain either a statement or a comment.</p></div>
+<div class="balloon" rel="335"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
+<div class="balloon" rel="336"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="347"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
+<div class="balloon" rel="349"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="363"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
+<div class="balloon" rel="363"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
+<div class="balloon" rel="383"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="377"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
+<div class="balloon" rel="387"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
+<div class="balloon" rel="387"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
+<div class="balloon" rel="395"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
+<div class="balloon" rel="408"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
+<div class="balloon" rel="422"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
+<div class="balloon" rel="420"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
+<div class="balloon" rel="420"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
+<div class="balloon" rel="430"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The right operand '0xFFFF' of the '&=' operator should not have the essential 'signed' type.</p></div>
+<div class="balloon" rel="430"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '&=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="431"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="444"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
+<div class="balloon" rel="439"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
+<div class="balloon" rel="439"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
+<div class="balloon" rel="449"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
+<div class="balloon" rel="456"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
+<div class="balloon" rel="456"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
+<div class="balloon" rel="465"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
+<div class="balloon" rel="476"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'Boolean' and 'signed'.</p></div>
+<div class="balloon" rel="474"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
+<div class="balloon" rel="474"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
+<div class="balloon" rel="484"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2009/" target="_blank">V2009</a> Consider rendering the 'p_data' pointer as a pointer to const.</p></div>
+<div class="balloon" rel="495"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="509"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'data_len'.</p></div>
+<div class="balloon" rel="509"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2537/" target="_blank">V2537</a> Functions should not have unused parameters. Consider inspecting the parameter: 'p_data'.</p></div>
+<div class="balloon" rel="552"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="552"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Value of the expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="552"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="553"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2562/" target="_blank">V2562</a> Expressions with pointer type should not be used in the '+', '-', '+=' and '-=' operations.</p></div>
+<div class="balloon" rel="553"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="553"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> Value of the expression should not be converted from the essential 'signed' type to the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="553"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="556"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2562/" target="_blank">V2562</a> Expressions with pointer type should not be used in the '+', '-', '+=' and '-=' operations.</p></div>
+<div class="balloon" rel="556"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="559"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="560"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="561"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2600/" target="_blank">V2600</a> The function with the 'snprintf' name should not be used.</p></div>
+<div class="balloon" rel="581"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(mode_changes_t *) p_context'.</p></div>
 <div class="balloon" rel="587"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="588"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="589"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="591"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '100U' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
-<div class="balloon" rel="592"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'character' and 'signed'.</p></div>
-<div class="balloon" rel="594"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="600"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="611"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
-<div class="balloon" rel="714"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The '((1U << 10U) & err_code)' operand of the '!' operator should not have the essential 'unsigned' type.</p></div>
-<div class="balloon" rel="714"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2570/" target="_blank">V2570</a> Operands of the '!' operator should have bool essential type.</p></div>
-<div class="balloon" rel="470"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v524/" target="_blank">V524</a> It is odd that the body of 'on_nfc_tx_done_isr' function is fully equivalent to the body of 'on_gatt_tx_done_isr' function.</p></div>
+<div class="balloon" rel="583"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'p_change->switch_to_normal' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="595"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="592"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2584/" target="_blank">V2584</a> The 'p_change->disable_config' expression used in condition should have essential Boolean type.</p></div>
+<div class="balloon" rel="606"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="607"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="608"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="610"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2572/" target="_blank">V2572</a> The value of the '100U' expression should not be converted to the narrower essential 'unsigned' type.</p></div>
+<div class="balloon" rel="611"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'character' and 'signed'.</p></div>
+<div class="balloon" rel="613"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="619"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="630"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '+' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="735"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2544/" target="_blank">V2544</a> The '((1U << 10U) & err_code)' operand of the '!' operator should not have the essential 'unsigned' type.</p></div>
+<div class="balloon" rel="735"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2570/" target="_blank">V2570</a> Operands of the '!' operator should have bool essential type.</p></div>
+<div class="balloon" rel="474"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v524/" target="_blank">V524</a> It is odd that the body of 'on_nfc_tx_done_isr' function is fully equivalent to the body of 'on_gatt_tx_done_isr' function.</p></div>
 
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

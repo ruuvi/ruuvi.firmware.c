@@ -37,7 +37,7 @@ var searchData=
   ['rt_5fadv_5fenabled_256',['RT_ADV_ENABLED',['../group___s_d_k15.html#ga32245aad226d413cecd9fd837ad45d88',1,'app_config.h']]],
   ['rt_5fbutton_5fenabled_257',['RT_BUTTON_ENABLED',['../group___s_d_k15.html#gaf7734ccdd66a80d4b45d31ca1c55ced6',1,'app_config.h']]],
   ['rt_5fcommunication_5fenabled_258',['RT_COMMUNICATION_ENABLED',['../group___s_d_k15.html#gaaa6c6f15d699d1d4841e5dce7dd0e2c9',1,'app_config.h']]],
-  ['rt_5fflash_5fenabled_259',['RT_FLASH_ENABLED',['../group___s_d_k15.html#gaa0d4d7764ffddf32adfb6e2083446517',1,'app_config.h']]],
+  ['rt_5fflash_5fenabled_259',['RT_FLASH_ENABLED',['../group___s_d_k15.html#gaa0d4d7764ffddf32adfb6e2083446517',1,'RT_FLASH_ENABLED():&#160;app_config.h'],['../application__mode__longlife_8h.html#aa0d4d7764ffddf32adfb6e2083446517',1,'RT_FLASH_ENABLED():&#160;application_mode_longlife.h']]],
   ['rt_5fgatt_5fenabled_260',['RT_GATT_ENABLED',['../group___s_d_k15.html#gaf927cfc1fe95803ae622bc67897f6264',1,'app_config.h']]],
   ['rt_5fgpio_5fenabled_261',['RT_GPIO_ENABLED',['../group___s_d_k15.html#gab041a09b0cfc52541091304900d9973c',1,'app_config.h']]],
   ['rt_5fgpio_5fint_5ftable_5fsize_262',['RT_GPIO_INT_TABLE_SIZE',['../group___s_d_k15.html#gaaa94f501b6d2c84d1a8f2dad2426abf9',1,'app_config.h']]],

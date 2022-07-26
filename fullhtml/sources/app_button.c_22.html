@@ -105,7 +105,7 @@
 <a name="ln92"> </a>
 <a name="ln93">    if (ii &lt; RB_BUTTONS_NUMBER)</a>
 <a name="ln94">    {</a>
-<a name="ln95">        activation = (states[ii] == RI_GPIO_HIGH) ? RI_GPIO_SLOPE_LOTOHI :</a>
+<a name="ln95">        activation = (states[ii] == RI_GPIO_HIGH) ? RI_GPIO_SLOPE_LOTOHI : //-V547</a>
 <a name="ln96">                     RI_GPIO_SLOPE_HITOLO;</a>
 <a name="ln97">    }</a>
 <a name="ln98">    else</a>
@@ -282,6 +282,7 @@
 <div class="balloon" rel="91"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="91"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v1008/" target="_blank">V1008</a> Consider inspecting the 'for' operator. No more than one iteration of the loop will be performed.</p></div>
 <div class="balloon" rel="93"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '<' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
+<div class="balloon" rel="95"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2594/" target="_blank">V2594</a> Controlling expressions should not be invariant. The result of the 'states[ii] == RI_GPIO_HIGH' expression in the conditional statement is always false.</p></div>
 <div class="balloon" rel="111"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="120"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2568/" target="_blank">V2568</a> Both operands of the '=' operator should have the same essential type. The current types are: 'unsigned' and 'signed'.</p></div>
 <div class="balloon" rel="134"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v2571/" target="_blank">V2571</a> Pointer to void should not be converted to a pointer to object. Consider inspecting the expression: '(ri_gpio_evt_t *) p_event_data'.</p></div>
