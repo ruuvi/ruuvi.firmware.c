@@ -163,7 +163,7 @@
 
 /** @brief Enable External TMP117 temperature sensor */
 #ifndef APP_SENSOR_TMP117_ENABLED
-#   define APP_SENSOR_TMP117EXT_ENABLED
+#   define APP_SENSOR_TMP117EXT_ENABLED 1
 #endif
 
 #ifndef APP_SENSOR_TMP117_DSP_FUNC
