@@ -182,9 +182,11 @@ void handle_gatt_connected (void * p_data, uint16_t data_len);
 void handle_gatt_disconnected (void * p_data, uint16_t data_len);
 void handle_nfc_connected (void * p_data, uint16_t data_len);
 void handle_nfc_disconnected (void * p_data, uint16_t data_len);
+void handle_nfc_data (void * p_data, uint16_t data_len);
 void on_nfc_connected_isr (void * p_data, size_t data_len);
 void on_nfc_disconnected_isr (void * p_data, size_t data_len);
 void on_nfc_tx_done_isr (void * p_data, size_t data_len);
+void on_nfc_data_isr (void * p_data, size_t data_len);
 void comm_mode_change_isr (void * const p_context);
 void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_data, size_t data_len);
 #endif
