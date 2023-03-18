@@ -46,10 +46,11 @@ jobs:
     - name: Compile project
       run: build-wrapper-linux-x86-64 --out-dir bw-output make sonar
 
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.6
+    - name: Set up Ruby
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0' # Not needed with a .ruby-version file
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
     # Runs a single command using the runners shell
     - name: Install Ceedling and GCovr
