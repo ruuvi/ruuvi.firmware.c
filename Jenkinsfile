@@ -1,4 +1,4 @@
-Jenkinsfile (Declarative Pipeline)
+// Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent any
 
@@ -6,11 +6,12 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                sh 'cd src'
+                dir('src'){
                 sh 'make clean'
                 sh 'make sync'
                 sh 'make'
                 archiveArtifacts artifacts: '**/targets/ruuvitag_b/armgcc/*.hex, **/targets/ruuvitag_b/armgcc/*.zip', fingerprint: true
+                }
             }
         }
         stage('Test') {
