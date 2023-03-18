@@ -39,6 +39,9 @@
 
 enum
 {
+#if APP_SENSOR_TMP117EXT_ENABLED
+    TMP117EXT_INDEX,
+#endif
 #if APP_SENSOR_TMP117_ENABLED
     TMP117_INDEX,
 #endif
@@ -214,6 +217,31 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .nvm_record = APP_FLASH_SENSOR_TMP117_RECORD,         \
     .bus = RD_BUS_I2C,                                    \
     .handle = RB_TMP117_I2C_ADDRESS,                      \
+    .pwr_pin = RB_TMP117_SENSOR_POWER_PIN,                \
+    .pwr_on = RI_GPIO_HIGH,                               \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                        \
+    .level_pin = RI_GPIO_ID_UNUSED                        \
+  }
+#endif
+
+#if APP_SENSOR_TMP117EXT_ENABLED
+#define APP_SENSOR_TMP117EXT_DEFAULT_CFG                     \
+  {                                                       \
+    .sensor = {0},                                        \
+    .init = &ri_tmp117_init,                              \
+    .configuration =                                      \
+    {                                                     \
+            .dsp_function = APP_SENSOR_TMP117_DSP_FUNC,   \
+            .dsp_parameter = APP_SENSOR_TMP117_DSP_PARAM, \
+            .mode = APP_SENSOR_TMP117_MODE,               \
+            .resolution = APP_SENSOR_TMP117_RESOLUTION,   \
+            .samplerate = APP_SENSOR_TMP117_SAMPLERATE,   \
+            .scale = APP_SENSOR_TMP117_SCALE              \
+    },                                                    \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                    \
+    .nvm_record = APP_FLASH_SENSOR_TMP117_RECORD,         \
+    .bus = RD_BUS_I2C,                                    \
+    .handle = RB_TMP117EXT_I2C_ADDRESS,                   \
     .pwr_pin = RB_TMP117_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \

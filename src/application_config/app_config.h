@@ -161,6 +161,11 @@
 #   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
 #endif
 
+/** @brief Enable External TMP117 temperature sensor */
+#ifndef APP_SENSOR_TMP117_ENABLED
+#   define APP_SENSOR_TMP117EXT_ENABLED
+#endif
+
 #ifndef APP_SENSOR_TMP117_DSP_FUNC
 #   define APP_SENSOR_TMP117_DSP_FUNC RD_SENSOR_DSP_LAST //!< Do not use DSP by default
 #endif

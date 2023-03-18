@@ -106,6 +106,10 @@ static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 static rt_sensor_ctx_t tmp117 = APP_SENSOR_TMP117_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_TMP117EXT_ENABLED
+static rt_sensor_ctx_t tmp117ext = APP_SENSOR_TMP117EXT_DEFAULT_CFG;
+#endif
+
 #if APP_SENSOR_PHOTO_ENABLED
 static rt_sensor_ctx_t photo = APP_SENSOR_PHOTO_DEFAULT_CFG;
 #endif
@@ -125,6 +129,9 @@ static
 void
 m_sensors_init (void)
 {
+#if APP_SENSOR_TMP117EXT_ENABLED
+    m_sensors[TMP117EXT_INDEX] = &tmp117ext;
+#endif
 #if APP_SENSOR_TMP117_ENABLED
     m_sensors[TMP117_INDEX] = &tmp117;
 #endif
