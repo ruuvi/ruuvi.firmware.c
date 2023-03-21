@@ -328,7 +328,10 @@ rd_status_t app_sensor_init (void)
     rd_status_t err_code = RD_SUCCESS;
     m_sensors_init();
     ri_i2c_frequency_t i2c_freq = rb_to_ri_i2c_freq (RB_I2C_FREQ);
+    // Initialize with slowest frequency supported by board to check all sensors
     err_code |= app_sensor_buses_init (i2c_freq);
+    // Assume maximum speed board supports, if a sensor supports only lower speeds will get downgraded
+    i2c_freq = RB_I2C_MAX_SPD;
 
     if (RD_SUCCESS == err_code)
     {
@@ -391,7 +394,7 @@ rd_status_t app_sensor_init (void)
                 m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
             }
         }
-
+        // Reinit board with fastest speed supported by board + sensors.
         err_code |= app_sensor_buses_uninit();
         err_code |= app_sensor_buses_init (i2c_freq);
     }
