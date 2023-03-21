@@ -87,6 +87,8 @@ void test_app_sensor_init_ok (void)
 
     ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
     ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
@@ -178,6 +180,8 @@ void test_app_sensor_init_first_time (void)
 
     ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
     ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
@@ -225,6 +229,8 @@ void test_app_sensor_init_not_found (void)
 
     ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
     ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
@@ -277,6 +283,8 @@ void test_app_sensor_init_selftest_fail (void)
 
     ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
     ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_gpio_is_init_ExpectAndReturn (true);
+    ri_gpio_interrupt_is_init_ExpectAndReturn (true);
     ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
@@ -394,6 +402,7 @@ void test_app_sensor_available_data (void)
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         m_sensors[ENV_MCU_INDEX]->sensor.provides = fields_envi_mcu;
         m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
+        m_sensors[TMP117EXT_INDEX]->sensor.provides = fields_tmp117;
         fields_found = app_sensor_available_data();
         TEST_ASSERT (!memcmp (&fields_found.bitfield, &fields_expected.bitfield,
                               sizeof (fields_expected.bitfield)));
@@ -436,6 +445,9 @@ static rd_status_t mock_data_get (rd_sensor_data_t * const data)
         case TMP117_INDEX:
             data->valid.bitfield |= (data->fields.bitfield & fields_tmp117.bitfield);
 
+        case TMP117EXT_INDEX:
+            data->valid.bitfield |= (data->fields.bitfield & fields_tmp117.bitfield);
+
         default:
             break;
     }
@@ -453,6 +465,7 @@ void test_app_sensor_get (void)
     m_sensors[DPS310_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[ENV_MCU_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[TMP117_INDEX]->sensor.data_get = &mock_data_get;
+    m_sensors[TMP117EXT_INDEX]->sensor.data_get = &mock_data_get;
 
     for (size_t ii = 0; ii < SENSOR_COUNT; ii++)
     {
@@ -516,6 +529,7 @@ void test_app_sensor_find_provider_overlap (void)
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
+        m_sensors[TMP117EXT_INDEX]->sensor.provides = fields_tmp117;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
         TEST_ASSERT (p_sensor == & (m_sensors[TMP117_INDEX]->sensor));
     }
@@ -540,6 +554,7 @@ void test_app_sensor_find_provider_empty (void)
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
+        m_sensors[TMP117EXT_INDEX]->sensor.provides = fields_tmp117;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
         TEST_ASSERT (p_sensor == & (m_sensors[TMP117_INDEX]->sensor));
     }
@@ -585,6 +600,7 @@ void test_app_sensor_find_provider_null (void)
         m_sensors[SHTCX_INDEX] = NULL;
         m_sensors[ENV_MCU_INDEX] = NULL;
         m_sensors[TMP117_INDEX] = NULL;
+        m_sensors[TMP117EXT_INDEX] = NULL;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
         TEST_ASSERT (p_sensor == & (m_sensors[LIS2DH12_INDEX]->sensor));
     }

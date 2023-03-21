@@ -39,11 +39,12 @@
 
 enum
 {
-#if APP_SENSOR_TMP117EXT_ENABLED
-    TMP117EXT_INDEX,
-#endif
+    // Due to TMP117 driver implementation, if there are many instances the last instance will be used.
 #if APP_SENSOR_TMP117_ENABLED
     TMP117_INDEX,
+#endif
+#if APP_SENSOR_TMP117EXT_ENABLED
+    TMP117EXT_INDEX,
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     SHTCX_INDEX,
