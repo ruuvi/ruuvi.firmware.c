@@ -106,7 +106,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_BME280_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -130,7 +131,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_DPS310_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -154,7 +156,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_LIS2DH12_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                                 \
     .fifo_pin = RB_INT_FIFO_PIN,                            \
-    .level_pin = RB_INT_LEVEL_PIN                           \
+    .level_pin = RB_INT_LEVEL_PIN,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -171,7 +174,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RI_GPIO_ID_UNUSED,                           \
     .pwr_on = RI_GPIO_HIGH,                                 \
     .fifo_pin = RB_INT_ACC1_PIN,                            \
-    .level_pin = RB_INT_ACC2_PIN                            \
+    .level_pin = RB_INT_ACC2_PIN,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -195,7 +199,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_SHTCX_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                              \
     .fifo_pin = RI_GPIO_ID_UNUSED,                       \
-    .level_pin = RI_GPIO_ID_UNUSED                       \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_SHTCX_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -220,7 +225,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_TMP117_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_TMP117_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -245,7 +251,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_TMP117_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_TMP117EXT_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -262,7 +269,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_PHOTO_PWR_PIN,                 \
     .pwr_on = RB_PHOTO_ACTIVE,                   \
     .fifo_pin = RI_GPIO_ID_UNUSED,               \
-    .level_pin = RI_GPIO_ID_UNUSED               \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -279,7 +287,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_NTC_PWR_PIN,                 \
     .pwr_on = RB_NTC_ACTIVE,                   \
     .fifo_pin = RI_GPIO_ID_UNUSED,             \
-    .level_pin = RI_GPIO_ID_UNUSED             \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -304,7 +313,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RI_GPIO_ID_UNUSED,                        \
     .pwr_on = RI_GPIO_LOW,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                       \
-    .level_pin = RI_GPIO_ID_UNUSED                       \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
