@@ -374,6 +374,12 @@ rd_status_t app_sensor_init (void)
                     init_code = rt_sensor_configure (m_sensors[ii]);
                     rt_sensor_store (m_sensors[ii]);
                 }
+
+                // Update board max I2C speed
+                if (i2c_freq > m_sensors[ii]->i2c_max_speed)
+                {
+                    i2c_freq = m_sensors[ii]->i2c_max_speed;
+                }
             }
             else if (RD_ERROR_SELFTEST == init_code)
             {
@@ -386,19 +392,7 @@ rd_status_t app_sensor_init (void)
             }
         }
 
-        err_code |=  app_sensor_buses_uninit();
-
-        for (size_t ii = 0; (ii < SENSOR_COUNT); ii++)
-        {
-            if ( (NULL != m_sensors[ii]) && rd_sensor_is_init (& (m_sensors[ii]->sensor)))
-            {
-                if (i2c_freq > m_sensors[ii]->i2c_max_speed)
-                {
-                    i2c_freq =  m_sensors[ii]->i2c_max_speed;
-                }
-            }
-        }
-
+        err_code |= app_sensor_buses_uninit();
         err_code |= app_sensor_buses_init (i2c_freq);
     }
 

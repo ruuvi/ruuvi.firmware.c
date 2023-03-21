@@ -85,6 +85,16 @@ void test_app_sensor_init_ok (void)
         rt_sensor_configure_ExpectWithArrayAndReturn (m_sensors[ii], 1, RD_SUCCESS);
     }
 
+    ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -166,6 +176,16 @@ void test_app_sensor_init_first_time (void)
         rt_sensor_store_ExpectWithArrayAndReturn (m_sensors[ii], 1, RD_SUCCESS);
     }
 
+    ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -203,6 +223,16 @@ void test_app_sensor_init_not_found (void)
         rt_sensor_initialize_ExpectWithArrayAndReturn (m_sensors[ii], 1, RD_ERROR_NOT_FOUND);
     }
 
+    ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
@@ -245,6 +275,16 @@ void test_app_sensor_init_selftest_fail (void)
         } while (retries++ < APP_SENSOR_SELFTEST_RETRIES);
     }
 
+    ri_spi_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_i2c_uninit_ExpectAndReturn (RD_SUCCESS);
+    ri_spi_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_i2c_init_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SDA_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
+    ri_gpio_configure_ExpectAndReturn (RB_I2C_SCL_PIN,
+                                       RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE,
+                                       RD_SUCCESS);
     err_code = app_sensor_init();
     TEST_ASSERT (RD_ERROR_SELFTEST == err_code);
 }
