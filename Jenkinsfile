@@ -1,7 +1,9 @@
 // Jenkinsfile (Declarative Pipeline)
 pipeline {
     agent any
-
+    environment {
+        GH_TOKEN = credentials('jenkins-github-token')
+    }
     stages {
         stage('Build') {
             steps {
@@ -21,8 +23,14 @@ pipeline {
             }
         }
         stage('Deploy') {
+            when {
+                buildingTag()
+            }
             steps {
-                echo 'Deploying....'
+                echo 'Deploying....'            
+                dir('src'){
+                sh 'release.sh'
+                }
             }
         }
     }

@@ -11,4 +11,8 @@
 
 #define RT_FLASH_ENABLED (0U)
 
+#define APP_SENSOR_LIS2DH12_SAMPLERATE (1U) //!< Hz
+
+#define APP_SENSOR_TMP117_SAMPLERATE RD_SENSOR_CFG_CUSTOM_2 // 8000 ms conversion cycle.
+
 #endif
