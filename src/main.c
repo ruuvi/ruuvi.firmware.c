@@ -63,7 +63,8 @@ static
 rd_status_t protect_flash (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-    #if RI_FLASH_ENABLED
+#if RI_FLASH_ENABLED
+
     // Protect softdevice
     for (size_t page = 0; page < 0x26; page++)
     {
@@ -75,8 +76,8 @@ rd_status_t protect_flash (void)
     {
         err_code |= ri_flash_protect (page);
     }
-    #endif
 
+#endif
     return err_code;
 }
 
