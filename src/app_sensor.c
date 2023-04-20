@@ -394,6 +394,7 @@ rd_status_t app_sensor_init (void)
                 m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
             }
         }
+
         // Reinit board with fastest speed supported by board + sensors.
         err_code |= app_sensor_buses_uninit();
         err_code |= app_sensor_buses_init (i2c_freq);
