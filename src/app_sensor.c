@@ -24,6 +24,7 @@
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
+#include "nrf_gpio.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -102,6 +103,10 @@ static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;
 static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
+static rt_sensor_ctx_t env_sen55 = APP_SENSOR_ENVIRONMENTAL_SEN55_DEFAULT_CFG;
+#endif
+
 #if APP_SENSOR_TMP117_ENABLED
 static rt_sensor_ctx_t tmp117 = APP_SENSOR_TMP117_DEFAULT_CFG;
 #endif
@@ -130,6 +135,9 @@ m_sensors_init (void)
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     m_sensors[SHTCX_INDEX] = &shtcx;
+#endif
+#if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
+    m_sensors[ENV_SEN55_INDEX] = &env_sen55;
 #endif
 #if APP_SENSOR_DPS310_ENABLED
     m_sensors[DPS310_INDEX] = &dps310;
@@ -285,10 +293,15 @@ static rd_status_t app_sensor_buses_init (void)
     {
         err_code |= ri_spi_init (&spi_config);
         err_code |= ri_i2c_init (&i2c_config);
+#if 0
         err_code |= ri_gpio_configure (RB_I2C_SDA_PIN,
                                        RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
         err_code |= ri_gpio_configure (RB_I2C_SCL_PIN,
                                        RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
+#else
+        nrf_gpio_cfg_sense_input(RB_I2C_SCL_PIN, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_NOSENSE);
+        nrf_gpio_cfg_sense_input(RB_I2C_SDA_PIN, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_NOSENSE);
+#endif
     }
 
     return err_code;
