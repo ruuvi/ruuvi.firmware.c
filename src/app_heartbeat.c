@@ -127,7 +127,9 @@ void heartbeat (void * p_event, uint16_t event_size)
 
     if (heartbeat_ok)
     {
+#   if (!RUUVI_RUN_TESTS)
         ri_watchdog_feed();
+#   endif
         last_heartbeat_timestamp_ms = ri_rtc_millis();
     }
 
