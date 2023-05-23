@@ -226,7 +226,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude=""
+        exclude="ruuvi_interface_sen55.*"
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -454,7 +454,7 @@
       </folder>
       <folder
         Name="interfaces"
-        exclude=""
+        exclude="ruuvi_interface_sen55.*"
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -682,7 +682,7 @@
       </folder>
       <folder
         Name="interfaces"
-        exclude=""
+        exclude="ruuvi_interface_sen55.*"
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -927,7 +927,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude=""
+        exclude="ruuvi_interface_sen55.*"
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -1172,7 +1172,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude=""
+        exclude="ruuvi_interface_sen55.*"
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -1405,7 +1405,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude=""
+        exclude="ruuvi_interface_sen55.*"
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -1727,7 +1727,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude=""
+        exclude="ruuvi_interface_sen55.*"
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
