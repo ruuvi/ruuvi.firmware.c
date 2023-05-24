@@ -432,6 +432,13 @@
 #endif
 
 /**
+ * @brief Enable official raw dataformat
+ */
+#ifndef RE_6_ENABLED
+#   define RE_6_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
  * @brief Enable official encrypted dataformat
  */
 #ifndef RE_8_ENABLED

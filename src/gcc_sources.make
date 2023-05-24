@@ -276,6 +276,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoints.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_3.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_5.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_6.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_8.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_fa.c \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress/ruuvi_library_compress.c \

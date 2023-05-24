@@ -27,10 +27,21 @@
 #include "ruuvi_task_nfc.h"
 
 #define U8_MASK (0xFFU)
+#if !defined(APP_DF_3_ENABLED)
 #define APP_DF_3_ENABLED 0
+#endif
+#if !defined(APP_DF_5_ENABLED)
 #define APP_DF_5_ENABLED 1
+#endif
+#if !defined(APP_DF_6_ENABLED)
+#define APP_DF_6_ENABLED 0
+#endif
+#if !defined(APP_DF_8_ENABLED)
 #define APP_DF_8_ENABLED 0
+#endif
+#if !defined(APP_DF_FA_ENABLED)
 #define APP_DF_FA_ENABLED 0
+#endif
 
 static ri_timer_id_t heart_timer; //!< Timer for updating data.
 
@@ -42,6 +53,7 @@ static app_dataformats_t m_dataformats_enabled =
 {
     .DF_3  = APP_DF_3_ENABLED,
     .DF_5  = APP_DF_5_ENABLED,
+    .DF_6  = APP_DF_6_ENABLED,
     .DF_8  = APP_DF_8_ENABLED,
     .DF_FA = APP_DF_FA_ENABLED
 }; //!< Flags of enabled formats

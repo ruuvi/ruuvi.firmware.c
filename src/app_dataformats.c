@@ -3,6 +3,7 @@
 #include "ruuvi_endpoints.h"
 #include "ruuvi_endpoint_3.h"
 #include "ruuvi_endpoint_5.h"
+#include "ruuvi_endpoint_6.h"
 #include "ruuvi_endpoint_8.h"
 #include "ruuvi_endpoint_fa.h"
 #include "ruuvi_interface_aes.h"
@@ -55,7 +56,152 @@ uint32_t app_data_encrypt (const uint8_t * const cleartext,
 app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
                                       const app_dataformat_t state)
 {
-    // TODO: Return enabled value instead of hardcoded one
+    switch (state)
+    {
+        case DF_INVALID:
+            if (formats.DF_3)
+            {
+                return DF_3;
+            }
+
+            if (formats.DF_5)
+            {
+                return DF_5;
+            }
+
+            if (formats.DF_6)
+            {
+                return DF_6;
+            }
+
+            if (formats.DF_8)
+            {
+                return DF_8;
+            }
+
+            if (formats.DF_FA)
+            {
+                return DF_FA;
+            }
+
+            break;
+
+        case DF_3:
+            if (formats.DF_5)
+            {
+                return DF_5;
+            }
+
+            if (formats.DF_6)
+            {
+                return DF_6;
+            }
+
+            if (formats.DF_8)
+            {
+                return DF_8;
+            }
+
+            if (formats.DF_FA)
+            {
+                return DF_FA;
+            }
+
+            return DF_3;
+
+        case DF_5:
+            if (formats.DF_6)
+            {
+                return DF_6;
+            }
+
+            if (formats.DF_8)
+            {
+                return DF_8;
+            }
+
+            if (formats.DF_FA)
+            {
+                return DF_FA;
+            }
+
+            if (formats.DF_3)
+            {
+                return DF_3;
+            }
+
+            return DF_5;
+
+        case DF_6:
+            if (formats.DF_8)
+            {
+                return DF_8;
+            }
+
+            if (formats.DF_FA)
+            {
+                return DF_FA;
+            }
+
+            if (formats.DF_3)
+            {
+                return DF_3;
+            }
+
+            if (formats.DF_5)
+            {
+                return DF_5;
+            }
+
+            return DF_6;
+
+        case DF_8:
+            if (formats.DF_FA)
+            {
+                return DF_FA;
+            }
+
+            if (formats.DF_3)
+            {
+                return DF_3;
+            }
+
+            if (formats.DF_5)
+            {
+                return DF_5;
+            }
+
+            if (formats.DF_6)
+            {
+                return DF_6;
+            }
+
+            return DF_8;
+
+        case DF_FA:
+            if (formats.DF_3)
+            {
+                return DF_3;
+            }
+
+            if (formats.DF_5)
+            {
+                return DF_5;
+            }
+
+            if (formats.DF_6)
+            {
+                return DF_6;
+            }
+
+            if (formats.DF_8)
+            {
+                return DF_8;
+            }
+
+            return DF_FA;
+    }
+
     return DF_5;
 }
 
@@ -119,6 +265,41 @@ encode_to_5 (uint8_t * const output,
     }
 
     *output_length = RE_5_DATA_LENGTH;
+    return err_code;
+}
+#endif
+
+#if RE_6_ENABLED
+TESTABLE_STATIC rd_status_t
+encode_to_6 (uint8_t * const output,
+             size_t * const output_length,
+             const rd_sensor_data_t * const data)
+{
+    static uint16_t ep_6_measurement_count = 0;
+    rd_status_t err_code = RD_SUCCESS;
+    re_status_t enc_code = RE_SUCCESS;
+    re_6_data_t ep_data = {0};
+    ep_6_measurement_count++;
+    ep_6_measurement_count %= (RE_6_SEQ_CTR_MAX + 1);
+    ep_data.pm1p0_ppm = rd_sensor_data_parse (data, RD_SENSOR_PM1_FIELD);
+    ep_data.pm2p5_ppm = rd_sensor_data_parse (data, RD_SENSOR_PM2_FIELD);
+    ep_data.pm4p0_ppm = rd_sensor_data_parse (data, RD_SENSOR_PM4_FIELD);
+    ep_data.pm10p0_ppm = rd_sensor_data_parse (data, RD_SENSOR_PM10_FIELD);
+    ep_data.co2 = rd_sensor_data_parse (data, RD_SENSOR_CO2_FIELD);
+    ep_data.humidity_rh = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
+    ep_data.voc_index = rd_sensor_data_parse (data, RD_SENSOR_VOC_FIELD);
+    ep_data.nox_index = rd_sensor_data_parse (data, RD_SENSOR_NOX_FIELD);
+    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
+    ep_data.measurement_count = ep_6_measurement_count;
+    err_code |= ri_radio_address_get (&ep_data.address);
+    enc_code |= re_6_encode (output, &ep_data);
+
+    if (RE_SUCCESS != enc_code)
+    {
+        err_code |= RD_ERROR_INTERNAL;
+    }
+
+    *output_length = RE_6_DATA_LENGTH;
     return err_code;
 }
 #endif
@@ -245,6 +426,12 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
 
         case DF_5:
             err_code |= encode_to_5 (output, output_length, p_data);
+            break;
+#       endif
+#       if RE_6_ENABLED
+
+        case DF_6:
+            err_code |= encode_to_6 (output, output_length, p_data);
             break;
 #       endif
 #       if RE_8_ENABLED

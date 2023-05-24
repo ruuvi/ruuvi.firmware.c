@@ -299,8 +299,8 @@ static rd_status_t app_sensor_buses_init (void)
         err_code |= ri_gpio_configure (RB_I2C_SCL_PIN,
                                        RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
 #else
-        nrf_gpio_cfg_sense_input(RB_I2C_SCL_PIN, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_NOSENSE);
-        nrf_gpio_cfg_sense_input(RB_I2C_SDA_PIN, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_NOSENSE);
+        nrf_gpio_cfg_sense_input (RB_I2C_SCL_PIN, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_NOSENSE);
+        nrf_gpio_cfg_sense_input (RB_I2C_SDA_PIN, NRF_GPIO_PIN_PULLUP, NRF_GPIO_PIN_NOSENSE);
 #endif
     }
 
