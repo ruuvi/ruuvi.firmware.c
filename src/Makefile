@@ -22,7 +22,7 @@ COMMIT := $(shell git rev-parse --short HEAD)
 # VERSION will be the tag if one exists for current commit, otherwise the commit hash.
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
 
-BOARDS = ruuvitag_b ruuvi_airq kaarle kalervo keijo
+BOARDS = ruuvi_airq ruuvitag_b kaarle kalervo keijo
 VARIANTS = default test
 
 .PHONY: all sync ${BOARDS} analysis publish clean

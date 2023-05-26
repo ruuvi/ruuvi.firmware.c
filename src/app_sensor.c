@@ -103,6 +103,10 @@ static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;
 static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
+static rt_sensor_ctx_t env_scd41 = APP_SENSOR_ENVIRONMENTAL_SCD41_DEFAULT_CFG;
+#endif
+
 #if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
 static rt_sensor_ctx_t env_sen55 = APP_SENSOR_ENVIRONMENTAL_SEN55_DEFAULT_CFG;
 #endif
@@ -135,6 +139,9 @@ m_sensors_init (void)
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     m_sensors[SHTCX_INDEX] = &shtcx;
+#endif
+#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
+    m_sensors[ENV_SCD41_INDEX] = &env_scd41;
 #endif
 #if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
     m_sensors[ENV_SEN55_INDEX] = &env_sen55;

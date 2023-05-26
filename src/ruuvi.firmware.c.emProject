@@ -226,7 +226,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude="ruuvi_interface_sen55.*"
+        exclude=""
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -454,7 +454,7 @@
       </folder>
       <folder
         Name="interfaces"
-        exclude="ruuvi_interface_sen55.*"
+        exclude=""
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -682,7 +682,7 @@
       </folder>
       <folder
         Name="interfaces"
-        exclude="ruuvi_interface_sen55.*"
+        exclude=""
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -927,7 +927,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude="ruuvi_interface_sen55.*"
+        exclude=""
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -1172,7 +1172,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude="ruuvi_interface_sen55.*"
+        exclude=""
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -1405,7 +1405,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude="ruuvi_interface_sen55.*"
+        exclude=""
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
@@ -1457,7 +1457,7 @@
       arm_target_device_name="nRF52832_xxAA"
       arm_target_interface_type="SWD"
       c_preprocessor_definitions="APPLICATION_DRIVER_CONFIGURED;BOARD_RUUVI_AIRQ;CONFIG_GPIO_AS_PINRESET;FLOAT_ABI_HARD;INITIALIZE_USER_SECTIONS;NO_VTOR_CONFIG;NRF52;NRF52832_XXAA;NRF52_PAN_74;NRF_DFU_SVCI_ENABLED;NRF_DFU_TRANSPORT_BLE=1;NRF_SD_BLE_API_VERSION=6;S132;SOFTDEVICE_PRESENT;SWI_DISABLE0;NRF_DFU_SETTINGS_VERSION=1;APP_DF_5_ENABLED=0;APP_DF_6_ENABLED=1"
-      c_user_include_directories="ruuvi.drivers.c/embedded-i2c-sen5x;."
+      c_user_include_directories="ruuvi.drivers.c/sensirion-i2c;ruuvi.drivers.c/embedded-i2c-sen5x;ruuvi.drivers.c/embedded-i2c-scd4x;."
       debug_additional_load_file="../nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex"
       debug_register_definition_file="../nRF5_SDK_15.3.0_59ac345/modules/nrfx/mdk/nrf52.svd"
       debug_start_from_entry_point_symbol="No"
@@ -1699,16 +1699,13 @@
       path="ruuvi.boards.c"
       recurse="Yes" />
     <folder Name="ruuvi.drivers.c">
+      <folder Name="SCD4X">
+        <file file_name="ruuvi.drivers.c/embedded-i2c-scd4x/scd4x_i2c.c" />
+        <file file_name="ruuvi.drivers.c/embedded-i2c-scd4x/scd4x_i2c.h" />
+      </folder>
       <folder Name="SEN5X">
         <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sen5x_i2c.c" />
         <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sen5x_i2c.h" />
-        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_common.c" />
-        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_common.h" />
-        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_config.h" />
-        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c.c" />
-        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c.h" />
-        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c_hal.c" />
-        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c_hal.h" />
       </folder>
       <folder Name="STM_drivers">
         <file file_name="ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c" />
@@ -1727,7 +1724,10 @@
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />
       <folder Name="interfaces_environmental">
+        <file file_name="ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_scd41.c" />
+        <file file_name="ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_scd41.h" />
         <file file_name="ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_sen55.c" />
+        <file file_name="ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_sen55.h" />
       </folder>
       <folder
         Name="nrf5_sdk15_platform"
@@ -1741,6 +1741,15 @@
         filter="*c;*.h"
         path="ruuvi.drivers.c/ruuvi.dps310.c/src"
         recurse="Yes" />
+      <folder Name="sensirion-i2c">
+        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_common.c" />
+        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_common.h" />
+        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_config.h" />
+        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c.c" />
+        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c.h" />
+        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c_hal.c" />
+        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c_hal.h" />
+      </folder>
       <folder
         Name="tasks"
         exclude=""
@@ -2055,7 +2064,7 @@
         recurse="Yes" />
       <folder
         Name="interfaces"
-        exclude="ruuvi_interface_sen55.*"
+        exclude=""
         filter="*.c;*.h"
         path="ruuvi.drivers.c/src/interfaces"
         recurse="Yes" />

@@ -196,9 +196,10 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1/shtc1.c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sen5x_i2c.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_common.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c.c \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c_hal.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-scd4x/scd4x_i2c.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/sensirion-i2c/sensirion_common.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/sensirion-i2c/sensirion_i2c.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/sensirion-i2c/sensirion_i2c_hal.c \
   $(PROJ_DIR)/ruuvi.drivers.c/ruuvi.dps310.c/src/dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_driver_sensor_test.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_driver_test.c \
@@ -220,6 +221,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_adc_photo.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_dps310.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_scd41.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_sen55.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_shtcx.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_tmp117.c \
@@ -390,11 +392,13 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.boards.c \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-scd4x \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x \
+  $(PROJ_DIR)/ruuvi.drivers.c/sensirion-i2c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/ \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/sht-common \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1 \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x \
   $(PROJ_DIR)/ruuvi.drivers.c/ruuvi.dps310.c/src \
   $(PROJ_DIR)/ruuvi.drivers.c/src \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests \

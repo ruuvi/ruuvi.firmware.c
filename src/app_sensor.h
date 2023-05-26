@@ -33,6 +33,7 @@
 #include "ruuvi_task_sensor.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_tmp117.h"
+#include "ruuvi_interface_scd41.h"
 #include "ruuvi_interface_sen55.h"
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
@@ -48,6 +49,9 @@ enum
 #endif
 #if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
     ENV_SEN55_INDEX,
+#endif
+#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
+    ENV_SCD41_INDEX,
 #endif
 #if APP_SENSOR_DPS310_ENABLED
     DPS310_INDEX,
@@ -195,6 +199,31 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .handle = RB_SHTCX_I2C_ADDRESS,                      \
     .pwr_pin = RB_SHTCX_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                              \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                       \
+    .level_pin = RI_GPIO_ID_UNUSED                       \
+  }
+#endif
+
+#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
+#define APP_SENSOR_ENVIRONMENTAL_SCD41_DEFAULT_CFG       \
+  {                                                      \
+    .sensor = {0},                                       \
+    .init = &ri_scd41_init,                              \
+    .configuration =                                     \
+    {                                                    \
+            .dsp_function = APP_SENSOR_NRF52_DSP_FUNC,   \
+            .dsp_parameter = APP_SENSOR_NRF52_DSP_PARAM, \
+            .mode = APP_SENSOR_NRF52_MODE,               \
+            .resolution = APP_SENSOR_NRF52_RESOLUTION,   \
+            .samplerate = APP_SENSOR_NRF52_SAMPLERATE,   \
+            .scale = APP_SENSOR_NRF52_SCALE              \
+    },                                                   \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                   \
+    .nvm_record = APP_FLASH_SENSOR_ENVI_RECORD,          \
+    .bus = RD_BUS_I2C,                                   \
+    .handle = RB_SCD41_I2C_ADDRESS,                      \
+    .pwr_pin = RI_GPIO_ID_UNUSED,                        \
+    .pwr_on = RI_GPIO_LOW,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                       \
     .level_pin = RI_GPIO_ID_UNUSED                       \
   }
