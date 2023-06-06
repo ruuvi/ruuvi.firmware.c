@@ -10,13 +10,22 @@ $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
 
 include ${PROJ_DIR}/gcc_sources.make
 
-# Source files common to all targets
 SRC_FILES += ${COMMON_SOURCES} ${NFC_SOURCES} \
    $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
-   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
+   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sen5x_i2c.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-scd4x/scd4x_i2c.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_common.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_sen5x_scd4x.c
+
 
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
+
+INC_FOLDERS += \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-scd4x
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -62,7 +71,8 @@ CFLAGS += -Wall -Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing -fstack-usage
-CFLAGS += -fno-builtin -fshort-enums 
+CFLAGS += -fno-builtin -fshort-enums
+CFLAGS += -DDEBUG
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)

@@ -1742,13 +1742,11 @@
         path="ruuvi.drivers.c/ruuvi.dps310.c/src"
         recurse="Yes" />
       <folder Name="sensirion-i2c">
-        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_common.c" />
-        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_common.h" />
-        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_config.h" />
-        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c.c" />
-        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c.h" />
-        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c_hal.c" />
-        <file file_name="ruuvi.drivers.c/sensirion-i2c/sensirion_i2c_hal.h" />
+        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_common.c" />
+        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_common.h" />
+        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_config.h" />
+        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c.c" />
+        <file file_name="ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c.h" />
       </folder>
       <folder
         Name="tasks"

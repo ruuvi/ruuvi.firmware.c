@@ -15,10 +15,19 @@ include ${PROJ_DIR}/gcc_sources.make
 # Source files common to all targets
 SRC_FILES += ${COMMON_SOURCES} \
    $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52811.S \
-   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52811.c
-   
+   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52811.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1/shtc1.c
+
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
+
+INC_FOLDERS += \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/sht-common \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1
+
 
 # Libraries common to all targets
 LIB_FILES += 

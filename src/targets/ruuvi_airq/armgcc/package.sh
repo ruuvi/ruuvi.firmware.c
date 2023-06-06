@@ -15,7 +15,7 @@ v) VERSION=${OPTARG};;
 esac
 done
 BINNAME=ruuvi_airq\_armgcc\_${NAME}\_${VERSION}
-BOOTLOADER="ruuvi_airq_s132_6.1.1_bootloader_3.1.0.hex"     
+BOOTLOADER="ruuvitag_b_s132_6.1.1_bootloader_3.1.0.hex"     
 if [ -f $BOOTLOADER ]; then
    echo "Found bootloader."
 else

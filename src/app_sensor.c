@@ -103,12 +103,12 @@ static rt_sensor_ctx_t lis2dw12 = APP_SENSOR_LIS2DW2_DEFAULT_CFG;
 static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 #endif
 
-#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
-static rt_sensor_ctx_t env_scd41 = APP_SENSOR_ENVIRONMENTAL_SCD41_DEFAULT_CFG;
+#if APP_SENSOR_SCD41_ENABLED
+static rt_sensor_ctx_t env_scd41 = APP_SENSOR_SCD41_DEFAULT_CFG;
 #endif
 
-#if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
-static rt_sensor_ctx_t env_sen55 = APP_SENSOR_ENVIRONMENTAL_SEN55_DEFAULT_CFG;
+#if APP_SENSOR_SEN55_ENABLED
+static rt_sensor_ctx_t env_sen55 = APP_SENSOR_SEN55_DEFAULT_CFG;
 #endif
 
 #if APP_SENSOR_TMP117_ENABLED
@@ -140,10 +140,10 @@ m_sensors_init (void)
 #if APP_SENSOR_SHTCX_ENABLED
     m_sensors[SHTCX_INDEX] = &shtcx;
 #endif
-#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
+#if APP_SENSOR_SCD41_ENABLED
     m_sensors[ENV_SCD41_INDEX] = &env_scd41;
 #endif
-#if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
+#if APP_SENSOR_SEN55_ENABLED
     m_sensors[ENV_SEN55_INDEX] = &env_sen55;
 #endif
 #if APP_SENSOR_DPS310_ENABLED
@@ -869,7 +869,7 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
             {
                 err_code |= app_sensor_send_eof (reply_fp, raw_message);
                 char msg[128];
-                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", sent_elements); //-V576
+                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", (unsigned long)sent_elements); //-V576
                 LOG (msg);
                 sent_elements = 0;
             }

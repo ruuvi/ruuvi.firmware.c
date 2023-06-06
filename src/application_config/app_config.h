@@ -132,6 +132,16 @@
 #   define APP_SENSOR_SHTCX_ENABLED RB_ENVIRONMENTAL_SHTCX_PRESENT
 #endif
 
+/** @brief Enable SEN55 sensor */
+#ifndef APP_SENSOR_SEN55_ENABLED
+#   define APP_SENSOR_SEN55_ENABLED RB_ENVIRONMENTAL_SEN55_PRESENT
+#endif
+
+/** @brief Enable SCD41 sensor */
+#ifndef APP_SENSOR_SCD41_ENABLED
+#   define APP_SENSOR_SCD41_ENABLED RB_ENVIRONMENTAL_SCD41_PRESENT
+#endif
+
 #ifndef APP_SENSOR_SHTCX_DSP_FUNC
 #   define APP_SENSOR_SHTCX_DSP_FUNC RD_SENSOR_DSP_LAST //!< DSP function to use, only LAST is supported.
 #endif
@@ -156,14 +166,14 @@
 #   define RI_SHTCX_ENABLED APP_SENSOR_SHTCX_ENABLED
 #endif
 
-/** @brief Enable SCD41 air quality sensor */
-#ifndef APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
-#   define APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED RB_ENVIRONMENTAL_SCD41_PRESENT
+/** @brief Enable SEN5X driver */
+#ifndef RI_SEN5X_ENABLED
+#   define RI_SEN5X_ENABLED APP_SENSOR_SEN55_ENABLED
 #endif
 
-/** @brief Enable SEN55 air quality sensor */
-#ifndef APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
-#   define APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED RB_ENVIRONMENTAL_SEN55_PRESENT
+/** @brief Enable SCD4X driver */
+#ifndef RI_SCD4X_ENABLED
+#   define RI_SCD4X_ENABLED APP_SENSOR_SCD41_ENABLED
 #endif
 
 /** @brief Enable TMP117 temperature sensor */

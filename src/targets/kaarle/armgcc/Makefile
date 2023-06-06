@@ -13,9 +13,18 @@ include ${PROJ_DIR}/gcc_sources.make
 # Source files common to all targets
 SRC_FILES += ${COMMON_SOURCES} \
    $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
-   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c
+   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1/shtc1.c
+
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
+
+INC_FOLDERS += \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/ \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/sht-common \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1
 
 
 # Libraries common to all targets
@@ -70,7 +79,7 @@ ASMFLAGS += -mcpu=cortex-m4
 ASMFLAGS += -mthumb -mabi=aapcs
 ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ASMFLAGS += -DBL_SETTINGS_ACCESS_ONLY
-ASMFLAGS += -DBOARD_RUUVITAG_B
+ASMFLAGS += -DBOARD_KAARLE
 ASMFLAGS += -DBOARD_CUSTOM
 ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD

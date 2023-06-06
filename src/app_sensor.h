@@ -47,10 +47,10 @@ enum
 #if APP_SENSOR_SHTCX_ENABLED
     SHTCX_INDEX,
 #endif
-#if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
+#if APP_SENSOR_SEN55_ENABLED
     ENV_SEN55_INDEX,
 #endif
-#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
+#if APP_SENSOR_SCD41_ENABLED
     ENV_SCD41_INDEX,
 #endif
 #if APP_SENSOR_DPS310_ENABLED
@@ -204,8 +204,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
   }
 #endif
 
-#if APP_SENSOR_ENVIRONMENTAL_SCD41_ENABLED
-#define APP_SENSOR_ENVIRONMENTAL_SCD41_DEFAULT_CFG       \
+#if APP_SENSOR_SCD41_ENABLED
+#define APP_SENSOR_SCD41_DEFAULT_CFG       \
   {                                                      \
     .sensor = {0},                                       \
     .init = &ri_scd41_init,                              \
@@ -229,8 +229,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
   }
 #endif
 
-#if APP_SENSOR_ENVIRONMENTAL_SEN55_ENABLED
-#define APP_SENSOR_ENVIRONMENTAL_SEN55_DEFAULT_CFG       \
+#if APP_SENSOR_SEN55_ENABLED
+#define APP_SENSOR_SEN55_DEFAULT_CFG       \
   {                                                      \
     .sensor = {0},                                       \
     .init = &ri_sen55_init,                              \

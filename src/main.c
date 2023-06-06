@@ -66,6 +66,8 @@ void setup (void)
     float motion_threshold = APP_MOTION_THRESHOLD;
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
+#   endif
+#   if defined(DEBUG)
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
 #   endif
     err_code |= ri_yield_init();
