@@ -36,6 +36,30 @@ sync:
 	git submodule sync --recursive
 	git submodule update --init --recursive
 
+ruuvi_airq:
+	@echo build FW ${VERSION} for board $@
+
+	@echo + Calling targets/ruuvi_airq/armgcc/Makefile
+	$(MAKE) -C targets/ruuvi_airq/armgcc clean
+	$(MAKE) -C targets/ruuvi_airq/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT
+	@echo + package next
+	targets/$@/armgcc/package.sh -n ruuvifw_default
+
+	$(MAKE) -C targets/$@/armgcc clean
+	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGLIFE
+	@echo + package next
+	targets/$@/armgcc/package.sh -n ruuvifw_longlife
+
+	$(MAKE) -C targets/$@/armgcc clean
+	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGMEM
+	@echo + package next
+	targets/$@/armgcc/package.sh -n ruuvifw_longmem
+
+	$(MAKE) -C targets/$@/armgcc clean
+	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DDEBUG   MODE=-DAPPLICATION_MODE_DEBUG \
+											RUN_TESTS=-DRUUVI_RUN_TESTS OPT="-Og -g3" # gdb information included
+	@echo + package next
+	targets/$@/armgcc/package.sh -n ruuvifw_test
 
 ruuvitag_b:
 	@echo build FW ${VERSION} for board $@
@@ -43,31 +67,6 @@ ruuvitag_b:
 	@echo + Calling targets/ruuvitag_b/armgcc/Makefile
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
 	$(MAKE) -C targets/ruuvitag_b/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT   
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_default
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGLIFE   
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_longlife
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGMEM 
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_longmem
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DDEBUG   MODE=-DAPPLICATION_MODE_DEBUG \
-											RUN_TESTS=-DRUUVI_RUN_TESTS OPT="-Og -g3" # gdb information included 
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_test
-
-ruuvi_airq:
-	@echo build FW ${VERSION} for board $@
-
-	@echo + Calling targets/ruuvi_airq/armgcc/Makefile
-	$(MAKE) -C targets/ruuvi_airq/armgcc clean
-	$(MAKE) -C targets/ruuvi_airq/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT   
 	@echo + package next
 	targets/$@/armgcc/package.sh -n ruuvifw_default
 
