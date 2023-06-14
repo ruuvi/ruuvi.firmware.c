@@ -869,7 +869,8 @@ static rd_status_t app_sensor_log_read (const ri_comm_xfer_fp_t reply_fp,
             {
                 err_code |= app_sensor_send_eof (reply_fp, raw_message);
                 char msg[128];
-                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n", (unsigned long)sent_elements); //-V576
+                snprintf (msg, sizeof (msg), "Logged data sent: %lu elements\r\n",
+                          (unsigned long) sent_elements); //-V576
                 LOG (msg);
                 sent_elements = 0;
             }
