@@ -289,7 +289,7 @@ encode_to_6 (uint8_t * const output,
     ep_data.humidity_rh = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
     ep_data.voc_index = rd_sensor_data_parse (data, RD_SENSOR_VOC_FIELD);
     ep_data.nox_index = rd_sensor_data_parse (data, RD_SENSOR_NOX_FIELD);
-    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
+    ep_data.temperature_c = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
     ep_data.measurement_count = ep_6_measurement_count;
     err_code |= ri_radio_address_get (&ep_data.address);
     enc_code |= re_6_encode (output, &ep_data);
