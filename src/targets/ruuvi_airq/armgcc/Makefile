@@ -1,4 +1,4 @@
-PROJECT_NAME     := ruuvitag_b_s132
+PROJECT_NAME     := ruuvi_airq
 TARGETS          := nrf52832_xxaa
 OUTPUT_DIRECTORY := _build
 
@@ -6,26 +6,26 @@ SDK_ROOT := ../../../../nRF5_SDK_15.3.0_59ac345
 PROJ_DIR := ../../..
 
 $(OUTPUT_DIRECTORY)/nrf52832_xxaa.out: \
-  LINKER_SCRIPT  := ruuvitag_b.ld
+  LINKER_SCRIPT  := ruuvi_airq.ld
 
 include ${PROJ_DIR}/gcc_sources.make
 
-# Source files common to all targets
 SRC_FILES += ${COMMON_SOURCES} ${NFC_SOURCES} \
    $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52.S \
    $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52.c \
-   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
-   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1/shtc1.c
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sen5x_i2c.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-scd4x/scd4x_i2c.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_common.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x/sensirion_i2c.c \
+   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_sen5x_scd4x.c
+
 
 # Include folders common to all targets
 INC_FOLDERS += ${COMMON_INCLUDES}
 
 INC_FOLDERS += \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/ \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/sht-common \
-  $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1
-
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-sen5x \
+  $(PROJ_DIR)/ruuvi.drivers.c/embedded-i2c-scd4x
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -44,7 +44,7 @@ CFLAGS += $(FW_VERSION)
 CFLAGS += $(OPT)
 CFLAGS += $(COMMON_DEFINES)
 CFLAGS += -DBL_SETTINGS_ACCESS_ONLY
-CFLAGS += -DBOARD_RUUVITAG_B
+CFLAGS += -DBOARD_RUUVI_AIRQ
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DBME280_FLOAT_ENABLE
@@ -63,13 +63,16 @@ CFLAGS += -DuECC_SQUARE_FUNC=0
 CFLAGS += -DuECC_SUPPORT_COMPRESSED_POINT=0
 CFLAGS += -DuECC_VLI_NATIVE_LITTLE_ENDIAN=1
 CFLAGS += -DSWI_DISABLE0
+CFLAGS += -DAPP_DF_5_ENABLED=0
+CFLAGS += -DAPP_DF_6_ENABLED=1
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing -fstack-usage
-CFLAGS += -fno-builtin -fshort-enums 
+CFLAGS += -fno-builtin -fshort-enums
+CFLAGS += -DDEBUG
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)
@@ -80,7 +83,7 @@ ASMFLAGS += -mcpu=cortex-m4
 ASMFLAGS += -mthumb -mabi=aapcs
 ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ASMFLAGS += -DBL_SETTINGS_ACCESS_ONLY
-ASMFLAGS += -DBOARD_RUUVITAG_B
+ASMFLAGS += -DBOARD_RUUVI_AIRQ
 ASMFLAGS += -DBOARD_CUSTOM
 ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD
