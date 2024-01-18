@@ -13,6 +13,7 @@
 #include "mock_ruuvi_endpoint_3.h"
 #include "mock_ruuvi_endpoint_5.h"
 #include "mock_ruuvi_endpoint_8.h"
+#include "mock_ruuvi_endpoint_c5.h"
 #include "mock_ruuvi_endpoint_fa.h"
 #include "mock_ruuvi_interface_aes.h"
 #include "mock_ruuvi_interface_communication_ble_advertising.h"

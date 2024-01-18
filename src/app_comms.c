@@ -40,6 +40,7 @@
 /** @brief Set to long enough to handle existing queue, then as short as possible. */
 #define BLOCKING_COMM_TIMEOUT_MS (4000U)
 #define CONN_PARAM_UPDATE_DELAY_MS (30U * 1000U) //!< Delay before switching to faster conn params in long ops.
+#define RUUVI_SERVICE_UUID (0xFC98U)
 
 #if APP_COMMS_BIDIR_ENABLED
 TESTABLE_STATIC bool
@@ -612,6 +613,7 @@ static rd_status_t adv_init (void)
     adv_settings.channels = channels;
     adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;
     err_code |= rt_adv_init (&adv_settings);
+    ri_adv_set_service_uuid (RUUVI_SERVICE_UUID);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
