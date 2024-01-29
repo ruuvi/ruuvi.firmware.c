@@ -17,12 +17,8 @@
 #include "application_mode_longlife.h"
 #elif APPLICATION_MODE_LONGMEM
 #include "application_mode_longmem.h"
-#elif APPLICATION_MODE_UUID_DEFAULT
-#include "application_mode_uuid_default.h"
-#elif APPLICATION_MODE_UUID_POWERSAVE
-#include "application_mode_uuid_powersave.h"
-#elif APPLICATION_MODE_UUID_LONGLIFE
-#include "application_mode_uuid_longlife.h"
+#elif APPLICATION_MODE_UUID
+#include "application_mode_uuid.h"
 #elif DEBUG
 #include "application_mode_debug.h"
 #endif

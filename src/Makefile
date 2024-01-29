@@ -57,19 +57,9 @@ ruuvitag_b:
 	targets/$@/armgcc/package.sh -n ruuvifw_longmem
 
 	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_UUID_DEFAULT
+	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_UUID
 	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_uuiddefault
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_UUID_POWERSAVE
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_uuidpowersave
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_UUID_LONGLIFE
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_uuidlonglife
+	targets/$@/armgcc/package.sh -n ruuvifw_uuid
 
 	$(MAKE) -C targets/$@/armgcc clean
 	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DDEBUG   MODE=-DAPPLICATION_MODE_DEBUG \
