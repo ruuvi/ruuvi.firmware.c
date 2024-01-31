@@ -180,7 +180,9 @@ rd_status_t app_log_init (void)
         err_code |= purge_logs();
     }
 
-    err_code |= app_log_increment_boot_count();
+    // Boot count used to be incremented here,
+    // but as boot counter is not used line is omitted
+    // err_code |= app_log_increment_boot_count();
     return err_code;
 }
 
