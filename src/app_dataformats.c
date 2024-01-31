@@ -58,7 +58,7 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
 {
     app_dataformat_t nextState = DF_INVALID;
 
-    if (formats.formats)
+    if (DF_INVALID != formats.formats)
     {
         nextState = state;
 
