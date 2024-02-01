@@ -78,6 +78,7 @@ var app__config_8h =
     [ "RE_3_ENABLED", "group___s_d_k15.html#ga789935ddce011c9c19ca360734bd4a5e", null ],
     [ "RE_5_ENABLED", "group___s_d_k15.html#gaf77b2470d57aa28298ccb425383099fd", null ],
     [ "RE_8_ENABLED", "group___s_d_k15.html#gab7613ab023924448d2b9268382a5f9d7", null ],
+    [ "RE_C5_ENABLED", "group___s_d_k15.html#ga40511b8e1420d7040a654a1b5a92d428", null ],
     [ "RE_FA_ENABLED", "group___s_d_k15.html#ga714841001964e7c15757f9eec4fd1e08", null ],
     [ "RI_ADC_ENABLED", "group___s_d_k15.html#gabc3ae583cd5b18ae10397acae5bf3e68", null ],
     [ "RI_ADC_NTC_ENABLED", "group___s_d_k15.html#ga6b7de40913f80b6163eba5c0df8a6913", null ],

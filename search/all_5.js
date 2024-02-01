@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['fields_192',['fields',['../structapp__log__config__t.html#ad87183c0717974ffaf7a518b6b254c4d',1,'app_log_config_t']]]
+  ['fields_194',['fields',['../structapp__log__config__t.html#ad87183c0717974ffaf7a518b6b254c4d',1,'app_log_config_t']]],
+  ['formats_195',['formats',['../structapp__dataformats__t.html#a8d54024724791d9d78bd0826cf161a10',1,'app_dataformats_t']]]
 ];

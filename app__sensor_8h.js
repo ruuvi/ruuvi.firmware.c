@@ -2,7 +2,6 @@ var app__sensor_8h =
 [
     [ "APP_SENSOR_HANDLE_UNUSED", "group__app__sensor.html#ga2ff399b408dc39318d7968c6e06f844f", null ],
     [ "APP_SENSOR_SELFTEST_RETRIES", "group__app__sensor.html#ga06c6546722dfa63c681655e4576a532b", null ],
-    [ "SENSOR_COUNT", "group__app__sensor.html#gga06fc87d81c62e9abb8790b6e5713c55baa63fba570fa766597e039da3a69a991b", null ],
     [ "app_sensor_acc_thr_set", "group__app__sensor.html#ga1486749a89720d4d93ad855025f1e76d", null ],
     [ "app_sensor_available_data", "group__app__sensor.html#ga7077aa82166808259f34de69d76e936f", null ],
     [ "app_sensor_event_count_get", "group__app__sensor.html#gada029e85b696279c1fa6f0ed942fee19", null ],

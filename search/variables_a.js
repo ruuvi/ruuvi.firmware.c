@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['start_5ftimestamp_5fs_394',['start_timestamp_s',['../structapp__log__record__t.html#aa1942cccb5e5358f935957444137db62',1,'app_log_record_t']]],
-  ['storage_395',['storage',['../structapp__log__record__t.html#aeaa7c130dea586ddc0c223bd9ae8135e',1,'app_log_record_t']]]
+  ['temperature_5fc_399',['temperature_c',['../structapp__log__element__t.html#a9f70e945c9af4c5e4458b65916538716',1,'app_log_element_t']]],
+  ['timestamp_5fs_400',['timestamp_s',['../structapp__log__element__t.html#acaf6793b7f77084d9a49a8a4648a1fb0',1,'app_log_element_t']]]
 ];
