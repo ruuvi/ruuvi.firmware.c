@@ -92,7 +92,7 @@ ri_gpio_slope_t get_activation (const ri_gpio_evt_t * const evt)
 
     if (ii < RB_BUTTONS_NUMBER)
     {
-        activation = (states[ii] == RI_GPIO_HIGH) ? RI_GPIO_SLOPE_LOTOHI :
+        activation = (states[ii] == RI_GPIO_HIGH) ? RI_GPIO_SLOPE_LOTOHI : //-V547
                      RI_GPIO_SLOPE_HITOLO;
     }
     else

@@ -40,6 +40,7 @@
 /** @brief Set to long enough to handle existing queue, then as short as possible. */
 #define BLOCKING_COMM_TIMEOUT_MS (4000U)
 #define CONN_PARAM_UPDATE_DELAY_MS (30U * 1000U) //!< Delay before switching to faster conn params in long ops.
+#define RUUVI_SERVICE_UUID (0xFC98U)
 
 #if APP_COMMS_BIDIR_ENABLED
 TESTABLE_STATIC bool
@@ -282,8 +283,10 @@ TESTABLE_STATIC void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_da
     {
         // Stop heartbeat processing.
         err_code |= app_heartbeat_stop();
+#if APP_GATT_ENABLED
         // Switch GATT to faster params.
         err_code |= ri_gatt_params_request (RI_GATT_TURBO, CONN_PARAM_UPDATE_DELAY_MS);
+#endif
         // Parse message type.
         re_type_t type = raw_message[RE_STANDARD_DESTINATION_INDEX];
 
@@ -314,7 +317,9 @@ TESTABLE_STATIC void handle_comms (const ri_comm_xfer_fp_t reply_fp, void * p_da
         }
 
         // Switch GATT to slower params.
+#if APP_GATT_ENABLED
         err_code |= ri_gatt_params_request (RI_GATT_LOW_POWER, 0);
+#endif
         // Resume heartbeat processing.
         err_code |= app_heartbeat_start();
     }
@@ -471,6 +476,18 @@ TESTABLE_STATIC void on_nfc_tx_done_isr (void * p_data, size_t data_len)
 {
     m_tx_done = true;
 }
+
+TESTABLE_STATIC void handle_nfc_data (void * p_data, uint16_t data_len)
+{
+    handle_comms (&rt_nfc_send, p_data, data_len);
+}
+
+TESTABLE_STATIC void on_nfc_data_isr (void * p_data, size_t data_len)
+{
+    rd_status_t err_code = RD_SUCCESS;
+    err_code |= ri_scheduler_event_put (p_data, (uint16_t) data_len, &handle_nfc_data);
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
+}
 #endif
 
 rd_status_t app_comms_configure_next_enable (void)
@@ -493,14 +510,16 @@ rd_status_t app_comms_configure_next_disable (void)
 TESTABLE_STATIC void handle_config_disable (void * p_data, uint16_t data_len)
 {
     rd_status_t err_code = RD_SUCCESS;
-
     // Do not kick out current connection, disconnect handler
     // will disable config.
+#if APP_GATT_ENABLED
+
     if (!rt_gatt_nus_is_connected())
     {
         err_code |= enable_config_on_next_conn (false);
     }
 
+#endif
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
 }
 
@@ -553,6 +572,7 @@ static rd_status_t nfc_init (ri_comm_dis_init_t * const p_dis)
     rt_nfc_set_on_connected_isr (&on_nfc_connected_isr);
     rt_nfc_set_on_disconn_isr (&on_nfc_disconnected_isr);
     rt_nfc_set_on_sent_isr (&on_nfc_tx_done_isr);
+    rt_nfc_set_on_received_isr (&on_nfc_data_isr);
 #endif
     return err_code;
 }
@@ -593,6 +613,7 @@ static rd_status_t adv_init (void)
     adv_settings.channels = channels;
     adv_settings.manufacturer_id = RB_BLE_MANUFACTURER_ID;
     err_code |= rt_adv_init (&adv_settings);
+    ri_adv_set_service_uuid (RUUVI_SERVICE_UUID);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
     err_code |= ri_adv_type_set (NONCONNECTABLE_NONSCANNABLE);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
@@ -681,7 +702,9 @@ rd_status_t app_comms_ble_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_adv_uninit();
+#if APP_GATT_ENABLED
     err_code |= rt_gatt_uninit();
+#endif
     return err_code;
 }
 

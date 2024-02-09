@@ -45,7 +45,7 @@ void tearDown (void)
 
 
 
-static rd_status_t dummy_comm (ri_comm_message_t * const msg)
+static rd_status_t dummy_comm_gatt (ri_comm_message_t * const msg)
 {
     rd_status_t err_code = RD_SUCCESS;
 
@@ -119,6 +119,7 @@ static void adv_init_Expect (void)
 {
 #if APP_ADV_ENABLED
     rt_adv_init_ExpectAndReturn (&adv_settings, RD_SUCCESS);
+    ri_adv_set_service_uuid_Expect (0xFC98);
     ri_adv_type_set_ExpectAndReturn (NONCONNECTABLE_NONSCANNABLE, RD_SUCCESS);
     ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
     ri_timer_start_ExpectAndReturn (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops,
@@ -156,6 +157,7 @@ static void nfc_init_Expect (ri_comm_dis_init_t * p_dis)
     rt_nfc_set_on_connected_isr_Expect (&on_nfc_connected_isr);
     rt_nfc_set_on_disconn_isr_Expect (&on_nfc_disconnected_isr);
     rt_nfc_set_on_sent_isr_Expect (&on_nfc_tx_done_isr);
+    rt_nfc_set_on_received_isr_Expect (&on_nfc_data_isr);
 #endif
 }
 
@@ -332,7 +334,7 @@ void test_handle_gatt_password_ok (void)
     app_comms_configure_next_enable_Expect ();
     ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_ERROR_INVALID_STATE);
     app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
-    handle_comms (&dummy_comm, mock_data, sizeof (mock_data));
+    handle_comms (&dummy_comm_gatt, mock_data, sizeof (mock_data));
     TEST_ASSERT (m_config_enabled_on_next_conn);
 }
 
@@ -350,7 +352,7 @@ void test_handle_gatt_password_denied (void)
     app_comms_configure_next_disable_Expect ();
     ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_ERROR_INVALID_STATE);
     app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
-    handle_comms (&dummy_comm, mock_data, sizeof (mock_data));
+    handle_comms (&dummy_comm_gatt, mock_data, sizeof (mock_data));
     TEST_ASSERT (!m_config_enabled_on_next_conn);
 }
 
@@ -445,6 +447,29 @@ void test_handle_nfc_disconnected (void)
     TEST_ASSERT (m_mode_ops.disable_config);
 }
 
+void test_on_nfc_received_isr (void)
+{
+    uint8_t data[RI_SCHEDULER_SIZE];
+    ri_scheduler_event_put_ExpectAndReturn (data, sizeof (data), &handle_nfc_data,
+                                            RD_SUCCESS);
+    RD_ERROR_CHECK_EXPECT (RD_SUCCESS, RD_SUCCESS);
+    on_nfc_data_isr (data, sizeof (data));
+}
+
+void test_handle_nfc_data_acceleration (void)
+{
+    uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
+    mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_ACCELERATION;
+    mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_READ;
+    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
+    app_sensor_handle_ExpectAndReturn (&rt_nfc_send, mock_data,
+                                       sizeof (mock_data), RD_SUCCESS);
+    ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_SUCCESS);
+    app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
+    handle_nfc_data (mock_data, sizeof (mock_data));
+}
+
 void test_app_comm_configurable_gatt_after_nfc (void)
 {
     ri_scheduler_event_put_ExpectAndReturn (NULL, 0, &handle_nfc_connected, RD_SUCCESS);
@@ -467,7 +492,7 @@ void test_app_comms_blocking_send_ok (void)
     ri_rtc_millis_ExpectAndReturn (1000);
     ri_rtc_millis_ExpectAndReturn (2000);
     // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
-    err_code = app_comms_blocking_send (&dummy_comm,
+    err_code = app_comms_blocking_send (&dummy_comm_gatt,
                                         NULL);
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (1 == m_expect_sends);
@@ -482,7 +507,7 @@ void test_app_comms_blocking_send_no_mem_once (void)
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     ri_rtc_millis_ExpectAndReturn (4000);
     // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
-    err_code = app_comms_blocking_send (&dummy_comm,
+    err_code = app_comms_blocking_send (&dummy_comm_gatt,
                                         NULL);
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (2 == m_expect_sends);
@@ -505,7 +530,7 @@ void test_app_comms_blocking_send_timeout (void)
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     ri_rtc_millis_ExpectAndReturn (5500);
     // reply_fp would actually return ERROR_NULL, but we can mock around it in test.
-    err_code = app_comms_blocking_send (&dummy_comm,
+    err_code = app_comms_blocking_send (&dummy_comm_gatt,
                                         NULL);
     TEST_ASSERT ( (RD_ERROR_TIMEOUT | RD_ERROR_NO_MEM) == err_code);
     TEST_ASSERT (5 == m_expect_sends);
