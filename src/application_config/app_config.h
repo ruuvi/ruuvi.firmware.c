@@ -439,6 +439,13 @@
 #endif
 
 /**
+ * @brief Enable dataformat with space for UUID
+ */
+#ifndef RE_C5_ENABLED
+#   define RE_C5_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
  * @brief Enable legacy encrypted dataformat
  */
 #ifndef RE_FA_ENABLED

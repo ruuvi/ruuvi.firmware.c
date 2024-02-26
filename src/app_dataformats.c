@@ -4,6 +4,7 @@
 #include "ruuvi_endpoint_3.h"
 #include "ruuvi_endpoint_5.h"
 #include "ruuvi_endpoint_8.h"
+#include "ruuvi_endpoint_c5.h"
 #include "ruuvi_endpoint_fa.h"
 #include "ruuvi_interface_aes.h"
 #include "ruuvi_interface_communication_ble_advertising.h"
@@ -55,8 +56,42 @@ uint32_t app_data_encrypt (const uint8_t * const cleartext,
 app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
                                       const app_dataformat_t state)
 {
-    // TODO: Return enabled value instead of hardcoded one
-    return DF_5;
+    app_dataformat_t nextState = DF_INVALID;
+
+    if (DF_INVALID != formats.formats)
+    {
+        nextState = state;
+
+        do
+        {
+            switch (nextState)
+            {
+                case DF_3:
+                    nextState = DF_5;
+                    break;
+
+                case DF_5:
+                    nextState = DF_8;
+                    break;
+
+                case DF_8:
+                    nextState = DF_C5;
+                    break;
+
+                case DF_C5:
+                    nextState = DF_FA;
+                    break;
+
+                case DF_FA:
+                default:
+                    nextState = DF_3;
+                    break;
+            }
+        } while (! (nextState & formats.formats));
+    }
+
+    ri_adv_enable_uuid (nextState == DF_C5);
+    return nextState;
 }
 
 #if RE_3_ENABLED
@@ -184,6 +219,39 @@ encode_to_8 (uint8_t * const output,
 }
 #endif
 
+#if RE_C5_ENABLED
+TESTABLE_STATIC rd_status_t
+encode_to_c5 (uint8_t * const output,
+              size_t * const output_length,
+              const rd_sensor_data_t * const data)
+{
+    static uint16_t ep_c5_measurement_count = 0;
+    rd_status_t err_code = RD_SUCCESS;
+    re_status_t enc_code = RE_SUCCESS;
+    re_c5_data_t ep_data = {0};
+    ep_c5_measurement_count++;
+    ep_c5_measurement_count %= (RE_C5_SEQCTR_MAX + 1);
+    ep_data.humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
+    ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
+    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
+    ep_data.measurement_count = ep_c5_measurement_count;
+    uint8_t mvtctr = (uint8_t) (app_sensor_event_count_get() % (RE_C5_MVTCTR_MAX + 1));
+    ep_data.movement_count    = mvtctr;
+    err_code |= ri_radio_address_get (&ep_data.address);
+    err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
+    err_code |= rt_adc_vdd_get (&ep_data.battery_v);
+    enc_code |= re_c5_encode (output, &ep_data);
+
+    if (RE_SUCCESS != enc_code)
+    {
+        err_code |= RD_ERROR_INTERNAL;
+    }
+
+    *output_length = RE_C5_DATA_LENGTH;
+    return err_code;
+}
+#endif
+
 #if RE_FA_ENABLED
 #ifndef APP_FA_KEY
 #define APP_FA_KEY {00, 11, 22, 33, 44, 55, 66, 77, 88, 99, 11, 12, 13, 14, 15, 16}
@@ -251,6 +319,12 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
 
         case DF_8:
             err_code |= encode_to_8 (output, output_length, p_data);
+            break;
+#       endif
+#       if RE_C5_ENABLED
+
+        case DF_C5:
+            err_code |= encode_to_c5 (output, output_length, p_data);
             break;
 #       endif
 #       if RE_FA_ENABLED

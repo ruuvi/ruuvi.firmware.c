@@ -31,6 +31,15 @@ jobs:
     - name: Generate docs
       run: doxygen
 
+    # Error if doxygen.error has content
+    - name: Check documentation has no errors
+      run: |
+          if [[ $(wc -l <doxygen.error) -gt 0 ]]
+          then
+              cat doxygen.error
+              exit 1
+          fi
+
     - name: Install SSH Client 🔑
       uses: webfactory/ssh-agent@v0.5.2
       with:

@@ -4,7 +4,7 @@ GH_REPO="ruuvi.firmware.c"
 #$(GH_TOKEN) Set this in environment.
 
 BOARDS=(ruuvitag_b)
-VARIANTS=(default longlife test)
+VARIANTS=(default longlife test uuid)
 TAG=$(git describe --tags --exact-match)
 if [ -z "$TAG" ]; then echo "Tag is not set, exit"; exit; fi
 
