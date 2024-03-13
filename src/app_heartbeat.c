@@ -29,7 +29,7 @@
 #define U8_MASK (0xFFU)
 #define APP_DF_3_ENABLED  RE_3_ENABLED
 #define APP_DF_5_ENABLED  RE_5_ENABLED
-#define APP_DF_8_ENABLED  RE_5_ENABLED
+#define APP_DF_8_ENABLED  RE_8_ENABLED
 #define APP_DF_C5_ENABLED RE_C5_ENABLED
 #define APP_DF_FA_ENABLED RE_FA_ENABLED
 
@@ -101,7 +101,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     msg.data_length = (uint8_t) buffer_len;
     err_code = send_adv (&msg);
     // Advertising should always be successful
-    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
 
     if (RD_SUCCESS == err_code)
     {
