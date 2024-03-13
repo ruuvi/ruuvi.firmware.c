@@ -80,13 +80,16 @@ void test_app_on_error_nonfatal (void)
                   7);
 }
 
-static void flash_protect_expect(void)
+static void flash_protect_expect (void)
 {
-    for(uint8_t ii = 0; ii < 0x26; ii++){
-        ri_flash_protect_ExpectAndReturn(ii, RD_SUCCESS);
+    for (uint8_t ii = 0; ii < 0x26; ii++)
+    {
+        ri_flash_protect_ExpectAndReturn (ii, RD_SUCCESS);
     }
-    for(uint8_t ii = 0x75; ii < 0x80; ii++){
-        ri_flash_protect_ExpectAndReturn(ii, RD_SUCCESS);
+
+    for (uint8_t ii = 0x75; ii < 0x80; ii++)
+    {
+        ri_flash_protect_ExpectAndReturn (ii, RD_SUCCESS);
     }
 }
 

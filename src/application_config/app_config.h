@@ -412,9 +412,12 @@
  * @brief Enable all possible dataformats for unit testing.
  */
 #ifdef CEEDLING
-#  define ENABLE_ALL_DATAFORMATS (1U)
+#  define TEST_ALL_DATAFORMATS (1U)
 #else
-#  define ENABLE_ALL_DATAFORMATS (0U)
+#  define TEST_ALL_DATAFORMATS (0U)
+#endif
+#ifndef ENABLE_ALL_DATAFORMATS
+#  define ENABLE_ALL_DATAFORMATS (TEST_ALL_DATAFORMATS)
 #endif
 
 /**
