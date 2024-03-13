@@ -5,7 +5,7 @@
 
 #define APP_BLE_INTERVAL_MS (1285U * 7U) //8995 ms, longest allowed divisible by 1285
 
-#define APP_NUM_REPEATS (7U) // ~63 s
+#define APP_NUM_REPEATS (1U) // ~9 s
 
 #define APP_GATT_ENABLED (0U)
 
