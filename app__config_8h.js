@@ -73,6 +73,7 @@ var app__config_8h =
     [ "APP_SENSOR_TMP117_RESOLUTION", "group___s_d_k15.html#ga3780d2d9d504059d36d3f654a0d3b798", null ],
     [ "APP_SENSOR_TMP117_SAMPLERATE", "group___s_d_k15.html#gacf49e8c9f978807a2d46251bd6c7e3b1", null ],
     [ "APP_SENSOR_TMP117_SCALE", "group___s_d_k15.html#ga158490bf402ea6d9201ba05318424004", null ],
+    [ "APP_SENSOR_TMP117EXT_ENABLED", "group___s_d_k15.html#ga63595345c5e9614b43bdc21b2d3de230", null ],
     [ "APP_WDT_INTERVAL_MS", "group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1", null ],
     [ "ENABLE_ALL_DATAFORMATS", "group___s_d_k15.html#ga60e06a0e84ed67140b3c2afa41dcbd2d", null ],
     [ "RE_3_ENABLED", "group___s_d_k15.html#ga789935ddce011c9c19ca360734bd4a5e", null ],
@@ -119,5 +120,6 @@ var app__config_8h =
     [ "RT_NFC_ENABLED", "group___s_d_k15.html#gaf8d470cb34b7e22e5f03e0febfc6ec60", null ],
     [ "RT_SENSOR_ENABLED", "group___s_d_k15.html#gae99c783515a2855670970a379bfde222", null ],
     [ "RUUVI_NRF5_SDK15_ENABLED", "group___s_d_k15.html#ga440ba3f12d133ce32de100b4c324c8ec", null ],
-    [ "RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED", "group___s_d_k15.html#ga7314a7262cc925ddaa2252da8e88776f", null ]
+    [ "RUUVI_NRF5_SDK15_NRF52832_ENVIRONMENTAL_ENABLED", "group___s_d_k15.html#ga7314a7262cc925ddaa2252da8e88776f", null ],
+    [ "TEST_ALL_DATAFORMATS", "group___s_d_k15.html#gae9c2b1d4b524b6fdb174205fc80d892b", null ]
 ];
