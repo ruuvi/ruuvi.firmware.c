@@ -1,3 +1,5 @@
+/* @file test/test_app_log.c
+ */
 #include "unity.h"
 
 #include "app_config.h"
@@ -885,7 +887,6 @@ void test_app_log_config_set_notinit (void)
     err_code |= app_log_config_set (&defaults);
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
 }
-
 
 /**
  * @brief Read current logging configuration.
