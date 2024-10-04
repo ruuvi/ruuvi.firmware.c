@@ -35,6 +35,7 @@
 #include "mock_ruuvi_driver_error.h"
 #include "mock_ruuvi_task_flash.h"
 #include "mock_ruuvi_interface_gpio.h"
+#include "mock_ruuvi_interface_flash.h"
 #include "mock_ruuvi_interface_log.h"
 #include "mock_ruuvi_interface_power.h"
 #include "mock_ruuvi_interface_scheduler.h"
@@ -79,11 +80,25 @@ void test_app_on_error_nonfatal (void)
                   7);
 }
 
+static void flash_protect_expect (void)
+{
+    for (uint8_t ii = 0; ii < 0x26; ii++)
+    {
+        ri_flash_protect_ExpectAndReturn (ii, RD_SUCCESS);
+    }
+
+    for (uint8_t ii = 0x75; ii < 0x80; ii++)
+    {
+        ri_flash_protect_ExpectAndReturn (ii, RD_SUCCESS);
+    }
+}
+
 void test_main_ok (void)
 {
     // <setup>
     float motion_threshold = APP_MOTION_THRESHOLD;
     ri_watchdog_init_ExpectAndReturn (APP_WDT_INTERVAL_MS, &on_wdt, RD_SUCCESS);
+    flash_protect_expect();
     ri_yield_init_ExpectAndReturn (RD_SUCCESS);
     ri_timer_init_ExpectAndReturn (RD_SUCCESS);
     ri_scheduler_init_ExpectAndReturn (RD_SUCCESS);
@@ -117,6 +132,7 @@ void test_main_error (void)
     // <setup>
     float motion_threshold = APP_MOTION_THRESHOLD;
     ri_watchdog_init_ExpectAndReturn (APP_WDT_INTERVAL_MS, &on_wdt, RD_SUCCESS);
+    flash_protect_expect();
     ri_yield_init_ExpectAndReturn (RD_SUCCESS);
     ri_timer_init_ExpectAndReturn (RD_SUCCESS);
     ri_scheduler_init_ExpectAndReturn (RD_SUCCESS);

@@ -161,6 +161,11 @@
 #   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
 #endif
 
+/** @brief Enable External TMP117 temperature sensor */
+#ifndef APP_SENSOR_TMP117EXT_ENABLED
+#   define APP_SENSOR_TMP117EXT_ENABLED RB_ENVIRONMENTAL_TMP117EXT_PRESENT
+#endif
+
 #ifndef APP_SENSOR_TMP117_DSP_FUNC
 #   define APP_SENSOR_TMP117_DSP_FUNC RD_SENSOR_DSP_LAST //!< Do not use DSP by default
 #endif
@@ -407,9 +412,12 @@
  * @brief Enable all possible dataformats for unit testing.
  */
 #ifdef CEEDLING
-#  define ENABLE_ALL_DATAFORMATS (1U)
+#  define TEST_ALL_DATAFORMATS (1U)
 #else
-#  define ENABLE_ALL_DATAFORMATS (0U)
+#  define TEST_ALL_DATAFORMATS (0U)
+#endif
+#ifndef ENABLE_ALL_DATAFORMATS
+#  define ENABLE_ALL_DATAFORMATS (TEST_ALL_DATAFORMATS)
 #endif
 
 /**
@@ -431,6 +439,13 @@
  */
 #ifndef RE_8_ENABLED
 #   define RE_8_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable dataformat with space for UUID
+ */
+#ifndef RE_C5_ENABLED
+#   define RE_C5_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
 #endif
 
 /**

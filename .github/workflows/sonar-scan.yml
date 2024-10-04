@@ -24,16 +24,14 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    - name: Set up Sonar Scanner 4.40
-      run: |
-        export SONAR_SCANNER_VERSION=4.4.0.2170
-        export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-$SONAR_SCANNER_VERSION-linux
-        curl --create-dirs -sSLo $HOME/.sonar/sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip
-        unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
-        echo "$SONAR_SCANNER_HOME/bin" >> $GITHUB_PATH
-        curl --create-dirs -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-        unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
-        echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
+    # Setup java 17 to be default (sonar-scanner requirement as of 5.x)
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin' # See 'Supported distributions' for available options
+        java-version: '17'
+
+    - name:  Install sonar-scanner and build-wrapper
+      uses: sonarsource/sonarcloud-github-c-cpp@v2
 
     - name: Download Nordic SDK
       run: |
@@ -46,10 +44,11 @@ jobs:
     - name: Compile project
       run: build-wrapper-linux-x86-64 --out-dir bw-output make sonar
 
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
+        ruby-version: '3.0' # Not needed with a .ruby-version file
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
     # Runs a single command using the runners shell
     - name: Install Ceedling and GCovr

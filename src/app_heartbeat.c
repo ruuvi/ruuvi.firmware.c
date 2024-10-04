@@ -27,10 +27,11 @@
 #include "ruuvi_task_nfc.h"
 
 #define U8_MASK (0xFFU)
-#define APP_DF_3_ENABLED 0
-#define APP_DF_5_ENABLED 1
-#define APP_DF_8_ENABLED 0
-#define APP_DF_FA_ENABLED 0
+#define APP_DF_3_ENABLED  RE_3_ENABLED
+#define APP_DF_5_ENABLED  RE_5_ENABLED
+#define APP_DF_8_ENABLED  RE_8_ENABLED
+#define APP_DF_C5_ENABLED RE_C5_ENABLED
+#define APP_DF_FA_ENABLED RE_FA_ENABLED
 
 static ri_timer_id_t heart_timer; //!< Timer for updating data.
 
@@ -38,13 +39,15 @@ static uint64_t last_heartbeat_timestamp_ms; //!< Timestamp for heartbeat refres
 
 static app_dataformat_t m_dataformat_state; //!< State of heartbeat.
 
-static app_dataformats_t m_dataformats_enabled =
+static const app_dataformats_t m_dataformats_enabled =
 {
-    .DF_3  = APP_DF_3_ENABLED,
-    .DF_5  = APP_DF_5_ENABLED,
-    .DF_8  = APP_DF_8_ENABLED,
-    .DF_FA = APP_DF_FA_ENABLED
-}; //!< Flags of enabled formats
+    .formats =
+    + (APP_DF_3_ENABLED  ? DF_3  : 0)
+    + (APP_DF_5_ENABLED  ? DF_5  : 0)
+    + (APP_DF_8_ENABLED  ? DF_8  : 0)
+    + (APP_DF_C5_ENABLED ? DF_C5 : 0)
+    + (APP_DF_FA_ENABLED ? DF_FA : 0)
+};
 
 static rd_status_t send_adv (ri_comm_message_t * const p_msg)
 {
@@ -98,7 +101,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     msg.data_length = (uint8_t) buffer_len;
     err_code = send_adv (&msg);
     // Advertising should always be successful
-    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+    RD_ERROR_CHECK (err_code, RD_SUCCESS);
 
     if (RD_SUCCESS == err_code)
     {

@@ -39,8 +39,12 @@
 
 enum
 {
+    // Due to TMP117 driver implementation, if there are many instances the last instance will be used.
 #if APP_SENSOR_TMP117_ENABLED
     TMP117_INDEX,
+#endif
+#if APP_SENSOR_TMP117EXT_ENABLED
+    TMP117EXT_INDEX,
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     SHTCX_INDEX,
@@ -103,7 +107,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_BME280_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -127,7 +132,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_DPS310_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -151,7 +157,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_LIS2DH12_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                                 \
     .fifo_pin = RB_INT_FIFO_PIN,                            \
-    .level_pin = RB_INT_LEVEL_PIN                           \
+    .level_pin = RB_INT_LEVEL_PIN,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -168,7 +175,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RI_GPIO_ID_UNUSED,                           \
     .pwr_on = RI_GPIO_HIGH,                                 \
     .fifo_pin = RB_INT_ACC1_PIN,                            \
-    .level_pin = RB_INT_ACC2_PIN                            \
+    .level_pin = RB_INT_ACC2_PIN,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -192,7 +200,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_SHTCX_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                              \
     .fifo_pin = RI_GPIO_ID_UNUSED,                       \
-    .level_pin = RI_GPIO_ID_UNUSED                       \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_SHTCX_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -217,7 +226,34 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_TMP117_SENSOR_POWER_PIN,                \
     .pwr_on = RI_GPIO_HIGH,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                        \
-    .level_pin = RI_GPIO_ID_UNUSED                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_TMP117_I2C_MAX_SPD                        \
+  }
+#endif
+
+#if APP_SENSOR_TMP117EXT_ENABLED
+#define APP_SENSOR_TMP117EXT_DEFAULT_CFG                     \
+  {                                                       \
+    .sensor = {0},                                        \
+    .init = &ri_tmp117_init,                              \
+    .configuration =                                      \
+    {                                                     \
+            .dsp_function = APP_SENSOR_TMP117_DSP_FUNC,   \
+            .dsp_parameter = APP_SENSOR_TMP117_DSP_PARAM, \
+            .mode = APP_SENSOR_TMP117_MODE,               \
+            .resolution = APP_SENSOR_TMP117_RESOLUTION,   \
+            .samplerate = APP_SENSOR_TMP117_SAMPLERATE,   \
+            .scale = APP_SENSOR_TMP117_SCALE              \
+    },                                                    \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                    \
+    .nvm_record = APP_FLASH_SENSOR_TMP117_RECORD,         \
+    .bus = RD_BUS_I2C,                                    \
+    .handle = RB_TMP117EXT_I2C_ADDRESS,                   \
+    .pwr_pin = RB_TMP117_SENSOR_POWER_PIN,                \
+    .pwr_on = RI_GPIO_HIGH,                               \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                        \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_TMP117EXT_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -234,7 +270,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_PHOTO_PWR_PIN,                 \
     .pwr_on = RB_PHOTO_ACTIVE,                   \
     .fifo_pin = RI_GPIO_ID_UNUSED,               \
-    .level_pin = RI_GPIO_ID_UNUSED               \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -251,7 +288,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RB_NTC_PWR_PIN,                 \
     .pwr_on = RB_NTC_ACTIVE,                   \
     .fifo_pin = RI_GPIO_ID_UNUSED,             \
-    .level_pin = RI_GPIO_ID_UNUSED             \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 
@@ -276,7 +314,8 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .pwr_pin = RI_GPIO_ID_UNUSED,                        \
     .pwr_on = RI_GPIO_LOW,                               \
     .fifo_pin = RI_GPIO_ID_UNUSED,                       \
-    .level_pin = RI_GPIO_ID_UNUSED                       \
+    .level_pin = RI_GPIO_ID_UNUSED,                        \
+    .i2c_max_speed = RB_I2C_MAX_SPD                        \
   }
 #endif
 

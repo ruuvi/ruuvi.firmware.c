@@ -119,6 +119,7 @@ static void adv_init_Expect (void)
 {
 #if APP_ADV_ENABLED
     rt_adv_init_ExpectAndReturn (&adv_settings, RD_SUCCESS);
+    ri_adv_set_service_uuid_Expect (0xFC98);
     ri_adv_type_set_ExpectAndReturn (NONCONNECTABLE_NONSCANNABLE, RD_SUCCESS);
     ri_timer_stop_ExpectAndReturn (m_comm_timer, RD_SUCCESS);
     ri_timer_start_ExpectAndReturn (m_comm_timer, APP_FAST_ADV_TIME_MS, &m_mode_ops,

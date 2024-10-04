@@ -58,7 +58,6 @@ m_log_output_block;    //!< Block read from flash for examination.
 TESTABLE_STATIC app_log_config_t m_log_config;          //!< Configuration for logging.
 TESTABLE_STATIC uint64_t
 m_last_sample_ms;      //!< Timestamp of last processed sample.
-TESTABLE_STATIC uint32_t         m_boot_count = 0;
 
 
 /*
@@ -127,6 +126,9 @@ static rd_status_t purge_logs (void)
     return err_code;
 }
 
+#if 0
+// Bootcounter is unused, code left for reference.
+TESTABLE_STATIC uint32_t         m_boot_count = 0;
 TESTABLE_STATIC rd_status_t app_log_increment_boot_count (void)
 {
     rd_status_t err_code = RD_SUCCESS;
@@ -147,6 +149,7 @@ TESTABLE_STATIC rd_status_t app_log_increment_boot_count (void)
     LOGI (msg);
     return err_code;
 }
+#endif
 
 rd_status_t app_log_init (void)
 {
@@ -180,7 +183,9 @@ rd_status_t app_log_init (void)
         err_code |= purge_logs();
     }
 
-    err_code |= app_log_increment_boot_count();
+    // Boot count used to be incremented here,
+    // but as boot counter is not used line is omitted
+    // err_code |= app_log_increment_boot_count();
     return err_code;
 }
 
