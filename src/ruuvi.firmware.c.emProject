@@ -1206,7 +1206,7 @@
       <folder
         Name="ruuvi.dps310.c"
         exclude=""
-        filter="*c;*.h"
+        filter="*.c;*.h"
         path="ruuvi.drivers.c/ruuvi.dps310.c/src"
         recurse="Yes" />
     </folder>
