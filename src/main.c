@@ -39,10 +39,10 @@ static
 void on_wdt (void)
 {
     // No action needed, device reboots after returning from this interrupt.
-    // Any any code necessary for a graceful shutdown / reboot here. 
-    /** 
-      If the watchdog is configured to generate an interrupt on the TIMEOUT event, 
-      the watchdog reset is postponed by two 32.768 kHz clock cycles after the TIMEOUT event is generated. 
+    // Any any code necessary for a graceful shutdown / reboot here.
+    /**
+      If the watchdog is configured to generate an interrupt on the TIMEOUT event,
+      the watchdog reset is postponed by two 32.768 kHz clock cycles after the TIMEOUT event is generated.
       Once the TIMEOUT event is generated, and unless the watchdog is stopped, the impending watchdog reset will occur.
       [https://docs.nordicsemi.com/bundle/ps_nrf52840/page/wdt.html], presumably same for all of nRF52 family.
     */
