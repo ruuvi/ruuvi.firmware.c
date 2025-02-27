@@ -356,7 +356,6 @@ void test_handle_gatt_password_denied (void)
     TEST_ASSERT (!m_config_enabled_on_next_conn);
 }
 
-#if 0
 void test_handle_gatt_unauthorized (void)
 {
     uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
@@ -370,7 +369,6 @@ void test_handle_gatt_unauthorized (void)
     RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
     handle_gatt_data (mock_data, sizeof (mock_data));
 }
-#endif
 
 void test_handle_gatt_null_data (void)
 {
