@@ -20,6 +20,7 @@
 #include "main.h"
 #include "run_integration_tests.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_flash.h"
 #include "ruuvi_interface_power.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_timer.h"
@@ -56,6 +57,30 @@ void app_on_error (const rd_status_t error,
     }
 }
 
+#ifndef CEEDLING
+static
+#endif
+rd_status_t protect_flash (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+#if RI_FLASH_ENABLED
+
+    // Protect softdevice
+    for (size_t page = 0; page < 0x26; page++)
+    {
+        err_code |= ri_flash_protect (page);
+    }
+
+    // Protect bootloader
+    for (size_t page = 0x75; page < 0x80; page++)
+    {
+        err_code |= ri_flash_protect (page);
+    }
+
+#endif
+    return err_code;
+}
+
 /**
  * @brief setup MCU peripherals and board peripherals.
  *
@@ -68,6 +93,7 @@ void setup (void)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
 #   endif
+    err_code |= protect_flash();
     err_code |= ri_yield_init();
     err_code |= ri_timer_init();
     err_code |= ri_scheduler_init();

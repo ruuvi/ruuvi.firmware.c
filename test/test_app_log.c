@@ -1,7 +1,4 @@
 /* @file test/test_app_log.c
- * @date 
- *       2021-12-15 DG remove test for unused functions:
- *                      app_log_config_get/set
  */
 #include "unity.h"
 
@@ -836,7 +833,7 @@ void test_app_log_process_nomem_block (void)
     err_code = app_log_process (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
-#if     0 // unused functions should not be tested          \/  \/  \/
+
 /**
  * @brief Configure logging.
  *
@@ -890,7 +887,6 @@ void test_app_log_config_set_notinit (void)
     err_code |= app_log_config_set (&defaults);
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
 }
-#endif  //  unused functions should not be tested    /\    /\   /\
 
 /**
  * @brief Read current logging configuration.

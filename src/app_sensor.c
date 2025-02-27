@@ -106,6 +106,10 @@ static rt_sensor_ctx_t shtcx = APP_SENSOR_SHTCX_DEFAULT_CFG;
 static rt_sensor_ctx_t tmp117 = APP_SENSOR_TMP117_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_TMP117EXT_ENABLED
+static rt_sensor_ctx_t tmp117ext = APP_SENSOR_TMP117EXT_DEFAULT_CFG;
+#endif
+
 #if APP_SENSOR_PHOTO_ENABLED
 static rt_sensor_ctx_t photo = APP_SENSOR_PHOTO_DEFAULT_CFG;
 #endif
@@ -125,8 +129,12 @@ static
 void
 m_sensors_init (void)
 {
+    // Due to TMP117 driver implementation, if there are many instances the last instance will be used.
 #if APP_SENSOR_TMP117_ENABLED
     m_sensors[TMP117_INDEX] = &tmp117;
+#endif
+#if APP_SENSOR_TMP117EXT_ENABLED
+    m_sensors[TMP117EXT_INDEX] = &tmp117ext;
 #endif
 #if APP_SENSOR_SHTCX_ENABLED
     m_sensors[SHTCX_INDEX] = &shtcx;
@@ -254,7 +262,7 @@ static ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
     return freq;
 }
 
-static rd_status_t app_sensor_buses_init (void)
+static rd_status_t app_sensor_buses_init (ri_i2c_frequency_t i2c_freq)
 {
     rd_status_t err_code = RD_SUCCESS;
     ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
@@ -274,7 +282,7 @@ static rd_status_t app_sensor_buses_init (void)
         .sda = RB_I2C_SDA_PIN,
         .scl = RB_I2C_SCL_PIN,
         .bus_pwr = RB_I2C_BUS_POWER_PIN,
-        .frequency = rb_to_ri_i2c_freq (RB_I2C_FREQ)
+        .frequency = i2c_freq
     };
 
     if ( (!ri_gpio_is_init()) || (!ri_gpio_interrupt_is_init()))
@@ -319,7 +327,11 @@ rd_status_t app_sensor_init (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     m_sensors_init();
-    err_code |= app_sensor_buses_init();
+    ri_i2c_frequency_t i2c_freq = rb_to_ri_i2c_freq (RB_I2C_FREQ);
+    // Initialize with slowest frequency supported by board to check all sensors
+    err_code |= app_sensor_buses_init (i2c_freq);
+    // Assume maximum speed board supports, if a sensor supports only lower speeds will get downgraded
+    i2c_freq = RB_I2C_MAX_SPD;
 
     if (RD_SUCCESS == err_code)
     {
@@ -365,6 +377,12 @@ rd_status_t app_sensor_init (void)
                     init_code = rt_sensor_configure (m_sensors[ii]);
                     rt_sensor_store (m_sensors[ii]);
                 }
+
+                // Update board max I2C speed
+                if (i2c_freq > m_sensors[ii]->i2c_max_speed)
+                {
+                    i2c_freq = m_sensors[ii]->i2c_max_speed;
+                }
             }
             else if (RD_ERROR_SELFTEST == init_code)
             {
@@ -376,6 +394,10 @@ rd_status_t app_sensor_init (void)
                 m_sensors[ii]->handle = APP_SENSOR_HANDLE_UNUSED;
             }
         }
+
+        // Reinit board with fastest speed supported by board + sensors.
+        err_code |= app_sensor_buses_uninit();
+        err_code |= app_sensor_buses_init (i2c_freq);
     }
 
     return err_code;
