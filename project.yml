@@ -12,6 +12,7 @@
 :project:
   :use_exceptions: FALSE
   :use_auxiliary_dependencies: TRUE
+  :use_test_preprocessor: :all
   :build_root: build
 #  :release_build: TRUE
   :test_file_prefix: test_
@@ -59,12 +60,15 @@
     - CMOCK
     - CEEDLING
     - APPLICATION_ENDPOINTS_CONFIGURED
+    - UNITY_INCLUDE_FLOAT
   :test:
     - *common_defines
     - TEST
+    - UNITY_INCLUDE_FLOAT
   :test_preprocess:
     - *common_defines
     - TEST
+    - UNITY_INCLUDE_FLOAT
 
 :cmock:
   :mock_prefix: mock_

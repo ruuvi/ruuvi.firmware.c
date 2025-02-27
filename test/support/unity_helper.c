@@ -1,6 +1,8 @@
 #include "app_log.h"
 #include "ruuvi_driver_sensor.h"
 #include "unity.h"
+#include <stdlib.h>
+#include <math.h>
 
 void AssertEqual_rd_sensor_data_t (rd_sensor_data_t expected, rd_sensor_data_t actual,
                                    unsigned short line)
