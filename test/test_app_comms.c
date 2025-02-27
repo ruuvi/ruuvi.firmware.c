@@ -363,7 +363,7 @@ void test_handle_gatt_unauthorized (void)
     mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_READ;
     app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
     ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
-    ri_comm_id_get_ExpectAnyArgsAndReturn(RD_SUCCESS);
+    ri_comm_id_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_SUCCESS);
     app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
     RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
