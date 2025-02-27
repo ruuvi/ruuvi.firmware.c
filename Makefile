@@ -205,10 +205,8 @@
 
 CXX=gcc
 
-PVS_CFG=./PVS-Studio.cfg
-# csv, errorfile, fullhtml, html, tasklist, xml
+
 LOG_FORMAT=fullhtml
-PVS_LOG=./doxygen/html
 DOXYGEN_DIR=./doxygen
 
 SDK_ROOT := nRF5_SDK_15.3.0_59ac345
@@ -229,8 +227,6 @@ INC_PARAMS=$(foreach d, $(INCLUDES), -I$d)
 ANALYSIS=$(SOURCES:.c=.a)
 SOURCES=${RUUVI_PRJ_SOURCES}
 OBJECTS=$(SOURCES:.c=.o)
-IOBJECTS=$(SOURCES:.c=.o.PVS-Studio.i)
-POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
 SONAR=firmware_analysis
 
 # Tag on this commit
@@ -238,6 +234,19 @@ TAG := $(shell git describe --tags --exact-match)
 # Commit hash from git
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),$(TAG),$(COMMIT))
+
+BUILD_DIR = ./build
+TEST_BUILD_DIR = ${BUILD_DIR}/test
+TEST_OUT_DIR = ${TEST_BUILD_DIR}/out
+
+# Setup environment variables for ${CMOCK_DIR}/scripts/create_makefile.rb:
+export CMOCK_DIR ?= ./CMock
+UNITY_DIR = ${CMOCK_DIR}/vendor/unity
+DISABLE_CMOCK_TEST_SUMMARY_PER_PROJECT=1
+
+TEST_MAKEFILE = ${TEST_BUILD_DIR}/MakefileTestSupport
+
+-include ${TEST_MAKEFILE}
 
 .PHONY: astyle clean doxygen sonar pvs
 
@@ -275,3 +284,47 @@ clean:
 	rm -rf $(DOXYGEN_DIR)/html
 	rm -rf $(DOXYGEN_DIR)/latex
 	rm -f *.gcov
+
+test_all:
+	rm -rf build_ceedling
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_48.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_max.yml ceedling test:all
+
+test_all_gcov:
+	rm -rf build_ceedling
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling gcov:all utils:gcov
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_48.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_48.yml ceedling gcov:all utils:gcov
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_max.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_max.yml ceedling gcov:all utils:gcov
+	gcov  -b -c build_ceedling/gcov/out/*.gcno
+
+test:
+	@UNITY_DIR=${UNITY_DIR} BUILD_DIR=${BUILD_DIR} TEST_BUILD_DIR= ruby ${CMOCK_DIR}/scripts/test_summary.rb
+	@UNITY_DIR=${UNITY_DIR} BUILD_DIR=${BUILD_DIR}_ext_adv_48 TEST_BUILD_DIR= ruby ${CMOCK_DIR}/scripts/test_summary.rb
+	@UNITY_DIR=${UNITY_DIR} BUILD_DIR=${BUILD_DIR}_ext_adv_max TEST_BUILD_DIR= ruby ${CMOCK_DIR}/scripts/test_summary.rb
+
+setup_test:
+	mkdir -p ${BUILD_DIR}
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml \
+		BUILD_DIR=${BUILD_DIR} \
+		TEST_BUILD_DIR=${TEST_BUILD_DIR} \
+		TEST_OUT_DIR=${TEST_OUT_DIR} \
+		TEST_MAKEFILE=${TEST_MAKEFILE} \
+		ruby ${CMOCK_DIR}/scripts/create_makefile.rb
+	mkdir -p ${BUILD_DIR}_ext_adv_48
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_48.yml \
+		BUILD_DIR=${BUILD_DIR}_ext_adv_48 \
+		TEST_BUILD_DIR=${BUILD_DIR}_ext_adv_48/test \
+		TEST_OUT_DIR=${BUILD_DIR}_ext_adv_48/out \
+		TEST_MAKEFILE=${TEST_MAKEFILE_EXT_ADV_48} \
+		ruby ${CMOCK_DIR}/scripts/create_makefile.rb
+	mkdir -p ${BUILD_DIR}_ext_adv_max
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_max.yml \
+		BUILD_DIR=${BUILD_DIR}_ext_adv_max \
+		TEST_BUILD_DIR=${BUILD_DIR}_ext_adv_max/test \
+		TEST_OUT_DIR=${BUILD_DIR}_ext_adv_max/out \
+		TEST_MAKEFILE=${TEST_MAKEFILE_EXT_ADV_MAX} \
+		ruby ${CMOCK_DIR}/scripts/create_makefile.rb

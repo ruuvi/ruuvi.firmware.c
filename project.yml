@@ -1,14 +1,17 @@
 ---
 
 # Notes:
+
+# This file has been updated from v0.X sample to v1.0.1-compatible configuration. 
+# Some options might not be valid anymore. 
+
 # Sample project C code is not presently written to produce a release artifact.
 # As such, release build options are disabled.
 # This sample, therefore, only demonstrates running a collection of unit tests.
 
 :project:
   :use_exceptions: FALSE
-  :use_test_preprocessor: TRUE
-  :use_auxiliary_dependencies: FALSE
+  :use_auxiliary_dependencies: TRUE
   :build_root: build
 #  :release_build: TRUE
   :test_file_prefix: test_
@@ -28,22 +31,6 @@
 :extension:
   :executable: .out
 
-:tools:
-# Ceedling defaults to using gcc for compiling, linking, etc.
-# As [:tools] is blank, gcc will be used (so long as it's in your system path)
-# See documentation to configure a given toolchain for use
-  :test_linker:
-    :executable: gcc                  #absolute file path
-    :name: 'gcc linker'
-    :arguments:
-      - ${1}                          #list of object files to link (Ruby method call param list sub)
-      - -lm                           #link with math header
-      - -o ${2}                       #executable file output (Ruby method call param list sub)
-
-:tools_gcov_linker:
-  :arguments:
-    - -lm
-
 :paths:
   :test:
     - +:test/**
@@ -55,6 +42,11 @@
     - nRF5_SDK_15.3.0_59ac345/modules/**
   :support:
     - test/support
+  :include:
+    - src/**
+    - nRF5_SDK_15.3.0_59ac345/components/**
+    - nRF5_SDK_15.3.0_59ac345/integration/**
+    - nRF5_SDK_15.3.0_59ac345/modules/**
 
 :defines:
   # in order to add common defines:
@@ -79,11 +71,11 @@
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
   :plugins:
+    - :array
     - :ignore
     - :ignore_arg
     - :callback
     - :return_thru_ptr
-    - :array
     - :expect_any_args
   :treat_as:
     uint8:    HEX8
@@ -91,25 +83,24 @@
     uint32:   UINT32
     int8:     INT8
     bool:     UINT8
-  :unity_helper: 'test/support/unity_helper.h'
-  :includes:
-    - 'unity_helper.h'
 
 # Add -gcov to the plugins list to make sure of the gcov plugin
 # You will need to have gcov and gcovr both installed to make it work.
 # For more information on these options, see docs in plugins/gcov
 :gcov:
-    :html_report: TRUE
-    :html_report_type: detailed
-    :html_medium_threshold: 75
-    :html_high_threshold: 90
-    :xml_report: TRUE
+  :reports:
+    - SonarQube
+  :gcovr:                        # `gcovr` common and report-specific options
+    :report_root: "../../"       # Atypical layout -- project.yml is inside a subdirectoy below <build root>
+    :sort_percentage: TRUE
+    :sort_uncovered: FALSE
+    :html_medium_threshold: 60
+    :html_high_threshold: 85
+    :print_summary: TRUE
+    :threads: 4
+    :keep: FALSE
     :report_exclude: "src/ruuvi.drivers.c/BME280_driver|src/ruuvi.drivers.c/embedded-sht|src/ruuvi.drivers.c/STMems_Standard_C_drivers|nRF5_SDK_15.3.0_59ac345:|^build|^vendor|^test|^support"
 
-#:tools:
-# Ceedling defaults to using gcc for compiling, linking, etc.
-# As [:tools] is blank, gcc will be used (so long as it's in your system path)
-# See documentation to configure a given toolchain for use
 
 # LIBRARIES
 # These libraries are automatically injected into the build process. Those specified as
@@ -122,22 +113,7 @@
   :release: []
 
 :plugins:
-  :load_paths:
-    - "#{Ceedling.load_path}"
   :enabled:
-    - stdout_pretty_tests_report
     - module_generator
     - gcov 
-
-:flags:
-  :test:
-    :compile:
-      :*:
-        - -Wall
-        - -std=c11
-  :gcov:
-    :compile:
-      :*:
-        - -Wall
-        - -std=c11
 ...

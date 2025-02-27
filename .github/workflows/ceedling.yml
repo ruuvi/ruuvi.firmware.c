@@ -25,7 +25,7 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    - name: Set up Ruby
+    - name: Set up Ruby 3.0
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: '3.0' # Not needed with a .ruby-version file
