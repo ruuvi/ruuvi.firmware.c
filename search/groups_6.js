@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['storing_20sensor_20data_20to_20memory_20and_20reading_20logs_2e_453',['Storing sensor data to memory and reading logs.',['../group__app__log.html',1,'']]]
+  ['integration_20tests_0',['Run integration tests',['../group__integration__test.html',1,'']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['power_20configuration_450',['Power configuration',['../group__app__power.html',1,'']]],
-  ['program_20main_451',['Program main',['../group__main.html',1,'']]]
+  ['etc_20support_0',['Button, HALL etc support.',['../group__app__button.html',1,'']]]
 ];

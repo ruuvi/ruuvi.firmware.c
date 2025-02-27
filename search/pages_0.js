@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['deprecated_20list_455',['Deprecated List',['../deprecated.html',1,'']]]
+  ['c_0',['ruuvi.firmware.c',['../index.html',1,'']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nrf_20sdk15_20configuration_449',['nRF SDK15 Configuration',['../group___s_d_k15.html',1,'']]]
+  ['data_20to_20memory_20and_20reading_20logs_0',['Storing sensor data to memory and reading logs.',['../group__app__log.html',1,'']]]
 ];

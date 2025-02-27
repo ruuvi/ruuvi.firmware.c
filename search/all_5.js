@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['fields_195',['fields',['../structapp__log__config__t.html#ad87183c0717974ffaf7a518b6b254c4d',1,'app_log_config_t']]],
-  ['formats_196',['formats',['../structapp__dataformats__t.html#a8d54024724791d9d78bd0826cf161a10',1,'app_dataformats_t']]]
+  ['fields_0',['fields',['../structapp__log__config__t.html#ad87183c0717974ffaf7a518b6b254c4d',1,'app_log_config_t']]],
+  ['firmware_20c_1',['ruuvi.firmware.c',['../index.html',1,'']]],
+  ['formats_2',['formats',['../structapp__dataformats__t.html#a8d54024724791d9d78bd0826cf161a10',1,'app_dataformats_t']]]
 ];

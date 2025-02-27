@@ -26,7 +26,7 @@ var NAVTREE =
 [
   [ "ruuvi.firmware.c", "index.html", [
     [ "Deprecated List", "deprecated.html", null ],
-    [ "Modules", "modules.html", "modules" ],
+    [ "Topics", "topics.html", "topics" ],
     [ "Data Structures", "annotated.html", [
       [ "Data Structures", "annotated.html", "annotated_dup" ],
       [ "Data Structure Index", "classes.html", null ],
@@ -53,8 +53,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"group___s_d_k15.html#ga73919d09a4961d4fab804c0a1df18f4b",
-"group__app__log.html#ga6aa1d7b80c152cc5a9014bc6e7095379"
+"group___s_d_k15.html#gaff4c6a340dde754b8408783aaf91b59c"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
