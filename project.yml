@@ -64,11 +64,11 @@
   :test:
     - *common_defines
     - TEST
-    - UNITY_INCLUDE_FLOAT
+    - UNITY_EXCLUDE_FLOAT
   :test_preprocess:
     - *common_defines
     - TEST
-    - UNITY_INCLUDE_FLOAT
+    - UNITY_EXCLUDE_FLOAT
 
 :cmock:
   :mock_prefix: mock_
