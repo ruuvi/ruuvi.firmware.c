@@ -128,119 +128,119 @@ $(document).ready(function(){initNavTree('main_8c_source.html',''); initResizabl
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span><span class="keywordtype">void</span> on_wdt (<span class="keywordtype">void</span>)</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>{</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// Store cause of reset to flash - TODO</span></div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span><span class="preprocessor">#ifndef CEEDLING</span></div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">static</span></div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="keywordtype">void</span> app_on_error (<span class="keyword">const</span> rd_status_t error,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                   <span class="keyword">const</span> <span class="keywordtype">bool</span> fatal,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                   <span class="keyword">const</span> <span class="keywordtype">char</span> * file,</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                   <span class="keyword">const</span> <span class="keywordtype">int</span> line)</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>{</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="comment">// TODO: store error source to flash.</span></div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordflow">if</span> (fatal)</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    {</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        ri_power_reset();</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    }</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="preprocessor">#ifndef CEEDLING</span></div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span><span class="keyword">static</span></div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>rd_status_t protect_flash (<span class="keywordtype">void</span>)</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>{</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    rd_status_t err_code = RD_SUCCESS;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#if RI_FLASH_ENABLED</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="comment">// Protect softdevice</span></div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> page = 0; page &lt; 0x26; page++)</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        err_code |= ri_flash_protect (page);</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    }</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="comment">// No action needed, device reboots after returning from this interrupt.</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="comment">// Any any code necessary for a graceful shutdown / reboot here.</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="preprocessor">#ifndef CEEDLING</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">static</span></div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keywordtype">void</span> app_on_error (<span class="keyword">const</span> rd_status_t error,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                   <span class="keyword">const</span> <span class="keywordtype">bool</span> fatal,</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                   <span class="keyword">const</span> <span class="keywordtype">char</span> * file,</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                   <span class="keyword">const</span> <span class="keywordtype">int</span> line)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>{</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keywordflow">if</span> (fatal)</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        ri_power_reset();</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>}</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="preprocessor">#ifndef CEEDLING</span></div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">static</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>rd_status_t protect_flash (<span class="keywordtype">void</span>)</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    rd_status_t err_code = RD_SUCCESS;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span><span class="preprocessor">#if RI_FLASH_ENABLED</span></div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">// Protect bootloader</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> page = 0x75; page &lt; 0x80; page++)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="comment">// Protect softdevice</span></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> page = 0; page &lt; 0x26; page++)</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    {</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        err_code |= ri_flash_protect (page);</div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    }</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> err_code;</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
-<div class="foldopen" id="foldopen00088" data-start="{" data-end="}">
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno"><a class="line" href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">   88</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">setup</a> (<span class="keywordtype">void</span>)</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>{</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    rd_status_t err_code = RD_SUCCESS;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    <span class="keywordtype">float</span> motion_threshold = <a class="code hl_define" href="application__mode__default_8h.html#ab253f95c0e3dea4efc0e452469702857">APP_MOTION_THRESHOLD</a>;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="preprocessor">#   if (!RUUVI_RUN_TESTS)</span></div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    err_code |= ri_watchdog_init (<a class="code hl_define" href="group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1">APP_WDT_INTERVAL_MS</a>, &amp;on_wdt);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    err_code |= ri_log_init (<a class="code hl_define" href="group___s_d_k15.html#gacba659841b897024f7d12dafd1fd706b">APP_LOG_LEVEL</a>); <span class="comment">// Logging to terminal.</span></div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#   endif</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    err_code |= protect_flash();</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    err_code |= ri_yield_init();</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    err_code |= ri_timer_init();</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    err_code |= ri_scheduler_init();</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    err_code |= rt_gpio_init();</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    err_code |= ri_yield_low_power_enable (<span class="keyword">true</span>);</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    err_code |= rt_flash_init();</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    err_code |= <a class="code hl_function" href="group__app__led.html#gaa35f028487c4c468a1559b0afe90ede6">app_led_init</a>();</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <a class="code hl_function" href="group__app__led.html#ga06b2cf9b27188dd4115d5d2250c6223a">app_led_error_signal</a> (<span class="keyword">true</span>);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    err_code |= <a class="code hl_function" href="group__app__button.html#gac95bed5758bf6c73e2cd8029397cabd3">app_button_init</a>();</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    err_code |= <a class="code hl_function" href="group__app.html#ga03f65454c667265b967dafb1865b5727">app_dc_dc_init</a>();</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    err_code |= <a class="code hl_function" href="group__app__sensor.html#ga4ca51982d7d6e78a95417f4b741f4e40">app_sensor_init</a>();</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    err_code |= <a class="code hl_function" href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">app_log_init</a>();</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="comment">// Allow fail on boards which do not have accelerometer.</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    (void) <a class="code hl_function" href="group__app__sensor.html#ga1486749a89720d4d93ad855025f1e76d">app_sensor_acc_thr_set</a> (&amp;motion_threshold);</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    err_code |= <a class="code hl_function" href="group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c">app_comms_init</a> (<a class="code hl_define" href="application__mode__default_8h.html#a531b31859ed758eaff01c4d9046a72a7">APP_LOCKED_AT_BOOT</a>);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    err_code |= <a class="code hl_function" href="group__app__sensor.html#ga2642e4561032bf7dc329d9cc41e904f0">app_sensor_vdd_sample</a>();</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    err_code |= <a class="code hl_function" href="app__heartbeat_8c.html#a076a04b2dd4533bfaf3e3aec2940f558">app_heartbeat_init</a>();</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    err_code |= <a class="code hl_function" href="app__heartbeat_8c.html#a6a199fc870f7d66078873a5ac7fd13b2">app_heartbeat_start</a>();</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">if</span> (RD_SUCCESS == err_code)</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    {</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <a class="code hl_function" href="group__app__led.html#ga06b2cf9b27188dd4115d5d2250c6223a">app_led_error_signal</a> (<span class="keyword">false</span>);</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <a class="code hl_function" href="group__app__led.html#ga64dfbd61665aa58ec85e763576504a36">app_led_activity_signal</a> (<span class="keyword">true</span>);</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        err_code |= ri_delay_ms (<a class="code hl_define" href="group__main.html#gaf5a5662b0addd9448b22094c663fecd7">APP_SELFTEST_OK_DELAY_MS</a>);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <a class="code hl_function" href="group__app__led.html#ga64dfbd61665aa58ec85e763576504a36">app_led_activity_signal</a> (<span class="keyword">false</span>);</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    }</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    rd_error_cb_set (&amp;app_on_error);</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    RD_ERROR_CHECK (err_code, RD_SUCCESS);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="comment">// Protect bootloader</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> page = 0x75; page &lt; 0x80; page++)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        err_code |= ri_flash_protect (page);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">return</span> err_code;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>}</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="foldopen" id="foldopen00094" data-start="{" data-end="}">
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">   94</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">setup</a> (<span class="keywordtype">void</span>)</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>{</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    rd_status_t err_code = RD_SUCCESS;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keywordtype">float</span> motion_threshold = <a class="code hl_define" href="application__mode__default_8h.html#ab253f95c0e3dea4efc0e452469702857">APP_MOTION_THRESHOLD</a>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="preprocessor">#   if (!RUUVI_RUN_TESTS)</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    err_code |= ri_watchdog_init (<a class="code hl_define" href="group___s_d_k15.html#ga25d771b6d2f753e677805a4177cdaaa1">APP_WDT_INTERVAL_MS</a>, &amp;on_wdt);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    err_code |= ri_log_init (<a class="code hl_define" href="group___s_d_k15.html#gacba659841b897024f7d12dafd1fd706b">APP_LOG_LEVEL</a>); <span class="comment">// Logging to terminal.</span></div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="preprocessor">#   endif</span></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    err_code |= protect_flash();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    err_code |= ri_yield_init();</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    err_code |= ri_timer_init();</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    err_code |= ri_scheduler_init();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    err_code |= rt_gpio_init();</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    err_code |= ri_yield_low_power_enable (<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    err_code |= rt_flash_init();</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    err_code |= <a class="code hl_function" href="group__app__led.html#gaa35f028487c4c468a1559b0afe90ede6">app_led_init</a>();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_function" href="group__app__led.html#ga06b2cf9b27188dd4115d5d2250c6223a">app_led_error_signal</a> (<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    err_code |= <a class="code hl_function" href="group__app__button.html#gac95bed5758bf6c73e2cd8029397cabd3">app_button_init</a>();</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    err_code |= <a class="code hl_function" href="group__app.html#ga03f65454c667265b967dafb1865b5727">app_dc_dc_init</a>();</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    err_code |= <a class="code hl_function" href="group__app__sensor.html#ga4ca51982d7d6e78a95417f4b741f4e40">app_sensor_init</a>();</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    err_code |= <a class="code hl_function" href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">app_log_init</a>();</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="comment">// Allow fail on boards which do not have accelerometer.</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    (void) <a class="code hl_function" href="group__app__sensor.html#ga1486749a89720d4d93ad855025f1e76d">app_sensor_acc_thr_set</a> (&amp;motion_threshold);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    err_code |= <a class="code hl_function" href="group__app__comms.html#gaca2cd30d1c09441ce5f23d31b156026c">app_comms_init</a> (<a class="code hl_define" href="application__mode__default_8h.html#a531b31859ed758eaff01c4d9046a72a7">APP_LOCKED_AT_BOOT</a>);</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    err_code |= <a class="code hl_function" href="group__app__sensor.html#ga2642e4561032bf7dc329d9cc41e904f0">app_sensor_vdd_sample</a>();</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    err_code |= <a class="code hl_function" href="app__heartbeat_8c.html#a076a04b2dd4533bfaf3e3aec2940f558">app_heartbeat_init</a>();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    err_code |= <a class="code hl_function" href="app__heartbeat_8c.html#a6a199fc870f7d66078873a5ac7fd13b2">app_heartbeat_start</a>();</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">if</span> (RD_SUCCESS == err_code)</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <a class="code hl_function" href="group__app__led.html#ga06b2cf9b27188dd4115d5d2250c6223a">app_led_error_signal</a> (<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <a class="code hl_function" href="group__app__led.html#ga64dfbd61665aa58ec85e763576504a36">app_led_activity_signal</a> (<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        err_code |= ri_delay_ms (<a class="code hl_define" href="group__main.html#gaf5a5662b0addd9448b22094c663fecd7">APP_SELFTEST_OK_DELAY_MS</a>);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        <a class="code hl_function" href="group__app__led.html#ga64dfbd61665aa58ec85e763576504a36">app_led_activity_signal</a> (<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    }</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    rd_error_cb_set (&amp;app_on_error);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    RD_ERROR_CHECK (err_code, RD_SUCCESS);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>}</div>
 </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span><span class="preprocessor">#ifdef  CEEDLING</span></div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keywordtype">int</span> app_main (<span class="keywordtype">void</span>)</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span><span class="preprocessor">#else</span></div>
-<div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="group__main.html#ga840291bc02cba5474a4cb46a9b9566fe">  131</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="group__main.html#ga840291bc02cba5474a4cb46a9b9566fe">main</a> (<span class="keywordtype">void</span>)</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>{</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="preprocessor">#   if RUUVI_RUN_TESTS</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <a class="code hl_function" href="group__integration__test.html#ga6b0a6b67d34b0a6b83aa2a2a792d708b">integration_tests_run</a>();</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="preprocessor">#   endif</span></div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    <a class="code hl_function" href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">setup</a>();</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">do</span></div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    {</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        ri_scheduler_execute();</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        <span class="comment">// Sleep - woken up on event</span></div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="comment">// Do not indicate activity here to conserve power.</span></div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="comment">// Sensor reads take ~20ms, having led on for that time is expensive.</span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        ri_yield();</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        <span class="comment">// Prevent loop being optimized away</span></div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        __asm__ (<span class="stringliteral">&quot;&quot;</span>);</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    } <span class="keywordflow">while</span> (<a class="code hl_define" href="group__main.html#gabb4360b563449b775f80a2d36f20e5bf">LOOP_FOREVER</a>);</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    <span class="comment">// Intentionally non-reachable code unless unit testing.</span></div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>}</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span><span class="preprocessor">#ifdef  CEEDLING</span></div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="keywordtype">int</span> app_main (<span class="keywordtype">void</span>)</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span><span class="preprocessor">#else</span></div>
+<div class="foldopen" id="foldopen00137" data-start="{" data-end="}">
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno"><a class="line" href="group__main.html#ga840291bc02cba5474a4cb46a9b9566fe">  137</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="group__main.html#ga840291bc02cba5474a4cb46a9b9566fe">main</a> (<span class="keywordtype">void</span>)</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>{</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span><span class="preprocessor">#   if RUUVI_RUN_TESTS</span></div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    <a class="code hl_function" href="group__integration__test.html#ga6b0a6b67d34b0a6b83aa2a2a792d708b">integration_tests_run</a>();</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="preprocessor">#   endif</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    <a class="code hl_function" href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">setup</a>();</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">do</span></div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    {</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        ri_scheduler_execute();</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="comment">// Sleep - woken up on event</span></div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="comment">// Do not indicate activity here to conserve power.</span></div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="comment">// Sensor reads take ~20ms, having led on for that time is expensive.</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        ri_yield();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="comment">// Prevent loop being optimized away</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        __asm__ (<span class="stringliteral">&quot;&quot;</span>);</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    } <span class="keywordflow">while</span> (<a class="code hl_define" href="group__main.html#gabb4360b563449b775f80a2d36f20e5bf">LOOP_FOREVER</a>);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="comment">// Intentionally non-reachable code unless unit testing.</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>}</div>
 </div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span> </div>
 <div class="ttc" id="aapp__button_8h_html"><div class="ttname"><a href="app__button_8h.html">app_button.h</a></div></div>
 <div class="ttc" id="aapp__comms_8h_html"><div class="ttname"><a href="app__comms_8h.html">app_comms.h</a></div></div>
 <div class="ttc" id="aapp__config_8h_html"><div class="ttname"><a href="app__config_8h.html">app_config.h</a></div></div>
@@ -266,8 +266,8 @@ $(document).ready(function(){initNavTree('main_8c_source.html',''); initResizabl
 <div class="ttc" id="agroup__app__sensor_html_ga4ca51982d7d6e78a95417f4b741f4e40"><div class="ttname"><a href="group__app__sensor.html#ga4ca51982d7d6e78a95417f4b741f4e40">app_sensor_init</a></div><div class="ttdeci">rd_status_t app_sensor_init(void)</div><div class="ttdoc">Initialize sensors into default mode or to a mode stored to flash.</div><div class="ttdef"><b>Definition</b> <a href="app__sensor_8c_source.html#l00326">app_sensor.c:326</a></div></div>
 <div class="ttc" id="agroup__app_html_ga03f65454c667265b967dafb1865b5727"><div class="ttname"><a href="group__app.html#ga03f65454c667265b967dafb1865b5727">app_dc_dc_init</a></div><div class="ttdeci">rd_status_t app_dc_dc_init(void)</div><div class="ttdoc">Initialize regulatore.</div><div class="ttdef"><b>Definition</b> <a href="app__power_8c_source.html#l00006">app_power.c:6</a></div></div>
 <div class="ttc" id="agroup__integration__test_html_ga6b0a6b67d34b0a6b83aa2a2a792d708b"><div class="ttname"><a href="group__integration__test.html#ga6b0a6b67d34b0a6b83aa2a2a792d708b">integration_tests_run</a></div><div class="ttdeci">void integration_tests_run(void)</div><div class="ttdoc">Run integration tests.</div><div class="ttdef"><b>Definition</b> <a href="run__integration__tests_8c_source.html#l00174">run_integration_tests.c:174</a></div></div>
-<div class="ttc" id="agroup__main_html_ga7dfd9b79bc5a37d7df40207afbc5431f"><div class="ttname"><a href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">setup</a></div><div class="ttdeci">void setup(void)</div><div class="ttdoc">setup MCU peripherals and board peripherals.</div><div class="ttdef"><b>Definition</b> <a href="main_8c_source.html#l00088">main.c:88</a></div></div>
-<div class="ttc" id="agroup__main_html_ga840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="group__main.html#ga840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdef"><b>Definition</b> <a href="main_8c_source.html#l00131">main.c:131</a></div></div>
+<div class="ttc" id="agroup__main_html_ga7dfd9b79bc5a37d7df40207afbc5431f"><div class="ttname"><a href="group__main.html#ga7dfd9b79bc5a37d7df40207afbc5431f">setup</a></div><div class="ttdeci">void setup(void)</div><div class="ttdoc">setup MCU peripherals and board peripherals.</div><div class="ttdef"><b>Definition</b> <a href="main_8c_source.html#l00094">main.c:94</a></div></div>
+<div class="ttc" id="agroup__main_html_ga840291bc02cba5474a4cb46a9b9566fe"><div class="ttname"><a href="group__main.html#ga840291bc02cba5474a4cb46a9b9566fe">main</a></div><div class="ttdeci">int main(void)</div><div class="ttdef"><b>Definition</b> <a href="main_8c_source.html#l00137">main.c:137</a></div></div>
 <div class="ttc" id="agroup__main_html_gabb4360b563449b775f80a2d36f20e5bf"><div class="ttname"><a href="group__main.html#gabb4360b563449b775f80a2d36f20e5bf">LOOP_FOREVER</a></div><div class="ttdeci">#define LOOP_FOREVER</div><div class="ttdoc">Normal run does not exit.</div><div class="ttdef"><b>Definition</b> <a href="main_8h_source.html#l00042">main.h:42</a></div></div>
 <div class="ttc" id="agroup__main_html_gaf5a5662b0addd9448b22094c663fecd7"><div class="ttname"><a href="group__main.html#gaf5a5662b0addd9448b22094c663fecd7">APP_SELFTEST_OK_DELAY_MS</a></div><div class="ttdeci">#define APP_SELFTEST_OK_DELAY_MS</div><div class="ttdoc">time to show &quot;ok&quot; led.</div><div class="ttdef"><b>Definition</b> <a href="main_8h_source.html#l00030">main.h:30</a></div></div>
 <div class="ttc" id="amain_8h_html"><div class="ttname"><a href="main_8h.html">main.h</a></div></div>
