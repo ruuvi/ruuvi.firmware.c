@@ -75,6 +75,7 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
+  :unity_helper_path: test/support/unity_helper.h
   :plugins:
     - :array
     - :ignore
