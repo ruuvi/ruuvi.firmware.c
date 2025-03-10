@@ -81,9 +81,9 @@ jobs:
           DEFAULT="default"
           LLIFE="longlife"
           TEST="test"
-          DEFAULTNAME="${PREFIX}_${VERSION}_${DEFAULT}"
-          LLIFENAME="${PREFIX}_${VERSION}_${LLIFE}"
-          TESTNAME="${PREFIX}_${VERSION}_${TEST}"
+          DEFAULTNAME="${PREFIX}_${DEFAULT}_${VERSION}"
+          LLIFENAME="${PREFIX}_${LLIFE}_${VERSION}"
+          TESTNAME="${PREFIX}_${TEST}_${VERSION}"
           
           echo "default_full_hex=${DEFAULTNAME}_full.hex" >> $GITHUB_ENV
           echo "default_app_dfu=${DEFAULTNAME}_dfu_app.zip" >> $GITHUB_ENV

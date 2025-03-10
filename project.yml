@@ -20,8 +20,9 @@
   :default_tasks:
     - test:all
 
-#:test_build:
-#  :use_assembly: TRUE
+# Return error on test fail
+  :test_build:
+    :graceful_fail: true
 
 #:release_build:
 #  :output: MyApp.out
@@ -135,5 +136,6 @@
 :plugins:
   :enabled:
     - module_generator
-    - gcov 
+    - gcov
+    - report_tests_pretty_stdout
 ...
