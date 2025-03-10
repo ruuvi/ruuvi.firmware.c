@@ -19,6 +19,18 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           submodules: recursive
 
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        run: |
+          python --version
+          pip --version
+          python3 -m pip install --upgrade pip
+          pip3 install -r scripts/requirements.txt
+
       - name: Install nRF Command Line Tools
         run: |
           wget -q -P ~ https://storage.ruuvi.com/nrf-command-line-tools_10.24.2_amd64.deb
@@ -59,7 +71,7 @@ jobs:
         run: |
           ln -s ~/nRF5_SDK_15.3.0_59ac345 nRF5_SDK_15.3.0_59ac345
           cd src
-          make all
+          make ruuvitag_b
 
       - name: Generate artifact names
         id: artifact-names
