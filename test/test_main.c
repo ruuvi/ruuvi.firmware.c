@@ -93,6 +93,7 @@ static void flash_protect_expect (void)
     }
 }
 
+#if !UNITY_EXCLUDE_FLOAT
 void test_main_ok (void)
 {
     // <setup>
@@ -156,6 +157,7 @@ void test_main_error (void)
     ri_yield_ExpectAndReturn (RD_SUCCESS);
     app_main();
 }
+#endif
 
 void test_semver_boards (void)
 {

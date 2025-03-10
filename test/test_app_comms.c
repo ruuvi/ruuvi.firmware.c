@@ -28,6 +28,7 @@ extern bool m_config_enabled_on_curr_conn;
 extern bool m_config_enabled_on_next_conn;
 static uint32_t m_expect_sends = 0;
 static uint32_t m_dummy_timeouts = 0;
+static ri_comm_message_t m_dummy_sent_data = {0};
 
 void setUp (void)
 {
@@ -58,6 +59,14 @@ static rd_status_t dummy_comm_gatt (ri_comm_message_t * const msg)
     if (RD_SUCCESS == err_code)
     {
         on_gatt_tx_done_isr (NULL, 0);
+        // Mocking around NULL data not checked. 
+        if(msg != NULL)
+        {
+            memcpy(m_dummy_sent_data.data, msg->data, RI_COMM_MESSAGE_MAX_LENGTH);
+            m_dummy_sent_data.data_length = msg->data_length;
+            m_dummy_sent_data.repeat_count = msg->data_length;
+        }
+        
     }
 
     m_expect_sends++;
@@ -360,14 +369,15 @@ void test_handle_gatt_unauthorized (void)
 {
     uint8_t mock_data[RE_STANDARD_MESSAGE_LENGTH] = {0};
     mock_data[RE_STANDARD_DESTINATION_INDEX] = RE_STANDARD_DESTINATION_PASSWORD;
-    mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_READ;
-    app_heartbeat_stop_ExpectAndReturn (RD_SUCCESS);
-    ri_gatt_params_request_ExpectAndReturn (RI_GATT_TURBO, (30 * 1000), RD_SUCCESS);
-    ri_comm_id_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
-    ri_gatt_params_request_ExpectAndReturn (RI_GATT_LOW_POWER, 0, RD_SUCCESS);
-    app_heartbeat_start_ExpectAndReturn (RD_SUCCESS);
+    mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_WRITE;
     RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
-    handle_gatt_data (mock_data, sizeof (mock_data));
+    handle_comms (&dummy_comm_gatt, mock_data, sizeof (mock_data));
+    TEST_ASSERT(m_dummy_sent_data.data[RE_STANDARD_OPERATION_INDEX] == RE_STANDARD_OP_UNAUTHORIZED);
+    for (uint8_t ii = RE_STANDARD_PAYLOAD_START_INDEX;
+            ii < RE_STANDARD_MESSAGE_LENGTH; ii++)
+    {
+        TEST_ASSERT(m_dummy_sent_data.data[ii] == 0xFFU);
+    }
 }
 
 void test_handle_gatt_null_data (void)
