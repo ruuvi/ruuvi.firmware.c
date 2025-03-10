@@ -59,14 +59,14 @@ static rd_status_t dummy_comm_gatt (ri_comm_message_t * const msg)
     if (RD_SUCCESS == err_code)
     {
         on_gatt_tx_done_isr (NULL, 0);
-        // Mocking around NULL data not checked. 
-        if(msg != NULL)
+
+        // Mocking around NULL data not checked.
+        if (msg != NULL)
         {
-            memcpy(m_dummy_sent_data.data, msg->data, RI_COMM_MESSAGE_MAX_LENGTH);
+            memcpy (m_dummy_sent_data.data, msg->data, RI_COMM_MESSAGE_MAX_LENGTH);
             m_dummy_sent_data.data_length = msg->data_length;
             m_dummy_sent_data.repeat_count = msg->data_length;
         }
-        
     }
 
     m_expect_sends++;
@@ -372,11 +372,13 @@ void test_handle_gatt_unauthorized (void)
     mock_data[RE_STANDARD_OPERATION_INDEX] = RE_STANDARD_VALUE_WRITE;
     RD_ERROR_CHECK_EXPECT (RD_SUCCESS, ~RD_ERROR_FATAL);
     handle_comms (&dummy_comm_gatt, mock_data, sizeof (mock_data));
-    TEST_ASSERT(m_dummy_sent_data.data[RE_STANDARD_OPERATION_INDEX] == RE_STANDARD_OP_UNAUTHORIZED);
+    TEST_ASSERT (m_dummy_sent_data.data[RE_STANDARD_OPERATION_INDEX] ==
+                 RE_STANDARD_OP_UNAUTHORIZED);
+
     for (uint8_t ii = RE_STANDARD_PAYLOAD_START_INDEX;
             ii < RE_STANDARD_MESSAGE_LENGTH; ii++)
     {
-        TEST_ASSERT(m_dummy_sent_data.data[ii] == 0xFFU);
+        TEST_ASSERT (m_dummy_sent_data.data[ii] == 0xFFU);
     }
 }
 
