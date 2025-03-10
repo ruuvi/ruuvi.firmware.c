@@ -61,7 +61,6 @@ jobs:
     - name: Run Sonar scanner
       run: |
         ceedling test:all
-        ceedling gcov:all utils:gcov
         gcov  -b -c build/gcov/out/*.gcno
         export SONAR_SCANNER_OPTS="-server"
         sonar-scanner \
