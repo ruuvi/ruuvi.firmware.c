@@ -96,34 +96,34 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.default_full_hex }}
-          path: src/targets/ruuvitab_b/armgcc/${{ env.default_full_hex }}
+          path: src/targets/ruuvitag_b/armgcc/${{ env.default_full_hex }}
 
       - name: Upload artifact default_dfu.zip
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.default_app_dfu }}
-          path: src/targets/ruuvitab_b/armgcc/${{ env.default_app_dfu }}
+          path: src/targets/ruuvitag_b/armgcc/${{ env.default_app_dfu }}
 
       - name: Upload artifact llife_full.hex
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.llife_full_hex }}
-          path: src/targets/ruuvitab_b/armgcc/${{ env.llife_full_hex }}
+          path: src/targets/ruuvitag_b/armgcc/${{ env.llife_full_hex }}
 
       - name: Upload artifact llife_dfu.zip
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.llife_app_dfu }}
-          path: src/targets/ruuvitab_b/armgcc/${{ env.llife_app_dfu }}
+          path: src/targets/ruuvitag_b/armgcc/${{ env.llife_app_dfu }}
 
       - name: Upload artifact test_full.hex
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.test_full_hex }}
-          path: src/targets/ruuvitab_b/armgcc/${{ env.test_full_hex }}
+          path: src/targets/ruuvitag_b/armgcc/${{ env.test_full_hex }}
 
       - name: Upload artifact test_dfu.zip
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.test_app_dfu }}
-          path: src/targets/ruuvitab_b/armgcc/${{ env.test_app_dfu }}
+          path: src/targets/ruuvitag_b/armgcc/${{ env.test_app_dfu }}
