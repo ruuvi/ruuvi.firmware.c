@@ -76,7 +76,7 @@ jobs:
       - name: Generate artifact names
         id: artifact-names
         run: |
-          PREFIX="ruuvitab_b_armgcc_ruuvifw"
+          PREFIX="ruuvitag_b_armgcc_ruuvifw"
           VERSION="${{ env.git_version }}"
           DEFAULT="default"
           LLIFE="longlife"
@@ -84,6 +84,7 @@ jobs:
           DEFAULTNAME="${PREFIX}_${DEFAULT}_${VERSION}"
           LLIFENAME="${PREFIX}_${LLIFE}_${VERSION}"
           TESTNAME="${PREFIX}_${TEST}_${VERSION}"
+          BUILDPATH="src/targets/ruuvitag_b/armgcc"
           
           echo "default_full_hex=${DEFAULTNAME}_full.hex" >> $GITHUB_ENV
           echo "default_app_dfu=${DEFAULTNAME}_dfu_app.zip" >> $GITHUB_ENV
@@ -96,34 +97,34 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.default_full_hex }}
-          path: src/targets/ruuvitag_b/armgcc/${{ env.default_full_hex }}
+          path: ${BUILDPATH}/${{ env.default_full_hex }}
 
       - name: Upload artifact default_dfu.zip
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.default_app_dfu }}
-          path: src/targets/ruuvitag_b/armgcc/${{ env.default_app_dfu }}
+          path: ${BUILDPATH}/${{ env.default_app_dfu }}
 
       - name: Upload artifact llife_full.hex
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.llife_full_hex }}
-          path: src/targets/ruuvitag_b/armgcc/${{ env.llife_full_hex }}
+          path: ${BUILDPATH}/${{ env.llife_full_hex }}
 
       - name: Upload artifact llife_dfu.zip
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.llife_app_dfu }}
-          path: src/targets/ruuvitag_b/armgcc/${{ env.llife_app_dfu }}
+          path: ${BUILDPATH}/${{ env.llife_app_dfu }}
 
       - name: Upload artifact test_full.hex
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.test_full_hex }}
-          path: src/targets/ruuvitag_b/armgcc/${{ env.test_full_hex }}
+          path: ${BUILDPATH}/${{ env.test_full_hex }}
 
       - name: Upload artifact test_dfu.zip
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.test_app_dfu }}
-          path: src/targets/ruuvitag_b/armgcc/${{ env.test_app_dfu }}
+          path: ${BUILDPATH}/${{ env.test_app_dfu }}
