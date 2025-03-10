@@ -21,7 +21,7 @@ jobs:
 
       - name: Install nRF Command Line Tools
         run: |
-          wget -q -P ~ https://nsscprodmedia.blob.core.windows.net/prod/software-and-other-downloads/desktop-software/nrf-command-line-tools/sw/versions-10-x-x/10-24-2/nrf-command-line-tools_10.24.2_amd64.deb
+          wget -q -P ~ https://storage.ruuvi.com/nrf-command-line-tools_10.24.2_amd64.deb
           sudo dpkg -i ~/nrf-command-line-tools_10.24.2_amd64.deb
           rm -f ~/nrf-command-line-tools_10.24.2_amd64.deb
 
@@ -45,7 +45,7 @@ jobs:
       - name: Download and install Nordic SDK nRF5_SDK_15.3.0_59ac345
         if: steps.cache-nRF5_SDK.outputs.cache-hit != 'true'
         run: |
-          wget -q -P ~ https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+          wget -q -P ~ https://storage.ruuvi.com/nRF5_SDK_15.3.0_59ac345.zip
           unzip -q ~/nRF5_SDK_15.3.0_59ac345.zip -d ~
           rm -f ~/nRF5_SDK_15.3.0_59ac345.zip
 
