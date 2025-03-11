@@ -20,8 +20,9 @@
   :default_tasks:
     - test:all
 
-#:test_build:
-#  :use_assembly: TRUE
+# Return error on test fail
+  :test_build:
+    :graceful_fail: true
 
 #:release_build:
 #  :output: MyApp.out
@@ -74,6 +75,7 @@
   :mock_prefix: mock_
   :when_no_prototypes: :warn
   :enforce_strict_ordering: TRUE
+  :unity_helper_path: test/support/unity_helper.h
   :plugins:
     - :array
     - :ignore
@@ -135,5 +137,6 @@
 :plugins:
   :enabled:
     - module_generator
-    - gcov 
+    - gcov
+    - report_tests_pretty_stdout
 ...

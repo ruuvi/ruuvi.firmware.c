@@ -668,14 +668,6 @@ void test_app_log_process_sequence (void)
         if (! (ii % 2))
         {
             sample_process_expect (&sample);
-#           if RL_COMPRESS_ENABLED
-            rl_compress_ExpectAndReturn (NULL,
-                                         m_log_input_block.storage,
-                                         sizeof (m_log_input_block.storage),
-                                         &m_compress_state,
-                                         RL_SUCCESS);
-            rl_compress_IgnoreArg_data();
-#           endif
         }
 
         err_code |= app_log_process (&sample);
@@ -716,16 +708,7 @@ void test_app_log_process_fill_blocks (void)
             rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
         }
 
-#       if RL_COMPRESS_ENABLED
-        rl_compress_ExpectAndReturn (NULL,
-                                     m_log_input_block.storage,
-                                     sizeof (m_log_input_block.storage),
-                                     &m_compress_state,
-                                     RL_COMPRESS_END);
-        rl_compress_IgnoreArg_data();
-#       else
         m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
-#       endif
         bool store_fail = (ii) % 2;
         store_block_expect (record_idx, store_fail);
         record_idx ++;
@@ -768,16 +751,7 @@ void test_app_log_process_32b_ms_overflow (void)
             rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
         }
 
-#       if RL_COMPRESS_ENABLED
-        rl_compress_ExpectAndReturn (NULL,
-                                     m_log_input_block.storage,
-                                     sizeof (m_log_input_block.storage),
-                                     &m_compress_state,
-                                     RL_COMPRESS_END);
-        rl_compress_IgnoreArg_data();
-#       else
         m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
-#       endif
         bool store_fail = false;
         store_block_expect (record_idx, store_fail);
         record_idx ++;
@@ -819,16 +793,7 @@ void test_app_log_process_nomem_block (void)
         rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     }
 
-#       if RL_COMPRESS_ENABLED
-    rl_compress_ExpectAndReturn (NULL,
-                                 m_log_input_block.storage,
-                                 sizeof (m_log_input_block.storage),
-                                 &m_compress_state,
-                                 RL_COMPRESS_END);
-    rl_compress_IgnoreArg_data();
-#       else
     m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
-#       endif
     store_block_expect_nomem (record_idx);
     err_code = app_log_process (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
@@ -961,6 +926,7 @@ void test_app_log_config_get_not_init (void)
     TEST_ASSERT (RD_ERROR_NOT_INITIALIZED == err_code);
 }
 
+#if !UNITY_EXCLUDE_FLOAT
 /**
  * @brief Get data from log.
  *
@@ -1006,16 +972,6 @@ void test_app_log_read_from_start (void)
                                    RD_SUCCESS);
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnArrayThruPtr_message (&r1, 1);
-#if RL_COMPRESS_ENABLED
-    uint32_t timestamp = sample.timestamp_ms / 1000;
-    rl_data_t data = {0};
-    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
-                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
-                                            sizeof (m_log_output_block.storage),
-                                            &m_compress_state, 1,
-                                            &timestamp, 1,
-                                            RD_SUCCESS);
-#endif
     sample_read_expect (&sample, &r1.storage[0]);
     err_code |= app_log_read (&sample, &rs);
     TEST_ASSERT (RD_SUCCESS == err_code);
@@ -1353,20 +1309,11 @@ void test_app_log_read_32b_ms_overflow (void)
                                    RD_SUCCESS);
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnArrayThruPtr_message (&r1, 1);
-#if RL_COMPRESS_ENABLED
-    uint32_t timestamp = sample.timestamp_ms / 1000;
-    rl_data_t data = {0};
-    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
-                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
-                                            sizeof (m_log_output_block.storage),
-                                            &m_compress_state, 1,
-                                            &timestamp, 1,
-                                            RD_SUCCESS);
-#endif
     sample_read_expect (&sample, &r1.storage[0]);
     err_code |= app_log_read (&sample, &rs);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
+#endif
 
 void test_app_log_purge_flash (void)
 {

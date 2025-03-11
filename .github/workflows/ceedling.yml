@@ -38,7 +38,7 @@ jobs:
     - name: Download Nordic SDK
       run: |
         if [ ! -d "nRF5_SDK_15.3.0_59ac345/modules" ]; then
-          wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+          wget -q https://storage.ruuvi.com/nRF5_SDK_15.3.0_59ac345.zip
           unzip -q nRF5_SDK_15.3.0_59ac345.zip
         fi
 
