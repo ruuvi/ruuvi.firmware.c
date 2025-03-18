@@ -1,0 +1,128 @@
+name: Build Release
+
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+jobs:
+  build:
+    name: Build Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          submodules: recursive
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        run: |
+          python --version
+          pip --version
+          python3 -m pip install --upgrade pip
+          pip3 install -r scripts/requirements.txt
+
+      - name: Install nRF Command Line Tools
+        run: |
+          wget -q -P ~ https://storage.ruuvi.com/nrf-command-line-tools_10.24.2_amd64.deb
+          sudo dpkg -i ~/nrf-command-line-tools_10.24.2_amd64.deb
+          rm -f ~/nrf-command-line-tools_10.24.2_amd64.deb
+
+      - name: Install Arm GNU Toolchain (arm-none-eabi-gcc)
+        uses: carlosperate/arm-none-eabi-gcc-action@v1
+        with:
+          release: '7-2018-q2'
+
+      - name: Create symbolic link for ARM toolchain
+        run: |
+          sudo ln -s /home/runner/gcc-arm-none-eabi-7.2018.2-linux-x64/gcc-arm-none-eabi-7-2018-q2-update \
+            /usr/local/gcc-arm-none-eabi-7-2018-q2-update
+
+      - name: Cache nRF5_SDK_15.3.0_59ac345
+        id: cache-nRF5_SDK
+        uses: actions/cache@v4
+        with:
+          path: ~/nRF5_SDK_15.3.0_59ac345
+          key: nRF5_SDK-${{ hashFiles('.github/workflows/build-fw.yml') }}
+
+      - name: Download and install Nordic SDK nRF5_SDK_15.3.0_59ac345
+        if: steps.cache-nRF5_SDK.outputs.cache-hit != 'true'
+        run: |
+          wget -q -P ~ https://storage.ruuvi.com/nRF5_SDK_15.3.0_59ac345.zip
+          unzip -q ~/nRF5_SDK_15.3.0_59ac345.zip -d ~
+          rm -f ~/nRF5_SDK_15.3.0_59ac345.zip
+
+      - name: Get short commit hash if no tags
+        id: get-version
+        run: |
+          VERSION=$(git describe --exact-match --tags HEAD 2>/dev/null || git rev-parse --short HEAD)
+          echo "git_version=$VERSION" >> $GITHUB_ENV
+
+      - name: Run build
+        run: |
+          ln -s ~/nRF5_SDK_15.3.0_59ac345 nRF5_SDK_15.3.0_59ac345
+          cd src
+          make ruuvitag_b
+
+      - name: Generate artifact names
+        id: artifact-names
+        run: |
+          PREFIX="ruuvitag_b_armgcc_ruuvifw"
+          VERSION="${{ env.git_version }}"
+          DEFAULT="default"
+          LLIFE="longlife"
+          TEST="test"
+          DEFAULTNAME="${PREFIX}_${DEFAULT}_${VERSION}"
+          LLIFENAME="${PREFIX}_${LLIFE}_${VERSION}"
+          TESTNAME="${PREFIX}_${TEST}_${VERSION}"
+          BUILDPATH="src/targets/ruuvitag_b/armgcc"
+          
+          echo "default_full_hex=${DEFAULTNAME}_full.hex" >> $GITHUB_ENV
+          echo "default_app_dfu=${DEFAULTNAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "llife_full_hex=${LLIFENAME}_full.hex" >> $GITHUB_ENV
+          echo "llife_app_dfu=${LLIFENAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "test_full_hex=${TESTNAME}_full.hex" >> $GITHUB_ENV
+          echo "test_app_dfu=${TESTNAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "buildpath=${BUILDPATH}" >> $GITHUB_ENV
+
+      - name: Upload artifact default_full.hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.default_full_hex }}
+          path: ${{ env.buildpath }}/${{ env.default_full_hex }}
+
+      - name: Upload artifact default_dfu.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.default_app_dfu }}
+          path: ${{ env.buildpath }}/${{ env.default_app_dfu }}
+
+      - name: Upload artifact llife_full.hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.llife_full_hex }}
+          path: ${{ env.buildpath }}/${{ env.llife_full_hex }}
+
+      - name: Upload artifact llife_dfu.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.llife_app_dfu }}
+          path: ${{ env.buildpath }}/${{ env.llife_app_dfu }}
+
+      - name: Upload artifact test_full.hex
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.test_full_hex }}
+          path: ${{ env.buildpath }}/${{ env.test_full_hex }}
+
+      - name: Upload artifact test_dfu.zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.test_app_dfu }}
+          path: ${{ env.buildpath }}/${{ env.test_app_dfu }}
