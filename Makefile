@@ -205,10 +205,8 @@
 
 CXX=gcc
 
-PVS_CFG=./PVS-Studio.cfg
-# csv, errorfile, fullhtml, html, tasklist, xml
+
 LOG_FORMAT=fullhtml
-PVS_LOG=./doxygen/html
 DOXYGEN_DIR=./doxygen
 
 SDK_ROOT := nRF5_SDK_15.3.0_59ac345
@@ -229,9 +227,6 @@ INC_PARAMS=$(foreach d, $(INCLUDES), -I$d)
 ANALYSIS=$(SOURCES:.c=.a)
 SOURCES=${RUUVI_PRJ_SOURCES}
 OBJECTS=$(SOURCES:.c=.o)
-IOBJECTS=$(SOURCES:.c=.o.PVS-Studio.i)
-POBJECTS=$(SOURCES:.c=.o.PVS-Studio.log)
-EXECUTABLE=ruuvifw
 SONAR=firmware_analysis
 
 # Tag on this commit
@@ -240,24 +235,27 @@ TAG := $(shell git describe --tags --exact-match)
 COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := $(if $(TAG),$(TAG),$(COMMIT))
 
-.PHONY: astyle clean doxygen sonar pvs
+BUILD_DIR = ./build
+TEST_BUILD_DIR = ${BUILD_DIR}/test
+TEST_OUT_DIR = ${TEST_BUILD_DIR}/out
 
-all: clean doxygen pvs $(SOURCES) $(EXECUTABLE) 
+# Setup environment variables for ${CMOCK_DIR}/scripts/create_makefile.rb:
+export CMOCK_DIR ?= ./CMock
+UNITY_DIR = ${CMOCK_DIR}/vendor/unity
+DISABLE_CMOCK_TEST_SUMMARY_PER_PROJECT=1
 
-pvs: $(SOURCES) $(EXECUTABLE) 
+TEST_MAKEFILE = ${TEST_BUILD_DIR}/MakefileTestSupport
 
-$(EXECUTABLE): $(OBJECTS)
-# Converting
-	plog-converter -a 'GA:1,2,3;OP:1,2,3;CS:1,2,3;MISRA:1,2,3' -t $(LOG_FORMAT) $(POBJECTS) -o $(PVS_LOG)
-	plog-converter -a 'GA:1;OP:1;CS:1;MISRA:1' --excludedCodes=V1042 -t errorfile $(POBJECTS) -o ./pvs.error
+-include ${TEST_MAKEFILE}
+
+.PHONY: astyle clean doxygen sonar test
+
+all: clean doxygen $(SOURCES) $(EXECUTABLE) 
+
 
 .c.o:
 # Build
 	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) $(OFLAGS) -o $@
-# Preprocessing
-	$(CXX) $(CFLAGS) $< $(DFLAGS) $(INC_PARAMS) -E -o $@.PVS-Studio.i
-# Analysis
-	pvs-studio --cfg $(PVS_CFG) --source-file $< --i-file $@.PVS-Studio.i --output-file $@.PVS-Studio.log
 
 sonar: $(SOURCES) $(SONAR) 
 $(SONAR): $(ANALYSIS)
@@ -280,7 +278,17 @@ astyle:
 
 clean:
 	rm -f $(OBJECTS) $(IOBJECTS) $(POBJECTS) 
-	rm -rf $(PVS_LOG)/fullhtml
 	rm -rf $(DOXYGEN_DIR)/html
 	rm -rf $(DOXYGEN_DIR)/latex
 	rm -f *.gcov
+
+test_all:
+	rm -rf build
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_48.yml ceedling test:all
+	CEEDLING_MAIN_PROJECT_FILE=./project_ext_adv_max.yml ceedling test:all
+
+test_gcov:
+	rm -rf build
+	CEEDLING_MAIN_PROJECT_FILE=./project.yml ceedling test:all
+	gcov  -b -c build/gcov/out/*.gcno

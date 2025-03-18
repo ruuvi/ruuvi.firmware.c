@@ -14,6 +14,11 @@
  * @brief Configure application enabled modules and parameters.
  */
 /** @}*/
+
+#ifndef APP_FW_VERSION
+#define APP_FW_VERSION "v0.0.1"
+#endif
+
 /**
  * @addtogroup SDK15
  */
@@ -156,6 +161,11 @@
 #   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
 #endif
 
+/** @brief Enable External TMP117 temperature sensor */
+#ifndef APP_SENSOR_TMP117EXT_ENABLED
+#   define APP_SENSOR_TMP117EXT_ENABLED RB_ENVIRONMENTAL_TMP117EXT_PRESENT
+#endif
+
 #ifndef APP_SENSOR_TMP117_DSP_FUNC
 #   define APP_SENSOR_TMP117_DSP_FUNC RD_SENSOR_DSP_LAST //!< Do not use DSP by default
 #endif
@@ -196,7 +206,7 @@
 #   define APP_SENSOR_NRF52_DSP_PARAM (1U) //!< Only 1 is valid with LAST
 #endif
 #ifndef APP_SENSOR_NRF52_MODE
-#   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< SHTC runs in single-shot mode internally, update data automatically on fetch.
+#   define APP_SENSOR_NRF52_MODE RD_SENSOR_CFG_CONTINUOUS //!< NRF runs in single-shot mode internally, update data automatically on fetch.
 #endif
 #ifndef APP_SENSOR_NRF52_RESOLUTION
 #   define APP_SENSOR_NRF52_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default resolution supported.
@@ -309,13 +319,13 @@
 #   define APP_COMMS_BIDIR_ENABLED ((APP_GATT_ENABLED) + (APP_NFC_ENABLED))
 #endif
 
-/** @brief Enable Flash tasks if there is storage space */
+/** @brief Enable Flash tasks if there is storage space. GATT also requires flash */
 #ifndef RT_FLASH_ENABLED
 #   define RT_FLASH_ENABLED (RB_FLASH_SPACE_AVAILABLE > RB_FLASH_SPACE_SMALL)
 #endif
 
 /** @brief Enable Ruuvi Flash interface. */
-#define RI_FLASH_ENABLED RT_FLASH_ENABLED
+#define RI_FLASH_ENABLED ((RT_FLASH_ENABLED)  + (APP_GATT_ENABLED))
 
 // ***** Flash storage constants *****/
 
@@ -402,9 +412,12 @@
  * @brief Enable all possible dataformats for unit testing.
  */
 #ifdef CEEDLING
-#  define ENABLE_ALL_DATAFORMATS (1U)
+#  define TEST_ALL_DATAFORMATS (1U)
 #else
-#  define ENABLE_ALL_DATAFORMATS (0U)
+#  define TEST_ALL_DATAFORMATS (0U)
+#endif
+#ifndef ENABLE_ALL_DATAFORMATS
+#  define ENABLE_ALL_DATAFORMATS (TEST_ALL_DATAFORMATS)
 #endif
 
 /**
@@ -426,6 +439,13 @@
  */
 #ifndef RE_8_ENABLED
 #   define RE_8_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable dataformat with space for UUID
+ */
+#ifndef RE_C5_ENABLED
+#   define RE_C5_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
 #endif
 
 /**

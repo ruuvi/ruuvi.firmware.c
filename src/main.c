@@ -20,6 +20,7 @@
 #include "main.h"
 #include "run_integration_tests.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_flash.h"
 #include "ruuvi_interface_power.h"
 #include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_timer.h"
@@ -37,7 +38,14 @@ static
 #endif
 void on_wdt (void)
 {
-    // Store cause of reset to flash - TODO
+    // No action needed, device reboots after returning from this interrupt.
+    // Any any code necessary for a graceful shutdown / reboot here.
+    /**
+      If the watchdog is configured to generate an interrupt on the TIMEOUT event,
+      the watchdog reset is postponed by two 32.768 kHz clock cycles after the TIMEOUT event is generated.
+      Once the TIMEOUT event is generated, and unless the watchdog is stopped, the impending watchdog reset will occur.
+      [https://docs.nordicsemi.com/bundle/ps_nrf52840/page/wdt.html], presumably same for all of nRF52 family.
+    */
 }
 #endif
 
@@ -49,11 +57,34 @@ void app_on_error (const rd_status_t error,
                    const char * file,
                    const int line)
 {
-    // TODO: store error source to flash.
     if (fatal)
     {
         ri_power_reset();
     }
+}
+
+#ifndef CEEDLING
+static
+#endif
+rd_status_t protect_flash (void)
+{
+    rd_status_t err_code = RD_SUCCESS;
+#if RI_FLASH_ENABLED
+
+    // Protect softdevice
+    for (size_t page = 0; page < 0x26; page++)
+    {
+        err_code |= ri_flash_protect (page);
+    }
+
+    // Protect bootloader
+    for (size_t page = 0x75; page < 0x80; page++)
+    {
+        err_code |= ri_flash_protect (page);
+    }
+
+#endif
+    return err_code;
 }
 
 /**
@@ -68,6 +99,7 @@ void setup (void)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
 #   endif
+    err_code |= protect_flash();
     err_code |= ri_yield_init();
     err_code |= ri_timer_init();
     err_code |= ri_scheduler_init();

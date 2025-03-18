@@ -17,10 +17,6 @@
 #define APP_FW_NAME "Ruuvi FW "
 #endif
 
-#ifndef APP_FW_VERSION
-#define APP_FW_VERSION "v0.0.1"
-#endif
-
 #ifndef APP_FW_VARIANT
 #define APP_FW_VARIANT "+default"
 #endif
@@ -56,7 +52,7 @@
 #endif
 
 #ifndef APP_MOTION_THRESHOLD
-#   define APP_MOTION_THRESHOLD (0.064F)
+#   define APP_MOTION_THRESHOLD (0.64F)
 #endif
 
 #ifndef APP_LOCKED_AT_BOOT

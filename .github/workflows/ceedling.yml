@@ -25,10 +25,11 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    - name: Set up Ruby 2.6
-      uses: actions/setup-ruby@v1
+    - name: Set up Ruby 3.0
+      uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.6
+        ruby-version: '3.0' # Not needed with a .ruby-version file
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
 
     # Runs a single command using the runners shell
     - name: Install Ceedling
@@ -37,7 +38,7 @@ jobs:
     - name: Download Nordic SDK
       run: |
         if [ ! -d "nRF5_SDK_15.3.0_59ac345/modules" ]; then
-          wget -q https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip
+          wget -q https://storage.ruuvi.com/nRF5_SDK_15.3.0_59ac345.zip
           unzip -q nRF5_SDK_15.3.0_59ac345.zip
         fi
 

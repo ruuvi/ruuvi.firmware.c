@@ -1,7 +1,4 @@
 /* @file test/test_app_log.c
- * @date 
- *       2021-12-15 DG remove test for unused functions:
- *                      app_log_config_get/set
  */
 #include "unity.h"
 
@@ -240,6 +237,24 @@ static void log_purge_Expect (void)
     rt_flash_gc_run_ExpectAndReturn (RD_SUCCESS);
 }
 
+static void log_purge_noflash_Expect (void)
+{
+    for (uint8_t r_idx = 0; r_idx < APP_FLASH_LOG_DATA_RECORDS_NUM; r_idx++)
+    {
+        rd_status_t rvalue = RD_ERROR_INVALID_STATE;
+        rt_flash_free_ExpectAndReturn (APP_FLASH_LOG_FILE,
+                                       (APP_FLASH_LOG_DATA_RECORD_PREFIX << 8U) + r_idx,
+                                       rvalue);
+        rt_flash_busy_ExpectAndReturn (true);
+        ri_yield_ExpectAndReturn (RD_SUCCESS);
+        rt_flash_busy_ExpectAndReturn (false);
+    }
+
+    rt_flash_gc_run_ExpectAndReturn (RD_ERROR_INVALID_STATE);
+}
+
+/*
+ These functions are not needed as the app bootcounter is unused. Leaving them here for future reference.
 static void app_log_read_boot_count_Expect (void)
 {
     rt_flash_load_ExpectAndReturn (APP_FLASH_LOG_FILE, APP_FLASH_LOG_BOOT_COUNTER_RECORD,
@@ -266,6 +281,7 @@ static void app_log_read_boot_count_noflash_Expect (void)
                                    &m_boot_count, sizeof (uint32_t), RD_ERROR_INVALID_STATE);
     rt_flash_load_IgnoreArg_message();
 }
+*/
 
 static void sample_process_expect (const rd_sensor_data_t * const sample)
 {
@@ -437,7 +453,6 @@ void test_app_log_init_nostored (void)
     rt_flash_store_IgnoreArg_message();
 #endif
     log_purge_Expect();
-    app_log_read_boot_count_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
@@ -464,7 +479,6 @@ void test_app_log_init_stored (void)
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnMemThruPtr_message (&stored, sizeof (stored));
     log_purge_Expect();
-    app_log_read_boot_count_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&stored, &m_log_config, sizeof (m_log_config)));
@@ -483,9 +497,8 @@ void test_app_log_init_noflash (void)
                                    RD_ERROR_INVALID_STATE);
     rt_flash_load_IgnoreArg_message();
 #   else
-    log_purge_Expect();
+    log_purge_noflash_Expect();
 #   endif
-    app_log_read_boot_count_noflash_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
@@ -517,7 +530,6 @@ void test_app_log_init_nostored_nocounter (void)
     rt_flash_store_IgnoreArg_message();
 #endif
     log_purge_Expect();
-    app_log_read_boot_count_not_found_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
@@ -544,7 +556,6 @@ void test_app_log_init_stored_nocounter (void)
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnMemThruPtr_message (&stored, sizeof (stored));
     log_purge_Expect();
-    app_log_read_boot_count_not_found_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_SUCCESS == err_code);
     TEST_ASSERT (!memcmp (&stored, &m_log_config, sizeof (m_log_config)));
@@ -563,9 +574,8 @@ void test_app_log_init_noflash_nocounter (void)
                                    RD_ERROR_INVALID_STATE);
     rt_flash_load_IgnoreArg_message();
 #   else
-    log_purge_Expect();
+    log_purge_noflash_Expect();
 #   endif
-    app_log_read_boot_count_noflash_Expect();
     err_code |= app_log_init();
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
     TEST_ASSERT (!memcmp (&defaults, &m_log_config, sizeof (m_log_config)));
@@ -658,14 +668,6 @@ void test_app_log_process_sequence (void)
         if (! (ii % 2))
         {
             sample_process_expect (&sample);
-#           if RL_COMPRESS_ENABLED
-            rl_compress_ExpectAndReturn (NULL,
-                                         m_log_input_block.storage,
-                                         sizeof (m_log_input_block.storage),
-                                         &m_compress_state,
-                                         RL_SUCCESS);
-            rl_compress_IgnoreArg_data();
-#           endif
         }
 
         err_code |= app_log_process (&sample);
@@ -706,16 +708,7 @@ void test_app_log_process_fill_blocks (void)
             rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
         }
 
-#       if RL_COMPRESS_ENABLED
-        rl_compress_ExpectAndReturn (NULL,
-                                     m_log_input_block.storage,
-                                     sizeof (m_log_input_block.storage),
-                                     &m_compress_state,
-                                     RL_COMPRESS_END);
-        rl_compress_IgnoreArg_data();
-#       else
         m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
-#       endif
         bool store_fail = (ii) % 2;
         store_block_expect (record_idx, store_fail);
         record_idx ++;
@@ -758,16 +751,7 @@ void test_app_log_process_32b_ms_overflow (void)
             rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
         }
 
-#       if RL_COMPRESS_ENABLED
-        rl_compress_ExpectAndReturn (NULL,
-                                     m_log_input_block.storage,
-                                     sizeof (m_log_input_block.storage),
-                                     &m_compress_state,
-                                     RL_COMPRESS_END);
-        rl_compress_IgnoreArg_data();
-#       else
         m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
-#       endif
         bool store_fail = false;
         store_block_expect (record_idx, store_fail);
         record_idx ++;
@@ -809,16 +793,7 @@ void test_app_log_process_nomem_block (void)
         rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
     }
 
-#       if RL_COMPRESS_ENABLED
-    rl_compress_ExpectAndReturn (NULL,
-                                 m_log_input_block.storage,
-                                 sizeof (m_log_input_block.storage),
-                                 &m_compress_state,
-                                 RL_COMPRESS_END);
-    rl_compress_IgnoreArg_data();
-#       else
     m_log_input_block.num_samples = APP_LOG_MAX_SAMPLES;
-#       endif
     store_block_expect_nomem (record_idx);
     err_code = app_log_process (&sample);
     TEST_ASSERT (RD_SUCCESS == err_code);
@@ -876,9 +851,7 @@ void test_app_log_config_set_notinit (void)
     rt_flash_store_IgnoreArg_message();
     err_code |= app_log_config_set (&defaults);
     TEST_ASSERT (RD_ERROR_INVALID_STATE == err_code);
-}
-#endif  //  unused functions should not be tested    /\    /\   /\
-
+#endif  
 /**
  * @brief Read current logging configuration.
  *
@@ -952,6 +925,7 @@ void test_app_log_config_get_not_init (void)
     TEST_ASSERT (RD_ERROR_NOT_INITIALIZED == err_code);
 }
 
+#if !UNITY_EXCLUDE_FLOAT
 /**
  * @brief Get data from log.
  *
@@ -997,16 +971,6 @@ void test_app_log_read_from_start (void)
                                    RD_SUCCESS);
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnArrayThruPtr_message (&r1, 1);
-#if RL_COMPRESS_ENABLED
-    uint32_t timestamp = sample.timestamp_ms / 1000;
-    rl_data_t data = {0};
-    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
-                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
-                                            sizeof (m_log_output_block.storage),
-                                            &m_compress_state, 1,
-                                            &timestamp, 1,
-                                            RD_SUCCESS);
-#endif
     sample_read_expect (&sample, &r1.storage[0]);
     err_code |= app_log_read (&sample, &rs);
     TEST_ASSERT (RD_SUCCESS == err_code);
@@ -1344,20 +1308,11 @@ void test_app_log_read_32b_ms_overflow (void)
                                    RD_SUCCESS);
     rt_flash_load_IgnoreArg_message();
     rt_flash_load_ReturnArrayThruPtr_message (&r1, 1);
-#if RL_COMPRESS_ENABLED
-    uint32_t timestamp = sample.timestamp_ms / 1000;
-    rl_data_t data = {0};
-    rl_decompress_ExpectWithArrayAndReturn (&data, 1,
-                                            m_log_output_block.storage, sizeof (m_log_output_block.storage),
-                                            sizeof (m_log_output_block.storage),
-                                            &m_compress_state, 1,
-                                            &timestamp, 1,
-                                            RD_SUCCESS);
-#endif
     sample_read_expect (&sample, &r1.storage[0]);
     err_code |= app_log_read (&sample, &rs);
     TEST_ASSERT (RD_SUCCESS == err_code);
 }
+#endif
 
 void test_app_log_purge_flash (void)
 {

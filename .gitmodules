@@ -13,3 +13,6 @@
 [submodule "src/semver.c"]
 	path = src/semver
 	url = https://github.com/h2non/semver.c.git
+[submodule "CMock"]
+	path = CMock
+	url = https://github.com/ruuvi/CMock.git
