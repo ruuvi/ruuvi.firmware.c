@@ -84,11 +84,11 @@ jobs:
           BUILDPATH="src/targets/ruuvitag_b/armgcc"
           
           echo "default_full_hex=${DEFAULTNAME}_full.hex" >> $GITHUB_ENV
-          echo "default_app_dfu=${DEFAULTNAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "default_app_dfu=${DEFAULTNAME}_dfu_app" >> $GITHUB_ENV
           echo "llife_full_hex=${LLIFENAME}_full.hex" >> $GITHUB_ENV
-          echo "llife_app_dfu=${LLIFENAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "llife_app_dfu=${LLIFENAME}_dfu_app" >> $GITHUB_ENV
           echo "test_full_hex=${TESTNAME}_full.hex" >> $GITHUB_ENV
-          echo "test_app_dfu=${TESTNAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "test_app_dfu=${TESTNAME}_dfu_app" >> $GITHUB_ENV
           echo "buildpath=${BUILDPATH}" >> $GITHUB_ENV
 
       - name: Upload artifact default_full.hex
@@ -101,7 +101,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.default_app_dfu }}
-          path: ${{ env.buildpath }}/${{ env.default_app_dfu }}
+          path: ${{ env.buildpath }}/${{ env.default_app_dfu }}.zip
 
       - name: Upload artifact llife_full.hex
         uses: actions/upload-artifact@v4
@@ -113,7 +113,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.llife_app_dfu }}
-          path: ${{ env.buildpath }}/${{ env.llife_app_dfu }}
+          path: ${{ env.buildpath }}/${{ env.llife_app_dfu }}.zip
 
       - name: Upload artifact test_full.hex
         uses: actions/upload-artifact@v4
@@ -125,4 +125,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.test_app_dfu }}
-          path: ${{ env.buildpath }}/${{ env.test_app_dfu }}
+          path: ${{ env.buildpath }}/${{ env.test_app_dfu }}.zip
