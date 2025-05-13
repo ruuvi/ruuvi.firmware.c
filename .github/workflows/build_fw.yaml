@@ -88,7 +88,7 @@ jobs:
           UUIDNAME="${PREFIX}_${UUID}_${VERSION}"
           BUILDPATH="src/targets/ruuvitag_b/armgcc"
           
-          echo "all_artifacts=all_binaries" >> $GITHUB_ENV
+          echo "all_artifacts=${VERSION}_binaries" >> $GITHUB_ENV
           echo "default_full_hex=${DEFAULTNAME}_full.hex" >> $GITHUB_ENV
           echo "default_app_dfu=${DEFAULTNAME}_dfu_app.zip" >> $GITHUB_ENV
           echo "llife_full_hex=${LLIFENAME}_full.hex" >> $GITHUB_ENV
