@@ -110,3 +110,5 @@ jobs:
             ${{ env.buildpath }}/${{ env.llife_app_dfu }}
             ${{ env.buildpath }}/${{ env.test_full_hex }}
             ${{ env.buildpath }}/${{ env.test_app_dfu }}
+            ${{ env.buildpath }}/${{ env.uuid_full_hex }}
+            ${{ env.buildpath }}/${{ env.uuid_app_dfu }}
