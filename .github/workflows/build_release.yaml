@@ -78,51 +78,34 @@ jobs:
           DEFAULT="default"
           LLIFE="longlife"
           TEST="test"
+          UUID="uuid"
           DEFAULTNAME="${PREFIX}_${DEFAULT}_${VERSION}"
           LLIFENAME="${PREFIX}_${LLIFE}_${VERSION}"
           TESTNAME="${PREFIX}_${TEST}_${VERSION}"
+          UUIDNAME="${PREFIX}_${UUID}_${VERSION}"
           BUILDPATH="src/targets/ruuvitag_b/armgcc"
           
+          echo "all_artifacts=${VERSION}_binaries" >> $GITHUB_ENV
           echo "default_full_hex=${DEFAULTNAME}_full.hex" >> $GITHUB_ENV
           echo "default_app_dfu=${DEFAULTNAME}_dfu_app.zip" >> $GITHUB_ENV
           echo "llife_full_hex=${LLIFENAME}_full.hex" >> $GITHUB_ENV
           echo "llife_app_dfu=${LLIFENAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "uuid_full_hex=${UUIDNAME}_full.hex" >> $GITHUB_ENV
+          echo "uuid_app_dfu=${UUIDNAME}_dfu_app.zip" >> $GITHUB_ENV
           echo "test_full_hex=${TESTNAME}_full.hex" >> $GITHUB_ENV
           echo "test_app_dfu=${TESTNAME}_dfu_app.zip" >> $GITHUB_ENV
           echo "buildpath=${BUILDPATH}" >> $GITHUB_ENV
 
-      - name: Upload artifact default_full.hex
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.default_full_hex }}
-          path: ${{ env.buildpath }}/${{ env.default_full_hex }}
-
-      - name: Upload artifact default_dfu.zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.default_app_dfu }}
-          path: ${{ env.buildpath }}/${{ env.default_app_dfu }}
-
-      - name: Upload artifact llife_full.hex
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.llife_full_hex }}
-          path: ${{ env.buildpath }}/${{ env.llife_full_hex }}
-
-      - name: Upload artifact llife_dfu.zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.llife_app_dfu }}
-          path: ${{ env.buildpath }}/${{ env.llife_app_dfu }}
-
-      - name: Upload artifact test_full.hex
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.test_full_hex }}
-          path: ${{ env.buildpath }}/${{ env.test_full_hex }}
-
-      - name: Upload artifact test_dfu.zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.test_app_dfu }}
-          path: ${{ env.buildpath }}/${{ env.test_app_dfu }}
+          name: ${{ env.all_artifacts }}
+          path: |
+            ${{ env.buildpath }}/${{ env.default_full_hex }}
+            ${{ env.buildpath }}/${{ env.default_app_dfu }}
+            ${{ env.buildpath }}/${{ env.llife_full_hex }}
+            ${{ env.buildpath }}/${{ env.llife_app_dfu }}
+            ${{ env.buildpath }}/${{ env.test_full_hex }}
+            ${{ env.buildpath }}/${{ env.test_app_dfu }}
+            ${{ env.buildpath }}/${{ env.uuid_full_hex }}
+            ${{ env.buildpath }}/${{ env.uuid_app_dfu }}
