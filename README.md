@@ -1,7 +1,6 @@
 # ruuvi.firmware.c
 Current git repository status:
 
-[![Build Status](https://jenkins.ruuvi.com/buildStatus/icon?job=ruuvi.firmware.c+-+deploy)](https://jenkins.ruuvi.com/job/ruuvi.firmware.c%20-%20deploy/)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=alert_status)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=bugs)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=ruuvi_ruuvi.firmware.c&metric=code_smells)](https://sonarcloud.io/dashboard?id=ruuvi_ruuvi.firmware.c)
@@ -129,12 +128,7 @@ The report can be found under _build/artifacts/gcov_.
 Travis will fail the build if unit test fails and Gcov results will get pushed to SonarCloud.
 
 # How to contribute
-## Using http://github create a branch where the name is a very short description of the changes.
-## Create a Pull Request with a detailed description of your changes.
-* Do not use something like "Fixed movement threshold", rather use:
-* "Changed movement threshold from 0.064F to 0.128 to make it less sensative"
-
-## Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?
+Please let us know your thoughts on the direction and structure of the project. Does the project help you to understand how to build code for the RuuviTag?
 Is the structure of the project sensible to you? 
 
 If you want to assist in the project maintenance by fixing some issues _doxygen.error_ is
