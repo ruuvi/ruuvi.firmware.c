@@ -33,6 +33,7 @@
 #include "ruuvi_task_sensor.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_tmp117.h"
+#include "ri_pyd15x8.h"
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
 #define APP_SENSOR_HANDLE_UNUSED    RD_HANDLE_UNUSED
@@ -69,6 +70,9 @@ enum
 #endif
 #if APP_SENSOR_LIS2DW12_ENABLED
     LIS2DW12_INDEX,
+#endif
+#if APP_SENSOR_PYD15X8_ENABLED
+    PYD15X8_INDEX,
 #endif
     SENSOR_COUNT
 };
@@ -177,6 +181,23 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .fifo_pin = RB_INT_ACC1_PIN,                            \
     .level_pin = RB_INT_ACC2_PIN,                        \
     .i2c_max_speed = RB_I2C_MAX_SPD                        \
+  }
+#endif
+
+#if APP_SENSOR_PYD15X8_ENABLED
+#define APP_SENSOR_PYD15X8_DEFAULT_CFG                  \
+  {                                                     \
+    .sensor = { 0 },                                    \
+    .init = &ri_pyd15x8_init,                           \
+    .configuration = {0},                               \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                  \
+    .nvm_record = APP_FLASH_SENSOR_PYD15X8_RECORD,      \
+    .bus = RD_BUS_GPIO,                                 \
+    .handle = RD_BUS_NONE,                              \
+    .pwr_pin = RI_GPIO_ID_UNUSED,                       \
+    .pwr_on = RI_GPIO_HIGH,                             \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                      \
+    .level_pin = RI_GPIO_ID_UNUSED,                     \
   }
 #endif
 
@@ -439,6 +460,19 @@ uint32_t app_sensor_event_count_get (void);
  *
  */
 rd_status_t app_sensor_acc_thr_set (float * threshold_g);
+
+/**
+ * @brief Set threshold for PIR motion interrupts.
+ *
+ *
+ * @param[in, out] threshold   In: Thershold of motion, 0.0 ... 1.0. 
+ *                              NULL to disable interrupts.
+ *                             Out: Configured threshold.
+ * @retval RD_SUCCESS if threshold was configured.
+ * @retval RD_ERROR_NOT_IMPLEMENTED if threshold is lower than 0 (negative).
+ * @retval RD_ERROR_NOT_SUPPORTED if no suitable accelerometer is initialized.
+ */
+rd_status_t app_sensor_motion_interrupt_set(float * const threshold);
 
 /**
  * @brief Handle data coming in to the application.

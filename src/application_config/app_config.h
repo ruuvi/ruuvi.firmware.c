@@ -156,6 +156,30 @@
 #   define RI_SHTCX_ENABLED APP_SENSOR_SHTCX_ENABLED
 #endif
 
+/** @brief Enable PYD15X8 PIR sensor */
+#ifndef APP_SENSOR_PYD15X8_ENABLED
+#   define APP_SENSOR_PYD15X8_ENABLED RB_MOTION_PYD_PRESENT
+#endif
+
+#ifndef APP_SENSOR_PYD15X8_DSP_FUNC
+#   define APP_SENSOR_PYD15X8_DSP_FUNC RD_SENSOR_DSP_LAST //!< Only LAST supported
+#endif
+#ifndef APP_SENSOR_PYD15X8_DSP_PARAM
+#   define APP_SENSOR_PYD15X8_DSP_PARAM 1 //!< Only 1 is valid with LAST
+#endif
+#ifndef APP_SENSOR_PYD15X8_MODE
+#   define APP_SENSOR_PYD15X8_MODE RD_SENSOR_CFG_CONTINUOUS //!< Continuous mode
+#endif
+#ifndef APP_SENSOR_PYD15X8_RESOLUTION
+#   define APP_SENSOR_PYD15X8_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default supported
+#endif
+#ifndef APP_SENSOR_PYD15X8_SAMPLERATE
+#   define APP_SENSOR_PYD15X8_SAMPLERATE RD_SENSOR_CFG_DEFAULT //!< Only default supported
+#endif
+#ifndef APP_SENSOR_PYD15X8_SCALE
+#   define APP_SENSOR_PYD15X8_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default supported
+#endif
+
 /** @brief Enable TMP117 temperature sensor */
 #ifndef APP_SENSOR_TMP117_ENABLED
 #   define APP_SENSOR_TMP117_ENABLED RB_ENVIRONMENTAL_TMP117_PRESENT
@@ -253,6 +277,11 @@
 #   define RI_DPS310_ENABLED APP_SENSOR_DPS310_ENABLED
 #endif
 
+/** @brief Enable PYD15X8 driver */
+#ifndef RI_PYD15X8_ENABLED
+#   define RI_PYD15X8_ENABLED RB_MOTION_PYD_PRESENT
+#endif
+
 /** @brief Enable atomic operations */
 #ifndef RI_ATOMIC_ENABLED
 #   define RI_ATOMIC_ENABLED (1U)
@@ -342,6 +371,7 @@
 #define APP_FLASH_SENSOR_LIS2DH12_RECORD (0x2DU)
 #define APP_FLASH_SENSOR_NTC_RECORD      (0xC1U)
 #define APP_FLASH_SENSOR_PHOTO_RECORD    (0xC2U)
+#define APP_FLASH_SENSOR_PYD15X8_RECORD  (0xC4U)
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_TMP117_RECORD   (0x17U)
 
@@ -475,7 +505,7 @@
 
 /** @brief Enable Ruuvi I2C interface. */
 #ifndef RI_I2C_ENABLED
-#   define RI_I2C_ENABLED (1U)
+#   define RI_I2C_ENABLED (RB_I2C_ENABLED)
 #endif
 
 /** @brief Enable Ruuvi led tasks. */
@@ -505,7 +535,7 @@
 
 /** @brief Enable Ruuvi SPI interface. */
 #ifndef RI_SPI_ENABLED
-#   define RI_SPI_ENABLED (1U)
+#   define RI_SPI_ENABLED (RB_SPI_ENABLED)
 #endif
 
 /** @brief Enable Ruuvi Timer interface. */

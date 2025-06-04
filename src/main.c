@@ -95,6 +95,7 @@ void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
     float motion_threshold = APP_MOTION_THRESHOLD;
+    float pir_threshold = 0.5;
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
@@ -112,8 +113,9 @@ void setup (void)
     err_code |= app_dc_dc_init();
     err_code |= app_sensor_init();
     err_code |= app_log_init();
-    // Allow fail on boards which do not have accelerometer.
+    // Allow fail on boards which do not have specific sensors.
     (void) app_sensor_acc_thr_set (&motion_threshold);
+    (void) app_sensor_motion_interrupt_set(&pir_threshold);
     err_code |= app_comms_init (APP_LOCKED_AT_BOOT);
     err_code |= app_sensor_vdd_sample();
     err_code |= app_heartbeat_init();
