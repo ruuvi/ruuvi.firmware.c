@@ -71,7 +71,7 @@ jobs:
         run: |
           ln -s ~/nRF5_SDK_15.3.0_59ac345 nRF5_SDK_15.3.0_59ac345
           cd src
-          make ruuvitag_b
+          make ruuvitag_b ruuvitag_c
 
       - name: Generate artifact names
         id: artifact-names
