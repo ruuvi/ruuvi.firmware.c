@@ -465,14 +465,14 @@ rd_status_t app_sensor_acc_thr_set (float * threshold_g);
  * @brief Set threshold for PIR motion interrupts.
  *
  *
- * @param[in, out] threshold   In: Thershold of motion, 0.0 ... 1.0. 
+ * @param[in, out] threshold   In: Thershold of motion, 0.0 ... 1.0.
  *                              NULL to disable interrupts.
  *                             Out: Configured threshold.
  * @retval RD_SUCCESS if threshold was configured.
  * @retval RD_ERROR_NOT_IMPLEMENTED if threshold is lower than 0 (negative).
  * @retval RD_ERROR_NOT_SUPPORTED if no suitable accelerometer is initialized.
  */
-rd_status_t app_sensor_motion_interrupt_set(float * const threshold);
+rd_status_t app_sensor_motion_interrupt_set (float * const threshold);
 
 /**
  * @brief Handle data coming in to the application.
