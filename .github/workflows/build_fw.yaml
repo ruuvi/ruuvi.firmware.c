@@ -91,7 +91,8 @@ jobs:
           LLIFE_C_NAME="${PREFIX_C}_${LLIFE}_${VERSION}"
           TEST_C_NAME="${PREFIX_C}_${TEST}_${VERSION}"
           UUID_C_NAME="${PREFIX_C}_${UUID}_${VERSION}"
-          BUILDPATH="src/targets/ruuvitag_b/armgcc"
+          BUILDPATH_B="src/targets/ruuvitag_b/armgcc"
+          BUILDPATH_C="src/targets/ruuvitag_c/armgcc"
           
           echo "all_artifacts=${VERSION}_binaries" >> $GITHUB_ENV
           echo "default_b_full_hex=${DEFAULT_B_NAME}_full.hex" >> $GITHUB_ENV
@@ -110,26 +111,27 @@ jobs:
           echo "uuid_c_app_dfu=${UUID_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
           echo "test_c_full_hex=${TEST_B_NAME}_full.hex" >> $GITHUB_ENV
           echo "test_c_app_dfu=${TEST_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "buildpath=${BUILDPATH}" >> $GITHUB_ENV
+          echo "buildpath_b=${BUILDPATH_B}" >> $GITHUB_ENV
+          echo "buildpath_c=${BUILDPATH_C}" >> $GITHUB_ENV
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.all_artifacts }}
           path: |
-            ${{ env.buildpath }}/${{ env.default_b_full_hex }}
-            ${{ env.buildpath }}/${{ env.default_b_app_dfu }}
-            ${{ env.buildpath }}/${{ env.llife_b_full_hex }}
-            ${{ env.buildpath }}/${{ env.llife_b_app_dfu }}
-            ${{ env.buildpath }}/${{ env.test_b_full_hex }}
-            ${{ env.buildpath }}/${{ env.test_b_app_dfu }}
-            ${{ env.buildpath }}/${{ env.uuid_b_full_hex }}
-            ${{ env.buildpath }}/${{ env.uuid_b_app_dfu }}
-            ${{ env.buildpath }}/${{ env.default_c_full_hex }}
-            ${{ env.buildpath }}/${{ env.default_c_app_dfu }}
-            ${{ env.buildpath }}/${{ env.llife_c_full_hex }}
-            ${{ env.buildpath }}/${{ env.llife_c_app_dfu }}
-            ${{ env.buildpath }}/${{ env.test_c_full_hex }}
-            ${{ env.buildpath }}/${{ env.test_c_app_dfu }}
-            ${{ env.buildpath }}/${{ env.uuid_c_full_hex }}
-            ${{ env.buildpath }}/${{ env.uuid_c_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.default_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.default_b_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.llife_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.llife_b_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.test_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.test_b_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.uuid_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.uuid_b_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.default_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.default_c_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.llife_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.llife_c_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.test_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.test_c_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.uuid_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.uuid_c_app_dfu }}
