@@ -103,14 +103,14 @@ jobs:
           echo "uuid_b_app_dfu=${UUID_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
           echo "test_b_full_hex=${TEST_B_NAME}_full.hex" >> $GITHUB_ENV
           echo "test_b_app_dfu=${TEST_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "default_c_full_hex=${DEFAULT_B_NAME}_full.hex" >> $GITHUB_ENV
-          echo "default_c_app_dfu=${DEFAULT_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "llife_c_full_hex=${LLIFE_B_NAME}_full.hex" >> $GITHUB_ENV
-          echo "llife_c_app_dfu=${LLIFE_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "uuid_c_full_hex=${UUID_B_NAME}_full.hex" >> $GITHUB_ENV
-          echo "uuid_c_app_dfu=${UUID_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "test_c_full_hex=${TEST_B_NAME}_full.hex" >> $GITHUB_ENV
-          echo "test_c_app_dfu=${TEST_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "default_c_full_hex=${DEFAULT_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "default_c_app_dfu=${DEFAULT_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "llife_c_full_hex=${LLIFE_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "llife_c_app_dfu=${LLIFE_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "uuid_c_full_hex=${UUID_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "uuid_c_app_dfu=${UUID_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "test_c_full_hex=${TEST_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "test_c_app_dfu=${TEST_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
           echo "buildpath_b=${BUILDPATH_B}" >> $GITHUB_ENV
           echo "buildpath_c=${BUILDPATH_C}" >> $GITHUB_ENV
 
