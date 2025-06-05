@@ -316,27 +316,6 @@ static ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
 static rd_status_t app_sensor_buses_init (ri_i2c_frequency_t i2c_freq)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
-    ri_spi_init_config_t spi_config =
-    {
-        .mosi = RB_SPI_MOSI_PIN,
-        .miso = RB_SPI_MISO_PIN,
-        .sclk = RB_SPI_SCLK_PIN,
-        .ss_pins = ss_pins,
-        .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),
-        // Assume mode 0 always.
-        .mode = RI_SPI_MODE_0,
-        .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)
-    };
-    ri_i2c_init_config_t i2c_config =
-    {
-        .sda = RB_I2C_SDA_PIN,
-        .scl = RB_I2C_SCL_PIN,
-        .bus_pwr = RB_I2C_BUS_POWER_PIN,
-        .frequency = i2c_freq
-    };
-
-
     if ( (!ri_gpio_is_init()) || (!ri_gpio_interrupt_is_init()))
     {
         err_code |= RD_ERROR_INVALID_STATE;
@@ -344,9 +323,29 @@ static rd_status_t app_sensor_buses_init (ri_i2c_frequency_t i2c_freq)
     else
     {
         #if RI_SPI_ENABLED
+        ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
+        ri_spi_init_config_t spi_config =
+        {
+            .mosi = RB_SPI_MOSI_PIN,
+            .miso = RB_SPI_MISO_PIN,
+            .sclk = RB_SPI_SCLK_PIN,
+            .ss_pins = ss_pins,
+            .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),
+            // Assume mode 0 always.
+            .mode = RI_SPI_MODE_0,
+            .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)
+        };
         err_code |= ri_spi_init (&spi_config);
         #endif // RI_SPI_ENABLED
+
         #if RI_I2C_ENABLED
+        ri_i2c_init_config_t i2c_config =
+        {
+            .sda = RB_I2C_SDA_PIN,
+            .scl = RB_I2C_SCL_PIN,
+            .bus_pwr = RB_I2C_BUS_POWER_PIN,
+            .frequency = i2c_freq
+        };
         err_code |= ri_i2c_init (&i2c_config);
         err_code |= ri_gpio_configure (RB_I2C_SDA_PIN,
                                        RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);

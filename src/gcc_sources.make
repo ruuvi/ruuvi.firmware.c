@@ -403,6 +403,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/pir \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/power \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/rtc \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/scheduler \
