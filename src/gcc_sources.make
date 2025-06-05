@@ -222,6 +222,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_shtcx.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log/ruuvi_interface_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/pir/ri_pyd15x8.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
@@ -402,6 +403,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/pir \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/power \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/rtc \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/scheduler \

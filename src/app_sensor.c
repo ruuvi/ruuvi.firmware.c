@@ -3,6 +3,7 @@
 #include "app_comms.h"
 #include "app_heartbeat.h"
 #include "app_log.h"
+
 #include "ruuvi_boards.h"
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
@@ -18,7 +19,11 @@
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_lis2dh12.h"
 #include "ruuvi_interface_log.h"
+// Workaround sensor API for PIR
+#include "ri_pyd15x8.h"
+#include "ri_pyd15x8_reg.h"
 #include "ruuvi_interface_rtc.h"
+#include "ruuvi_interface_scheduler.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_spi.h"
 #include "ruuvi_interface_yield.h"
@@ -122,6 +127,17 @@ static rt_sensor_ctx_t ntc = APP_SENSOR_NTC_DEFAULT_CFG;
 static rt_sensor_ctx_t env_mcu = APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_PYD15X8_ENABLED
+// Patch around to pass two init params as a handle
+static pyd15x8_bus_t pyd15x8_ctx =
+{
+    \
+    .pin_serin = RB_PYD_SERIN_PIN,              \
+    .pin_dl = RB_PYD_DL_PIN                     \
+};
+static rt_sensor_ctx_t pyd15x8 = APP_SENSOR_PYD15X8_DEFAULT_CFG;
+#endif
+
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
 static
@@ -159,6 +175,10 @@ m_sensors_init (void)
 #endif
 #if APP_SENSOR_LIS2DW12_ENABLED
     m_sensors[LIS2DW12_INDEX] = lis2dw12;
+#endif
+#if APP_SENSOR_PYD15X8_ENABLED
+    m_sensors[PYD15X8_INDEX] = &pyd15x8;
+    pyd15x8.sensor.p_ctx = &pyd15x8_ctx;
 #endif
 }
 
@@ -204,9 +224,40 @@ on_accelerometer_isr (const ri_gpio_evt_t event)
     if (RI_GPIO_SLOPE_LOTOHI == event.slope)
     {
         LOG ("Movement \r\n");
+#if !APP_SENSOR_PYD15X8_ENABLED
         app_sensor_event_increment();
+#endif
     }
 }
+
+#if APP_SENSOR_PYD15X8_ENABLED
+#ifndef CEEDLING
+static
+#endif
+void
+on_motion_isr (const ri_gpio_evt_t event);
+void pir_event (void * p_event, uint16_t event_size)
+{
+    LOG ("PIR detection \r\n");
+    app_sensor_event_increment();
+    // Hack around API to clear alert on GPIO level.
+    pyd15x8_clear_interrupt (&pyd15x8_ctx);
+    // re-enable alert.
+    ri_gpio_interrupt_enable (RB_INT_MOTION_PIN,
+                              RI_GPIO_SLOPE_LOTOHI,
+                              RI_GPIO_MODE_INPUT_NOPULL,
+                              &on_motion_isr);
+}
+
+#ifndef CEEDLING
+static
+#endif
+void
+on_motion_isr (const ri_gpio_evt_t event)
+{
+    ri_scheduler_event_put (NULL, 0U, &pir_event);
+}
+#endif
 
 static ri_i2c_frequency_t rb_to_ri_i2c_freq (unsigned int rb_freq)
 {
@@ -265,25 +316,6 @@ static ri_spi_frequency_t rb_to_ri_spi_freq (unsigned int rb_freq)
 static rd_status_t app_sensor_buses_init (ri_i2c_frequency_t i2c_freq)
 {
     rd_status_t err_code = RD_SUCCESS;
-    ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
-    ri_spi_init_config_t spi_config =
-    {
-        .mosi = RB_SPI_MOSI_PIN,
-        .miso = RB_SPI_MISO_PIN,
-        .sclk = RB_SPI_SCLK_PIN,
-        .ss_pins = ss_pins,
-        .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),
-        // Assume mode 0 always.
-        .mode = RI_SPI_MODE_0,
-        .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)
-    };
-    ri_i2c_init_config_t i2c_config =
-    {
-        .sda = RB_I2C_SDA_PIN,
-        .scl = RB_I2C_SCL_PIN,
-        .bus_pwr = RB_I2C_BUS_POWER_PIN,
-        .frequency = i2c_freq
-    };
 
     if ( (!ri_gpio_is_init()) || (!ri_gpio_interrupt_is_init()))
     {
@@ -291,12 +323,35 @@ static rd_status_t app_sensor_buses_init (ri_i2c_frequency_t i2c_freq)
     }
     else
     {
+#if RI_SPI_ENABLED
+        ri_gpio_id_t ss_pins[RB_SPI_SS_NUMBER] = RB_SPI_SS_LIST;
+        ri_spi_init_config_t spi_config =
+        {
+            .mosi = RB_SPI_MOSI_PIN,
+            .miso = RB_SPI_MISO_PIN,
+            .sclk = RB_SPI_SCLK_PIN,
+            .ss_pins = ss_pins,
+            .ss_pins_number = sizeof (ss_pins) / sizeof (ri_gpio_id_t),
+            // Assume mode 0 always.
+            .mode = RI_SPI_MODE_0,
+            .frequency = rb_to_ri_spi_freq (RB_SPI_FREQ)
+        };
         err_code |= ri_spi_init (&spi_config);
+#endif // RI_SPI_ENABLED
+#if RI_I2C_ENABLED
+        ri_i2c_init_config_t i2c_config =
+        {
+            .sda = RB_I2C_SDA_PIN,
+            .scl = RB_I2C_SCL_PIN,
+            .bus_pwr = RB_I2C_BUS_POWER_PIN,
+            .frequency = i2c_freq
+        };
         err_code |= ri_i2c_init (&i2c_config);
         err_code |= ri_gpio_configure (RB_I2C_SDA_PIN,
                                        RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
         err_code |= ri_gpio_configure (RB_I2C_SCL_PIN,
                                        RI_GPIO_MODE_SINK_PULLUP_HIGHDRIVE);
+#endif // RI_I2C_ENABLED
     }
 
     return err_code;
@@ -305,10 +360,15 @@ static rd_status_t app_sensor_buses_init (ri_i2c_frequency_t i2c_freq)
 static rd_status_t app_sensor_buses_uninit (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+#if RI_SPI_ENABLED
     err_code |= ri_spi_uninit();
+#endif // RI_SPI_ENABLED
+#if RI_I2C_ENABLED
     err_code |= ri_i2c_uninit();
+#endif // RI_I2C_ENABLED
     return err_code;
 }
+
 
 static void app_sensor_rtc_init (void)
 {
@@ -522,6 +582,44 @@ rd_status_t app_sensor_acc_thr_set (float * const threshold_g)
         err_code |= provider->level_interrupt_set (true, threshold_g);
     }
 
+    return err_code;
+}
+
+rd_status_t app_sensor_motion_interrupt_set (float * const threshold)
+{
+    rd_status_t err_code = RD_SUCCESS;
+#if APP_SENSOR_PYD15X8_ENABLED
+    const rd_sensor_t * const provider = &m_sensors[PYD15X8_INDEX]->sensor;
+
+    if (RI_GPIO_ID_UNUSED == RB_INT_MOTION_PIN)
+    {
+        err_code |= RD_ERROR_NOT_SUPPORTED;
+    }
+    else if ( (NULL == provider) || (NULL == provider->level_interrupt_set))
+    {
+        err_code |= RD_ERROR_NOT_SUPPORTED;
+    }
+    else if (NULL == threshold)
+    {
+        ri_gpio_interrupt_disable (RB_INT_MOTION_PIN);
+        err_code |= provider->level_interrupt_set (false, threshold);
+    }
+    else if (0 > *threshold)
+    {
+        err_code |= RD_ERROR_NOT_IMPLEMENTED;
+    }
+    else
+    {
+        // Setting interrupt clears the alert on pin.
+        err_code |= provider->level_interrupt_set (true, threshold);
+        // 400 ms time to re-enable alert.
+        err_code |= ri_gpio_interrupt_enable (RB_INT_MOTION_PIN,
+                                              RI_GPIO_SLOPE_LOTOHI,
+                                              RI_GPIO_MODE_INPUT_NOPULL,
+                                              &on_motion_isr);
+    }
+
+#endif
     return err_code;
 }
 

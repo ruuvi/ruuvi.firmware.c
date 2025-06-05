@@ -71,44 +71,67 @@ jobs:
         run: |
           ln -s ~/nRF5_SDK_15.3.0_59ac345 nRF5_SDK_15.3.0_59ac345
           cd src
-          make ruuvitag_b
+          make ruuvitag_b ruuvitag_c
 
       - name: Generate artifact names
         id: artifact-names
         run: |
-          PREFIX="ruuvitag_b_armgcc_ruuvifw"
+          PREFIX_B="ruuvitag_b_armgcc_ruuvifw"
+          PREFIX_C="ruuvitag_c_armgcc_ruuvifw"
           VERSION="${{ env.git_version }}"
           DEFAULT="default"
           LLIFE="longlife"
           TEST="test"
           UUID="uuid"
-          DEFAULTNAME="${PREFIX}_${DEFAULT}_${VERSION}"
-          LLIFENAME="${PREFIX}_${LLIFE}_${VERSION}"
-          TESTNAME="${PREFIX}_${TEST}_${VERSION}"
-          UUIDNAME="${PREFIX}_${UUID}_${VERSION}"
-          BUILDPATH="src/targets/ruuvitag_b/armgcc"
+          DEFAULT_B_NAME="${PREFIX_B}_${DEFAULT}_${VERSION}"
+          LLIFE_B_NAME="${PREFIX_B}_${LLIFE}_${VERSION}"
+          TEST_B_NAME="${PREFIX_B}_${TEST}_${VERSION}"
+          UUID_B_NAME="${PREFIX_B}_${UUID}_${VERSION}"
+          DEFAULT_C_NAME="${PREFIX_C}_${DEFAULT}_${VERSION}"
+          LLIFE_C_NAME="${PREFIX_C}_${LLIFE}_${VERSION}"
+          TEST_C_NAME="${PREFIX_C}_${TEST}_${VERSION}"
+          UUID_C_NAME="${PREFIX_C}_${UUID}_${VERSION}"
+          BUILDPATH_B="src/targets/ruuvitag_b/armgcc"
+          BUILDPATH_C="src/targets/ruuvitag_c/armgcc"
           
           echo "all_artifacts=${VERSION}_binaries" >> $GITHUB_ENV
-          echo "default_full_hex=${DEFAULTNAME}_full.hex" >> $GITHUB_ENV
-          echo "default_app_dfu=${DEFAULTNAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "llife_full_hex=${LLIFENAME}_full.hex" >> $GITHUB_ENV
-          echo "llife_app_dfu=${LLIFENAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "uuid_full_hex=${UUIDNAME}_full.hex" >> $GITHUB_ENV
-          echo "uuid_app_dfu=${UUIDNAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "test_full_hex=${TESTNAME}_full.hex" >> $GITHUB_ENV
-          echo "test_app_dfu=${TESTNAME}_dfu_app.zip" >> $GITHUB_ENV
-          echo "buildpath=${BUILDPATH}" >> $GITHUB_ENV
+          echo "default_b_full_hex=${DEFAULT_B_NAME}_full.hex" >> $GITHUB_ENV
+          echo "default_b_app_dfu=${DEFAULT_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "llife_b_full_hex=${LLIFE_B_NAME}_full.hex" >> $GITHUB_ENV
+          echo "llife_b_app_dfu=${LLIFE_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "uuid_b_full_hex=${UUID_B_NAME}_full.hex" >> $GITHUB_ENV
+          echo "uuid_b_app_dfu=${UUID_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "test_b_full_hex=${TEST_B_NAME}_full.hex" >> $GITHUB_ENV
+          echo "test_b_app_dfu=${TEST_B_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "default_c_full_hex=${DEFAULT_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "default_c_app_dfu=${DEFAULT_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "llife_c_full_hex=${LLIFE_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "llife_c_app_dfu=${LLIFE_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "uuid_c_full_hex=${UUID_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "uuid_c_app_dfu=${UUID_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "test_c_full_hex=${TEST_C_NAME}_full.hex" >> $GITHUB_ENV
+          echo "test_c_app_dfu=${TEST_C_NAME}_dfu_app.zip" >> $GITHUB_ENV
+          echo "buildpath_b=${BUILDPATH_B}" >> $GITHUB_ENV
+          echo "buildpath_c=${BUILDPATH_C}" >> $GITHUB_ENV
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.all_artifacts }}
           path: |
-            ${{ env.buildpath }}/${{ env.default_full_hex }}
-            ${{ env.buildpath }}/${{ env.default_app_dfu }}
-            ${{ env.buildpath }}/${{ env.llife_full_hex }}
-            ${{ env.buildpath }}/${{ env.llife_app_dfu }}
-            ${{ env.buildpath }}/${{ env.test_full_hex }}
-            ${{ env.buildpath }}/${{ env.test_app_dfu }}
-            ${{ env.buildpath }}/${{ env.uuid_full_hex }}
-            ${{ env.buildpath }}/${{ env.uuid_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.default_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.default_b_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.llife_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.llife_b_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.test_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.test_b_app_dfu }}
+            ${{ env.buildpath_b }}/${{ env.uuid_b_full_hex }}
+            ${{ env.buildpath_b }}/${{ env.uuid_b_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.default_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.default_c_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.llife_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.llife_c_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.test_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.test_c_app_dfu }}
+            ${{ env.buildpath_c }}/${{ env.uuid_c_full_hex }}
+            ${{ env.buildpath_c }}/${{ env.uuid_c_app_dfu }}
