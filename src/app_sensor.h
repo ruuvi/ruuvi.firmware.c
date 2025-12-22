@@ -33,6 +33,9 @@
 #include "ruuvi_task_sensor.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_tmp117.h"
+#if APP_SENSOR_STHS34PF80_ENABLED
+#include "ruuvi_interface_sths34pf80.h"
+#endif
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
 #define APP_SENSOR_HANDLE_UNUSED    RD_HANDLE_UNUSED
@@ -69,6 +72,9 @@ enum
 #endif
 #if APP_SENSOR_LIS2DW12_ENABLED
     LIS2DW12_INDEX,
+#endif
+#if APP_SENSOR_STHS34PF80_ENABLED
+    STHS34PF80_INDEX,
 #endif
     SENSOR_COUNT
 };
@@ -316,6 +322,32 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .fifo_pin = RI_GPIO_ID_UNUSED,                       \
     .level_pin = RI_GPIO_ID_UNUSED,                        \
     .i2c_max_speed = RB_I2C_MAX_SPD                        \
+  }
+#endif
+
+#if APP_SENSOR_STHS34PF80_ENABLED
+#define APP_SENSOR_STHS34PF80_DEFAULT_CFG                       \
+  {                                                             \
+    .sensor = {0},                                              \
+    .init = &ri_sths34pf80_init,                                \
+    .configuration =                                            \
+    {                                                           \
+            .dsp_function = APP_SENSOR_STHS34PF80_DSP_FUNC,     \
+            .dsp_parameter = APP_SENSOR_STHS34PF80_DSP_PARAM,   \
+            .mode = APP_SENSOR_STHS34PF80_MODE,                 \
+            .resolution = APP_SENSOR_STHS34PF80_RESOLUTION,     \
+            .samplerate = APP_SENSOR_STHS34PF80_SAMPLERATE,     \
+            .scale = APP_SENSOR_STHS34PF80_SCALE                \
+    },                                                          \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                          \
+    .nvm_record = APP_FLASH_SENSOR_STHS34PF80_RECORD,           \
+    .bus = RD_BUS_I2C,                                          \
+    .handle = RB_STHS34PF80_I2C_ADDRESS,                        \
+    .pwr_pin = RB_STHS34PF80_SENSOR_POWER_PIN,                  \
+    .pwr_on = RI_GPIO_HIGH,                                     \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                              \
+    .level_pin = RB_INT_STHS34PF80_PIN,                         \
+    .i2c_max_speed = RB_STHS34PF80_I2C_MAX_SPD                  \
   }
 #endif
 
