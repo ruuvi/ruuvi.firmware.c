@@ -5,13 +5,14 @@
 #define RI_LOG_ENABLED (true)
 #define APP_LOG_LEVEL RI_LOG_LEVEL_INFO
 #define APP_WDT_INTERVAL_MS (10U*60U*1000U)
-#define ENABLE_ALL_DATAFORMATS (1U)
+#define ENABLE_ALL_DATAFORMATS (0U)
 
 /** @brief Communicate sensor data at this interval. 221 matches Apple guideline. */
 #define APP_BLE_INTERVAL_MS (221U)
+#define APP_SENSOR_STHS34PF80_SAMPLERATE (2U) //!< 2 Hz
 
 /** @brief repeat same data N times in advertisement, reduce sensor reads. */
-#define APP_NUM_REPEATS (4U)
+#define APP_NUM_REPEATS (2U)
 
 /** @brief Communicate sensor data at this interval. 221 matches Apple guideline. */
 #define APP_HEARTBEAT_INTERVAL_MS (APP_BLE_INTERVAL_MS * APP_NUM_REPEATS)

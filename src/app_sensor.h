@@ -33,9 +33,6 @@
 #include "ruuvi_task_sensor.h"
 #include "ruuvi_interface_environmental_mcu.h"
 #include "ruuvi_interface_tmp117.h"
-#if APP_SENSOR_STHS34PF80_ENABLED
-#include "ruuvi_interface_sths34pf80.h"
-#endif
 
 #define APP_SENSOR_SELFTEST_RETRIES (5U) //!< Number of times to retry init on self-test fail.
 #define APP_SENSOR_HANDLE_UNUSED    RD_HANDLE_UNUSED

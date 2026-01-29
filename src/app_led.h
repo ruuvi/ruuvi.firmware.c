@@ -140,6 +140,28 @@ void app_led_interaction_signal (const bool active);
  */
 void app_led_error_signal (const bool active);
 
+/**
+ * @brief Set/Clear motion indication
+ *
+ * Call this function to set / clear motion state of the leds.
+ * App_led decides action based on other signals.
+ *
+ * @param[in] active True to activate signal, false to deactivate.
+ */
+void app_led_motion_signal (const bool active);
+
+/**
+ * @brief Set/Clear presence indication
+ *
+ * Call this function to set / clear presence state of the leds.
+ * App_led decides action based on other signals.
+ *
+ * @param[in] active True to activate signal, false to deactivate.
+ */
+void app_led_presence_signal (const bool active);
+
+
+
 /** @} */
 
 #endif // APP_LED_H

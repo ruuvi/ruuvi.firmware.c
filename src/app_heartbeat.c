@@ -15,6 +15,8 @@
 #include "ruuvi_driver_error.h"
 #include "ruuvi_driver_sensor.h"
 #include "ruuvi_endpoint_5.h"
+#include "ruuvi_endpoint_7.h"
+#include "ruuvi_endpoint_8.h"
 #include "ruuvi_interface_communication.h"
 #include "ruuvi_interface_communication_radio.h"
 #include "ruuvi_interface_rtc.h"
@@ -25,10 +27,19 @@
 #include "ruuvi_task_advertisement.h"
 #include "ruuvi_task_gatt.h"
 #include "ruuvi_task_nfc.h"
+#if DEBUG
+#include "ruuvi_interface_log.h"
+#include "ruuvi_driver_sensor_test.h"
+static inline void LOG (const char * const msg)
+{
+    ri_log (RI_LOG_LEVEL_INFO, msg);
+}
+#endif
 
 #define U8_MASK (0xFFU)
 #define APP_DF_3_ENABLED  RE_3_ENABLED
 #define APP_DF_5_ENABLED  RE_5_ENABLED
+#define APP_DF_7_ENABLED  RE_7_ENABLED
 #define APP_DF_8_ENABLED  RE_8_ENABLED
 #define APP_DF_C5_ENABLED RE_C5_ENABLED
 #define APP_DF_FA_ENABLED RE_FA_ENABLED
@@ -44,6 +55,7 @@ static const app_dataformats_t m_dataformats_enabled =
     .formats =
     + (APP_DF_3_ENABLED  ? DF_3  : 0)
     + (APP_DF_5_ENABLED  ? DF_5  : 0)
+    + (APP_DF_7_ENABLED  ? DF_7  : 0)
     + (APP_DF_8_ENABLED  ? DF_8  : 0)
     + (APP_DF_C5_ENABLED ? DF_C5 : 0)
     + (APP_DF_FA_ENABLED ? DF_FA : 0)
@@ -134,6 +146,12 @@ void heartbeat (void * p_event, uint16_t event_size)
         last_heartbeat_timestamp_ms = ri_rtc_millis();
     }
 
+    // PoC - LED indication of presence / motion
+    app_led_motion_signal (rd_sensor_data_parse (&data, RD_SENSOR_MOTION_FIELD) > 0.0f);
+    app_led_presence_signal (rd_sensor_data_parse (&data, RD_SENSOR_PRESENCE_FIELD) > 0.0f);
+#if DEBUG
+    rd_sensor_data_print (&data, &LOG);
+#endif
     // Turn LED off before starting lengthy flash operations
     app_led_activity_signal (false);
     err_code = app_log_process (&data);

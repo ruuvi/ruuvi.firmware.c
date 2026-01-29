@@ -21,9 +21,7 @@
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_spi.h"
-#if APP_SENSOR_STHS34PF80_ENABLED
 #include "ruuvi_interface_sths34pf80.h"
-#endif
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
@@ -368,7 +366,6 @@ rd_status_t app_sensor_init (void)
             {
                 init_code = rt_sensor_initialize (m_sensors[ii]);
             } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++)
-
                       && (RD_ERROR_SELFTEST == init_code));
 
             if (RD_SUCCESS == init_code)

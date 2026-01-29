@@ -343,7 +343,6 @@ rd_status_t app_log_read (rd_sensor_data_t * const sample,
             // Fast forward to start of desired time range.
             if (RD_SUCCESS == err_code) { err_code |= app_log_read_fast_forward (p_rs); }
         } while ( (err_code != RD_SUCCESS)
-
                   && (p_rs->page_idx <= APP_FLASH_LOG_DATA_RECORDS_NUM));
 
         err_code |= app_log_read_populate (sample, p_rs); // Populate record

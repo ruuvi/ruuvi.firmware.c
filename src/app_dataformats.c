@@ -3,6 +3,7 @@
 #include "ruuvi_endpoints.h"
 #include "ruuvi_endpoint_3.h"
 #include "ruuvi_endpoint_5.h"
+#include "ruuvi_endpoint_7.h"
 #include "ruuvi_endpoint_8.h"
 #include "ruuvi_endpoint_c5.h"
 #include "ruuvi_endpoint_fa.h"
@@ -71,6 +72,10 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
                     break;
 
                 case DF_5:
+                    nextState = DF_7;
+                    break;
+
+                case DF_7:
                     nextState = DF_8;
                     break;
 
@@ -90,7 +95,7 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
         } while (! (nextState & formats.formats));
     }
 
-    ri_adv_enable_uuid (nextState == DF_C5);
+    ri_adv_enable_uuid (nextState == DF_C5 || nextState == DF_8);
     return nextState;
 }
 
@@ -154,6 +159,41 @@ encode_to_5 (uint8_t * const output,
     }
 
     *output_length = RE_5_DATA_LENGTH;
+    return err_code;
+}
+#endif
+
+#if RE_7_ENABLED
+TESTABLE_STATIC rd_status_t
+encode_to_7 (uint8_t * const output,
+             size_t * const output_length,
+             const rd_sensor_data_t * const data)
+{
+    static uint16_t ep_7_measurement_count = 0;
+    rd_status_t err_code = RD_SUCCESS;
+    re_status_t enc_code = RE_SUCCESS;
+    re_7_data_t ep_data = {0};
+    ep_7_measurement_count++;
+    ep_7_measurement_count %= (RE_7_SEQCTR_MAX + 1);
+    ep_data.humidity_rh       = rd_sensor_data_parse (data, RD_SENSOR_HUMI_FIELD);
+    ep_data.pressure_pa       = rd_sensor_data_parse (data, RD_SENSOR_PRES_FIELD);
+    ep_data.temperature_c     = rd_sensor_data_parse (data, RD_SENSOR_TEMP_FIELD);
+    ep_data.sequence_counter  = ep_7_measurement_count;
+    uint8_t mvtctr = (uint8_t) (app_sensor_event_count_get() % (RE_7_MOTION_CNT_MAX + 1));
+    ep_data.motion_count      = mvtctr;
+    ep_data.motion_detected   = (rd_sensor_data_parse (data, RD_SENSOR_MOTION_FIELD) > 0.5f);
+    ep_data.presence_detected = (rd_sensor_data_parse (data,
+                                 RD_SENSOR_PRESENCE_FIELD) > 0.5f);
+    err_code |= ri_radio_address_get (&ep_data.address);
+    err_code |= rt_adc_vdd_get (&ep_data.battery_v);
+    enc_code |= re_7_encode (output, &ep_data);
+
+    if (RE_SUCCESS != enc_code)
+    {
+        err_code |= RD_ERROR_INTERNAL;
+    }
+
+    *output_length = RE_7_DATA_LENGTH;
     return err_code;
 }
 #endif
@@ -313,6 +353,12 @@ rd_status_t app_dataformat_encode (uint8_t * const output,
 
         case DF_5:
             err_code |= encode_to_5 (output, output_length, p_data);
+            break;
+#       endif
+#       if RE_7_ENABLED
+
+        case DF_7:
+            err_code |= encode_to_7 (output, output_length, p_data);
             break;
 #       endif
 #       if RE_8_ENABLED

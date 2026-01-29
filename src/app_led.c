@@ -28,48 +28,66 @@
 #define INTERACTION_BIT  (1U << 2U)
 #define ERROR_BIT        (1U << 3U)
 #define PAUSE_BIT        (1U << 4U) // For backwards compatibility, do not use.
+#define PRESENCE_BIT     (1U << 5U)
+#define MOTION_BIT       (1U << 6U)
 
 static const uint16_t        m_led_pins[]   = RB_LEDS_LIST;
 static const ri_gpio_state_t m_led_active[] = RB_LEDS_ACTIVE_STATE;
-TESTABLE_STATIC ri_gpio_id_t m_activity_led          = RI_GPIO_ID_UNUSED;
+TESTABLE_STATIC ri_gpio_id_t m_activity_led = RI_GPIO_ID_UNUSED;
 TESTABLE_STATIC uint32_t m_signals;
 
 static void state_change_process (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+    const bool error_led_active  = ERROR_BIT & m_signals;
+    const bool motion_led_active = MOTION_BIT & m_signals;
+    const bool presence_led_active = PRESENCE_BIT & m_signals;
+    const bool activity_led_active = ACTIVITY_BIT & m_signals;
+    const bool configurable_led_active = CONFIGURABLE_BIT & m_signals;
+    const bool interaction_led_active = INTERACTION_BIT & m_signals;
 
     //State: Paused
     if (PAUSE_BIT & m_signals)
     {
-        // No action needed
+        return;
     }
-    //State: Error on
-    else if (ERROR_BIT & m_signals)
+
+    //Default: leds off
+    err_code |= rt_led_write (RB_LED_STATUS_ERROR, false);
+    err_code |= rt_led_write (RB_LED_CONFIG_ENABLED, false);
+    err_code |= rt_led_write (RB_LED_ACTIVITY, false);
+    err_code |= rt_led_write (RB_LED_BUTTON_PRESS, false);
+
+    if (error_led_active)
     {
         err_code |= rt_led_write (RB_LED_STATUS_ERROR, true);
     }
-    //State: Interaction on
-    else if (INTERACTION_BIT & m_signals)
+
+    if (interaction_led_active)
     {
         err_code |= rt_led_write (RB_LED_BUTTON_PRESS, true);
     }
-    // State: configurable, active
-    else if ( (ACTIVITY_BIT | CONFIGURABLE_BIT) == m_signals)
+
+    if (motion_led_active)
     {
-        err_code |= rt_led_write (RB_LED_CONFIG_ENABLED, true);
+        // TODO: Define motion led
+        err_code |= rt_led_write (RB_LED_ACTIVITY, true);
     }
-    // State: active, not configurable
-    else if (ACTIVITY_BIT == m_signals)
+
+    if (presence_led_active)
+    {
+        // TODO: Define presence led
+        err_code |= rt_led_write (RB_LED_STATUS_ERROR, true);
+    }
+
+    if (activity_led_active)
     {
         err_code |= rt_led_write (RB_LED_ACTIVITY, true);
     }
-    //Default: leds off
-    else
+
+    if (configurable_led_active)
     {
-        for (size_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
-        {
-            err_code |= rt_led_write (m_led_pins[ii], false);
-        }
+        err_code |= rt_led_write (RB_LED_CONFIG_ENABLED, true);
     }
 
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
@@ -215,6 +233,32 @@ void app_led_interaction_signal (const bool active)
 void app_led_error_signal (const bool active)
 {
     app_led_signal (ERROR_BIT, active);
+}
+
+/**
+ * @brief Set/Clear presence indication
+ *
+ * Call this function to set / clear presence state of the leds.
+ * App_led decides action based on other signals.
+ *
+ * @param[in] present True to activate signal, false to deactivate.
+ */
+void app_led_presence_signal (const bool present)
+{
+    app_led_signal (PRESENCE_BIT, present);
+}
+
+/**
+ * @brief Set/Clear motion indication
+ *
+ * Call this function to set / clear motion state of the leds.
+ * App_led decides action based on other signals.
+ *
+ * @param[in] active True to activate signal, false to deactivate.
+ */
+void app_led_motion_signal (const bool active)
+{
+    app_led_signal (MOTION_BIT, active);
 }
 
 /** @} */

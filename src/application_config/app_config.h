@@ -271,7 +271,9 @@
 #   define APP_SENSOR_STHS34PF80_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default supported
 #endif
 #ifndef APP_SENSOR_STHS34PF80_SAMPLERATE
-#   define APP_SENSOR_STHS34PF80_SAMPLERATE (1U) //!< 1 Hz default
+/** @note Presence/motion flags may be missed if polled slower than sensor ODR.
+ *        Consider using interrupt-driven detection for reliable event capture. */
+#   define APP_SENSOR_STHS34PF80_SAMPLERATE RD_SENSOR_CFG_CUSTOM_2 //!< 0.5 Hz (CUSTOM_2)
 #endif
 #ifndef APP_SENSOR_STHS34PF80_SCALE
 #   define APP_SENSOR_STHS34PF80_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid
@@ -373,7 +375,7 @@
 #define APP_FLASH_SENSOR_PHOTO_RECORD    (0xC2U)
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_TMP117_RECORD   (0x17U)
-#define APP_FLASH_SENSOR_STHS34PF80_RECORD (0x80U)  //!< STHS34PF80 presence sensor
+#define APP_FLASH_SENSOR_STHS34PF80_RECORD (0xC4U)
 
 
 
@@ -461,7 +463,14 @@
  * @brief Enable official raw dataformat
  */
 #ifndef RE_5_ENABLED
-#   define RE_5_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
+#   define RE_5_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable experimental motion dataformat
+ */
+#ifndef RE_7_ENABLED
+#   define RE_7_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
 #endif
 
 /**
