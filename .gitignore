@@ -64,6 +64,9 @@ _build/
 *.emSession
 *.jlink
 
+# VSCode
+.vscode/
+
 # Compiled packages
 *.zip
 
