@@ -56,6 +56,8 @@ static void state_change_process (void)
     err_code |= rt_led_write (RB_LED_STATUS_ERROR, false);
     err_code |= rt_led_write (RB_LED_CONFIG_ENABLED, false);
     err_code |= rt_led_write (RB_LED_ACTIVITY, false);
+    err_code |= rt_led_write (RB_LED_MOTION, false);
+    err_code |= rt_led_write (RB_LED_PRESENCE, false);
     err_code |= rt_led_write (RB_LED_BUTTON_PRESS, false);
 
     if (error_led_active)
@@ -71,13 +73,12 @@ static void state_change_process (void)
     if (motion_led_active)
     {
         // TODO: Define motion led
-        err_code |= rt_led_write (RB_LED_ACTIVITY, true);
+        err_code |= rt_led_write (RB_LED_MOTION, true);
     }
 
     if (presence_led_active)
     {
-        // TODO: Define presence led
-        err_code |= rt_led_write (RB_LED_STATUS_ERROR, true);
+        err_code |= rt_led_write (RB_LED_PRESENCE, true);
     }
 
     if (activity_led_active)
