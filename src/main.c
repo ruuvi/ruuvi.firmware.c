@@ -99,7 +99,6 @@ void setup (void)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
 #   endif
-    err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal. DELETEß
     err_code |= protect_flash();
     err_code |= ri_yield_init();
     err_code |= ri_timer_init();
@@ -138,7 +137,7 @@ int app_main (void)
 int main (void)
 #endif
 {
-#   if (0) /*RUUVI_RUN_TESTS*/
+#   if (RUUVI_RUN_TESTS)
     integration_tests_run();
 #   endif
     setup();
