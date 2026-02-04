@@ -57,7 +57,7 @@ DEBUG_longlife = -DNDEBUG
 DEBUG_uuid     = -DNDEBUG
 
 # Variant to optimization flag mapping (release builds optimized, debug builds with debug info)
-OPT_default    = -Os
+OPT_default    = -Os -g3
 OPT_test       = -Og -g3
 OPT_longmem    = -Os
 OPT_longlife   = -Os
