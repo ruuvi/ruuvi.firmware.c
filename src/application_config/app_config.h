@@ -463,14 +463,14 @@
  * @brief Enable official raw dataformat
  */
 #ifndef RE_5_ENABLED
-#   define RE_5_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
+#   define RE_5_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
 #endif
 
 /**
  * @brief Enable experimental motion dataformat
  */
 #ifndef RE_7_ENABLED
-#   define RE_7_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
+#   define RE_7_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
 #endif
 
 /**
