@@ -146,10 +146,10 @@ void heartbeat (void * p_event, uint16_t event_size)
         last_heartbeat_timestamp_ms = ri_rtc_millis();
     }
 
+#if DEBUG
     // PoC - LED indication of presence / motion
     app_led_motion_signal (rd_sensor_data_parse (&data, RD_SENSOR_MOTION_FIELD) > 0.0f);
     app_led_presence_signal (rd_sensor_data_parse (&data, RD_SENSOR_PRESENCE_FIELD) > 0.0f);
-#if DEBUG
     rd_sensor_data_print (&data, &LOG);
 #endif
     // Turn LED off before starting lengthy flash operations
