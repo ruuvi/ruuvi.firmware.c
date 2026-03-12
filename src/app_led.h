@@ -156,9 +156,9 @@ void app_led_motion_signal (const bool active);
  * Call this function to set / clear presence state of the leds.
  * App_led decides action based on other signals.
  *
- * @param[in] active True to activate signal, false to deactivate.
+ * @param[in] present True to activate signal, false to deactivate.
  */
-void app_led_presence_signal (const bool active);
+void app_led_presence_signal (const bool present);
 
 
 
