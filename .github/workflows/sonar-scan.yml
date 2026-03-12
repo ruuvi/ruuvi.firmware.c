@@ -28,12 +28,6 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
-    # Setup java 17 to be default (sonar-scanner requirement as of 5.x)
-    - uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin' # See 'Supported distributions' for available options
-        java-version: '17'
-
     - name: Install Build Wrapper
       uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
 

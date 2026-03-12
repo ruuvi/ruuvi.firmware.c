@@ -20,6 +20,7 @@
 #include "ruuvi_endpoint_7.h"
 #include "ruuvi_endpoint_8.h"
 #include "ruuvi_endpoint_fa.h"
+#define APP_DATAFORMAT_FLAGS_IN_TX (1U)
 
 typedef enum
 {

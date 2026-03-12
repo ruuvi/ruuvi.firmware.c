@@ -109,6 +109,11 @@ void test_app_led_activity_pause (void)
  */
 void test_app_led_activity_signal (void)
 {
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
     rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
     app_led_activity_signal (true);
 
@@ -136,16 +141,15 @@ void test_app_led_configuration_signal (void)
         rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
     }
 
-    app_led_configuration_signal (true);
     rt_led_write_ExpectAndReturn (RB_LED_CONFIG_ENABLED, true, RD_SUCCESS);
-    app_led_activity_signal (true);
+    app_led_configuration_signal (true);
 
     for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
     {
         rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
     }
 
-    app_led_activity_signal (false);
+    app_led_configuration_signal (false);
 }
 
 /**
@@ -159,11 +163,29 @@ void test_app_led_configuration_signal (void)
  */
 void test_app_led_interaction_signal (void)
 {
-    rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    rt_led_write_ExpectAndReturn (RB_LED_BUTTON_PRESS, true, RD_SUCCESS);
     app_led_interaction_signal (true);
+
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    rt_led_write_ExpectAndReturn (RB_LED_BUTTON_PRESS, true, RD_SUCCESS);
     rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
     app_led_activity_signal (true);
-    rt_led_write_ExpectAndReturn (RB_LED_ACTIVITY, true, RD_SUCCESS);
+
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    rt_led_write_ExpectAndReturn (RB_LED_BUTTON_PRESS, true, RD_SUCCESS);
     app_led_activity_signal (false);
 
     for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
@@ -184,6 +206,11 @@ void test_app_led_interaction_signal (void)
  */
 void test_app_led_error_signal (void)
 {
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
     rt_led_write_ExpectAndReturn (RB_LED_STATUS_ERROR, true, RD_SUCCESS);
     app_led_error_signal (true);
 }

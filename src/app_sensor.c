@@ -20,6 +20,7 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
+#include "ruuvi_interface_sths34pf80.h"
 #include "ruuvi_interface_spi.h"
 #include "ruuvi_interface_sths34pf80.h"
 #include "ruuvi_interface_yield.h"

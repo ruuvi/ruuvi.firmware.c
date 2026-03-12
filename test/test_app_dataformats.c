@@ -12,6 +12,7 @@
 #include "mock_ruuvi_endpoints.h"
 #include "mock_ruuvi_endpoint_3.h"
 #include "mock_ruuvi_endpoint_5.h"
+#include "mock_ruuvi_endpoint_7.h"
 #include "mock_ruuvi_endpoint_8.h"
 #include "mock_ruuvi_endpoint_c5.h"
 #include "mock_ruuvi_endpoint_fa.h"
@@ -122,8 +123,14 @@ void test_app_dataformat_encode_5_ok (void)
     app_sensor_event_count_get_ExpectAndReturn (1);
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_radio_address_get_ReturnThruPtr_address (&address);
+#if APP_DATAFORMAT_FLAGS_IN_TX
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+#else
     ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_adv_tx_power_get_ReturnThruPtr_dbm (&power);
+#endif
     rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
     re_5_encode_ExpectAndReturn (NULL, NULL, RE_SUCCESS);
@@ -153,8 +160,14 @@ void test_app_dataformat_encode_5_error (void)
     app_sensor_event_count_get_ExpectAndReturn (1);
     ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_radio_address_get_ReturnThruPtr_address (&address);
+#if APP_DATAFORMAT_FLAGS_IN_TX
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+#else
     ri_adv_tx_power_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     ri_adv_tx_power_get_ReturnThruPtr_dbm (&power);
+#endif
     rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
     rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
     re_5_encode_ExpectAndReturn (NULL, NULL, RE_ERROR_ENCODING);
@@ -347,7 +360,7 @@ void test_app_dataformat_encode_fa_error (void)
 
 void test_app_dataformat_next_all (void)
 {
-    const app_dataformats_t formats = { DF_3 | DF_5 | DF_8 | DF_C5 | DF_FA };
+    const app_dataformats_t formats = { DF_3 | DF_5 | DF_7 | DF_8 | DF_C5 | DF_FA };
     app_dataformat_t format = DF_INVALID;
     ri_adv_enable_uuid_Expect (false);
     format = app_dataformat_next (formats, format);
@@ -355,7 +368,10 @@ void test_app_dataformat_next_all (void)
     ri_adv_enable_uuid_Expect (false);
     format = app_dataformat_next (formats, format);
     TEST_ASSERT (format == DF_5);
-    ri_adv_enable_uuid_Expect (false);
+    ri_adv_enable_uuid_Expect (true);
+    format = app_dataformat_next (formats, format);
+    TEST_ASSERT (format == DF_7);
+    ri_adv_enable_uuid_Expect (true);
     format = app_dataformat_next (formats, format);
     TEST_ASSERT (format == DF_8);
     ri_adv_enable_uuid_Expect (true);

@@ -95,7 +95,7 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
         } while (! (nextState & formats.formats));
     }
 
-    ri_adv_enable_uuid (nextState == DF_C5 || nextState == DF_8);
+    ri_adv_enable_uuid (nextState == DF_C5 || nextState == DF_8 || nextState == DF_7);
     return nextState;
 }
 
@@ -149,12 +149,15 @@ encode_to_5 (uint8_t * const output,
     uint8_t mvtctr = (uint8_t) (app_sensor_event_count_get() % (RE_5_MVTCTR_MAX + 1));
     ep_data.movement_count    = mvtctr;
     err_code |= ri_radio_address_get (&ep_data.address);
-    //err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
+#if APP_DATAFORMAT_FLAGS_IN_TX
     // Hack motion/presense data into tx power for testing
     ep_data.tx_power = (int8_t) ( ( (rd_sensor_data_parse (data,
                                      RD_SENSOR_MOTION_FIELD) > 0.5f) ? 2 : 0)
                                   + ( (rd_sensor_data_parse (data, RD_SENSOR_PRESENCE_FIELD) > 0.5f) ? 4 : 0)
                                   + ( (rd_sensor_data_parse (data, RD_SENSOR_DEBUG_TAMB_FIELD) > 0.5f) ? 8 : 0));
+#else
+    err_code |= ri_adv_tx_power_get (&ep_data.tx_power);
+#endif
     err_code |= rt_adc_vdd_get (&ep_data.battery_v);
     enc_code |= re_5_encode (output, &ep_data);
 

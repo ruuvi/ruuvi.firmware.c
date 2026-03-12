@@ -53,12 +53,10 @@ static void state_change_process (void)
     }
 
     //Default: leds off
-    err_code |= rt_led_write (RB_LED_STATUS_ERROR, false);
-    err_code |= rt_led_write (RB_LED_CONFIG_ENABLED, false);
-    err_code |= rt_led_write (RB_LED_ACTIVITY, false);
-    err_code |= rt_led_write (RB_LED_MOTION, false);
-    err_code |= rt_led_write (RB_LED_PRESENCE, false);
-    err_code |= rt_led_write (RB_LED_BUTTON_PRESS, false);
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write (m_led_pins[ii], false);
+    }
 
     if (error_led_active)
     {
@@ -72,7 +70,6 @@ static void state_change_process (void)
 
     if (motion_led_active)
     {
-        // TODO: Define motion led
         err_code |= rt_led_write (RB_LED_MOTION, true);
     }
 
