@@ -55,10 +55,9 @@ jobs:
       run: |
         gem install ceedling
         sudo pip install gcovr
-        
 
-    - name: Run unit tests
-      run: ceedling test:all
+    - name: Run unit tests with coverage
+      run: ceedling gcov:all
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarqube-scan-action@v6
@@ -71,5 +70,5 @@ jobs:
           --define sonar.projectKey=ruuvi_ruuvi.firmware.c
           --define sonar.sources=./src
           --define sonar.cfamily.compile-commands=bw-output/compile_commands.json
-          --define sonar.cfamily.gcov.reportsPath=.
+          --define sonar.coverageReportPaths=build/artifacts/gcov/gcovr/GcovCoverageSonarQube.xml
           --define sonar.host.url=https://sonarcloud.io
