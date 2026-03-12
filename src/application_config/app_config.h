@@ -278,6 +278,9 @@
 #ifndef APP_SENSOR_STHS34PF80_SCALE
 #   define APP_SENSOR_STHS34PF80_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid
 #endif
+#ifndef SHTS_DEBUG_DATA_IN_ACCELERATION
+#   define SHTS_DEBUG_DATA_IN_ACCELERATION (0U) //!< Enable to log raw data in acceleration format for easier debugging.
+#endif
 
 /** @brief Enable STHS34PF80 driver */
 #ifndef RI_STHS34PF80_ENABLED
