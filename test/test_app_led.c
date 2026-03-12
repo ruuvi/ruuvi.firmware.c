@@ -214,3 +214,55 @@ void test_app_led_error_signal (void)
     rt_led_write_ExpectAndReturn (RB_LED_STATUS_ERROR, true, RD_SUCCESS);
     app_led_error_signal (true);
 }
+
+/**
+ * @brief Set/Clear motion indication
+ *
+ * Call this function to set / clear motion state of the leds. app_led decides
+ * action based on other signals
+ *
+ * @param[in] active True to activate signal, false to deactivate.
+ */
+void test_app_led_motion_signal (void)
+{
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    rt_led_write_ExpectAndReturn (RB_LED_MOTION, true, RD_SUCCESS);
+    app_led_motion_signal (true);
+
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    app_led_motion_signal (false);
+}
+
+/**
+ * @brief Set/Clear presence indication
+ *
+ * Call this function to set / clear presence state of the leds. app_led decides
+ * action based on other signals
+ *
+ * @param[in] present True to activate signal, false to deactivate.
+ */
+void test_app_led_presence_signal (void)
+{
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    rt_led_write_ExpectAndReturn (RB_LED_PRESENCE, true, RD_SUCCESS);
+    app_led_presence_signal (true);
+
+    for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
+    {
+        rt_led_write_ExpectAndReturn (m_led_pins[ii], false, RD_SUCCESS);
+    }
+
+    app_led_presence_signal (false);
+}
