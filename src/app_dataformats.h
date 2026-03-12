@@ -27,7 +27,7 @@
  * to enable.
  */
 #ifndef APP_DATAFORMAT_FLAGS_IN_TX
-#define APP_DATAFORMAT_FLAGS_IN_TX (0U)
+#define APP_DATAFORMAT_FLAGS_IN_TX (1U)
 #endif
 
 typedef enum
