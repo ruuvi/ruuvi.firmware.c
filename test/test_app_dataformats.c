@@ -177,6 +177,57 @@ void test_app_dataformat_encode_5_error (void)
     TEST_ASSERT (RD_ERROR_INTERNAL == status);
 }
 
+void test_app_dataformat_encode_7_ok (void)
+{
+    uint8_t output[24] = {0};
+    size_t output_length = sizeof (output);
+    app_dataformat_t format = DF_7;
+    float voltage = 2.5F;
+    uint64_t address = 0x0000AABBCCDDEEFF;
+    rd_status_t status = RD_SUCCESS;
+    rd_sensor_data_t data = {0};
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    app_sensor_event_count_get_ExpectAndReturn (1);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_radio_address_get_ReturnThruPtr_address (&address);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    re_7_encode_ExpectAndReturn (output, NULL, RE_SUCCESS);
+    re_7_encode_IgnoreArg_data();
+    status = app_dataformat_encode (output, &output_length, &data, format);
+    TEST_ASSERT (RD_SUCCESS == status);
+    TEST_ASSERT (RE_7_DATA_LENGTH == output_length);
+}
+
+void test_app_dataformat_encode_7_error (void)
+{
+    uint8_t output[24] = {0};
+    size_t output_length = sizeof (output);
+    app_dataformat_t format = DF_7;
+    float voltage = 2.5F;
+    uint64_t address = 0x0000AABBCCDDEEFF;
+    rd_status_t status = RD_SUCCESS;
+    rd_sensor_data_t data = {0};
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    app_sensor_event_count_get_ExpectAndReturn (1);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    rd_sensor_data_parse_ExpectAnyArgsAndReturn (0);
+    ri_radio_address_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    ri_radio_address_get_ReturnThruPtr_address (&address);
+    rt_adc_vdd_get_ExpectAnyArgsAndReturn (RD_SUCCESS);
+    rt_adc_vdd_get_ReturnThruPtr_vdd (&voltage);
+    re_7_encode_ExpectAndReturn (output, NULL, RE_ERROR_ENCODING);
+    re_7_encode_IgnoreArg_data();
+    status = app_dataformat_encode (output, &output_length, &data, format);
+    TEST_ASSERT (RD_ERROR_INTERNAL == status);
+}
+
 void test_app_dataformat_encode_8_ok (void)
 {
     uint8_t output[24] = {0};
