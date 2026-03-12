@@ -127,7 +127,7 @@
   :reports:
     - SonarQube
   :gcovr:                        # `gcovr` common and report-specific options
-    :report_root: "../../"       # Atypical layout -- project.yml is inside a subdirectoy below <build root>
+    :report_root: "."            # Paths in XML will be relative to project root, matching sonar.projectBaseDir
     :sort_percentage: TRUE
     :sort_uncovered: FALSE
     :html_medium_threshold: 60
