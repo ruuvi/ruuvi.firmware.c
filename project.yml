@@ -39,6 +39,9 @@
     - -:test/support
   :source:
     - src/**
+    - src/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/**
+    - src/ruuvi.drivers.c/STMems_Standard_C_drivers/sths34pf80_STdC/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/**
     - nRF5_SDK_15.3.0_59ac345/components/**
     - nRF5_SDK_15.3.0_59ac345/integration/**
     - nRF5_SDK_15.3.0_59ac345/modules/**
@@ -46,6 +49,9 @@
     - test/support
   :include:
     - src/**
+    - src/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/**
+    - src/ruuvi.drivers.c/STMems_Standard_C_drivers/sths34pf80_STdC/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/**
     - nRF5_SDK_15.3.0_59ac345/components/**
     - nRF5_SDK_15.3.0_59ac345/integration/**
     - nRF5_SDK_15.3.0_59ac345/modules/**
