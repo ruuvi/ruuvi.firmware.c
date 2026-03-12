@@ -80,6 +80,24 @@ Select the Build Configuration: `Debug`, `Long Life` or `Release`.
 Navigate to `Debug -> Go`.
 This will flash the firmware and start the debugger.
 
+## VS Code IntelliSense (code highlighting with correct defines)
+
+The project uses build-time defines such as `-DBOARD_RUUVITAG_B` and `-DAPPLICATION_MODE_DEFAULT` that control which code is compiled via `#if` guards.
+To make VS Code parse and highlight code correctly for a given board/variant, generate a `compile_commands.json` from a real build:
+
+```sh
+./scripts/gen_compile_commands.sh
+```
+
+This performs a clean build of `ruuvitag_b / default` with verbose output, extracts all compiler invocations and writes
+`src/targets/ruuvitag_b/armgcc/compile_commands.json`.
+This repository does not ship a preconfigured `.vscode` directory; you must point VS Code's C/C++ extension at this file yourself (for example, by setting `C_Cpp.default.compileCommands` or the `compileCommands` field in `.vscode/c_cpp_properties.json` to `src/targets/ruuvitag_b/armgcc/compile_commands.json`).
+
+Re-run the script whenever the Makefile or source file list changes.
+
+> **Note:** `bear` (the usual tool for this) does not work on macOS with SIP enabled.
+> The script works around this by passing `NO_ECHO=` to make and parsing the output directly.
+
 # Alternate (non-IDE) building and debugging.
 
 ## ARMGCC is used for [Jenkins builds](http://jenkins.ruuvi.com/job/ruuvi.firmware.c/)
