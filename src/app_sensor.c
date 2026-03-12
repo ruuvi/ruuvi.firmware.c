@@ -22,7 +22,6 @@
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_sths34pf80.h"
 #include "ruuvi_interface_spi.h"
-#include "ruuvi_interface_sths34pf80.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_adc.h"
 #include "ruuvi_task_sensor.h"
