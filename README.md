@@ -91,7 +91,7 @@ To make VS Code parse and highlight code correctly for a given board/variant, ge
 
 This performs a clean build of `ruuvitag_b / default` with verbose output, extracts all compiler invocations and writes
 `src/targets/ruuvitag_b/armgcc/compile_commands.json`.
-The `.vscode/c_cpp_properties.json` already points IntelliSense at that file.
+This repository does not ship a preconfigured `.vscode` directory; you must point VS Code's C/C++ extension at this file yourself (for example, by setting `C_Cpp.default.compileCommands` or the `compileCommands` field in `.vscode/c_cpp_properties.json` to `src/targets/ruuvitag_b/armgcc/compile_commands.json`).
 
 Re-run the script whenever the Makefile or source file list changes.
 
