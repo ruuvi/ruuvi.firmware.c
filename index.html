@@ -158,6 +158,14 @@ $(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 </ul>
 <h3>Debug</h3>
 <p>Navigate to <code>Debug -&gt; Go</code>. This will flash the firmware and start the debugger.</p>
+<h2>VS Code IntelliSense (code highlighting with correct defines)</h2>
+<p>The project uses build-time defines such as <code>-DBOARD_RUUVITAG_B</code> and <code>-DAPPLICATION_MODE_DEFAULT</code> that control which code is compiled via <code>#if</code> guards. To make VS Code parse and highlight code correctly for a given board/variant, generate a <code>compile_commands.json</code> from a real build:</p>
+<div class="fragment"><div class="line">./scripts/gen_compile_commands.sh</div>
+</div><!-- fragment --><p>This performs a clean build of <code>ruuvitag_b / default</code> with verbose output, extracts all compiler invocations and writes <code>src/targets/ruuvitag_b/armgcc/compile_commands.json</code>. This repository does not ship a preconfigured <code>.vscode</code> directory; you must point VS Code's C/C++ extension at this file yourself (for example, by setting <code>C_Cpp.default.compileCommands</code> or the <code>compileCommands</code> field in <code>.vscode/c_cpp_properties.json</code> to <code>src/targets/ruuvitag_b/armgcc/compile_commands.json</code>).</p>
+<p>Re-run the script whenever the Makefile or source file list changes.</p>
+<blockquote class="doxtable">
+<p>&zwj;<b>Note:</b> <code>bear</code> (the usual tool for this) does not work on macOS with SIP enabled. The script works around this by passing <code>NO_ECHO=</code> to make and parsing the output directly. </p>
+</blockquote>
 <h1>Alternate (non-IDE) building and debugging.</h1>
 <h2>ARMGCC is used for <a href="http://jenkins.ruuvi.com/job/ruuvi.firmware.c/">Jenkins builds</a></h2>
 <p>You can make the project and a single variant by runnning "make variantName" (for example "make ruuvitag_b" at top level of the repository This way you can be certain to have a repeatable build process.</p>
