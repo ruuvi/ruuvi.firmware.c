@@ -55,7 +55,7 @@ static void state_change_process (void)
     //Default: leds off
     for (uint32_t ii = 0; ii < RB_LEDS_NUMBER; ii++)
     {
-        rt_led_write (m_led_pins[ii], false);
+        err_code |= rt_led_write (m_led_pins[ii], false);
     }
 
     if (error_led_active)
