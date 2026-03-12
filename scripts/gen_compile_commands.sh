@@ -32,7 +32,7 @@ with open(sys.argv[2]) as f:
             if m:
                 src = m.group(1)
                 if not src.startswith("/"):
-                    src = os.path.normpath(os.path.join(build_dir, src))
+                    src = os.path.normpath(src)  # keep relative to directory
                 entries.append({"directory": build_dir, "command": line.strip(), "file": src})
 
 out = os.path.join(build_dir, "compile_commands.json")
@@ -41,4 +41,4 @@ with open(out, "w") as f:
 print(f"{len(entries)} entries written to {out}")
 PYEOF
 
-rm "$LOG"
+[[ -f "$LOG" ]] && rm -- "$LOG"

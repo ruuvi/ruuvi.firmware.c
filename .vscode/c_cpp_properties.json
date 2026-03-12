@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "RuuviTag B - Default",
+            "compileCommands": "${workspaceFolder}/src/targets/ruuvitag_b/armgcc/compile_commands.json",
+            "intelliSenseMode": "gcc-arm"
+        }
+    ],
+    "version": 4
+}
