@@ -59,6 +59,7 @@ dkms.conf
 # Build folder
 Output/
 _build/
+compile_commands.json
 
 # SES files
 *.emSession
@@ -94,6 +95,7 @@ sizes.txt
 issues/
 *.gcov
 *_result.txt
+compile_commands.json
 
 # Ceedling machine generated output
 build

@@ -19,7 +19,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
     - name: Checkout submodules
       run: git submodule update --init --recursive
@@ -30,8 +32,8 @@ jobs:
         distribution: 'temurin' # See 'Supported distributions' for available options
         java-version: '17'
 
-    - name:  Install sonar-scanner and build-wrapper
-      uses: sonarsource/sonarcloud-github-c-cpp@v2
+    - name: Install Build Wrapper
+      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
 
     - name: Download Nordic SDK
       run: |
@@ -43,6 +45,8 @@ jobs:
     # Runs a single command using the runners shell
     - name: Compile project
       run: build-wrapper-linux-x86-64 --out-dir bw-output make sonar
+      env:
+        COMMIT: ${{ github.sha }}
 
     - name: Set up Ruby 3.0
       uses: ruby/setup-ruby@v1
@@ -57,19 +61,19 @@ jobs:
         sudo pip install gcovr
         
 
-    # Runs a set of commands using the runners shell
-    - name: Run Sonar scanner
-      run: |
-        ceedling test:all
-        export SONAR_SCANNER_OPTS="-server"
-        sonar-scanner \
-          -Dsonar.organization=ruuvi \
-          -Dsonar.projectKey=ruuvi_ruuvi.firmware.c \
-          -Dsonar.sources=./src \
-          -Dsonar.cfamily.build-wrapper-output=bw-output \
-          -Dsonar.cfamily.gcov.reportsPath=. \
-          -Dsonar.host.url=https://sonarcloud.io
+    - name: Run unit tests
+      run: ceedling test:all
 
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarqube-scan-action@v6
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          --define sonar.organization=ruuvi
+          --define sonar.projectKey=ruuvi_ruuvi.firmware.c
+          --define sonar.sources=./src
+          --define sonar.cfamily.compile-commands=bw-output/compile_commands.json
+          --define sonar.cfamily.gcov.reportsPath=.
+          --define sonar.host.url=https://sonarcloud.io
