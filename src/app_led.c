@@ -43,7 +43,6 @@ static void state_change_process (void)
     const bool motion_led_active = MOTION_BIT & m_signals;
     const bool presence_led_active = PRESENCE_BIT & m_signals;
     const bool activity_led_active = ACTIVITY_BIT & m_signals;
-    const bool configurable_led_active = CONFIGURABLE_BIT & m_signals;
     const bool interaction_led_active = INTERACTION_BIT & m_signals;
 
     //State: Paused
@@ -80,12 +79,8 @@ static void state_change_process (void)
 
     if (activity_led_active)
     {
-        err_code |= rt_led_write (RB_LED_ACTIVITY, true);
-    }
-
-    if (configurable_led_active)
-    {
-        err_code |= rt_led_write (RB_LED_CONFIG_ENABLED, true);
+        // Route activity to signal function
+        err_code |= app_led_activity_indicate (true);
     }
 
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
@@ -135,6 +130,15 @@ rd_status_t app_led_activity_indicate (const bool active)
 {
     rd_status_t err_code = RD_SUCCESS;
     RD_ERROR_CHECK (RD_WARNING_DEPRECATED, ~RD_ERROR_FATAL);
+
+    if (CONFIGURABLE_BIT & m_signals)
+    {
+        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
+    }
+    else
+    {
+        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
+    }
 
     if (! (PAUSE_BIT & m_signals))
     {
