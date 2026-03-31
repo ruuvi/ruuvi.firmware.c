@@ -184,7 +184,7 @@ static rd_status_t enable_config_on_next_conn (const bool enable)
     err_code |= app_comms_ble_uninit();
     err_code |= app_comms_ble_init (!enable);
     m_config_enabled_on_next_conn = enable;
-    app_led_configuration_signal (enable);
+    app_led_configuration_mode (enable);
     return err_code;
 }
 

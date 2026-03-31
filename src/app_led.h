@@ -117,7 +117,7 @@ void app_led_activity_signal (const bool active);
  *
 * @param[in] active True to activate signal, false to deactivate.
  */
-void app_led_configuration_signal (const bool active);
+void app_led_configuration_mode (const bool active);
 
 /**
  * @brief Set/Clear interaction indication

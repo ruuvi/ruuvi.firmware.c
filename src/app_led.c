@@ -24,7 +24,6 @@
 #endif
 
 #define ACTIVITY_BIT     (1U << 0U)
-#define CONFIGURABLE_BIT (1U << 1U)
 #define INTERACTION_BIT  (1U << 2U)
 #define ERROR_BIT        (1U << 3U)
 #define PAUSE_BIT        (1U << 4U) // For backwards compatibility, do not use.
@@ -92,6 +91,7 @@ rd_status_t app_led_init (void)
     rd_status_t err_code = RD_SUCCESS;
     err_code |= rt_led_init (m_led_pins, m_led_active, RB_LEDS_NUMBER);
     m_signals = 0;
+    m_activity_led = RB_LED_ACTIVITY;
     return  err_code;
 }
 
@@ -129,27 +129,10 @@ rd_status_t app_led_activity_set (const ri_gpio_id_t led)
 rd_status_t app_led_activity_indicate (const bool active)
 {
     rd_status_t err_code = RD_SUCCESS;
-    RD_ERROR_CHECK (RD_WARNING_DEPRECATED, ~RD_ERROR_FATAL);
-
-    if (CONFIGURABLE_BIT & m_signals)
-    {
-        err_code |= app_led_activity_set (RB_LED_CONFIG_ENABLED);
-    }
-    else
-    {
-        err_code |= app_led_activity_set (RB_LED_ACTIVITY);
-    }
 
     if (! (PAUSE_BIT & m_signals))
     {
-        if (active)
-        {
-            err_code |= app_led_activate (m_activity_led);
-        }
-        else
-        {
-            err_code |= app_led_deactivate (m_activity_led);
-        }
+        err_code |= rt_led_write (m_activity_led, active);
     }
 
     return err_code;
@@ -204,9 +187,16 @@ void app_led_activity_signal (const bool active)
  *
 * @param[in] active True to activate signal, false to deactivate.
  */
-void app_led_configuration_signal (const bool active)
+void app_led_configuration_mode (const bool active)
 {
-    app_led_signal (CONFIGURABLE_BIT, active);
+    if (active)
+    {
+        app_led_activity_set (RB_LED_CONFIG_ENABLED);
+    }
+    else
+    {
+        app_led_activity_set (RB_LED_ACTIVITY);
+    }
 }
 
 
