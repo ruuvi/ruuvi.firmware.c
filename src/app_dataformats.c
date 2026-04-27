@@ -95,7 +95,7 @@ app_dataformat_t app_dataformat_next (const app_dataformats_t formats,
         } while (! (nextState & formats.formats));
     }
 
-    ri_adv_enable_uuid (nextState == DF_C5 || nextState == DF_8 || nextState == DF_7);
+    ri_adv_enable_uuid ( (nextState == DF_C5) || (nextState == DF_8) || (nextState == DF_7));
     return nextState;
 }
 
