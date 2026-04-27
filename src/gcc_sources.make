@@ -195,6 +195,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/BME280_driver/selftest/bme280_selftest.c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/embedded-common/sensirion_common.c \
   $(PROJ_DIR)/ruuvi.drivers.c/embedded-sht/shtc1/shtc1.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/MMC5616WA/mmc5616wa.c \
   $(PROJ_DIR)/ruuvi.drivers.c/ruuvi.dps310.c/src/dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_driver_sensor_test.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/integration_tests/ruuvi_driver_test.c \
@@ -220,10 +221,12 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_sths34pf80.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_bme280.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_mmc5616wa.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_shtcx.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_sths34pf80.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log/ruuvi_interface_log.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/magnetometer/ruuvi_interface_mmc5616wa.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_lis2dh12.c \
@@ -406,6 +409,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/gpio \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/magnetometer \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/power \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/rtc \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/scheduler \
@@ -421,6 +425,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.endpoints.c/src \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/sths34pf80_STdC/driver \
+  $(PROJ_DIR)/ruuvi.drivers.c/MMC5616WA \
   $(PROJ_DIR)/ruuvi.libraries.c/src \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/include \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress \

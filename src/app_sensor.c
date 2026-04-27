@@ -18,6 +18,7 @@
 #include "ruuvi_interface_i2c.h"
 #include "ruuvi_interface_lis2dh12.h"
 #include "ruuvi_interface_log.h"
+#include "ruuvi_interface_mmc5616wa.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
 #include "ruuvi_interface_sths34pf80.h"
@@ -127,6 +128,10 @@ static rt_sensor_ctx_t env_mcu = APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG;
 static rt_sensor_ctx_t sths34pf80 = APP_SENSOR_STHS34PF80_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_MMC5616WA_ENABLED
+static rt_sensor_ctx_t mmc5616wa = APP_SENSOR_MMC5616WA_DEFAULT_CFG;
+#endif
+
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
 static
@@ -167,6 +172,9 @@ m_sensors_init (void)
 #endif
 #if APP_SENSOR_STHS34PF80_ENABLED
     m_sensors[STHS34PF80_INDEX] = &sths34pf80;
+#endif
+#if APP_SENSOR_MMC5616WA_ENABLED
+    m_sensors[MMC5616WA_INDEX] = &mmc5616wa;
 #endif
 }
 

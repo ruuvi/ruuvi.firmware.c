@@ -73,6 +73,9 @@ enum
 #if APP_SENSOR_LIS2DW12_ENABLED
     LIS2DW12_INDEX,
 #endif
+#if APP_SENSOR_MMC5616WA_ENABLED
+    MMC5616WA_INDEX,
+#endif
     SENSOR_COUNT
 };
 
@@ -345,6 +348,32 @@ void m_sensors_init (void); //!< Give Ceedling a handle to initialize structs.
     .fifo_pin = RI_GPIO_ID_UNUSED,                              \
     .level_pin = RB_INT_STHS34PF80_PIN,                         \
     .i2c_max_speed = RB_STHS34PF80_I2C_MAX_SPD                  \
+  }
+#endif
+
+#if APP_SENSOR_MMC5616WA_ENABLED
+#define APP_SENSOR_MMC5616WA_DEFAULT_CFG                        \
+  {                                                             \
+    .sensor = {0},                                              \
+    .init = &ri_mmc5616wa_init,                                 \
+    .configuration =                                            \
+    {                                                           \
+            .dsp_function = APP_SENSOR_MMC5616WA_DSP_FUNC,      \
+            .dsp_parameter = APP_SENSOR_MMC5616WA_DSP_PARAM,    \
+            .mode = APP_SENSOR_MMC5616WA_MODE,                  \
+            .resolution = APP_SENSOR_MMC5616WA_RESOLUTION,      \
+            .samplerate = APP_SENSOR_MMC5616WA_SAMPLERATE,      \
+            .scale = APP_SENSOR_MMC5616WA_SCALE                 \
+    },                                                          \
+    .nvm_file = APP_FLASH_SENSOR_FILE,                          \
+    .nvm_record = APP_FLASH_SENSOR_MMC5616WA_RECORD,            \
+    .bus = RD_BUS_I2C,                                          \
+    .handle = RB_MMC5616WA_I2C_ADDRESS,                         \
+    .pwr_pin = RB_MMC5616WA_SENSOR_POWER_PIN,                   \
+    .pwr_on = RI_GPIO_HIGH,                                     \
+    .fifo_pin = RI_GPIO_ID_UNUSED,                              \
+    .level_pin = RI_GPIO_ID_UNUSED,                             \
+    .i2c_max_speed = RB_MMC5616WA_I2C_MAX_SPD                   \
   }
 #endif
 
