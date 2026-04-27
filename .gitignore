@@ -65,6 +65,9 @@ compile_commands.json
 *.emSession
 *.jlink
 
+# VSCode
+.vscode/
+
 # Compiled packages
 *.zip
 

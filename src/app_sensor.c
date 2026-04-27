@@ -20,6 +20,7 @@
 #include "ruuvi_interface_log.h"
 #include "ruuvi_interface_rtc.h"
 #include "ruuvi_interface_shtcx.h"
+#include "ruuvi_interface_sths34pf80.h"
 #include "ruuvi_interface_spi.h"
 #include "ruuvi_interface_yield.h"
 #include "ruuvi_task_adc.h"
@@ -122,6 +123,10 @@ static rt_sensor_ctx_t ntc = APP_SENSOR_NTC_DEFAULT_CFG;
 static rt_sensor_ctx_t env_mcu = APP_SENSOR_ENVIRONMENTAL_MCU_DEFAULT_CFG;
 #endif
 
+#if APP_SENSOR_STHS34PF80_ENABLED
+static rt_sensor_ctx_t sths34pf80 = APP_SENSOR_STHS34PF80_DEFAULT_CFG;
+#endif
+
 /** @brief Initialize sensor pointer array */
 #ifndef CEEDLING
 static
@@ -159,6 +164,9 @@ m_sensors_init (void)
 #endif
 #if APP_SENSOR_LIS2DW12_ENABLED
     m_sensors[LIS2DW12_INDEX] = lis2dw12;
+#endif
+#if APP_SENSOR_STHS34PF80_ENABLED
+    m_sensors[STHS34PF80_INDEX] = &sths34pf80;
 #endif
 }
 
@@ -358,7 +366,6 @@ rd_status_t app_sensor_init (void)
             {
                 init_code = rt_sensor_initialize (m_sensors[ii]);
             } while ( (APP_SENSOR_SELFTEST_RETRIES > retries++)
-
                       && (RD_ERROR_SELFTEST == init_code));
 
             if (RD_SUCCESS == init_code)

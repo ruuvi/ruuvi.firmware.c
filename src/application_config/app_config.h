@@ -253,6 +253,40 @@
 #   define RI_DPS310_ENABLED APP_SENSOR_DPS310_ENABLED
 #endif
 
+/** @brief Enable STHS34PF80 thermal infrared presence sensor */
+#ifndef APP_SENSOR_STHS34PF80_ENABLED
+#   define APP_SENSOR_STHS34PF80_ENABLED RB_ENVIRONMENTAL_STHS34PF80_PRESENT
+#endif
+
+#ifndef APP_SENSOR_STHS34PF80_DSP_FUNC
+#   define APP_SENSOR_STHS34PF80_DSP_FUNC RD_SENSOR_DSP_LAST //!< Only LAST supported
+#endif
+#ifndef APP_SENSOR_STHS34PF80_DSP_PARAM
+#   define APP_SENSOR_STHS34PF80_DSP_PARAM (1U) //!< Only 1 is valid with LAST
+#endif
+#ifndef APP_SENSOR_STHS34PF80_MODE
+#   define APP_SENSOR_STHS34PF80_MODE RD_SENSOR_CFG_CONTINUOUS //!< Run in continuous mode
+#endif
+#ifndef APP_SENSOR_STHS34PF80_RESOLUTION
+#   define APP_SENSOR_STHS34PF80_RESOLUTION RD_SENSOR_CFG_DEFAULT //!< Only default supported
+#endif
+#ifndef APP_SENSOR_STHS34PF80_SAMPLERATE
+/** @note Presence/motion flags may be missed if polled slower than sensor ODR.
+ *        Consider using interrupt-driven detection for reliable event capture. */
+#   define APP_SENSOR_STHS34PF80_SAMPLERATE RD_SENSOR_CFG_CUSTOM_2 //!< 0.5 Hz (CUSTOM_2)
+#endif
+#ifndef APP_SENSOR_STHS34PF80_SCALE
+#   define APP_SENSOR_STHS34PF80_SCALE RD_SENSOR_CFG_DEFAULT //!< Only default is valid
+#endif
+#ifndef SHTS_DEBUG_DATA_IN_ACCELERATION
+#   define SHTS_DEBUG_DATA_IN_ACCELERATION (1U) //!< Enable to log raw data in acceleration format for easier debugging.
+#endif
+
+/** @brief Enable STHS34PF80 driver */
+#ifndef RI_STHS34PF80_ENABLED
+#   define RI_STHS34PF80_ENABLED APP_SENSOR_STHS34PF80_ENABLED
+#endif
+
 /** @brief Enable atomic operations */
 #ifndef RI_ATOMIC_ENABLED
 #   define RI_ATOMIC_ENABLED (1U)
@@ -344,6 +378,7 @@
 #define APP_FLASH_SENSOR_PHOTO_RECORD    (0xC2U)
 #define APP_FLASH_SENSOR_SHTCX_RECORD    (0xC3U)
 #define APP_FLASH_SENSOR_TMP117_RECORD   (0x17U)
+#define APP_FLASH_SENSOR_STHS34PF80_RECORD (0xC4U)
 
 
 
@@ -432,6 +467,13 @@
  */
 #ifndef RE_5_ENABLED
 #   define RE_5_ENABLED  (1U + ENABLE_ALL_DATAFORMATS)
+#endif
+
+/**
+ * @brief Enable experimental motion dataformat
+ */
+#ifndef RE_7_ENABLED
+#   define RE_7_ENABLED  (0U + ENABLE_ALL_DATAFORMATS)
 #endif
 
 /**

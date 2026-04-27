@@ -22,6 +22,7 @@
 #include "mock_ruuvi_interface_environmental_mcu.h"
 #include "mock_ruuvi_interface_lis2dh12.h"
 #include "mock_ruuvi_interface_shtcx.h"
+#include "mock_ruuvi_interface_sths34pf80.h"
 #include "mock_ruuvi_interface_tmp117.h"
 #include "mock_ruuvi_interface_yield.h"
 #include "mock_ruuvi_task_adc.h"
@@ -132,6 +133,14 @@ static const rd_sensor_data_fields_t fields_tmp117 =
 {
     .datas.temperature_c = 1
 };
+static const rd_sensor_data_fields_t fields_sths =
+{
+    .datas.temperature_c = 1,
+    .datas.presence = 1,
+    .datas.motion = 1,
+    .datas.ir_object = 1,
+    .datas.debug_tamb = 1
+};
 static const rd_sensor_data_fields_t fields_expected =
 {
     .datas.temperature_c = 1,
@@ -139,7 +148,11 @@ static const rd_sensor_data_fields_t fields_expected =
     .datas.pressure_pa = 1,
     .datas.acceleration_x_g = 1,
     .datas.acceleration_y_g = 1,
-    .datas.acceleration_z_g = 1
+    .datas.acceleration_z_g = 1,
+    .datas.presence = 1,
+    .datas.motion = 1,
+    .datas.ir_object = 1,
+    .datas.debug_tamb = 1
 };
 
 void test_app_sensor_init_first_time (void)
@@ -401,6 +414,7 @@ void test_app_sensor_available_data (void)
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
         m_sensors[ENV_MCU_INDEX]->sensor.provides = fields_envi_mcu;
+        m_sensors[STHS34PF80_INDEX]->sensor.provides = fields_sths;
         m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
         m_sensors[TMP117EXT_INDEX]->sensor.provides = fields_tmp117;
         fields_found = app_sensor_available_data();
@@ -441,9 +455,15 @@ static rd_status_t mock_data_get (rd_sensor_data_t * const data)
 
         case ENV_MCU_INDEX:
             data->valid.bitfield |= (data->fields.bitfield & fields_envi_mcu.bitfield);
+            break;
+        
+        case STHS34PF80_INDEX:
+            data->valid.bitfield |= (data->fields.bitfield & fields_sths.bitfield);
+            break;
 
         case TMP117_INDEX:
             data->valid.bitfield |= (data->fields.bitfield & fields_tmp117.bitfield);
+            break;
 
         case TMP117EXT_INDEX:
             data->valid.bitfield |= (data->fields.bitfield & fields_tmp117.bitfield);
@@ -464,6 +484,7 @@ void test_app_sensor_get (void)
     m_sensors[SHTCX_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[DPS310_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[ENV_MCU_INDEX]->sensor.data_get = &mock_data_get;
+    m_sensors[STHS34PF80_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[TMP117_INDEX]->sensor.data_get = &mock_data_get;
     m_sensors[TMP117EXT_INDEX]->sensor.data_get = &mock_data_get;
 
@@ -528,6 +549,7 @@ void test_app_sensor_find_provider_overlap (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
+        m_sensors[STHS34PF80_INDEX]->sensor.provides = fields_sths;
         m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
         m_sensors[TMP117EXT_INDEX]->sensor.provides = fields_tmp117;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
@@ -553,6 +575,7 @@ void test_app_sensor_find_provider_empty (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX]->sensor.provides = fields_shtcx;
         m_sensors[DPS310_INDEX]->sensor.provides = fields_dps;
+        m_sensors[STHS34PF80_INDEX]->sensor.provides = fields_sths;
         m_sensors[TMP117_INDEX]->sensor.provides = fields_tmp117;
         m_sensors[TMP117EXT_INDEX]->sensor.provides = fields_tmp117;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);
@@ -599,6 +622,7 @@ void test_app_sensor_find_provider_null (void)
         m_sensors[LIS2DH12_INDEX]->sensor.provides = fields_lis;
         m_sensors[SHTCX_INDEX] = NULL;
         m_sensors[ENV_MCU_INDEX] = NULL;
+        m_sensors[STHS34PF80_INDEX] = NULL;
         m_sensors[TMP117_INDEX] = NULL;
         m_sensors[TMP117EXT_INDEX] = NULL;
         const rd_sensor_t * const  p_sensor = app_sensor_find_provider (fields_wanted);

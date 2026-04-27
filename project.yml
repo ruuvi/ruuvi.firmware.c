@@ -39,6 +39,13 @@
     - -:test/support
   :source:
     - src/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_STEVAL_MKI109D/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_Nucleo_F401RE/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_Nucleo_H503RB/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_MKI109V3/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_resources/**
+    - -:src/ruuvi.endpoints.c/CMock/**
+    - -:src/ruuvi.drivers.c/embedded-sht/sample-projects/**
     - nRF5_SDK_15.3.0_59ac345/components/**
     - nRF5_SDK_15.3.0_59ac345/integration/**
     - nRF5_SDK_15.3.0_59ac345/modules/**
@@ -46,6 +53,13 @@
     - test/support
   :include:
     - src/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_STEVAL_MKI109D/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_Nucleo_F401RE/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_Nucleo_H503RB/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_prj_MKI109V3/**
+    - -:src/ruuvi.drivers.c/STMems_Standard_C_drivers/_resources/**
+    - -:src/ruuvi.endpoints.c/CMock/**
+    - -:src/ruuvi.drivers.c/embedded-sht/sample-projects/**
     - nRF5_SDK_15.3.0_59ac345/components/**
     - nRF5_SDK_15.3.0_59ac345/integration/**
     - nRF5_SDK_15.3.0_59ac345/modules/**
@@ -113,7 +127,7 @@
   :reports:
     - SonarQube
   :gcovr:                        # `gcovr` common and report-specific options
-    :report_root: "../../"       # Atypical layout -- project.yml is inside a subdirectoy below <build root>
+    :report_root: "."            # Paths in XML will be relative to project root, matching sonar.projectBaseDir
     :sort_percentage: TRUE
     :sort_uncovered: FALSE
     :html_medium_threshold: 60

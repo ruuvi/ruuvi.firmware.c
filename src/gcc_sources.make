@@ -217,9 +217,11 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_dps310.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_shtcx.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_sths34pf80.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/environmental/ruuvi_interface_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_bme280.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_shtcx.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_sths34pf80.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/i2c/ruuvi_interface_i2c_tmp117.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/log/ruuvi_interface_log.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/interfaces/spi/ruuvi_interface_spi_bme280.c \
@@ -256,6 +258,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/watchdog/ruuvi_nrf5_sdk15_watchdog.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/nrf5_sdk15_platform/yield/ruuvi_nrf5_sdk15_yield.c \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver/lis2dh12_reg.c \
+  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/sths34pf80_STdC/driver/sths34pf80_reg.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_adc.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_advertisement.c \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks/ruuvi_task_button.c \
@@ -271,6 +274,7 @@ RUUVI_LIB_SOURCES= \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoints.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_3.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_5.c \
+  $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_7.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_8.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_c5.c \
   $(PROJ_DIR)/ruuvi.endpoints.c/src/ruuvi_endpoint_fa.c \
@@ -416,6 +420,7 @@ COMMON_INCLUDES= \
   $(PROJ_DIR)/ruuvi.drivers.c/src/tasks \
   $(PROJ_DIR)/ruuvi.endpoints.c/src \
   $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/lis2dh12_STdC/driver \
+  $(PROJ_DIR)/ruuvi.drivers.c/STMems_Standard_C_drivers/sths34pf80_STdC/driver \
   $(PROJ_DIR)/ruuvi.libraries.c/src \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/include \
   $(PROJ_DIR)/ruuvi.libraries.c/src/libs/compress \

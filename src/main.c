@@ -137,7 +137,7 @@ int app_main (void)
 int main (void)
 #endif
 {
-#   if RUUVI_RUN_TESTS
+#   if (RUUVI_RUN_TESTS)
     integration_tests_run();
 #   endif
     setup();

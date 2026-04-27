@@ -17,17 +17,28 @@
 #include "ruuvi_endpoints.h"
 #include "ruuvi_endpoint_3.h"
 #include "ruuvi_endpoint_5.h"
+#include "ruuvi_endpoint_7.h"
 #include "ruuvi_endpoint_8.h"
 #include "ruuvi_endpoint_fa.h"
+/**
+ * Control inclusion of data format flags in transmission.
+ * Default is disabled (0U). Define APP_DATAFORMAT_FLAGS_IN_TX as 1U
+ * in a debug configuration (e.g. via build flags or app_config.h)
+ * to enable.
+ */
+#ifndef APP_DATAFORMAT_FLAGS_IN_TX
+#define APP_DATAFORMAT_FLAGS_IN_TX (0U)
+#endif
 
 typedef enum
 {
     DF_INVALID = 0U,
     DF_3       = (1U << 0U),
     DF_5       = (1U << 1U),
-    DF_8       = (1U << 2U),
-    DF_C5      = (1U << 3U),
-    DF_FA      = (1U << 4U)
+    DF_7       = (1U << 2U),
+    DF_8       = (1U << 3U),
+    DF_C5      = (1U << 4U),
+    DF_FA      = (1U << 5U)
 } app_dataformat_t;
 
 typedef struct

@@ -14,7 +14,7 @@ n) NAME=${OPTARG};;
 v) VERSION=${OPTARG};;
 esac
 done
-BINNAME=ruuvitag_b\_armgcc\_${NAME}\_${VERSION}
+BINNAME=pca10040\_armgcc\_${NAME}\_${VERSION}
 BOOTLOADER="ruuvitag_b_s132_6.1.1_bootloader_3.1.0.hex"     
 if [[ -f "$BOOTLOADER" ]]; then
    echo "Found bootloader."
@@ -31,8 +31,11 @@ fi
 
 rm ruuvitag_b_armgcc*${NAME}*
 
+echo "Generating settings."
 nrfutil settings generate --family NRF52 --application _build/nrf52832_xxaa.hex --application-version 1  --bootloader-version 1 --bl-settings-version 1 settings.hex 
+echo "Merging SBC."
 mergehex -m ../../../../nRF5_SDK_15.3.0_59ac345/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex $BOOTLOADER settings.hex -o sbc.hex
+echo "Merging application."
 mergehex -m sbc.hex _build/nrf52832_xxaa.hex -o packet.hex
 
 nrfutil pkg generate --application _build/nrf52832_xxaa.hex --application-version 1 --hw-version 0xB0 --sd-req 0xB7 --key-file ruuvi_open_private.pem ${BINNAME}\_dfu_app.zip

@@ -9,9 +9,24 @@
 # Segger Embedded Studio at ruuvi.firmware.c.emProject.
 # Changes to this makefile should be made there as well.
 #
-#	The -Dxxx generates a #define xxx in C preprocessor.
+# The -Dxxx generates a #define xxx in C preprocessor.
 #
 # @copyright Ruuvi Innovations Ltd, license BSD-3-Clause.
+#
+# Default behavior (no arguments):
+#   Builds ruuvitag_b and pca10040 boards with all variants:
+#   default, test, longmem, longlife, uuid
+#
+# Usage examples:
+#   make                                              # Build default boards/variants
+#   make BOARDS="pca10040"                            # Build only pca10040, all variants
+#   make VARIANTS="default test"                      # Build default boards, only default and test variants
+#   make BOARDS="pca10040 ruuvitag_b" VARIANTS="default test"  # Specific boards and variants
+#   make ruuvitag_b                                   # Build single board with all variants
+#   make BOARDS="kaarle" VARIANTS="longlife"          # Build kaarle with longlife only
+#
+# Available boards: ruuvitag_b, pca10040, kaarle, kalervo, keijo
+# Available variants: default, test, longmem, longlife, uuid
 
 #  For example v3.31.1
 TAG := $(shell git describe --tags --exact-match)
@@ -22,12 +37,38 @@ COMMIT := $(shell git rev-parse --short HEAD)
 # VERSION will be the tag if one exists for current commit, otherwise the commit hash.
 VERSION := $(if $(TAG),\\\"$(TAG)\\\",\\\"$(COMMIT)\\\")
 
-BOARDS = ruuvitag_b kaarle kalervo keijo
-VARIANTS = default test
+# Default boards and variants - can be overridden from command line
+# Usage: make BOARDS="pca10040 ruuvitag_b" VARIANTS="default test"
+BOARDS ?= ruuvitag_b pca10040
+VARIANTS ?= default test longmem longlife uuid
 
-.PHONY: all sync ${BOARDS} analysis publish clean
+# Variant to mode mapping
+MODE_default   = -DAPPLICATION_MODE_DEFAULT
+MODE_test      = -DAPPLICATION_MODE_DEBUG
+MODE_longmem   = -DAPPLICATION_MODE_LONGMEM
+MODE_longlife  = -DAPPLICATION_MODE_LONGLIFE
+MODE_uuid      = -DAPPLICATION_MODE_UUID
 
-all:  clean ${BOARDS}
+# Variant to debug flag mapping
+DEBUG_default  = -DNDEBUG
+DEBUG_test     = -DDEBUG
+DEBUG_longmem  = -DNDEBUG
+DEBUG_longlife = -DNDEBUG
+DEBUG_uuid     = -DNDEBUG
+
+# Variant to optimization flag mapping (release builds optimized, debug builds with debug info)
+OPT_default    = -Os -g3
+OPT_test       = -Og -g3
+OPT_longmem    = -Os
+OPT_longlife   = -Os
+OPT_uuid       = -Os
+
+# Variant to extra flags mapping (test variant runs tests)
+EXTRA_test     = RUN_TESTS=-DRUUVI_RUN_TESTS
+
+.PHONY: all sync ${BOARDS} analysis publish clean build_variant
+
+all: clean $(BOARDS)
 
 sync:
 	@echo Synchronizing GIT...
@@ -36,71 +77,34 @@ sync:
 	git submodule sync --recursive
 	git submodule update --init --recursive
 
+# Generic board target - builds all variants for a board
+define BUILD_BOARD
+$(1):
+	@echo "Building FW $${VERSION} for board $(1)"
+	@for variant in $(VARIANTS); do \
+		echo "  Building variant: $$$$variant"; \
+		case $$$$variant in \
+			default)  debug="$(DEBUG_default)";  mode="$(MODE_default)";  opt="$(OPT_default)";  extra="" ;; \
+			test)     debug="$(DEBUG_test)";     mode="$(MODE_test)";     opt="$(OPT_test)";     extra="$(EXTRA_test)" ;; \
+			longmem)  debug="$(DEBUG_longmem)";  mode="$(MODE_longmem)";  opt="$(OPT_longmem)";  extra="" ;; \
+			longlife) debug="$(DEBUG_longlife)"; mode="$(MODE_longlife)"; opt="$(OPT_longlife)"; extra="" ;; \
+			uuid)     debug="$(DEBUG_uuid)";     mode="$(MODE_uuid)";     opt="$(OPT_uuid)";     extra="" ;; \
+			*) echo "Unknown variant: $$$$variant"; exit 1 ;; \
+		esac; \
+		$$(MAKE) -C targets/$(1)/armgcc clean 2>/dev/null || true; \
+		echo "  make -C targets/$(1)/armgcc FW_VERSION=-DAPP_FW_VERSION=$${VERSION} DEBUG=$$$$debug MODE=$$$$mode OPT=\"$$$$opt\" $$$$extra"; \
+		$$(MAKE) -C targets/$(1)/armgcc \
+			FW_VERSION=-DAPP_FW_VERSION=$${VERSION} \
+			DEBUG=$$$$debug \
+			MODE=$$$$mode \
+			OPT="$$$$opt" \
+			$$$$extra; \
+		targets/$(1)/armgcc/package.sh -n ruuvifw_$$$$variant; \
+	done
+endef
 
-ruuvitag_b:
-	@echo build FW ${VERSION} for board $@
-
-	@echo + Calling targets/ruuvitag_b/armgcc/Makefile
-	$(MAKE) -C targets/ruuvitag_b/armgcc clean
-	$(MAKE) -C targets/ruuvitag_b/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT   
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_default
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGLIFE   
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_longlife
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGMEM 
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_longmem
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_UUID
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_uuid
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 	FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DDEBUG   MODE=-DAPPLICATION_MODE_DEBUG \
-											RUN_TESTS=-DRUUVI_RUN_TESTS OPT="-Og -g3" # gdb information included 
-	@echo + package next
-	targets/$@/armgcc/package.sh -n ruuvifw_test
-
-kaarle:
-	@echo build FW ${VERSION} for board $@
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 		FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT 
-	targets/$@/armgcc/package.sh -n ruuvifw_default
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 		FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DNDEBUG MODE=-DAPPLICATION_MODE_LONGLIFE 
-	targets/$@/armgcc/package.sh -n ruuvifw_longlife
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 		FW_VERSION=-DAPP_FW_VERSION=${VERSION} DEBUG=-DDEBUG   MODE=-DAPPLICATION_MODE_DEBUG \
-											RUN_TESTS=-DRUUVI_RUN_TESTS OPT="-Og -g3"
-	targets/$@/armgcc/package.sh -n ruuvifw_test
-
-kalervo:
-	@echo build FW ${VERSION} for board $@
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 		FW_VERSION=-DAPP_FW_VERSION=${VERSION}  DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT 
-	targets/$@/armgcc/package.sh -n ruuvifw_default
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc		FW_VERSION=-DAPP_FW_VERSION=${VERSION}  DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGLIFE 
-	targets/$@/armgcc/package.sh -n ruuvifw_longlife
-
-keijo:
-	@echo build FW ${VERSION} for board $@
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc			FW_VERSION=-DAPP_FW_VERSION=${VERSION}  DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_DEFAULT
-	targets/$@/armgcc/package.sh -n ruuvifw_default
-
-	$(MAKE) -C targets/$@/armgcc clean
-	$(MAKE) -C targets/$@/armgcc 		FW_VERSION=-DAPP_FW_VERSION=${VERSION}  DEBUG=-DNDEBUG  MODE=-DAPPLICATION_MODE_LONGLIFE 
-	targets/$@/armgcc/package.sh -n ruuvifw_longlife
+# Generate targets for all boards
+$(foreach board,ruuvitag_b pca10040 kaarle kalervo keijo,$(eval $(call BUILD_BOARD,$(board))))
 
 analysis:
 	@echo analysis FW ${VERSION}
@@ -115,6 +119,7 @@ publish:
 clean:
 	@echo Cleaning build files
 	$(MAKE) -C targets/ruuvitag_b/armgcc clean
+	$(MAKE) -C targets/pca10040/armgcc clean
 	$(MAKE) -C targets/kaarle/armgcc clean
 	$(MAKE) -C targets/kalervo/armgcc clean
 	$(MAKE) -C targets/keijo/armgcc clean
