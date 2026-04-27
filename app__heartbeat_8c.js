@@ -2,6 +2,7 @@ var app__heartbeat_8c =
 [
     [ "APP_DF_3_ENABLED", "app__heartbeat_8c.html#abaf09f2fcf216b10fea5a36dbfaa4b86", null ],
     [ "APP_DF_5_ENABLED", "app__heartbeat_8c.html#a22e1424bdf93cba8f07e1dffdb1a5242", null ],
+    [ "APP_DF_7_ENABLED", "app__heartbeat_8c.html#a5f0dbea038d055b25032c341eb30e566", null ],
     [ "APP_DF_8_ENABLED", "app__heartbeat_8c.html#aff4784ccbb92ae15a8b063cbe6fa0099", null ],
     [ "APP_DF_C5_ENABLED", "app__heartbeat_8c.html#a7c33e77781ae418deb3b28cdb83995d3", null ],
     [ "APP_DF_FA_ENABLED", "app__heartbeat_8c.html#a42d6063510c5455f74d7a5040d2e874e", null ],

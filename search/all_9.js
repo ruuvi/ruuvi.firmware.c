@@ -7,5 +7,6 @@ var searchData=
   ['main_4',['main',['../group__main.html#ga840291bc02cba5474a4cb46a9b9566fe',1,'main(void):&#160;main.c'],['../group__main.html',1,'Program main']]],
   ['main_2ec_5',['main.c',['../main_8c.html',1,'']]],
   ['main_2eh_6',['main.h',['../main_8h.html',1,'']]],
-  ['memory_20and_20reading_20logs_7',['Storing sensor data to memory and reading logs.',['../group__app__log.html',1,'']]]
+  ['memory_20and_20reading_20logs_7',['Storing sensor data to memory and reading logs.',['../group__app__log.html',1,'']]],
+  ['motion_5fbit_8',['MOTION_BIT',['../group__app__led.html#ga1bfcdc6759878a281d36491da6463702',1,'app_led.c']]]
 ];

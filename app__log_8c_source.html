@@ -402,115 +402,114 @@ $(document).ready(function(){initNavTree('app__log_8c_source.html',''); initResi
 <div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            <span class="comment">// Fast forward to start of desired time range.</span></div>
 <div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            <span class="keywordflow">if</span> (RD_SUCCESS == err_code) { err_code |= app_log_read_fast_forward (p_rs); }</div>
 <div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>        } <span class="keywordflow">while</span> ( (err_code != RD_SUCCESS)</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                  &amp;&amp; (p_rs-&gt;<a class="code hl_variable" href="structapp__log__read__state__t.html#a004307934628a68dda83626590eb1529">page_idx</a> &lt;= <a class="code hl_define" href="group___s_d_k15.html#gac2d6884ce2bb8042af22696a66421861">APP_FLASH_LOG_DATA_RECORDS_NUM</a>));</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>        err_code |= app_log_read_populate (sample, p_rs); <span class="comment">// Populate record</span></div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    }</div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    <span class="keywordflow">else</span> { err_code = RD_ERROR_NULL; }</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span> </div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    <span class="keywordflow">return</span> err_code;</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>}</div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span> </div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">app_log_config_set</a> (<span class="keyword">const</span> <a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)</div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>{</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    rd_status_t err_code = RD_SUCCESS;</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span> </div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keywordflow">if</span> (NULL == configuration) { err_code |= RD_ERROR_NULL; }</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>    {</div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        err_code |= rt_flash_store (<a class="code hl_define" href="group___s_d_k15.html#gacdbdd91bb86d7524f60f682b17b3c629">APP_FLASH_LOG_FILE</a>, <a class="code hl_define" href="group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8">APP_FLASH_LOG_CONFIG_RECORD</a>,</div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>                                    &amp;configuration, <span class="keyword">sizeof</span> (configuration));</div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span> </div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        <span class="keywordflow">if</span> (RD_SUCCESS == err_code)</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        {</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            err_code |= store_block (&amp;m_log_input_block);</div>
-<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>            RD_ERROR_CHECK (err_code, RD_SUCCESS);</div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            memset (&amp;m_log_input_block, 0, <span class="keyword">sizeof</span> (m_log_input_block));</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>            m_log_input_block.start_timestamp_s = end_timestamp;</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>            memcpy (&amp;m_log_config, configuration, <span class="keyword">sizeof</span> (m_log_config));</div>
-<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        }</div>
-<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>    }</div>
-<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span> </div>
-<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>    <span class="keywordflow">return</span> err_code;</div>
-<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>}</div>
-<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span> </div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log_config_get</a> (<a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>{</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    rd_status_t err_code = RD_SUCCESS;</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>    err_code |= rt_flash_load (<a class="code hl_define" href="group___s_d_k15.html#gacdbdd91bb86d7524f60f682b17b3c629">APP_FLASH_LOG_FILE</a>, <a class="code hl_define" href="group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8">APP_FLASH_LOG_CONFIG_RECORD</a>,</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>                               configuration, <span class="keyword">sizeof</span> (<a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a>));</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    memcpy (configuration, &amp;m_log_config, <span class="keyword">sizeof</span> (m_log_config));</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    <span class="keywordflow">return</span> err_code;</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>}</div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span> </div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log_purge_flash</a> (<span class="keywordtype">void</span>)</div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>{</div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>    ri_flash_purge();</div>
-<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>}</div>
-<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span> </div>
-<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span><span class="preprocessor">#else     </span><span class="comment">// RT_FLASH_ENABLED  </span></div>
-<div class="foldopen" id="foldopen00395" data-start="{" data-end="}">
-<div class="line"><a id="l00395" name="l00395"></a><span class="lineno"><a class="line" href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">  395</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">app_log_init</a> (<span class="keywordtype">void</span>)                                                 <span class="comment">// dummy</span></div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>{</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>}</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                  &amp;&amp; (p_rs-&gt;<a class="code hl_variable" href="structapp__log__read__state__t.html#a004307934628a68dda83626590eb1529">page_idx</a> &lt;= <a class="code hl_define" href="group___s_d_k15.html#gac2d6884ce2bb8042af22696a66421861">APP_FLASH_LOG_DATA_RECORDS_NUM</a>));</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span> </div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        err_code |= app_log_read_populate (sample, p_rs); <span class="comment">// Populate record</span></div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    }</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>    <span class="keywordflow">else</span> { err_code = RD_ERROR_NULL; }</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>    <span class="keywordflow">return</span> err_code;</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>}</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">app_log_config_set</a> (<span class="keyword">const</span> <a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>{</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    rd_status_t err_code = RD_SUCCESS;</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>    uint32_t end_timestamp = m_log_input_block.end_timestamp_s;</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span> </div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>    <span class="keywordflow">if</span> (NULL == configuration) { err_code |= RD_ERROR_NULL; }</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    {</div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        err_code |= rt_flash_store (<a class="code hl_define" href="group___s_d_k15.html#gacdbdd91bb86d7524f60f682b17b3c629">APP_FLASH_LOG_FILE</a>, <a class="code hl_define" href="group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8">APP_FLASH_LOG_CONFIG_RECORD</a>,</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>                                    &amp;configuration, <span class="keyword">sizeof</span> (configuration));</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span> </div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="keywordflow">if</span> (RD_SUCCESS == err_code)</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        {</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>            err_code |= store_block (&amp;m_log_input_block);</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>            RD_ERROR_CHECK (err_code, RD_SUCCESS);</div>
+<div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>            memset (&amp;m_log_input_block, 0, <span class="keyword">sizeof</span> (m_log_input_block));</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>            m_log_input_block.start_timestamp_s = end_timestamp;</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>            memcpy (&amp;m_log_config, configuration, <span class="keyword">sizeof</span> (m_log_config));</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        }</div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>    }</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span> </div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>    <span class="keywordflow">return</span> err_code;</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>}</div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span> </div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log_config_get</a> (<a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>{</div>
+<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>    rd_status_t err_code = RD_SUCCESS;</div>
+<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    err_code |= rt_flash_load (<a class="code hl_define" href="group___s_d_k15.html#gacdbdd91bb86d7524f60f682b17b3c629">APP_FLASH_LOG_FILE</a>, <a class="code hl_define" href="group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8">APP_FLASH_LOG_CONFIG_RECORD</a>,</div>
+<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>                               configuration, <span class="keyword">sizeof</span> (<a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a>));</div>
+<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>    memcpy (configuration, &amp;m_log_config, <span class="keyword">sizeof</span> (m_log_config));</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>    <span class="keywordflow">return</span> err_code;</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>}</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span> </div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span><span class="keywordtype">void</span> <a class="code hl_function" href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log_purge_flash</a> (<span class="keywordtype">void</span>)</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>{</div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    ri_flash_purge();</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>}</div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span> </div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span><span class="preprocessor">#else     </span><span class="comment">// RT_FLASH_ENABLED  </span></div>
+<div class="foldopen" id="foldopen00394" data-start="{" data-end="}">
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno"><a class="line" href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">  394</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">app_log_init</a> (<span class="keywordtype">void</span>)                                                 <span class="comment">// dummy</span></div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>{</div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>}</div>
 </div>
-<div class="foldopen" id="foldopen00399" data-start="{" data-end="}">
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno"><a class="line" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">  399</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log_process</a> (<span class="keyword">const</span> rd_sensor_data_t * <span class="keyword">const</span> sample)             <span class="comment">// dummy</span></div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>{</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>}</div>
+<div class="foldopen" id="foldopen00398" data-start="{" data-end="}">
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno"><a class="line" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">  398</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log_process</a> (<span class="keyword">const</span> rd_sensor_data_t * <span class="keyword">const</span> sample)             <span class="comment">// dummy</span></div>
+<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>{</div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>}</div>
 </div>
-<div class="foldopen" id="foldopen00403" data-start="{" data-end="}">
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno"><a class="line" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">  403</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log_config_get</a> (<a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)         <span class="comment">// dummy</span></div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>{</div>
-<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>}</div>
+<div class="foldopen" id="foldopen00402" data-start="{" data-end="}">
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno"><a class="line" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">  402</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log_config_get</a> (<a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)         <span class="comment">// dummy</span></div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>{</div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>}</div>
 </div>
-<div class="foldopen" id="foldopen00407" data-start="{" data-end="}">
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno"><a class="line" href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">  407</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">app_log_config_set</a> (<span class="keyword">const</span> <a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)  <span class="comment">// dummy</span></div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>{</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
-<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>}</div>
+<div class="foldopen" id="foldopen00406" data-start="{" data-end="}">
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno"><a class="line" href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">  406</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">app_log_config_set</a> (<span class="keyword">const</span> <a class="code hl_struct" href="structapp__log__config__t.html">app_log_config_t</a> * <span class="keyword">const</span> configuration)  <span class="comment">// dummy</span></div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>{</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>    <span class="keywordflow">return</span> RD_SUCCESS;</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>}</div>
 </div>
-<div class="foldopen" id="foldopen00411" data-start="{" data-end="}">
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno"><a class="line" href="group__app__log.html#ga3700e0f9c8d3ead0ce4aad5dd69fce56">  411</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga3700e0f9c8d3ead0ce4aad5dd69fce56">app_log_read</a> (rd_sensor_data_t * <span class="keyword">const</span> sample,                     <span class="comment">// dummy</span></div>
-<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>                          <a class="code hl_struct" href="structapp__log__read__state__t.html">app_log_read_state_t</a> * <span class="keyword">const</span> p_read_state)</div>
-<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>{</div>
-<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>    <span class="keywordflow">return</span> RD_ERROR_NOT_FOUND;</div>
-<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span>}</div>
+<div class="foldopen" id="foldopen00410" data-start="{" data-end="}">
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno"><a class="line" href="group__app__log.html#ga3700e0f9c8d3ead0ce4aad5dd69fce56">  410</a></span>rd_status_t <a class="code hl_function" href="group__app__log.html#ga3700e0f9c8d3ead0ce4aad5dd69fce56">app_log_read</a> (rd_sensor_data_t * <span class="keyword">const</span> sample,                     <span class="comment">// dummy</span></div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>                          <a class="code hl_struct" href="structapp__log__read__state__t.html">app_log_read_state_t</a> * <span class="keyword">const</span> p_read_state)</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>{</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>    <span class="keywordflow">return</span> RD_ERROR_NOT_FOUND;</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>}</div>
 </div>
-<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span> </div>
-<div class="foldopen" id="foldopen00417" data-start="{" data-end="}">
-<div class="line"><a id="l00417" name="l00417"></a><span class="lineno"><a class="line" href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">  417</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log_purge_flash</a> (<span class="keywordtype">void</span>)                                                 <span class="comment">// dummy</span></div>
-<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>{</div>
-<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span>}</div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span> </div>
+<div class="foldopen" id="foldopen00416" data-start="{" data-end="}">
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno"><a class="line" href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">  416</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log_purge_flash</a> (<span class="keywordtype">void</span>)                                                 <span class="comment">// dummy</span></div>
+<div class="line"><a id="l00417" name="l00417"></a><span class="lineno">  417</span>{</div>
+<div class="line"><a id="l00418" name="l00418"></a><span class="lineno">  418</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>}</div>
 </div>
-<div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span><span class="preprocessor">#endif    </span><span class="comment">// RT_FLASH_ENABLED</span></div>
+<div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span><span class="preprocessor">#endif    </span><span class="comment">// RT_FLASH_ENABLED</span></div>
 <div class="ttc" id="aapp__config_8h_html"><div class="ttname"><a href="app__config_8h.html">app_config.h</a></div></div>
-<div class="ttc" id="aapp__dataformats_8c_html_a2f63018251da5259db40a2cad4191ee6"><div class="ttname"><a href="app__dataformats_8c.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a></div><div class="ttdeci">#define TESTABLE_STATIC</div><div class="ttdef"><b>Definition</b> <a href="app__dataformats_8c_source.html#l00021">app_dataformats.c:21</a></div></div>
+<div class="ttc" id="aapp__dataformats_8c_html_a2f63018251da5259db40a2cad4191ee6"><div class="ttname"><a href="app__dataformats_8c.html#a2f63018251da5259db40a2cad4191ee6">TESTABLE_STATIC</a></div><div class="ttdeci">#define TESTABLE_STATIC</div><div class="ttdef"><b>Definition</b> <a href="app__dataformats_8c_source.html#l00022">app_dataformats.c:22</a></div></div>
 <div class="ttc" id="aapp__log_8h_html"><div class="ttname"><a href="app__log_8h.html">app_log.h</a></div></div>
 <div class="ttc" id="aapp__testing_8h_html"><div class="ttname"><a href="app__testing_8h.html">app_testing.h</a></div><div class="ttdoc">A set of utilities to facilitate testing.</div></div>
-<div class="ttc" id="agroup___s_d_k15_html_ga225edbd949150ad718c3ac9abcca6fe8"><div class="ttname"><a href="group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8">APP_FLASH_LOG_CONFIG_RECORD</a></div><div class="ttdeci">#define APP_FLASH_LOG_CONFIG_RECORD</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00351">app_config.h:351</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_ga584a838e4655660acbacbb395fb485de"><div class="ttname"><a href="group___s_d_k15.html#ga584a838e4655660acbacbb395fb485de">APP_LOG_TEMPERATURE_ENABLED</a></div><div class="ttdeci">#define APP_LOG_TEMPERATURE_ENABLED</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00364">app_config.h:364</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_ga6198c2c5512397bc756c6c52e2040024"><div class="ttname"><a href="group___s_d_k15.html#ga6198c2c5512397bc756c6c52e2040024">APP_LOG_INTERVAL_S</a></div><div class="ttdeci">#define APP_LOG_INTERVAL_S</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00358">app_config.h:358</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_ga7d5ce0a2293dabc4b0a957e57cbfa8a5"><div class="ttname"><a href="group___s_d_k15.html#ga7d5ce0a2293dabc4b0a957e57cbfa8a5">APP_LOG_PRESSURE_ENABLED</a></div><div class="ttdeci">#define APP_LOG_PRESSURE_ENABLED</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00370">app_config.h:370</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_gaafa389c3efd55eb57376023ebd947aa2"><div class="ttname"><a href="group___s_d_k15.html#gaafa389c3efd55eb57376023ebd947aa2">APP_LOG_OVERFLOW</a></div><div class="ttdeci">#define APP_LOG_OVERFLOW</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00361">app_config.h:361</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_gac2d6884ce2bb8042af22696a66421861"><div class="ttname"><a href="group___s_d_k15.html#gac2d6884ce2bb8042af22696a66421861">APP_FLASH_LOG_DATA_RECORDS_NUM</a></div><div class="ttdeci">#define APP_FLASH_LOG_DATA_RECORDS_NUM</div><div class="ttdoc">swap page + settings.</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00333">app_config.h:333</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_gacdbdd91bb86d7524f60f682b17b3c629"><div class="ttname"><a href="group___s_d_k15.html#gacdbdd91bb86d7524f60f682b17b3c629">APP_FLASH_LOG_FILE</a></div><div class="ttdeci">#define APP_FLASH_LOG_FILE</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00350">app_config.h:350</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_gacf2255f784f3313dfb30142a20fea6b4"><div class="ttname"><a href="group___s_d_k15.html#gacf2255f784f3313dfb30142a20fea6b4">APP_FLASH_LOG_BOOT_COUNTER_RECORD</a></div><div class="ttdeci">#define APP_FLASH_LOG_BOOT_COUNTER_RECORD</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00352">app_config.h:352</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_gae23060f71c179bbbae2c51121aa0cf6b"><div class="ttname"><a href="group___s_d_k15.html#gae23060f71c179bbbae2c51121aa0cf6b">APP_LOG_HUMIDITY_ENABLED</a></div><div class="ttdeci">#define APP_LOG_HUMIDITY_ENABLED</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00367">app_config.h:367</a></div></div>
-<div class="ttc" id="agroup___s_d_k15_html_gaea688c96cb118340e20e6d5ee728bd39"><div class="ttname"><a href="group___s_d_k15.html#gaea688c96cb118340e20e6d5ee728bd39">APP_FLASH_LOG_DATA_RECORD_PREFIX</a></div><div class="ttdeci">#define APP_FLASH_LOG_DATA_RECORD_PREFIX</div><div class="ttdoc">Prefix, append with U8 number.</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00353">app_config.h:353</a></div></div>
-<div class="ttc" id="agroup__app__log_html_ga3700e0f9c8d3ead0ce4aad5dd69fce56"><div class="ttname"><a href="group__app__log.html#ga3700e0f9c8d3ead0ce4aad5dd69fce56">app_log_read</a></div><div class="ttdeci">rd_status_t app_log_read(rd_sensor_data_t *const sample, app_log_read_state_t *const p_read_state)</div><div class="ttdoc">Get data from log.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00411">app_log.c:411</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_ga225edbd949150ad718c3ac9abcca6fe8"><div class="ttname"><a href="group___s_d_k15.html#ga225edbd949150ad718c3ac9abcca6fe8">APP_FLASH_LOG_CONFIG_RECORD</a></div><div class="ttdeci">#define APP_FLASH_LOG_CONFIG_RECORD</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00386">app_config.h:386</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_ga584a838e4655660acbacbb395fb485de"><div class="ttname"><a href="group___s_d_k15.html#ga584a838e4655660acbacbb395fb485de">APP_LOG_TEMPERATURE_ENABLED</a></div><div class="ttdeci">#define APP_LOG_TEMPERATURE_ENABLED</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00399">app_config.h:399</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_ga6198c2c5512397bc756c6c52e2040024"><div class="ttname"><a href="group___s_d_k15.html#ga6198c2c5512397bc756c6c52e2040024">APP_LOG_INTERVAL_S</a></div><div class="ttdeci">#define APP_LOG_INTERVAL_S</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00393">app_config.h:393</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_ga7d5ce0a2293dabc4b0a957e57cbfa8a5"><div class="ttname"><a href="group___s_d_k15.html#ga7d5ce0a2293dabc4b0a957e57cbfa8a5">APP_LOG_PRESSURE_ENABLED</a></div><div class="ttdeci">#define APP_LOG_PRESSURE_ENABLED</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00405">app_config.h:405</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_gaafa389c3efd55eb57376023ebd947aa2"><div class="ttname"><a href="group___s_d_k15.html#gaafa389c3efd55eb57376023ebd947aa2">APP_LOG_OVERFLOW</a></div><div class="ttdeci">#define APP_LOG_OVERFLOW</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00396">app_config.h:396</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_gac2d6884ce2bb8042af22696a66421861"><div class="ttname"><a href="group___s_d_k15.html#gac2d6884ce2bb8042af22696a66421861">APP_FLASH_LOG_DATA_RECORDS_NUM</a></div><div class="ttdeci">#define APP_FLASH_LOG_DATA_RECORDS_NUM</div><div class="ttdoc">swap page + settings.</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00367">app_config.h:367</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_gacdbdd91bb86d7524f60f682b17b3c629"><div class="ttname"><a href="group___s_d_k15.html#gacdbdd91bb86d7524f60f682b17b3c629">APP_FLASH_LOG_FILE</a></div><div class="ttdeci">#define APP_FLASH_LOG_FILE</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00385">app_config.h:385</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_gacf2255f784f3313dfb30142a20fea6b4"><div class="ttname"><a href="group___s_d_k15.html#gacf2255f784f3313dfb30142a20fea6b4">APP_FLASH_LOG_BOOT_COUNTER_RECORD</a></div><div class="ttdeci">#define APP_FLASH_LOG_BOOT_COUNTER_RECORD</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00387">app_config.h:387</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_gae23060f71c179bbbae2c51121aa0cf6b"><div class="ttname"><a href="group___s_d_k15.html#gae23060f71c179bbbae2c51121aa0cf6b">APP_LOG_HUMIDITY_ENABLED</a></div><div class="ttdeci">#define APP_LOG_HUMIDITY_ENABLED</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00402">app_config.h:402</a></div></div>
+<div class="ttc" id="agroup___s_d_k15_html_gaea688c96cb118340e20e6d5ee728bd39"><div class="ttname"><a href="group___s_d_k15.html#gaea688c96cb118340e20e6d5ee728bd39">APP_FLASH_LOG_DATA_RECORD_PREFIX</a></div><div class="ttdeci">#define APP_FLASH_LOG_DATA_RECORD_PREFIX</div><div class="ttdoc">Prefix, append with U8 number.</div><div class="ttdef"><b>Definition</b> <a href="app__config_8h_source.html#l00388">app_config.h:388</a></div></div>
+<div class="ttc" id="agroup__app__log_html_ga3700e0f9c8d3ead0ce4aad5dd69fce56"><div class="ttname"><a href="group__app__log.html#ga3700e0f9c8d3ead0ce4aad5dd69fce56">app_log_read</a></div><div class="ttdeci">rd_status_t app_log_read(rd_sensor_data_t *const sample, app_log_read_state_t *const p_read_state)</div><div class="ttdoc">Get data from log.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00410">app_log.c:410</a></div></div>
 <div class="ttc" id="agroup__app__log_html_ga420f33f00df798d7bface6e8fcab311e"><div class="ttname"><a href="group__app__log.html#ga420f33f00df798d7bface6e8fcab311e">APP_LOG_MAX_SAMPLES</a></div><div class="ttdeci">#define APP_LOG_MAX_SAMPLES</div><div class="ttdef"><b>Definition</b> <a href="app__log_8h_source.html#l00058">app_log.h:58</a></div></div>
-<div class="ttc" id="agroup__app__log_html_ga436adedb3c8dddc9b1a8a549487b0d80"><div class="ttname"><a href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log_purge_flash</a></div><div class="ttdeci">void app_log_purge_flash(void)</div><div class="ttdoc">Purge everything stored to flash.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00417">app_log.c:417</a></div></div>
-<div class="ttc" id="agroup__app__log_html_ga4b42bc16bd613711693847213b404e23"><div class="ttname"><a href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log_process</a></div><div class="ttdeci">rd_status_t app_log_process(const rd_sensor_data_t *const sample)</div><div class="ttdoc">Process data into log.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00399">app_log.c:399</a></div></div>
-<div class="ttc" id="agroup__app__log_html_ga813c97e01aa94eff37dc192c141633e1"><div class="ttname"><a href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log_config_get</a></div><div class="ttdeci">rd_status_t app_log_config_get(app_log_config_t *const configuration)</div><div class="ttdoc">Read current logging configuration.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00403">app_log.c:403</a></div></div>
-<div class="ttc" id="agroup__app__log_html_ga92c97cf51adb8d808be1b250d505614f"><div class="ttname"><a href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">app_log_config_set</a></div><div class="ttdeci">rd_status_t app_log_config_set(const app_log_config_t *const configuration)</div><div class="ttdoc">Configure logging.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00407">app_log.c:407</a></div></div>
-<div class="ttc" id="agroup__app__log_html_gab11f5d62e357d490f4e248992fadad61"><div class="ttname"><a href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">app_log_init</a></div><div class="ttdeci">rd_status_t app_log_init(void)</div><div class="ttdoc">Initialize logging.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00395">app_log.c:395</a></div></div>
+<div class="ttc" id="agroup__app__log_html_ga436adedb3c8dddc9b1a8a549487b0d80"><div class="ttname"><a href="group__app__log.html#ga436adedb3c8dddc9b1a8a549487b0d80">app_log_purge_flash</a></div><div class="ttdeci">void app_log_purge_flash(void)</div><div class="ttdoc">Purge everything stored to flash.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00416">app_log.c:416</a></div></div>
+<div class="ttc" id="agroup__app__log_html_ga4b42bc16bd613711693847213b404e23"><div class="ttname"><a href="group__app__log.html#ga4b42bc16bd613711693847213b404e23">app_log_process</a></div><div class="ttdeci">rd_status_t app_log_process(const rd_sensor_data_t *const sample)</div><div class="ttdoc">Process data into log.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00398">app_log.c:398</a></div></div>
+<div class="ttc" id="agroup__app__log_html_ga813c97e01aa94eff37dc192c141633e1"><div class="ttname"><a href="group__app__log.html#ga813c97e01aa94eff37dc192c141633e1">app_log_config_get</a></div><div class="ttdeci">rd_status_t app_log_config_get(app_log_config_t *const configuration)</div><div class="ttdoc">Read current logging configuration.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00402">app_log.c:402</a></div></div>
+<div class="ttc" id="agroup__app__log_html_ga92c97cf51adb8d808be1b250d505614f"><div class="ttname"><a href="group__app__log.html#ga92c97cf51adb8d808be1b250d505614f">app_log_config_set</a></div><div class="ttdeci">rd_status_t app_log_config_set(const app_log_config_t *const configuration)</div><div class="ttdoc">Configure logging.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00406">app_log.c:406</a></div></div>
+<div class="ttc" id="agroup__app__log_html_gab11f5d62e357d490f4e248992fadad61"><div class="ttname"><a href="group__app__log.html#gab11f5d62e357d490f4e248992fadad61">app_log_init</a></div><div class="ttdeci">rd_status_t app_log_init(void)</div><div class="ttdoc">Initialize logging.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8c_source.html#l00394">app_log.c:394</a></div></div>
 <div class="ttc" id="astructapp__log__config__t_html"><div class="ttname"><a href="structapp__log__config__t.html">app_log_config_t</a></div><div class="ttdef"><b>Definition</b> <a href="app__log_8h_source.html#l00031">app_log.h:32</a></div></div>
 <div class="ttc" id="astructapp__log__config__t_html_a7d50af7777e88823693c04b3c449d0c9"><div class="ttname"><a href="structapp__log__config__t.html#a7d50af7777e88823693c04b3c449d0c9">app_log_config_t::interval_s</a></div><div class="ttdeci">uint16_t interval_s</div><div class="ttdoc">Interval to log at, in seconds.</div><div class="ttdef"><b>Definition</b> <a href="app__log_8h_source.html#l00033">app_log.h:33</a></div></div>
 <div class="ttc" id="astructapp__log__element__t_html"><div class="ttname"><a href="structapp__log__element__t.html">app_log_element_t</a></div><div class="ttdef"><b>Definition</b> <a href="app__log_8h_source.html#l00043">app_log.h:44</a></div></div>

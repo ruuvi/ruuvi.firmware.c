@@ -92,6 +92,7 @@ $(document).ready(function(){initNavTree('app__dataformats_8h.html',''); initRes
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">app_dataformats.h File Reference</div></div>
@@ -103,6 +104,7 @@ $(document).ready(function(){initNavTree('app__dataformats_8h.html',''); initRes
 <code>#include &quot;ruuvi_endpoints.h&quot;</code><br />
 <code>#include &quot;ruuvi_endpoint_3.h&quot;</code><br />
 <code>#include &quot;ruuvi_endpoint_5.h&quot;</code><br />
+<code>#include &quot;ruuvi_endpoint_7.h&quot;</code><br />
 <code>#include &quot;ruuvi_endpoint_8.h&quot;</code><br />
 <code>#include &quot;ruuvi_endpoint_fa.h&quot;</code><br />
 </div>
@@ -113,16 +115,22 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structapp__dataformats__t.html">app_dataformats_t</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:a5c224a78100ba9548e30113b0b46bf7d" id="r_a5c224a78100ba9548e30113b0b46bf7d"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="app__dataformats_8h.html#a5c224a78100ba9548e30113b0b46bf7d">APP_DATAFORMAT_FLAGS_IN_TX</a>&#160;&#160;&#160;(0U)</td></tr>
+<tr class="separator:a5c224a78100ba9548e30113b0b46bf7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:af2622d100600a892b45980ca1b32e05a" id="r_af2622d100600a892b45980ca1b32e05a"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05a">app_dataformat_t</a> { <br />
 &#160;&#160;<a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa9e10287ad919f6f3835b625b08fd9108">DF_INVALID</a> = 0U
 , <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aafbf29fb134962bfe0704448fcd3e825f">DF_3</a> = (1U &lt;&lt; 0U)
 , <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa9de35aca84e149582cf502e689e031a5">DF_5</a> = (1U &lt;&lt; 1U)
-, <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9">DF_8</a> = (1U &lt;&lt; 2U)
+, <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa383feba7d16d2eb8923364bd302c545e">DF_7</a> = (1U &lt;&lt; 2U)
 , <br />
-&#160;&#160;<a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa497052804e284fcd07fb21a9a737827c">DF_C5</a> = (1U &lt;&lt; 3U)
-, <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19">DF_FA</a> = (1U &lt;&lt; 4U)
+&#160;&#160;<a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9">DF_8</a> = (1U &lt;&lt; 3U)
+, <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa497052804e284fcd07fb21a9a737827c">DF_C5</a> = (1U &lt;&lt; 4U)
+, <a class="el" href="app__dataformats_8h.html#af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19">DF_FA</a> = (1U &lt;&lt; 5U)
 <br />
  }</td></tr>
 <tr class="separator:af2622d100600a892b45980ca1b32e05a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,7 +151,25 @@ Functions</h2></td></tr>
 <p>Helper to encode data into various formats </p>
 
 <p class="definition">Definition in file <a class="el" href="app__dataformats_8h_source.html">app_dataformats.h</a>.</p>
-</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+</div><h2 class="groupheader">Macro Definition Documentation</h2>
+<a id="a5c224a78100ba9548e30113b0b46bf7d" name="a5c224a78100ba9548e30113b0b46bf7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c224a78100ba9548e30113b0b46bf7d">&#9670;&#160;</a></span>APP_DATAFORMAT_FLAGS_IN_TX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define APP_DATAFORMAT_FLAGS_IN_TX&#160;&#160;&#160;(0U)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Control inclusion of data format flags in transmission. Default is disabled (0U). Define APP_DATAFORMAT_FLAGS_IN_TX as 1U in a debug configuration (e.g. via build flags or <a class="el" href="app__config_8h.html">app_config.h</a>) to enable. </p>
+
+<p class="definition">Definition at line <a class="el" href="app__dataformats_8h_source.html#l00030">30</a> of file <a class="el" href="app__dataformats_8h_source.html">app_dataformats.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
 <a id="af2622d100600a892b45980ca1b32e05a" name="af2622d100600a892b45980ca1b32e05a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af2622d100600a892b45980ca1b32e05a">&#9670;&#160;</a></span>app_dataformat_t</h2>
 
@@ -159,12 +185,13 @@ Functions</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="af2622d100600a892b45980ca1b32e05aa9e10287ad919f6f3835b625b08fd9108" name="af2622d100600a892b45980ca1b32e05aa9e10287ad919f6f3835b625b08fd9108"></a>DF_INVALID&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="af2622d100600a892b45980ca1b32e05aafbf29fb134962bfe0704448fcd3e825f" name="af2622d100600a892b45980ca1b32e05aafbf29fb134962bfe0704448fcd3e825f"></a>DF_3&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="af2622d100600a892b45980ca1b32e05aa9de35aca84e149582cf502e689e031a5" name="af2622d100600a892b45980ca1b32e05aa9de35aca84e149582cf502e689e031a5"></a>DF_5&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af2622d100600a892b45980ca1b32e05aa383feba7d16d2eb8923364bd302c545e" name="af2622d100600a892b45980ca1b32e05aa383feba7d16d2eb8923364bd302c545e"></a>DF_7&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9" name="af2622d100600a892b45980ca1b32e05aa7a63b033df71ced27b3c0dee5cc5fae9"></a>DF_8&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="af2622d100600a892b45980ca1b32e05aa497052804e284fcd07fb21a9a737827c" name="af2622d100600a892b45980ca1b32e05aa497052804e284fcd07fb21a9a737827c"></a>DF_C5&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19" name="af2622d100600a892b45980ca1b32e05aa211c029a0d5bd5545ef19fcc0a624a19"></a>DF_FA&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
-<p class="definition">Definition at line <a class="el" href="app__dataformats_8h_source.html#l00023">23</a> of file <a class="el" href="app__dataformats_8h_source.html">app_dataformats.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__dataformats_8h_source.html#l00033">33</a> of file <a class="el" href="app__dataformats_8h_source.html">app_dataformats.h</a>.</p>
 
 </div>
 </div>
@@ -219,7 +246,7 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="app__dataformats_8c_source.html#l00297">297</a> of file <a class="el" href="app__dataformats_8c_source.html">app_dataformats.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__dataformats_8c_source.html#l00345">345</a> of file <a class="el" href="app__dataformats_8c_source.html">app_dataformats.c</a>.</p>
 
 </div>
 </div>
@@ -259,7 +286,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Next dataformat to use in app. DF_INVALID if no formats are enabled. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="app__dataformats_8c_source.html#l00056">56</a> of file <a class="el" href="app__dataformats_8c_source.html">app_dataformats.c</a>.</p>
+<p class="definition">Definition at line <a class="el" href="app__dataformats_8c_source.html#l00057">57</a> of file <a class="el" href="app__dataformats_8c_source.html">app_dataformats.c</a>.</p>
 
 </div>
 </div>

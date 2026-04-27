@@ -4,6 +4,7 @@ var searchData=
   ['pause_5fbit_1',['PAUSE_BIT',['../group__app__led.html#ga32204a962b0a78262d4aee9234cf7efe',1,'app_led.c']]],
   ['power_20configuration_2',['Power configuration',['../group__app__power.html',1,'']]],
   ['powerup_5fdelay_5fms_3',['POWERUP_DELAY_MS',['../app__sensor_8c.html#a609557c87d7c45e2c10777bd9beb0891',1,'app_sensor.c']]],
-  ['pressure_5fpa_4',['pressure_pa',['../structapp__log__element__t.html#a432a268dfe0d1f08e6527aaf3198019c',1,'app_log_element_t']]],
-  ['program_20main_5',['Program main',['../group__main.html',1,'']]]
+  ['presence_5fbit_4',['PRESENCE_BIT',['../group__app__led.html#gaca1ce657b3c19402e34342f07e6cac11',1,'app_led.c']]],
+  ['pressure_5fpa_5',['pressure_pa',['../structapp__log__element__t.html#a432a268dfe0d1f08e6527aaf3198019c',1,'app_log_element_t']]],
+  ['program_20main_6',['Program main',['../group__main.html',1,'']]]
 ];
