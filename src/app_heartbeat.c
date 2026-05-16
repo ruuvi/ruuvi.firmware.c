@@ -48,6 +48,7 @@ static ri_timer_id_t heart_timer; //!< Timer for updating data.
 
 static uint64_t last_heartbeat_timestamp_ms; //!< Timestamp for heartbeat refresh.
 
+#if !APP_SENSOR_POWER_PROFILING_ENABLED
 static app_dataformat_t m_dataformat_state; //!< State of heartbeat.
 
 static const app_dataformats_t m_dataformats_enabled =
@@ -86,6 +87,7 @@ static rd_status_t send_adv (ri_comm_message_t * const p_msg)
 
     return err_code;
 }
+#endif
 
 /**
  * @brief When timer triggers, schedule reading sensors and sending data.
@@ -97,6 +99,18 @@ static
 #endif
 void heartbeat (void * p_event, uint16_t event_size)
 {
+#if APP_SENSOR_POWER_PROFILING_ENABLED
+    UNUSED_VARIABLE (p_event);
+    UNUSED_VARIABLE (event_size);
+    const rd_status_t err_code = app_sensor_power_profile();
+
+    if (RD_SUCCESS == err_code)
+    {
+        last_heartbeat_timestamp_ms = 0U;
+    }
+
+    RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+#else
     ri_comm_message_t msg = {0};
     rd_status_t err_code = RD_SUCCESS;
     bool heartbeat_ok = false;
@@ -156,6 +170,7 @@ void heartbeat (void * p_event, uint16_t event_size)
     app_led_activity_signal (false);
     err_code = app_log_process (&data);
     RD_ERROR_CHECK (err_code, ~RD_ERROR_FATAL);
+#endif
 }
 
 /**

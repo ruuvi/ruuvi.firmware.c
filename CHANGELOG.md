@@ -1,4 +1,16 @@
 # Changelog
+## 3.35.0 
+ - Add support sths34pf80 presense / movement sensor
+
+## 3.34.0
+ - External TMP117 returns N/A on failure, helping to detect a broken external sensor instead of silent fallback to internal sensing
+
+## 3.33.0
+ - Internal test version, not recommended for use
+
+## 3.32.0
+ -  Support external TMP117 sensor
+
 ## 3.31.1
  - Fix RE5 negative temperatures being broadcasted out as zero
 

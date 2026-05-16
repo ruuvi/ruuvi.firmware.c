@@ -68,6 +68,207 @@ static uint64_t vdd_update_time;              //!< timestamp of VDD update.
 static uint32_t
 m_event_counter;              //!< Number of events registered in app_sensor.
 
+#if APP_SENSOR_POWER_PROFILING_ENABLED
+#define APP_SENSOR_POWER_PROFILE_AXIS_COUNT (3U)
+static bool m_power_profile_sensors_initialized;
+static volatile uint32_t m_power_profile_lis2dh12_fifo_events;
+
+#ifndef CEEDLING
+static
+#endif
+void power_profile_lis2dh12_fifo_isr (const ri_gpio_evt_t event)
+{
+    if (RI_GPIO_SLOPE_LOTOHI == event.slope)
+    {
+        m_power_profile_lis2dh12_fifo_events++;
+    }
+}
+
+static void power_profile_fifo_buffer_prepare (rd_sensor_data_t * const data,
+        float values[][APP_SENSOR_POWER_PROFILE_AXIS_COUNT],
+        const size_t count,
+        const rd_sensor_data_fields_t fields)
+{
+    for (size_t ii = 0U; ii < count; ii++)
+    {
+        data[ii].timestamp_ms = 0U;
+        data[ii].fields = fields;
+        data[ii].valid.bitfield = 0U;
+        data[ii].data = values[ii];
+    }
+}
+
+static rd_status_t power_profile_fifo_read (rt_sensor_ctx_t * const sensor,
+        const rd_sensor_data_fields_t fields,
+        const size_t samples_to_read,
+        const size_t fifo_buffer_len,
+        size_t * const samples_read)
+{
+    if ( (NULL == sensor) || (NULL == sensor->sensor.fifo_enable)
+            || (NULL == sensor->sensor.fifo_read) || (NULL == samples_read))
+    {
+        return RD_ERROR_NULL;
+    }
+
+    size_t samples_requested = samples_to_read;
+
+    if (fifo_buffer_len < samples_requested)
+    {
+        samples_requested = fifo_buffer_len;
+    }
+
+    rd_sensor_data_t data[fifo_buffer_len];
+    float values[fifo_buffer_len][APP_SENSOR_POWER_PROFILE_AXIS_COUNT];
+    power_profile_fifo_buffer_prepare (data, values, samples_requested, fields);
+    rd_status_t err_code = sensor->sensor.fifo_read (&samples_requested, data);
+    *samples_read = samples_requested;
+    return err_code;
+}
+
+static rd_status_t power_profile_lis2dh12_fifo_wait (uint32_t * const last_event_count)
+{
+    if (NULL == last_event_count)
+    {
+        return RD_ERROR_NULL;
+    }
+
+    const uint64_t start_ms = ri_rtc_millis();
+
+    while (*last_event_count == m_power_profile_lis2dh12_fifo_events)
+    {
+        if (APP_SENSOR_POWER_PROFILE_LIS2DH12_WATERMARK_TIMEOUT_MS <=
+                (ri_rtc_millis() - start_ms))
+        {
+            return RD_ERROR_TIMEOUT;
+        }
+
+        (void) ri_yield();
+    }
+
+    *last_event_count = m_power_profile_lis2dh12_fifo_events;
+    return RD_SUCCESS;
+}
+
+#if APP_SENSOR_LIS2DH12_ENABLED && APP_SENSOR_MMC5616WA_ENABLED
+static rd_status_t power_profile_fifo_collect (void)
+{
+    rt_sensor_ctx_t * const lis2dh12 = m_sensors[LIS2DH12_INDEX];
+    rt_sensor_ctx_t * const mmc5616wa = m_sensors[MMC5616WA_INDEX];
+
+    if ( (NULL == lis2dh12) || (NULL == mmc5616wa)
+            || (NULL == lis2dh12->sensor.fifo_enable)
+            || (NULL == lis2dh12->sensor.fifo_interrupt_enable)
+            || (NULL == lis2dh12->sensor.fifo_read)
+            || (NULL == lis2dh12->sensor.mode_set)
+            || (NULL == mmc5616wa->sensor.fifo_enable)
+            || (NULL == mmc5616wa->sensor.fifo_read)
+            || (NULL == mmc5616wa->sensor.mode_set))
+    {
+        return RD_ERROR_NULL;
+    }
+
+    if (RI_GPIO_ID_UNUSED == RB_INT_FIFO_PIN)
+    {
+        return RD_ERROR_NOT_SUPPORTED;
+    }
+
+    const rd_sensor_data_fields_t acceleration_fields =
+    {
+        .datas.acceleration_x_g = 1,
+        .datas.acceleration_y_g = 1,
+        .datas.acceleration_z_g = 1
+    };
+    const rd_sensor_data_fields_t magnetometer_fields =
+    {
+        .datas.magnetometer_x_g = 1,
+        .datas.magnetometer_y_g = 1,
+        .datas.magnetometer_z_g = 1
+    };
+    rd_status_t err_code = RD_SUCCESS;
+    size_t lis2dh12_samples_collected = 0U;
+    size_t mmc5616wa_samples_collected = 0U;
+    size_t mmc5616wa_empty_reads = 0U;
+
+    m_power_profile_lis2dh12_fifo_events = 0U;
+    err_code |= ri_gpio_interrupt_enable (RB_INT_FIFO_PIN,
+                                          RI_GPIO_SLOPE_LOTOHI,
+                                          RI_GPIO_MODE_INPUT_NOPULL,
+                                          &power_profile_lis2dh12_fifo_isr);
+    err_code |= lis2dh12->sensor.fifo_enable (true);
+    err_code |= lis2dh12->sensor.fifo_interrupt_enable (true);
+    err_code |= mmc5616wa->sensor.fifo_enable (true);
+    uint8_t mode = RD_SENSOR_CFG_CONTINUOUS;
+    err_code |= mmc5616wa->sensor.mode_set (&mode);
+    mode = RD_SENSOR_CFG_CONTINUOUS;
+    err_code |= lis2dh12->sensor.mode_set (&mode);
+    uint32_t lis2dh12_fifo_event_count = m_power_profile_lis2dh12_fifo_events;
+
+    while ( (RD_SUCCESS == err_code) &&
+            (mmc5616wa_samples_collected < APP_SENSOR_POWER_PROFILE_MMC5616WA_SAMPLE_COUNT))
+    {
+        err_code |= power_profile_lis2dh12_fifo_wait (&lis2dh12_fifo_event_count);
+
+        if (RD_SUCCESS == err_code)
+        {
+            size_t lis2dh12_samples_read = 0U;
+            const size_t lis2dh12_samples_to_read = APP_SENSOR_POWER_PROFILE_LIS2DH12_FIFO_BUFFER;
+            err_code |= power_profile_fifo_read (lis2dh12,
+                                                 acceleration_fields,
+                                                 lis2dh12_samples_to_read,
+                                                 APP_SENSOR_POWER_PROFILE_LIS2DH12_FIFO_BUFFER,
+                                                 &lis2dh12_samples_read);
+
+            if (lis2dh12_samples_collected < APP_SENSOR_POWER_PROFILE_LIS2DH12_SAMPLE_COUNT)
+            {
+                const size_t lis2dh12_samples_remaining =
+                    APP_SENSOR_POWER_PROFILE_LIS2DH12_SAMPLE_COUNT - lis2dh12_samples_collected;
+                lis2dh12_samples_collected += (lis2dh12_samples_read < lis2dh12_samples_remaining)
+                                              ? lis2dh12_samples_read
+                                              : lis2dh12_samples_remaining;
+            }
+        }
+
+        if (RD_SUCCESS == err_code)
+        {
+            size_t mmc5616wa_samples_read = 0U;
+            const size_t mmc5616wa_samples_remaining =
+                APP_SENSOR_POWER_PROFILE_MMC5616WA_SAMPLE_COUNT - mmc5616wa_samples_collected;
+            err_code |= power_profile_fifo_read (mmc5616wa,
+                                                 magnetometer_fields,
+                                                 mmc5616wa_samples_remaining,
+                                                 APP_SENSOR_POWER_PROFILE_MMC5616WA_FIFO_BUFFER,
+                                                 &mmc5616wa_samples_read);
+            mmc5616wa_samples_collected += mmc5616wa_samples_read;
+
+            if (0U == mmc5616wa_samples_read)
+            {
+                mmc5616wa_empty_reads++;
+
+                if (APP_SENSOR_POWER_PROFILE_EMPTY_READ_LIMIT < mmc5616wa_empty_reads)
+                {
+                    err_code |= RD_ERROR_TIMEOUT;
+                }
+            }
+            else
+            {
+                mmc5616wa_empty_reads = 0U;
+            }
+        }
+    }
+
+    mode = RD_SENSOR_CFG_SLEEP;
+    err_code |= lis2dh12->sensor.mode_set (&mode);
+    mode = RD_SENSOR_CFG_SLEEP;
+    err_code |= mmc5616wa->sensor.mode_set (&mode);
+    err_code |= lis2dh12->sensor.fifo_interrupt_enable (false);
+    err_code |= lis2dh12->sensor.fifo_enable (false);
+    err_code |= mmc5616wa->sensor.fifo_enable (false);
+    err_code |= ri_gpio_interrupt_disable (RB_INT_FIFO_PIN);
+    return err_code;
+}
+#endif
+#endif
+
 /**
  * @brief Sensor operation, such as read or configure.
  *
@@ -378,6 +579,9 @@ rd_status_t app_sensor_init (void)
 
             if (RD_SUCCESS == init_code)
             {
+#if APP_SENSOR_POWER_PROFILING_ENABLED
+                init_code = rt_sensor_configure (m_sensors[ii]);
+#else
                 // Check for a configuration in flash.
                 init_code = rt_sensor_load (m_sensors[ii]);
 
@@ -392,6 +596,7 @@ rd_status_t app_sensor_init (void)
                     init_code = rt_sensor_configure (m_sensors[ii]);
                     rt_sensor_store (m_sensors[ii]);
                 }
+#endif
 
                 // Update board max I2C speed
                 if (i2c_freq > m_sensors[ii]->i2c_max_speed)
@@ -442,6 +647,32 @@ rd_status_t app_sensor_uninit (void)
     app_sensor_rtc_uninit();
     ri_radio_activity_callback_set (NULL);
     return err_code;
+}
+
+rd_status_t app_sensor_power_profile (void)
+{
+#if APP_SENSOR_POWER_PROFILING_ENABLED
+    rd_status_t err_code = RD_SUCCESS;
+
+    if (!m_power_profile_sensors_initialized)
+    {
+        err_code = app_sensor_init();
+        m_power_profile_sensors_initialized = (RD_SUCCESS == err_code);
+    }
+
+#if APP_SENSOR_LIS2DH12_ENABLED && APP_SENSOR_MMC5616WA_ENABLED
+    if (RD_SUCCESS == err_code)
+    {
+        err_code |= power_profile_fifo_collect();
+    }
+#else
+    err_code |= RD_ERROR_NOT_SUPPORTED;
+#endif
+
+    return err_code;
+#else
+    return RD_ERROR_NOT_SUPPORTED;
+#endif
 }
 
 rd_sensor_data_fields_t app_sensor_available_data (void)

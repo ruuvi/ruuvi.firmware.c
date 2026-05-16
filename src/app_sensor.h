@@ -433,6 +433,14 @@ rd_sensor_data_fields_t app_sensor_available_data (void);
 rd_status_t app_sensor_get (rd_sensor_data_t * const data);
 
 /**
+ * @brief Run the configured sensor burst power profile and return sensors to sleep.
+ *
+ * @retval RD_SUCCESS On success.
+ * @return Error code from stack on error.
+ */
+rd_status_t app_sensor_power_profile (void);
+
+/**
  * @brief Uninitialize sensors into low-power mode.
  *
  * @retval RD_SUCCESS On success.

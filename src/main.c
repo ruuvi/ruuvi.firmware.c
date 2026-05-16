@@ -32,7 +32,7 @@
 #include "ruuvi_task_led.h"
 #include "ruuvi_task_adc.h"
 
-#if (!RUUVI_RUN_TESTS)
+#if (!RUUVI_RUN_TESTS) && (!APP_SENSOR_POWER_PROFILING_ENABLED)
 #ifndef CEEDLING
 static
 #endif
@@ -63,6 +63,7 @@ void app_on_error (const rd_status_t error,
     }
 }
 
+#if !APP_SENSOR_POWER_PROFILING_ENABLED
 #ifndef CEEDLING
 static
 #endif
@@ -86,6 +87,7 @@ rd_status_t protect_flash (void)
 #endif
     return err_code;
 }
+#endif
 
 /**
  * @brief setup MCU peripherals and board peripherals.
@@ -94,31 +96,38 @@ rd_status_t protect_flash (void)
 void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
+#if !APP_SENSOR_POWER_PROFILING_ENABLED
     float motion_threshold = APP_MOTION_THRESHOLD;
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
 #   endif
     err_code |= protect_flash();
+#endif
     err_code |= ri_yield_init();
     err_code |= ri_timer_init();
     err_code |= ri_scheduler_init();
     err_code |= rt_gpio_init();
     err_code |= ri_yield_low_power_enable (true);
+#if !APP_SENSOR_POWER_PROFILING_ENABLED
     err_code |= rt_flash_init();
     err_code |= app_led_init();
     app_led_error_signal (true);
     err_code |= app_button_init();
+#endif
     err_code |= app_dc_dc_init();
+#if !APP_SENSOR_POWER_PROFILING_ENABLED
     err_code |= app_sensor_init();
     err_code |= app_log_init();
     // Allow fail on boards which do not have accelerometer.
     (void) app_sensor_acc_thr_set (&motion_threshold);
     err_code |= app_comms_init (APP_LOCKED_AT_BOOT);
     err_code |= app_sensor_vdd_sample();
+#endif
     err_code |= app_heartbeat_init();
     err_code |= app_heartbeat_start();
 
+#if !APP_SENSOR_POWER_PROFILING_ENABLED
     if (RD_SUCCESS == err_code)
     {
         app_led_error_signal (false);
@@ -126,6 +135,7 @@ void setup (void)
         err_code |= ri_delay_ms (APP_SELFTEST_OK_DELAY_MS);
         app_led_activity_signal (false);
     }
+#endif
 
     rd_error_cb_set (&app_on_error);
     RD_ERROR_CHECK (err_code, RD_SUCCESS);
