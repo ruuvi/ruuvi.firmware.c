@@ -71,6 +71,7 @@ m_event_counter;              //!< Number of events registered in app_sensor.
 #if APP_SENSOR_POWER_PROFILING_ENABLED
 #define APP_SENSOR_POWER_PROFILE_AXIS_COUNT (3U)
 static bool m_power_profile_sensors_initialized;
+static uint32_t m_power_profile_run_count;
 static volatile uint32_t m_power_profile_lis2dh12_fifo_events;
 
 #ifndef CEEDLING
@@ -154,6 +155,13 @@ static rd_status_t power_profile_fifo_collect (void)
 {
     rt_sensor_ctx_t * const lis2dh12 = m_sensors[LIS2DH12_INDEX];
     rt_sensor_ctx_t * const mmc5616wa = m_sensors[MMC5616WA_INDEX];
+    const uint32_t mmc5616wa_run_interval =
+        (0U == APP_SENSOR_POWER_PROFILE_MMC5616WA_RUN_INTERVAL)
+        ? 1U
+        : APP_SENSOR_POWER_PROFILE_MMC5616WA_RUN_INTERVAL;
+    const bool run_mmc5616wa =
+        (0U == (m_power_profile_run_count % mmc5616wa_run_interval));
+    m_power_profile_run_count++;
 
     if ( (NULL == lis2dh12) || (NULL == mmc5616wa)
             || (NULL == lis2dh12->sensor.fifo_enable)
@@ -196,15 +204,22 @@ static rd_status_t power_profile_fifo_collect (void)
                                           &power_profile_lis2dh12_fifo_isr);
     err_code |= lis2dh12->sensor.fifo_enable (true);
     err_code |= lis2dh12->sensor.fifo_interrupt_enable (true);
-    err_code |= mmc5616wa->sensor.fifo_enable (true);
     uint8_t mode = RD_SENSOR_CFG_CONTINUOUS;
-    err_code |= mmc5616wa->sensor.mode_set (&mode);
+
+    if (run_mmc5616wa)
+    {
+        err_code |= mmc5616wa->sensor.fifo_enable (true);
+        err_code |= mmc5616wa->sensor.mode_set (&mode);
+    }
+
     mode = RD_SENSOR_CFG_CONTINUOUS;
     err_code |= lis2dh12->sensor.mode_set (&mode);
     uint32_t lis2dh12_fifo_event_count = m_power_profile_lis2dh12_fifo_events;
 
     while ( (RD_SUCCESS == err_code) &&
-            (mmc5616wa_samples_collected < APP_SENSOR_POWER_PROFILE_MMC5616WA_SAMPLE_COUNT))
+            (run_mmc5616wa
+             ? (mmc5616wa_samples_collected < APP_SENSOR_POWER_PROFILE_MMC5616WA_SAMPLE_COUNT)
+             : (lis2dh12_samples_collected < APP_SENSOR_POWER_PROFILE_LIS2DH12_SAMPLE_COUNT)))
     {
         err_code |= power_profile_lis2dh12_fifo_wait (&lis2dh12_fifo_event_count);
 
@@ -228,7 +243,7 @@ static rd_status_t power_profile_fifo_collect (void)
             }
         }
 
-        if (RD_SUCCESS == err_code)
+        if (run_mmc5616wa && (RD_SUCCESS == err_code))
         {
             size_t mmc5616wa_samples_read = 0U;
             const size_t mmc5616wa_samples_remaining =
@@ -262,8 +277,14 @@ static rd_status_t power_profile_fifo_collect (void)
     err_code |= mmc5616wa->sensor.mode_set (&mode);
     err_code |= lis2dh12->sensor.fifo_interrupt_enable (false);
     err_code |= lis2dh12->sensor.fifo_enable (false);
-    err_code |= mmc5616wa->sensor.fifo_enable (false);
+
+    if (run_mmc5616wa)
+    {
+        err_code |= mmc5616wa->sensor.fifo_enable (false);
+    }
+
     err_code |= ri_gpio_interrupt_disable (RB_INT_FIFO_PIN);
+    // Add a log print out with csv format here. 
     return err_code;
 }
 #endif
