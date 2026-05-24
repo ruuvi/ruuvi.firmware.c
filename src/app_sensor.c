@@ -70,9 +70,14 @@ m_event_counter;              //!< Number of events registered in app_sensor.
 
 #if APP_SENSOR_POWER_PROFILING_ENABLED
 #define APP_SENSOR_POWER_PROFILE_AXIS_COUNT (3U)
+#define APP_SENSOR_POWER_PROFILE_LOG_LINE_DELAY_MS (1U)
 static bool m_power_profile_sensors_initialized;
 static uint32_t m_power_profile_run_count;
 static volatile uint32_t m_power_profile_lis2dh12_fifo_events;
+static float m_power_profile_lis2dh12_samples[APP_SENSOR_POWER_PROFILE_LIS2DH12_SAMPLE_COUNT]
+             [APP_SENSOR_POWER_PROFILE_AXIS_COUNT];
+static float m_power_profile_mmc5616wa_samples[APP_SENSOR_POWER_PROFILE_MMC5616WA_SAMPLE_COUNT]
+             [APP_SENSOR_POWER_PROFILE_AXIS_COUNT];
 
 #ifndef CEEDLING
 static
@@ -99,10 +104,34 @@ static void power_profile_fifo_buffer_prepare (rd_sensor_data_t * const data,
     }
 }
 
+static void power_profile_log_csv (float values[][APP_SENSOR_POWER_PROFILE_AXIS_COUNT],
+                                   const size_t count)
+{
+    char line[64] = {0};
+
+    for (size_t ii = 0U; ii < count; ii++)
+    {
+        snprintf (line,
+                  sizeof (line),
+                  "%u;%.3f;%.3f;%.3f\r\n",
+                  (unsigned int) ii,
+                  (double) values[ii][0],
+                  (double) values[ii][1],
+                  (double) values[ii][2]);
+        ri_log (RI_LOG_LEVEL_INFO, line);
+        ri_delay_ms (APP_SENSOR_POWER_PROFILE_LOG_LINE_DELAY_MS);
+    }
+
+    ri_log_flush();
+}
+
 static rd_status_t power_profile_fifo_read (rt_sensor_ctx_t * const sensor,
         const rd_sensor_data_fields_t fields,
         const size_t samples_to_read,
         const size_t fifo_buffer_len,
+        float stored_values[][APP_SENSOR_POWER_PROFILE_AXIS_COUNT],
+        const size_t stored_offset,
+        const size_t stored_capacity,
         size_t * const samples_read)
 {
     if ( (NULL == sensor) || (NULL == sensor->sensor.fifo_enable)
@@ -123,6 +152,19 @@ static rd_status_t power_profile_fifo_read (rt_sensor_ctx_t * const sensor,
     power_profile_fifo_buffer_prepare (data, values, samples_requested, fields);
     rd_status_t err_code = sensor->sensor.fifo_read (&samples_requested, data);
     *samples_read = samples_requested;
+
+    if ( (NULL != stored_values) && (stored_offset < stored_capacity))
+    {
+        size_t samples_to_store = samples_requested;
+
+        if (samples_to_store > (stored_capacity - stored_offset))
+        {
+            samples_to_store = stored_capacity - stored_offset;
+        }
+
+        memcpy (&stored_values[stored_offset], values, sizeof (values[0]) * samples_to_store);
+    }
+
     return err_code;
 }
 
@@ -231,6 +273,9 @@ static rd_status_t power_profile_fifo_collect (void)
                                                  acceleration_fields,
                                                  lis2dh12_samples_to_read,
                                                  APP_SENSOR_POWER_PROFILE_LIS2DH12_FIFO_BUFFER,
+                                                 m_power_profile_lis2dh12_samples,
+                                                 lis2dh12_samples_collected,
+                                                 APP_SENSOR_POWER_PROFILE_LIS2DH12_SAMPLE_COUNT,
                                                  &lis2dh12_samples_read);
 
             if (lis2dh12_samples_collected < APP_SENSOR_POWER_PROFILE_LIS2DH12_SAMPLE_COUNT)
@@ -252,6 +297,9 @@ static rd_status_t power_profile_fifo_collect (void)
                                                  magnetometer_fields,
                                                  mmc5616wa_samples_remaining,
                                                  APP_SENSOR_POWER_PROFILE_MMC5616WA_FIFO_BUFFER,
+                                                 m_power_profile_mmc5616wa_samples,
+                                                 mmc5616wa_samples_collected,
+                                                 APP_SENSOR_POWER_PROFILE_MMC5616WA_SAMPLE_COUNT,
                                                  &mmc5616wa_samples_read);
             mmc5616wa_samples_collected += mmc5616wa_samples_read;
 
@@ -284,7 +332,13 @@ static rd_status_t power_profile_fifo_collect (void)
     }
 
     err_code |= ri_gpio_interrupt_disable (RB_INT_FIFO_PIN);
-    // Add a log print out with csv format here. 
+
+    if (RD_SUCCESS == err_code)
+    {
+        power_profile_log_csv (m_power_profile_lis2dh12_samples, lis2dh12_samples_collected);
+        power_profile_log_csv (m_power_profile_mmc5616wa_samples, mmc5616wa_samples_collected);
+    }
+
     return err_code;
 }
 #endif

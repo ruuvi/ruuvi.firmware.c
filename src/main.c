@@ -32,7 +32,7 @@
 #include "ruuvi_task_led.h"
 #include "ruuvi_task_adc.h"
 
-#if (!RUUVI_RUN_TESTS) && (!APP_SENSOR_POWER_PROFILING_ENABLED)
+#if !RUUVI_RUN_TESTS
 #ifndef CEEDLING
 static
 #endif
@@ -96,12 +96,11 @@ rd_status_t protect_flash (void)
 void setup (void)
 {
     rd_status_t err_code = RD_SUCCESS;
-#if !APP_SENSOR_POWER_PROFILING_ENABLED
-    float motion_threshold = APP_MOTION_THRESHOLD;
 #   if (!RUUVI_RUN_TESTS)
     err_code |= ri_watchdog_init (APP_WDT_INTERVAL_MS, &on_wdt);
     err_code |= ri_log_init (APP_LOG_LEVEL); // Logging to terminal.
 #   endif
+#if !APP_SENSOR_POWER_PROFILING_ENABLED
     err_code |= protect_flash();
 #endif
     err_code |= ri_yield_init();
@@ -117,6 +116,7 @@ void setup (void)
 #endif
     err_code |= app_dc_dc_init();
 #if !APP_SENSOR_POWER_PROFILING_ENABLED
+    float motion_threshold = APP_MOTION_THRESHOLD;
     err_code |= app_sensor_init();
     err_code |= app_log_init();
     // Allow fail on boards which do not have accelerometer.
